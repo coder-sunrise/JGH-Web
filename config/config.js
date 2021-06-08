@@ -35,8 +35,8 @@ const plugins = [
       ...(!process.env.TEST && os.platform() === 'darwin'
         ? {
             dll: {
-              include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-              exclude: ['@babel/runtime'],
+              include: [ 'dva', 'dva/router', 'dva/saga', 'dva/fetch' ],
+              exclude: [ '@babel/runtime' ],
             },
             hardSource: true,
           }
@@ -55,12 +55,10 @@ export default {
   define: {
     APP_TYPE: process.env.APP_TYPE || '',
     'process.env.client_env': 'development',
-    'process.env.client_secret':
-      '20e392d2ea9bfa76f2a9cb26c31a34d675ad81281a31f89ed5d572de8da0b9e7',
+    'process.env.client_secret': '20e392d2ea9bfa76f2a9cb26c31a34d675ad81281a31f89ed5d572de8da0b9e7',
     // 'process.env.url': 'http://localhost:55314',
-    'process.env.url': 'https://medicloud-uat-api-200729.semr2.com',
-    'process.env.signalrUrl':
-      'https://semr2dev2010-websocket.emr.com.sg/notificationHub',
+    'process.env.url': 'https://jghapi-development.azurewebsites.net',
+    'process.env.signalrUrl': 'https://semr2dev2010-websocket.emr.com.sg/notificationHub',
   },
   // 路由配置
   routes: pageRoutes,
@@ -111,10 +109,7 @@ export default {
       const match = context.resourcePath.match(/src(.*)/)
       if (match && match[1]) {
         const antdProPath = match[1].replace('.less', '').replace('.scss', '')
-        const arr = antdProPath
-          .split('/')
-          .map(a => a.replace(/([A-Z])/g, '-$1'))
-          .map(a => a.toLowerCase())
+        const arr = antdProPath.split('/').map((a) => a.replace(/([A-Z])/g, '-$1')).map((a) => a.toLowerCase())
         return `antd-pro${arr.join('-')}-${localName}`.replace(/--/g, '-')
       }
       return localName
