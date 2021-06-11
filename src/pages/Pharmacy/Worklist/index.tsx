@@ -1,12 +1,15 @@
-import { CardContainer } from '@/components'
+import { CardContainer, CommonModal } from '@/components'
 import { ManOutlined, WomanOutlined, FileDoneOutlined } from '@ant-design/icons'
 import React, { useState, CSSProperties } from 'react'
+import { useSelector } from 'react-redux'
 import patientService from '@/services/patient'
 import { primaryColor } from 'mui-pro-jss'
 import { DragDropList, DragDropListTypes } from '@medisys/component'
 import { Card, Button } from 'antd'
 import lists from './sample-data'
 import styles from './index.less'
+
+import DispensaryDetails from './Details'
 
 const linkButtonStyle: CSSProperties = {
   textDecoration: 'underline',
@@ -23,8 +26,9 @@ const ParmacyWorklist = () => {
     lists: lists,
     backgroundColor: 'none',
   }
-
   const [state, setState] = useState(initData)
+  const [showDetails, setShowDetails] = useState(false)
+  const patient = useSelector(state => state)
 
   const onDragEndHandler = (
     dragEndRespond: DragDropListTypes.DragEndRespond,
@@ -103,7 +107,12 @@ const ParmacyWorklist = () => {
             {item.orderCreatedTime}
           </div>
           <div>
-            <span style={linkButtonStyle}>Details</span>
+            <span
+              style={linkButtonStyle}
+              onClick={() => setShowDetails(!showDetails)}
+            >
+              Details
+            </span>
             <span style={linkButtonStyle}>Print Prescription</span>
           </div>
         </div>
@@ -119,7 +128,6 @@ const ParmacyWorklist = () => {
   }
 
   const onItemRender = (itemId: string) => {
-    console.log('styles.card', styles.card)
     const item = state.lists
       .flatMap(l => l.items)
       ?.filter(item => item.id === itemId)[0]
@@ -143,6 +151,20 @@ const ParmacyWorklist = () => {
         onTitleRender={onTitleRender}
         onItemRender={onItemRender}
       />
+      <CommonModal
+        open={showDetails}
+        title='Dispensary Details'
+        onClose={() => {
+          setShowDetails(false)
+        }}
+        onConfirm={() => {}}
+        showFooter={false}
+        maxWidth='xl'
+        overrideLoading
+        observe='AppointmentForm'
+      >
+        <DispensaryDetails />
+      </CommonModal>
     </CardContainer>
   )
 }

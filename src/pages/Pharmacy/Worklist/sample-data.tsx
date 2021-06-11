@@ -72,7 +72,32 @@ const lists = [
     id: 'list-4',
     backgroundColor: '#366',
     title: 'Completed',
-    items: [],
+    items: [
+      {
+        id: 'item-5-1',
+        name: 'Annie Moon',
+        gender: 'female',
+        age: 12,
+        patientAccountNo: 'S0000001',
+        patientReferenceNo: 'PT-00001',
+        doctor: 'Dr. Jin SanRong',
+        queueNo: '4',
+        orderCreatedTime: '05:32 PM, 23 Mar',
+        paymentCompletedTime: undefined,
+      },
+      {
+        id: 'item-5-2',
+        name: 'Annie Sun',
+        gender: 'female',
+        age: 12,
+        patientAccountNo: 'S0000001',
+        patientReferenceNo: 'PT-00001',
+        doctor: 'Dr. Jin SanRong',
+        queueNo: '4',
+        orderCreatedTime: '05:32 PM, 23 Mar',
+        paymentCompletedTime: undefined,
+      },
+    ],
   },
 ]
 
