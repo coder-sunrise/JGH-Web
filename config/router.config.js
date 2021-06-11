@@ -126,6 +126,32 @@ const _routes = [
           // },
         ],
       },
+      {
+        path: '/Pharmacy',
+        icon: 'icon-medicinebox-fill',
+        name: 'Pharmacy',
+        moduleName: 'Reception',
+        authority: ['reception'],
+        specialist: ['GP', 'Dental'],
+        routes: [
+          {
+            path: '/pharmacy/worklist',
+            name: 'Worklist',
+            component: './Pharmacy/Worklist',
+            mini: 'WL',
+            exact: true,
+            authority: ['reception/labtracking'],
+          },
+          {
+            path: '/reception/labtracking',
+            name: 'History',
+            component: './Reception/LabTracking',
+            mini: 'HI',
+            exact: true,
+            authority: ['reception/labtracking'],
+          },
+        ],
+      },
       //
       // Patient New
       {
