@@ -13,14 +13,21 @@ import { serverDateFormat, Tooltip } from '@/components'
 import { LoadingWrapper } from '@/components/_medisys'
 // setting
 import Authorized from '@/utils/Authorized'
+// assets
+import { primaryColor } from '@/assets/jss'
+
+import { ContextMenuComponent } from '@syncfusion/ej2-react-navigations'
+import { ScheduleComponent, Day, Week, Month, ViewsDirective, ViewDirective, ResourcesDirective, ResourceDirective, Inject, Timezone } from '@syncfusion/ej2-react-schedule'
+import { closest, extend, Internationalization, isNullOrUndefined } from '@syncfusion/ej2-base'
+
 import { doctorEventColorOpts } from '../utils'
 // sub component
 import CalendarToolbar from './Toolbar'
 import Event from './Event'
 import TimeSlotComponent from './TimeSlotComponent'
 import { getFirstAppointmentType } from './form/formUtils'
-// assets
-import { primaryColor } from '@/assets/jss'
+import { SampleBase } from './SampleBase'
+import './FuncCalendarView.css'
 
 const styles = () => ({
   customMaxWidth: {
@@ -102,7 +109,7 @@ const applyFilter = (filter, data, isDayView) => {
           return (
             patientProfile.name.toLowerCase().indexOf(_searchStr) >= 0 ||
             patientProfile.patientAccountNo.toLowerCase().indexOf(_searchStr) >=
-              0 ||
+            0 ||
             mobile.number.toLowerCase().indexOf(_searchStr) >= 0
           )
         }
@@ -189,157 +196,153 @@ const MonthDateHeader = withStyles(styles, { name: 'MonthDateHeader' })(
   }),
 )
 
-const CalendarView = ({
-  dispatch,
-  // --- event handlers ---
-  handleSelectSlot,
-  handleSelectEvent,
-  handleDoubleClick,
-  handleOnDragStart,
-  handleEventMouseOver,
-  handleMoveEvent,
-  // --- variables ---
-  calendarEvents,
-  publicHolidays,
-  doctorBlocks,
-  resources,
-  displayDate,
-  calendarView,
-  filter,
-  loading,
-  appointmentTypes,
-}) => {
-  const _draggableAccessor = (event) => {
-    if (event.isEnableRecurrence) return false
-    if (event.doctor) return false
-    return true
+export class CalendarView extends SampleBase {
+  constructor (props) {
+    super(props)
+    this.intl = new Internationalization()
+    this.contextMenuItems = [
+      { text: 'Copy', iconCss: 'e-icons new', id: 'Copy' },
+      { text: 'Cut', iconCss: 'e-icons recurrence', id: 'Cut' },
+      { text: 'Paste', iconCss: 'e-icons edit', id: 'Paste' },
+    ]
+    this.calendarCollections = [
+      { CalendarText: 'My Calendar', CalendarId: 1, CalendarColor: '#c43081' },
+      { CalendarText: 'Company', CalendarId: 2, CalendarColor: '#ff7f50' },
+      { CalendarText: 'Birthday', CalendarId: 3, CalendarColor: '#AF27CD' },
+      { CalendarText: 'Holiday', CalendarId: 4, CalendarColor: '#808000' },
+    ]
   }
-  const _eventColors = (event) => {
-    const { doctor } = event
 
-    if (doctor) {
+  render () {
+    const {
+      dispatch,
+      // --- event handlers ---
+      handleSelectSlot,
+      handleSelectEvent,
+      handleDoubleClick,
+      handleOnDragStart,
+      handleEventMouseOver,
+      handleMoveEvent,
+      // --- variables ---
+      calendarEvents,
+      publicHolidays,
+      doctorBlocks,
+      resources,
+      displayDate,
+      calendarView,
+      filter,
+      loading,
+      appointmentTypes,
+    } = this.props
+
+    const _draggableAccessor = (event) => {
+      if (event.isEnableRecurrence) return false
+      if (event.doctor) return false
+      return true
+    }
+    const _eventColors = (event) => {
+      const { doctor } = event
+
+      if (doctor) {
+        return {
+          style: {
+            backgroundColor: doctorEventColorOpts.value,
+          },
+        }
+      }
+
+      let appointmentType
+      if (calendarView !== BigCalendar.Views.MONTH) {
+        appointmentType = appointmentTypes.find(
+          (item) => item.id === event.appointmentTypeFK,
+        )
+      } else {
+        const appointmentTypeFK = getFirstAppointmentType(event)
+        appointmentType =
+          appointmentTypeFK !== null &&
+          appointmentTypes.find((item) => item.id === appointmentTypeFK)
+      }
+
       return {
         style: {
-          backgroundColor: doctorEventColorOpts.value,
+          backgroundColor: !appointmentType
+            ? primaryColor
+            : appointmentType.tagColorHex,
         },
       }
     }
 
-    let appointmentType
-    if (calendarView !== BigCalendar.Views.MONTH) {
-      appointmentType = appointmentTypes.find(
-        (item) => item.id === event.appointmentTypeFK,
+    const _customDayPropGetter = (date) => {
+      const momentDate = moment(date)
+      const publicHoliday = publicHolidays.find((item) => {
+        const momentStartDate = moment(item.startDate)
+        const momentEndDate = moment(item.endDate)
+        if (momentDate.isBetween(momentStartDate, momentEndDate, 'days', '[]'))
+          return true
+        return false
+      })
+
+      if (calendarView === BigCalendar.Views.MONTH && publicHoliday)
+        return {
+          className: 'calendar-holiday',
+        }
+      return {}
+    }
+
+    const _jumpToDate = (date) => {
+      dispatch({
+        type: 'calendar/navigateCalendar',
+        payload: { date },
+      })
+    }
+
+    const _onViewChange = (view) => {
+      dispatch({
+        type: 'calendar/navigateCalendar',
+        payload: { view },
+      })
+      dispatch({
+        type: 'calendar/setCalendarView',
+        payload: view,
+      })
+    }
+
+    const _moveEvent = (props) => {
+      handleMoveEvent({ props })
+    }
+
+    const _jumpToSelectedValue = (value, type, currentDate) => {
+      const desiredDate = moment(currentDate).add(value, type).toDate()
+
+      dispatch({
+        type: 'calendar/navigateCalendar',
+        payload: { date: desiredDate },
+      })
+    }
+
+    const Toolbar = (toolbarProps) => {
+      return (
+        <CalendarToolbar
+          {...toolbarProps}
+          handleViewChange={_onViewChange}
+          handleDateChange={_jumpToDate}
+          handleSelectedValue={_jumpToSelectedValue}
+        />
       )
-    } else {
-      const appointmentTypeFK = getFirstAppointmentType(event)
-      appointmentType =
-        appointmentTypeFK !== null &&
-        appointmentTypes.find((item) => item.id === appointmentTypeFK)
     }
 
-    return {
-      style: {
-        backgroundColor: !appointmentType
-          ? primaryColor
-          : appointmentType.tagColorHex,
-      },
+    const EventComponent = (eventProps) => {
+      return (
+        <Event
+          {...eventProps}
+        />
+      )
     }
-  }
 
-  const _customDayPropGetter = (date) => {
-    // const { publicHolidays } = this.props
-    // console.log({ date })
-    const momentDate = moment(date)
-    const publicHoliday = publicHolidays.find((item) => {
-      const momentStartDate = moment(item.startDate)
-      const momentEndDate = moment(item.endDate)
-
-      // if (momentStartDate.diff(momentDate, 'day') === 0) {
-      //   return true
-      // }
-      if (momentDate.isBetween(momentStartDate, momentEndDate, 'days', '[]'))
-        return true
-      return false
-    })
-
-    if (calendarView === BigCalendar.Views.MONTH && publicHoliday)
-      return {
-        className: 'calendar-holiday',
-      }
-    return {}
-  }
-
-  const _jumpToDate = (date) => {
-    dispatch({
-      type: 'calendar/navigateCalendar',
-      payload: { date },
-    })
-    // this.props.dispatch({ type: 'calendar/setCurrentViewDate', date })
-  }
-
-  const _onViewChange = (view) => {
-    dispatch({
-      type: 'calendar/navigateCalendar',
-      payload: { view },
-    })
-    dispatch({
-      type: 'calendar/setCalendarView',
-      payload: view,
-    })
-  }
-
-  const _moveEvent = (props) => {
-    handleMoveEvent({ props })
-
-    // const { handleMoveEvent } = this.props
-    // const { id, _appointmentID } = event
-
-    // const resourceID = resourceId !== undefined ? resourceId : event.resourceId
-
-    // const updatedEvent = {
-    //   start,
-    //   end,
-    //   resourceId: resourceID,
-    // }
-  }
-
-  const _jumpToSelectedValue = (value, type, currentDate) => {
-    const desiredDate = moment(currentDate).add(value, type).toDate()
-
-    dispatch({
-      type: 'calendar/navigateCalendar',
-      payload: { date: desiredDate },
-    })
-  }
-
-  const Toolbar = (toolbarProps) => {
-    return (
-      <CalendarToolbar
-        {...toolbarProps}
-        handleViewChange={_onViewChange}
-        handleDateChange={_jumpToDate}
-        handleSelectedValue={_jumpToSelectedValue}
-      />
-    )
-  }
-
-  const EventComponent = (eventProps) => {
-    return (
-      <Event
-        {...eventProps}
-        // calendarView={calendarView}
-        // handleMouseOver={handleEventMouseOver}
-      />
-    )
-  }
-
-  const eventList = useMemo(
-    () => {
+    const eventList = () => {
       if (calendarView === BigCalendar.Views.MONTH)
         return calendarEvents.reduce((events, appointment) => {
           const { appointment_Resources: apptResources = [] } = appointment
-
-          // TODO: need to fix sortOrder calculation, should exclude deleted appointments when calculating sortOrder
           const firstApptRes = apptResources.find(
             (item) => item.isPrimaryClinician,
           )
@@ -364,11 +367,11 @@ const CalendarView = ({
               clinicianName: !firstApptRes
                 ? undefined
                 : firstApptRes.clinicianName,
-              start: moment(
+              startTime: moment(
                 `${appointment.appointmentDate} ${firstApptRes.startTime}`,
                 `${serverDateFormat} HH:mm`,
               ).toDate(),
-              end: moment(
+              endTime: moment(
                 `${appointment.appointmentDate} ${firstApptRes.endTime}`,
                 `${serverDateFormat} HH:mm`,
               ).toDate(),
@@ -403,11 +406,11 @@ const CalendarView = ({
           bookedByUser,
           createDate,
           isEditedAsSingleAppointment,
-          start: moment(
+          StartTime: moment(
             `${appointmentDate} ${item.startTime}`,
             `${serverDateFormat} HH:mm`,
           ).toDate(),
-          end: moment(
+          EndTime: moment(
             `${appointmentDate} ${item.endTime}`,
             `${serverDateFormat} HH:mm`,
           ).toDate(),
@@ -418,19 +421,13 @@ const CalendarView = ({
           ...apptEvents,
         ]
       }, [])
-    },
-    [
-      calendarView,
-      calendarEvents,
-    ],
-  )
+    }
 
-  const filtered = useMemo(
-    () =>
-      applyFilter(
+    const filtered = () => {
+      return applyFilter(
         filter,
         [
-          ...eventList,
+          ...eventList(),
           ...doctorBlocks.map((item) => ({
             ...item,
             isDoctorBlock: true,
@@ -440,68 +437,107 @@ const CalendarView = ({
           })),
         ],
         calendarView === BigCalendar.Views.DAY,
-      ),
-    [
-      calendarView,
-      filter,
-      doctorBlocks,
-      eventList,
-    ],
-  )
-
-  return (
-    <LoadingWrapper loading={loading} text='Loading appointments...'>
-      <DragAndDropCalendar
-        components={{
-          // https://github.com/intljusticemission/react-big-calendar/blob/master/src/Calendar.js
-          toolbar: Toolbar,
-          event: EventComponent,
-          timeSlotWrapper: TimeSlotComponent,
-          month: {
-            dateHeader: MonthDateHeader,
-          },
-        }}
-        localizer={localizer}
-        date={displayDate}
-        min={minTime}
-        max={maxTime}
-        view={calendarView}
-        // #region values props
-        events={filtered}
-        // #endregion
-
-        // #region --- functional props ---
-        selectable='ignoreEvents'
-        resizable={false}
-        showMultiDayTimes={false}
-        step={15}
-        timeslots={1}
-        longPressThreshold={500}
-        tooltipAccessor={null}
-        // #endregion --- functional props ---
-        // #region --- resources ---
-        resources={
-          calendarView === BigCalendar.Views.DAY ? resources : undefined
-        }
-        resourceIdAccessor='clinicianFK'
-        resourceTitleAccessor='doctorName'
-        // #endregion --- resources ---
-        // #region --- event handlers ---
-        draggableAccessor={_draggableAccessor}
-        onNavigate={_jumpToDate}
-        onEventDrop={_moveEvent}
-        onView={_onViewChange}
-        eventPropGetter={_eventColors}
-        dayPropGetter={_customDayPropGetter}
-        // slotPropGetter={TimeSlotComponent}
-        onSelectSlot={handleSelectSlot}
-        onSelectEvent={handleSelectEvent}
-        onDoubleClickEvent={handleDoubleClick}
-        onDragStart={handleOnDragStart}
-        // #endregion --- event handlers ---
-      />
-    </LoadingWrapper>
-  )
+      )
+    }
+    console.log('Resources', this.scheduleObj)
+    return (
+      <div className='schedule-control-section' style={{ margin: '20px 10px' }}>
+        <div className='col-lg-9 control-section'>
+          <div className='control-wrapper'>
+            <ScheduleComponent id='scheduler'
+              cssClass='schedule-overview'
+              ref={(value) => { this.scheduleObj = value }}
+              width='100%'
+              height='100%'
+              group={{ resources: ['Resources'] }}
+              timezone='UTC'
+              currentView='Day'
+              startHour='07:00 AM'
+              endHour='22:00 PM'
+              eventSettings={{
+                dataSource: filtered(),
+                template: () => <div>Event</div>,
+                enableTooltip: true,
+                tooltipTemplate: () => <div>ToolTip</div>,
+              }}
+              eventClick={(event) => {
+                event.cancel = true
+              }}
+              cellDoubleClick={(event) => {
+                event.cancel = true
+              }}
+              cellClick={(event) => {
+                event.cancel = true
+              }}
+              select={(event) => {
+                event.cancel = true
+              }}
+              eventRendered={(event) => {
+                console.log('event,', event)
+                //event.element.style.backgroundColor = 'red'
+              }}
+              changeCurrentView={(viewName) => {
+                console.log('viewName', viewName)
+              }}
+            >
+              <ResourcesDirective>
+                <ResourceDirective
+                  field='clinicianFK'
+                  title='Resources'
+                  name='Resources'
+                  dataSource={resources}
+                  textField='doctorName'
+                  idField='clinicianFK'
+                //colorField='CalendarColor'
+                />
+              </ResourcesDirective>
+              <ViewsDirective>
+                <ViewDirective option='Day' />
+                <ViewDirective option='Week' />
+                <ViewDirective option='Month' />
+              </ViewsDirective>
+              <Inject services={[Day, Week, Month]} />
+            </ScheduleComponent>
+            <ContextMenuComponent
+              id='ContextMenu'
+              cssClass='schedule-context-menu'
+              ref={(memu) => { this.contextMenuObj = memu }}
+              target='.e-schedule'
+              items={this.contextMenuItems}
+              beforeOpen={(args) => {
+                this.targetElement = args.event.target
+                console.log('targetElement', this.targetElement)
+                if (closest(this.targetElement, '.e-header-cells')) {
+                  args.cancel = true
+                  return
+                }
+                if (closest(this.targetElement, '.e-all-day-cells')) {
+                  args.cancel = true
+                  return
+                }
+                if (closest(this.targetElement, '.e-contextmenu')) {
+                  return
+                }
+                this.selectedTarget = closest(this.targetElement, '.e-appointment,.e-work-cells,.e-vertical-view .e-date-header-wrap .e-all-day-cells,.e-vertical-view .e-date-header-wrap .e-header-cells');
+                if (isNullOrUndefined(this.selectedTarget)) {
+                  args.cancel = true
+                  return
+                }
+                this.contextMenuObj.hideItems(['Copy', 'Cut', 'Paste'], true)
+                if (this.selectedTarget.classList.contains('e-appointment')) {
+                  let eventObj = this.scheduleObj.getEventDetails(this.selectedTarget);
+                  console.log('eventObj', eventObj)
+                  this.contextMenuObj.showItems(['Copy', 'Cut'], true)
+                  return
+                }
+                this.contextMenuObj.showItems(['Paste'], true)
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
 }
 
 export default connect(({ calendar, codetable, loading, doctorBlock }) => ({

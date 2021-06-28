@@ -45,6 +45,8 @@
     "@material-ui/styles": "4.10.0",
     "@medisys/component": "^0.1.193",
     "@microsoft/signalr": "^3.1.0",
+    "@syncfusion/ej2-react-navigations": "^19.1.69",
+    "@syncfusion/ej2-react-schedule": "^19.1.69",
     "antd": "^4.15.6",
     "axios": "^0.19.0",
     "card-validator": "^6.2.0",

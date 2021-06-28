@@ -97,7 +97,7 @@ export default createListViewModel({
       })
     },
     effects: {
-      *initState({ payload }, { all, put }) {
+      *initState ({ payload }, { all, put }) {
         yield all([
           put({ type: 'getPublicHolidayList', payload }),
           put({ type: 'getClinicBreakHourList', payload }),
@@ -108,7 +108,7 @@ export default createListViewModel({
           }),
         ])
       },
-      *getActiveBizSessionQueue(_, { put, select }) {
+      *getActiveBizSessionQueue (_, { put, select }) {
         const queueLog = yield select(state => state.queueLog)
         const { sessionInfo } = queueLog
         if (sessionInfo.id === '') {
@@ -119,7 +119,7 @@ export default createListViewModel({
           })
         }
       },
-      *submit({ payload }, { select, put }) {
+      *submit ({ payload }, { select, put }) {
         const calendarState = yield select(state => state.calendar)
         // const { ltsppointmentstatus } = yield select((state) => state.codetable)
         try {
@@ -313,7 +313,7 @@ export default createListViewModel({
         }
         return false
       },
-      *validate({ payload }, { call, put }) {
+      *validate ({ payload }, { call, put }) {
         const result = yield call(service.validate, payload)
         const { status, data } = result
 
@@ -328,10 +328,10 @@ export default createListViewModel({
         }
         return null
       },
-      *refresh(_, { put }) {
+      *refresh (_, { put }) {
         yield put({ type: 'navigateCalendar', payload: {} })
       },
-      *getAppointmentDetails({ payload }, { call, put }) {
+      *getAppointmentDetails ({ payload }, { call, put }) {
         const result = yield call(service.query, payload)
         const { status, data } = result
         if (parseInt(status, 10) === 200) {
@@ -351,7 +351,7 @@ export default createListViewModel({
         }
         return false
       },
-      *getCalendarList({ payload }, { call, put }) {
+      *getCalendarList ({ payload }, { call, put }) {
         const result = yield call(service.queryList, {
           apiCriteria: {
             ...payload,
@@ -368,7 +368,7 @@ export default createListViewModel({
           })
         }
       },
-      *getClinicBreakHourList(_, { call, put }) {
+      *getClinicBreakHourList (_, { call, put }) {
         const result = yield call(cbServices.queryList, {
           isActive: true,
           pagesize: 999,
@@ -383,7 +383,7 @@ export default createListViewModel({
           })
         }
       },
-      *getClinicOperationHourList(_, { call, put }) {
+      *getClinicOperationHourList (_, { call, put }) {
         const result = yield call(cohServices.queryList, {
           isActive: true,
           pagesize: 999,
@@ -396,7 +396,7 @@ export default createListViewModel({
           })
         }
       },
-      *getPublicHolidayList({ payload }, { call, put }) {
+      *getPublicHolidayList ({ payload }, { call, put }) {
         const result = yield call(phServices.queryList, {
           isActive: true,
           lgteql_startDate: payload.start,
@@ -410,7 +410,7 @@ export default createListViewModel({
           })
         }
       },
-      *insertAppointment({ payload }, { call, put }) {
+      *insertAppointment ({ payload }, { call, put }) {
         const result = yield call(service.insert, payload)
         if (result) {
           yield put({ type: 'refresh' })
@@ -419,7 +419,7 @@ export default createListViewModel({
         }
         return false
       },
-      *saveAppointment({ payload }, { call, put }) {
+      *saveAppointment ({ payload }, { call, put }) {
         const result = yield call(service.save, payload)
         if (result) {
           yield put({ type: 'refresh' })
@@ -429,7 +429,7 @@ export default createListViewModel({
         return false
       },
 
-      *rescheduleAppointment({ payload }, { call, put }) {
+      *rescheduleAppointment ({ payload }, { call, put }) {
         const result = yield call(service.reschedule, payload)
         if (result) {
           yield put({ type: 'refresh' })
@@ -438,13 +438,13 @@ export default createListViewModel({
         }
         return false
       },
-      *deleteDraft({ payload, callback }, { call, put }) {
+      *deleteDraft ({ payload, callback }, { call, put }) {
         const result = yield call(service.deleteDraft, payload)
         if (result === 204) notification.success({ message: 'Deleted' })
         yield put({ type: 'refresh' })
         callback && callback()
       },
-      *cancelAppointment({ payload }, { call, put }) {
+      *cancelAppointment ({ payload }, { call, put }) {
         const result = yield call(service.cancel, payload)
         if (result && result.status === '200') {
           notification.success({ message: 'Appointment(s) cancelled' })
@@ -453,7 +453,7 @@ export default createListViewModel({
         }
         return false
       },
-      *navigateCalendar({ payload }, { all, select, put }) {
+      *navigateCalendar ({ payload }, { all, select, put }) {
         const calendarState = yield select(state => state.calendar)
         const { date, view } = payload
         const targetDate =
@@ -512,25 +512,33 @@ export default createListViewModel({
           }),
         ])
       },
-      *updateAppointmentLinking({ payload }, { call, put }) {
+      *updateAppointmentLinking ({ payload }, { call, put }) {
         const response = yield call(service.updateLinking, payload)
         return response
       },
+      *pasteAppointment ({ payload }, { call, put }) {
+        const result = yield call(service.pasteAppointment, payload)
+        if (result) {
+          notification.success({ message: 'Appointment pasted' })
+          return true
+        }
+        return false
+      },
     },
     reducers: {
-      saveConflict(state, { payload }) {
+      saveConflict (state, { payload }) {
         return { ...state, conflicts: payload.conflicts }
       },
-      cachePayload(state, { payload }) {
+      cachePayload (state, { payload }) {
         return { ...state, cachedPayload: payload }
       },
-      setEditType(state, { payload }) {
+      setEditType (state, { payload }) {
         return { ...state, mode: payload }
       },
-      setCurrentViewDate(state, { payload }) {
+      setCurrentViewDate (state, { payload }) {
         return { ...state, currentViewDate: payload }
       },
-      setViewAppointment(state, { data }) {
+      setViewAppointment (state, { data }) {
         const { appointments = [] } = data
 
         let newAppointments = appointments.map(o => {
@@ -565,23 +573,23 @@ export default createListViewModel({
           currentViewAppointment: { ...data, appointments: newAppointments },
         }
       },
-      setCalendarView(state, { payload }) {
+      setCalendarView (state, { payload }) {
         return { ...state, calendarView: payload }
       },
-      savePublicHolidays(state, { payload }) {
+      savePublicHolidays (state, { payload }) {
         return {
           ...state,
           publicHolidayList: [...payload],
         }
       },
-      saveClinicBreakHours(state, { payload }) {
+      saveClinicBreakHours (state, { payload }) {
         const breakHour = mapBreakHour(payload)
         return {
           ...state,
           clinicBreakHourList: breakHour,
         }
       },
-      saveClinicOperationHours(state, { payload }) {
+      saveClinicOperationHours (state, { payload }) {
         const operationHour = mapOperationHour(payload)
         return {
           ...state,

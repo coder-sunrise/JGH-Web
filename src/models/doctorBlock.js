@@ -63,6 +63,14 @@ export default createListViewModel({
         }
         return false
       },
+      *pasteDoctorBlock ({ payload }, { call, put }) {
+        const result = yield call(service.pasteDoctorBlock, payload)
+        if (result) {
+          notification.success({ message: 'Doctor Block pasted' })
+          return true
+        }
+        return false
+      },
     },
     reducers: {
       queryOneDone (state, { payload }) {

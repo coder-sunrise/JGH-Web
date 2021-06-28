@@ -17,3 +17,4 @@ export const remove = (params) => {
 }
 export const insert = (params) => request(url, { method: 'POST', body: params })
 export const save = (params) => request(url, { method: 'PUT', body: params })
+export const pasteDoctorBlock = (params) => request(`${url}/PasteDoctorBlock`, { method: 'POST', body: params })
