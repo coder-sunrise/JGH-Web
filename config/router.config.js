@@ -1266,6 +1266,11 @@ const _routes = [
         path: '/forbidden',
         component: './Exception/403.js',
       },
+      {
+        path: '/documenteditor',
+        name: 'documenteditor',
+        component: './DocumentEditor',
+      },
     ],
   },
   // Main routes

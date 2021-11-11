@@ -90,8 +90,7 @@ export default {
   'menu.report.gstReport': 'GST Report',
   'menu.report.inventoryMovementReport': 'Inventory Movement Report',
   'menu.report.chasClaimReport': 'CHAS Claim Report',
-  'menu.report.voidCreditNoteReport':
-    'Void Credit Note & Payment & Write Off Report',
+  'menu.report.voidCreditNoteReport': 'Void Credit Note & Payment Report',
   'menu.report.salesListingReport': 'Sales Listing Report',
   'menu.report.invoiceListingReport': 'Invoice Listing Report',
   'menu.report.lowStockReport': 'Inventory Threshold Report',
