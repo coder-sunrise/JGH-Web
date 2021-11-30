@@ -117,7 +117,7 @@ class PartialDispenseList extends PureComponent {
         width: 100,
       },
       { columnName: 'uom', width: 120 },
-      { columnExtensions: 'visitDoctor', width: 120 },
+      { columnName: 'visitDoctor', width: 120 },
       ...PartialDispenseExtensions,
     ]
 

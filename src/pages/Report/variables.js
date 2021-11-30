@@ -158,7 +158,7 @@ export const menuData = [
 
   {
     title: 'Inventory',
-    text: 'Partial Dispense Report',
+    text: 'Dispensary Report',
     url: '/report/partialdispensereport',
     authority: 'report.inventory.partialdispensereport',
   },

@@ -90,6 +90,26 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
               }}
             />
           </GridItem>
+
+          <GridItem md={2}>
+            <FastField
+              name='Status'
+              render={args => (
+                <Select
+                  label='Status'
+                  allowClear={false}
+                  labelField='name'
+                  valueField='value'
+                  {...args}
+                  options={[
+                    { name: 'All', value: 'All' },
+                    { name: 'Partially', value: 'Partially' },
+                    { name: 'Completed', value: 'Completed' },
+                  ]}
+                />
+              )}
+            />
+          </GridItem>
           <GridItem md={1}>
             <FastField
               name='GroupByItem'

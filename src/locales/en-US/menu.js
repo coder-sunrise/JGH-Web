@@ -194,7 +194,7 @@ export default {
   'menu.report.viewreport': 'View Report',
   'menu.report.expiringstockreport': 'Expiring Stock Report',
   'menu.report.radiologystatisticreport': 'Radiology Statistic Report',
-  'menu.report.partialdispensereport': ' Partial Dispense Report',
+  'menu.report.partialdispensereport': 'Dispensary Report',
 
   'menu.report.visitListingReport': 'Visit Listing Report',
 
