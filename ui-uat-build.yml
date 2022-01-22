@@ -13,7 +13,7 @@ variables:
   - name: npm_config_cache
     value: $(Build.SourcesDirectory)/node_modules
   - group: ui-uat-variable
-  - group: ui-prod-variable
+  - group: ui-production-variable
 
 jobs:
   - job: buildUATJob
