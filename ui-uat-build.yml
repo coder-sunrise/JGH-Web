@@ -15,7 +15,7 @@ variables:
 jobs:
   - job: buildUATJob
     pool:
-      name: 'JGH_UAT'
+      name: 'JGH-UAT'
     workspace:
       clean: all
     steps:
