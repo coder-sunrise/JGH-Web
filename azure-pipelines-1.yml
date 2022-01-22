@@ -1,0 +1,62 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger: none
+
+pool:
+  name: 'Medicloud'
+
+variables:
+  #override the npm_config_cache environment variable to the custom path
+  - name: npm_config_cache
+    value: $(Build.SourcesDirectory)/node_modules
+  - group: ui-uat-variable
+
+jobs:
+  - job: buildJob
+    workspace:
+      clean: all
+    steps:
+      - task: Cache@2
+        inputs:
+          key: 'version5 | npm | "$(Agent.OS)" | package.json'
+          path: $(npm_config_cache)
+          cacheHitVar: CACHE_RESTORED
+        displayName: Cache npm
+
+      - script: npm install
+        condition: ne(variables.CACHE_RESTORED, 'true')
+        displayName: 'npm install'
+
+      - script: dir & copy "config\config.template.js" "config\config.js" /Y
+        displayName: 'Copy template config to config file'
+
+      - powershell: |
+          ((Get-Content -path config\config.js -Raw) -replace '{environment}',$env:environment) | Set-Content -Path config\config.js
+          ((Get-Content -path config\config.js -Raw) -replace '{client_secret}',$env:client_secret) | Set-Content -Path config\config.js
+          ((Get-Content -path config\config.js -Raw) -replace '{signalr_url}',$env:signalr_url) | Set-Content -Path config\config.js
+          ((Get-Content -path config\config.js -Raw) -replace '{url}',$env:environment_url) | Set-Content -Path config\config.js
+          (Get-Content -path config\config.js -Raw)
+        env:
+          environment: $(process.env.client_env)
+          client_secret: $(process.env.client_secret)
+          signalr_url: $(process.env.signalrUrl)
+          environment_url: $(process.env.url)
+        displayName: Replace placeholders with actual values
+
+      - script:
+          #export NODE_OPTIONS="--no-warnings --max-old-space-size=2048" && npm run build
+          set NODE_OPTIONS=--max_old_space_size=8192 & npm run build
+        displayName: 'npm build'
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '.\dist'
+          Contents: '**'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'drop'
+          publishLocation: 'Container'
