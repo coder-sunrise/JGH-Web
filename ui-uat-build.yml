@@ -62,7 +62,7 @@ jobs:
         displayName: 'Publish UAT artifacts'
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)/UAT'
-          ArtifactName: 'drop'
+          ArtifactName: 'drop-uat'
           publishLocation: 'Container'
 
   - job: buildProdJob
@@ -114,5 +114,5 @@ jobs:
         displayName: 'Publish Production artifacts'
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)/Prod'
-          ArtifactName: 'drop'
+          ArtifactName: 'drop-prod'
           publishLocation: 'Container'
