@@ -9,6 +9,10 @@ variables:
   #override the npm_config_cache environment variable to the custom path
   - name: npm_config_cache
     value: $(Build.SourcesDirectory)/node_modules
+  - name: npm_config_cache_uat
+    value: $(Build.SourcesDirectory)/uat/node_modules
+  - name: npm_config_cache_prod
+    value: $(Build.SourcesDirectory)/prod/node_modules
   - group: ui-internal_testing-variable
   - group: ui-uat-variable
   - group: ui-production-variable
@@ -23,7 +27,7 @@ jobs:
       - task: Cache@2
         inputs:
           key: 'version5 | npm | "$(Agent.OS)" | package.json'
-          path: $(npm_config_cache)/internal_testing
+          path: $(npm_config_cache)
           cacheHitVar: CACHE_RESTORED
         displayName: Cache npm
 
@@ -75,7 +79,7 @@ jobs:
       - task: Cache@2
         inputs:
           key: 'version5 | npm | "$(Agent.OS)" | package.json'
-          path: $(npm_config_cache)/uat
+          path: $(npm_config_cache_uat)
           cacheHitVar: CACHE_RESTORED
         displayName: Cache npm
 
@@ -127,7 +131,7 @@ jobs:
       - task: Cache@2
         inputs:
           key: 'version5 | npm | "$(Agent.OS)" | package.json'
-          path: $(npm_config_cache)/prod
+          path: $(npm_config_cache_prod)
           cacheHitVar: CACHE_RESTORED
         displayName: Cache npm
 
