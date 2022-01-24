@@ -23,7 +23,7 @@ jobs:
       - task: Cache@2
         inputs:
           key: 'version5 | npm | "$(Agent.OS)" | package.json'
-          path: $(npm_config_cache)
+          path: $(npm_config_cache)/internal_testing
           cacheHitVar: CACHE_RESTORED
         displayName: Cache npm
 
@@ -75,7 +75,7 @@ jobs:
       - task: Cache@2
         inputs:
           key: 'version5 | npm | "$(Agent.OS)" | package.json'
-          path: $(npm_config_cache)
+          path: $(npm_config_cache)/uat
           cacheHitVar: CACHE_RESTORED
         displayName: Cache npm
 
@@ -127,7 +127,7 @@ jobs:
       - task: Cache@2
         inputs:
           key: 'version5 | npm | "$(Agent.OS)" | package.json'
-          path: $(npm_config_cache)
+          path: $(npm_config_cache)/prod
           cacheHitVar: CACHE_RESTORED
         displayName: Cache npm
 
