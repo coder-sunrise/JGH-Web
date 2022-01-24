@@ -119,7 +119,7 @@ jobs:
           publishLocation: 'Container'
   - job: buildProdJob
     pool:
-      name: 'JGH-Prod'
+      name: 'JGH-UAT'
     workspace:
       clean: all
     steps:
