@@ -26,7 +26,7 @@ jobs:
     steps:
       - task: Cache@2
         inputs:
-          key: 'version5 | npm | "$(Agent.OS)" | package.json'
+          key: 'internal_testing_version5 | npm | "$(Agent.OS)" | package.json'
           path: $(npm_config_cache)
           cacheHitVar: CACHE_RESTORED
         displayName: Cache npm
@@ -78,7 +78,7 @@ jobs:
     steps:
       - task: Cache@2
         inputs:
-          key: 'version5 | npm | "$(Agent.OS)" | package.json'
+          key: 'uat_version5 | npm | "$(Agent.OS)" | package.json'
           path: $(npm_config_cache_uat)
           cacheHitVar: CACHE_RESTORED
         displayName: Cache npm
@@ -130,7 +130,7 @@ jobs:
     steps:
       - task: Cache@2
         inputs:
-          key: 'version5 | npm | "$(Agent.OS)" | package.json'
+          key: 'prod_version5 | npm | "$(Agent.OS)" | package.json'
           path: $(npm_config_cache_prod)
           cacheHitVar: CACHE_RESTORED
         displayName: Cache npm
