@@ -9,10 +9,6 @@ variables:
   #override the npm_config_cache environment variable to the custom path
   - name: npm_config_cache
     value: $(Build.SourcesDirectory)/node_modules
-  - name: npm_config_cache_uat
-    value: $(Build.SourcesDirectory)/uat/node_modules
-  - name: npm_config_cache_prod
-    value: $(Build.SourcesDirectory)/prod/node_modules
   - group: ui-internal_testing-variable
   - group: ui-uat-variable
   - group: ui-production-variable
@@ -43,7 +39,7 @@ jobs:
           ((Get-Content -path config\config.js -Raw) -replace '{client_secret}',$env:client_secret) | Set-Content -Path config\config.js
           ((Get-Content -path config\config.js -Raw) -replace '{signalr_url}',$env:signalr_url) | Set-Content -Path config\config.js
           ((Get-Content -path config\config.js -Raw) -replace '{url}',$env:environment_url) | Set-Content -Path config\config.js
-          ((Get-Content -path config\config.js -Raw) -replace '{url}',$env:default_cliniccode) | Set-Content -Path config\config.js
+          ((Get-Content -path config\config.js -Raw) -replace '{default_cliniccode}',$env:default_cliniccode) | Set-Content -Path config\config.js
           (Get-Content -path config\config.js -Raw)
         env:
           environment: $(process.env.client_env)
@@ -79,7 +75,7 @@ jobs:
       - task: Cache@2
         inputs:
           key: 'uat_version5 | npm | "$(Agent.OS)" | package.json'
-          path: $(npm_config_cache_uat)
+          path: $(npm_config_cache)
           cacheHitVar: CACHE_RESTORED
         displayName: Cache npm
 
@@ -95,7 +91,7 @@ jobs:
           ((Get-Content -path config\config.js -Raw) -replace '{client_secret}',$env:client_secret) | Set-Content -Path config\config.js
           ((Get-Content -path config\config.js -Raw) -replace '{signalr_url}',$env:signalr_url) | Set-Content -Path config\config.js
           ((Get-Content -path config\config.js -Raw) -replace '{url}',$env:environment_url) | Set-Content -Path config\config.js
-          ((Get-Content -path config\config.js -Raw) -replace '{url}',$env:default_cliniccode) | Set-Content -Path config\config.js
+          ((Get-Content -path config\config.js -Raw) -replace '{default_cliniccode}',$env:default_cliniccode) | Set-Content -Path config\config.js
           (Get-Content -path config\config.js -Raw)
         env:
           environment: $(process.env.client_env_uat)
@@ -121,33 +117,29 @@ jobs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)/UAT'
           ArtifactName: 'drop-uat'
           publishLocation: 'Container'
-
   - job: buildProdJob
     pool:
-      name: 'JGH-UAT'
+      name: 'JGH-Prod'
     workspace:
       clean: all
     steps:
       - task: Cache@2
         inputs:
           key: 'prod_version5 | npm | "$(Agent.OS)" | package.json'
-          path: $(npm_config_cache_prod)
+          path: $(npm_config_cache)
           cacheHitVar: CACHE_RESTORED
         displayName: Cache npm
-
       - script: npm install
         condition: ne(variables.CACHE_RESTORED, 'true')
         displayName: 'npm install'
-
       - script: dir & copy "config\config.template.js" "config\config.js" /Y
         displayName: 'Copy template config to config file'
-
       - powershell: |
           ((Get-Content -path config\config.js -Raw) -replace '{environment}',$env:environment) | Set-Content -Path config\config.js
           ((Get-Content -path config\config.js -Raw) -replace '{client_secret}',$env:client_secret) | Set-Content -Path config\config.js
           ((Get-Content -path config\config.js -Raw) -replace '{signalr_url}',$env:signalr_url) | Set-Content -Path config\config.js
           ((Get-Content -path config\config.js -Raw) -replace '{url}',$env:environment_url) | Set-Content -Path config\config.js
-          ((Get-Content -path config\config.js -Raw) -replace '{url}',$env:default_cliniccode) | Set-Content -Path config\config.js
+          ((Get-Content -path config\config.js -Raw) -replace '{default_cliniccode}',$env:default_cliniccode) | Set-Content -Path config\config.js
           (Get-Content -path config\config.js -Raw)
         env:
           environment: $(process.env.client_env_prod)
@@ -156,7 +148,6 @@ jobs:
           environment_url: $(process.env.url_prod)
           default_cliniccode: $(process.env.default_cliniccode_prod)
         displayName: Replace placeholders with actual values
-
       - script:
           #export NODE_OPTIONS="--no-warnings --max-old-space-size=2048" && npm run build
           set NODE_OPTIONS=--max_old_space_size=8192 & npm run build
