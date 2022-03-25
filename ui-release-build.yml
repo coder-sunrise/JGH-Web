@@ -20,15 +20,8 @@ jobs:
     workspace:
       clean: all
     steps:
-      - task: Cache@2
-        inputs:
-          key: 'internal_testing_version5 | npm | "$(Agent.OS)" | package.json'
-          path: $(npm_config_cache)
-          cacheHitVar: CACHE_RESTORED
-        displayName: Cache npm
-
-      - script: npm install
-        condition: ne(variables.CACHE_RESTORED, 'true')
+     
+      - script: npm install 
         displayName: 'npm install'
 
       - script: dir & copy "config\config.template.js" "config\config.js" /Y
@@ -66,58 +59,7 @@ jobs:
           ArtifactName: 'drop-internal_testing'
           publishLocation: 'Container'
 
-  - job: buildUATJob
-    pool:
-      name: 'JGH-UAT'
-    workspace:
-      clean: all
-    steps:
-      - task: Cache@2
-        inputs:
-          key: 'uat_version5 | npm | "$(Agent.OS)" | package.json'
-          path: $(npm_config_cache)
-          cacheHitVar: CACHE_RESTORED
-        displayName: Cache npm
-
-      - script: npm install
-        condition: ne(variables.CACHE_RESTORED, 'true')
-        displayName: 'npm install'
-
-      - script: dir & copy "config\config.template.js" "config\config.js" /Y
-        displayName: 'Copy template config to config file'
-
-      - powershell: |
-          ((Get-Content -path config\config.js -Raw) -replace '{environment}',$env:environment) | Set-Content -Path config\config.js
-          ((Get-Content -path config\config.js -Raw) -replace '{client_secret}',$env:client_secret) | Set-Content -Path config\config.js
-          ((Get-Content -path config\config.js -Raw) -replace '{signalr_url}',$env:signalr_url) | Set-Content -Path config\config.js
-          ((Get-Content -path config\config.js -Raw) -replace '{url}',$env:environment_url) | Set-Content -Path config\config.js
-          ((Get-Content -path config\config.js -Raw) -replace '{default_cliniccode}',$env:default_cliniccode) | Set-Content -Path config\config.js
-          (Get-Content -path config\config.js -Raw)
-        env:
-          environment: $(process.env.client_env_uat)
-          client_secret: $(process.env.client_secret_uat)
-          signalr_url: $(process.env.signalrUrl_uat)
-          environment_url: $(process.env.url_uat)
-          default_cliniccode: $(process.env.default_cliniccode_uat)
-        displayName: Replace placeholders with actual values
-
-      - script:
-          #export NODE_OPTIONS="--no-warnings --max-old-space-size=2048" && npm run build
-          set NODE_OPTIONS=--max_old_space_size=8192 & npm run build
-        displayName: 'npm build'
-      - task: CopyFiles@2
-        displayName: 'Copy UAT artifacts to staging directory'
-        inputs:
-          SourceFolder: '.\dist'
-          Contents: '**'
-          TargetFolder: '$(Build.ArtifactStagingDirectory)/UAT'
-      - task: PublishBuildArtifacts@1
-        displayName: 'Publish UAT artifacts'
-        inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)/UAT'
-          ArtifactName: 'drop-uat'
-          publishLocation: 'Container'
-
+  
   # - job: buildProdJob
   #   pool:
   #     name: 'JGH-UAT'
