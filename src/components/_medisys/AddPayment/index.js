@@ -661,7 +661,6 @@ class AddPayment extends Component {
                     Available payment item(s):
                   </div>
                   <EditableTableGrid
-                    size='sm'
                     rows={invoicePayerItem}
                     forceRender
                     columns={[

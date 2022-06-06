@@ -228,6 +228,7 @@ const WorkitemBody = props => {
             visitGroup={item.visitGroup}
             visitFK={item.visitFK}
             isQueueNoDecimal={isQueueNoDecimal}
+            size='sm'
           />
         )}
         {item.statusFK === PHARMACY_STATUS.VERIFIED && (

@@ -87,12 +87,12 @@ const AutoCalculateDosage = ({
   return (
     <GridContainer>
       <GridItem md={6}>
-        <SectionHeader style={{ display: 'inline-flex', marginRight: 20 }}>
+        <SectionHeader style={{ display: 'inline-flex', margin: 0 }}>
           Prescribing {languageLabel}
         </SectionHeader>
       </GridItem>
       <GridItem md={6}>
-        <SectionHeader style={{ display: 'inline-flex', marginRight: 20 }}>
+        <SectionHeader style={{ display: 'inline-flex', margin: 0 }}>
           Dispensing {languageLabel}
         </SectionHeader>
       </GridItem>

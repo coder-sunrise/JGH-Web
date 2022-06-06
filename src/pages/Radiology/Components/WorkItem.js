@@ -138,7 +138,7 @@ const WorkitemBody = ({ item }) => {
     dateFormatLongWithTimeNoSec,
     false,
   )
-  
+
   const clinicSettings = useSelector(s => s.clinicSettings)
   const { isQueueNoDecimal } = clinicSettings.settings || {}
   const queueNo =
@@ -188,6 +188,7 @@ const WorkitemBody = ({ item }) => {
               visitGroup={item.visitInfo.visitGroup}
               visitFK={item.visitFK}
               isQueueNoDecimal={isQueueNoDecimal}
+              size='sm'
             />
           </RightLabel>
         )}

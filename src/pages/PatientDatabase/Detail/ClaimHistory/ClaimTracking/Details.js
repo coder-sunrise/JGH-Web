@@ -38,7 +38,9 @@ const ContentGridItem = ({ children, title }) => {
         >
           {title}
         </div>
-        <div style={{ marginLeft: 6 }}> {children}</div>
+        <div className='baseOnCustomStyle' style={{ marginLeft: 6 }}>
+          {children}
+        </div>
       </div>
     </GridItem>
   )
@@ -183,7 +185,6 @@ const Details = ({
           <div
             style={{
               padding: '12px 0px 7px',
-              fontSize: '14px',
               fontWeight: 400,
             }}
           >
@@ -195,7 +196,6 @@ const Details = ({
             <div
               style={{
                 padding: '12px 0px 7px',
-                fontSize: '14px',
                 fontWeight: 400,
                 textOverflow: 'ellipsis',
                 overflow: 'hidden',
@@ -210,7 +210,6 @@ const Details = ({
           <div
             style={{
               padding: '12px 0px 7px',
-              fontSize: '14px',
               fontWeight: 400,
             }}
           >
@@ -269,7 +268,6 @@ const Details = ({
           <div
             style={{
               padding: '12px 0px 7px',
-              fontSize: '14px',
               fontWeight: 400,
             }}
           >
@@ -324,7 +322,6 @@ const Details = ({
           <div
             style={{
               padding: '12px 0px 7px',
-              fontSize: '14px',
               fontWeight: 400,
             }}
           >

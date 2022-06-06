@@ -27,7 +27,6 @@ import { scribbleTypes } from '@/utils/codes'
 
 const useStyles = makeStyles(theme => ({
   editor: {
-    fontSize: '14px',
     minHeight: '500px',
   },
 }))
@@ -139,7 +138,12 @@ export const Findings = ({
     })
   }
 
-  const scribbleNoteDrawing = ({ subject, temp, thumbnail = null, origin = null }) => {
+  const scribbleNoteDrawing = ({
+    subject,
+    temp,
+    thumbnail = null,
+    origin = null,
+  }) => {
     const { category, arrayName, categoryIndex } = scribbleNoteState
     const fields = [item]
 

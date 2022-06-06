@@ -28,7 +28,7 @@ import StatusFilterButton from './StatusFilterButton'
 
 const styles = () => ({
   actionBar: { marginBottom: '10px' },
-  switch: { display: 'inline-block', width: '100px' },
+  switch: { display: 'inline-block', width: '120px' },
 })
 
 const Filterbar = props => {

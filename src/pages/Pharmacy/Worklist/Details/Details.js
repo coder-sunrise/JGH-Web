@@ -148,19 +148,19 @@ const Details = props => {
           />
         </div>
         <div className={classes.contentPanel} style={{ height: contentHeight }}>
-          <SizeContainer size='sm'>
-            <React.Fragment>
-              {!editingOrder ? (
-                <Main {...props} setEditingOrder={setEditingOrder} />
-              ) : (
+          <React.Fragment>
+            {!editingOrder ? (
+              <Main {...props} setEditingOrder={setEditingOrder} />
+            ) : (
+              <SizeContainer size='sm'>
                 <EditOrder
                   from='Pharmacy'
                   {...props}
                   closeEditOrder={closeEditOrder}
                 />
-              )}
-            </React.Fragment>
-          </SizeContainer>
+              </SizeContainer>
+            )}
+          </React.Fragment>
         </div>
       </LoadingWrapper>
     </div>

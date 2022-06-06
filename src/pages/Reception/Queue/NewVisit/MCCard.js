@@ -123,7 +123,7 @@ const MCCard = ({
       type: 'codeSelect',
       code: 'ctspecialty',
       width: 120,
-      isDisabled: () => false,
+      isDisabled: () => true,
     },
     {
       columnName: 'action',

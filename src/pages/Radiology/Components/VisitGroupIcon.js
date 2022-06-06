@@ -3,11 +3,11 @@ import _ from 'lodash'
 import numeral from 'numeral'
 import { Typography, Card, Table } from 'antd'
 import { calculateAgeFromDOB } from '@/utils/dateUtils'
-import { Icon, Popover } from '@/components'
+import { Icon, Popover, SizeContainer } from '@/components'
 import { queryVisitGroup } from '@/services/queue'
 
 const VisitGroupIcon = props => {
-  const { visitGroup, visitFK, isQueueNoDecimal } = props
+  const { visitGroup, visitFK, isQueueNoDecimal, size = 'md' } = props
   const [visitGroupList, setVisitGroupList] = useState([])
   const visitGroupDetail = () => {
     return (
@@ -77,25 +77,29 @@ const VisitGroupIcon = props => {
     })
   }
   return (
-    <span>
-      <Popover
-        icon={null}
-        trigger='click'
-        placement='right'
-        content={<div style={{ width: 400 }}>{visitGroupDetail()}</div>}
-      >
-        <Icon
-          type='family'
-          style={{
-            color: 'red',
-            fontSize: '1.2rem',
-            marginLeft: 10,
-          }}
-          onClick={searchVisitGroup}
-        />
-      </Popover>
-      <span style={{ marginLeft: 2 }}>{visitGroup}</span>
-    </span>
+    <SizeContainer size={size}>
+      <span>
+        <Popover
+          icon={null}
+          trigger='click'
+          placement='right'
+          content={<div style={{ width: 400 }}>{visitGroupDetail()}</div>}
+        >
+          <Icon
+            type='family'
+            style={{
+              color: 'red',
+              fontSize: '1.2rem',
+              marginLeft: 10,
+            }}
+            onClick={searchVisitGroup}
+          />
+        </Popover>
+        <span className='baseOnCustomStyle' style={{ marginLeft: 2 }}>
+          {visitGroup}
+        </span>
+      </span>
+    </SizeContainer>
   )
 }
 

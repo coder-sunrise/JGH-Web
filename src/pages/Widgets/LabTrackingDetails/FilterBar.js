@@ -206,7 +206,7 @@ class FilterBar extends PureComponent {
                   {...args}
                   disabled={values.isAllDateChecked}
                   style={{
-                    width: 220,
+                    width: 240,
                   }}
                 />
               )}
@@ -228,10 +228,10 @@ class FilterBar extends PureComponent {
                     })}
                     inputLabel=' '
                     style={{
-                      width: 80,
+                      width: 100,
                       marginLeft: 10,
                       position: 'relative',
-                      bottom: '-6px',
+                      bottom: '-4px',
                     }}
                     {...args}
                   />

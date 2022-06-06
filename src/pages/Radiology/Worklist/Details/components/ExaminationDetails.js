@@ -201,7 +201,9 @@ export const ExaminationDetails = ({
                   )}
                 </div>
               ) : (
-                assignedRadiographers.map(r => r.name).join(', ')
+                <span className='baseOnCustomStyle'>
+                  {assignedRadiographers.map(r => r.name).join(', ')}
+                </span>
               )}
             </GridItem>
 
@@ -289,6 +291,7 @@ export const ExaminationDetails = ({
                     {workitem.examinationFinding ? (
                       <div>
                         <div
+                          className='baseOnCustomStyle'
                           dangerouslySetInnerHTML={{
                             __html: workitem.examinationFinding,
                           }}

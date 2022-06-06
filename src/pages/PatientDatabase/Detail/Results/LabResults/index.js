@@ -510,7 +510,7 @@ const LabResults = ({
           <Checkbox
             style={{
               display: 'inline-block',
-              width: 210,
+              width: 240,
             }}
             checked={outOfRangeLatest}
             label='Out of Range (Latest Visit)'
@@ -524,7 +524,7 @@ const LabResults = ({
           <Checkbox
             style={{
               display: 'inline-block',
-              width: 200,
+              width: 230,
             }}
             label='Out of Range (All Visit)'
             checked={outOfRangeAll}

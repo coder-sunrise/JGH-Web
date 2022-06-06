@@ -25,7 +25,7 @@ import {
 } from '@/components'
 import AuthorizedContext from '@/components/Context/Authorized'
 
-const styles = (theme) => ({
+const styles = theme => ({
   errorMessage: {
     margin: theme.spacing(2),
     color: '#cf1322',
@@ -62,7 +62,7 @@ const inventoryAdjustmentSchema = Yup.object().shape({
     adjustmentTransactionDate: Yup.date().required(),
     remarks: Yup.string().max(2000, 'Max 2000 characters for remarks.'),
     inventoryAdjustmentItems: Yup.array()
-      .compact((v) => v.isDeleted)
+      .compact(v => v.isDeleted)
       .of(inventoryAdjustmentSchema)
       .required('At least one item is required.'),
   }),
@@ -83,7 +83,7 @@ const inventoryAdjustmentSchema = Yup.object().shape({
           // inventoryTypeFK: o.preInventoryTypeFK,
         }
       }
-      const type = (v) => {
+      const type = v => {
         switch (v) {
           case INVENTORY_TYPE.MEDICATION:
             return {
@@ -213,11 +213,17 @@ const inventoryAdjustmentSchema = Yup.object().shape({
       type: 'inventoryAdjustment/upsert',
       payload: {
         ...restValue,
-        inventoryAdjustmentStatusFK :_inventoryAdjustmentStatusFK === INVENTORY_ADJUSTMENT_STATUS.FINALIZED ? INVENTORY_ADJUSTMENT_STATUS.FINALIZED : restValue.inventoryAdjustmentStatusFK,
-        inventoryAdjustmentStatus: _inventoryAdjustmentStatusFK === INVENTORY_ADJUSTMENT_STATUS.FINALIZED ? 'Finalized' : inventoryAdjustmentStatusString,
+        inventoryAdjustmentStatusFK:
+          _inventoryAdjustmentStatusFK === INVENTORY_ADJUSTMENT_STATUS.FINALIZED
+            ? INVENTORY_ADJUSTMENT_STATUS.FINALIZED
+            : restValue.inventoryAdjustmentStatusFK,
+        inventoryAdjustmentStatus:
+          _inventoryAdjustmentStatusFK === INVENTORY_ADJUSTMENT_STATUS.FINALIZED
+            ? 'Finalized'
+            : inventoryAdjustmentStatusString,
         inventoryAdjustmentItems: newInventoryAdjustmentItem,
       },
-    }).then((r) => {
+    }).then(r => {
       if (r) {
         resetForm()
         if (onConfirm) onConfirm()
@@ -326,7 +332,7 @@ class Detail extends PureComponent {
         type: 'number',
         format: '0.0',
         qty: true,
-        onChange: (e) => {
+        onChange: e => {
           this.handleAdjQuantity(e)
         },
       },
@@ -335,7 +341,7 @@ class Detail extends PureComponent {
         type: 'number',
         format: '0.0',
         qty: true,
-        onChange: (e) => {
+        onChange: e => {
           this.handlePhysicStock(e)
         },
       },
@@ -343,7 +349,7 @@ class Detail extends PureComponent {
     // columnEditingEnabled: false,
   }
 
-  isDisabled = (row) => {
+  isDisabled = row => {
     if (row.isManuallyCreated === true) return false
     if (
       row.restValues &&
@@ -370,24 +376,28 @@ class Detail extends PureComponent {
     if (inventoryAdjustment.entity) {
       const { inventoryAdjustmentItems } = inventoryAdjustment.entity
       if (inventoryAdjustmentItems) {
-        const newList = _.orderBy(inventoryAdjustmentItems.map((o) => {
-          const getType = this.type(o.inventoryTypeFK)
-          return {
-            ...o,
-            itemFK: o[getType.typeName][getType.itemFK],
-            code: o[getType.typeName][getType.itemFK],
-            codeString: o[getType.typeName][getType.codeName],
-            displayValue: o[getType.typeName][getType.itemFK],
-            displayValueString: o[getType.typeName][getType.nameName],
-            batchNo: o[getType.typeName].batchNo,
-            expiryDate: o[getType.typeName].expiryDate,
-            stockFK: o[getType.typeName][getType.stockFK],
-            stock: o.oldQty,
-            physicalStock: o.oldQty + o.adjustmentQty,
-            restValues: o[getType.typeName],
-            totalStock: o.totalStock,
-          }
-        }),['expiryDate'],['desc'])
+        const newList = _.orderBy(
+          inventoryAdjustmentItems.map(o => {
+            const getType = this.type(o.inventoryTypeFK)
+            return {
+              ...o,
+              itemFK: o[getType.typeName][getType.itemFK],
+              code: o[getType.typeName][getType.itemFK],
+              codeString: o[getType.typeName][getType.codeName],
+              displayValue: o[getType.typeName][getType.itemFK],
+              displayValueString: o[getType.typeName][getType.nameName],
+              batchNo: o[getType.typeName].batchNo,
+              expiryDate: o[getType.typeName].expiryDate,
+              stockFK: o[getType.typeName][getType.stockFK],
+              stock: o.oldQty,
+              physicalStock: o.oldQty + o.adjustmentQty,
+              restValues: o[getType.typeName],
+              totalStock: o.totalStock,
+            }
+          }),
+          ['expiryDate'],
+          ['desc'],
+        )
         this.setState({ inventoryAdjustmentItems: newList })
         setValues({ ...values, inventoryAdjustmentItems: newList })
       }
@@ -403,10 +413,10 @@ class Detail extends PureComponent {
       return true
     }
 
-    await podoOrderType.forEach((x) => {
+    await podoOrderType.forEach(x => {
       fetchAndSaveCodeTable(x.ctName, {
         isActive: excludeInactiveCodes(),
-      }).then((list) => {
+      }).then(list => {
         const { inventoryItemList } = inventoryItemListing(
           list,
           x.itemFKName,
@@ -420,14 +430,16 @@ class Detail extends PureComponent {
     })
   }
 
-  getInventoryItems = (inventoryTypeFK) => {
-    const filterActiveCode = (ops) => {
-      return ops.filter((o) => o.isActive === true).map(o=> ({inventoryTypeFK,...o}))
+  getInventoryItems = inventoryTypeFK => {
+    const filterActiveCode = ops => {
+      return ops
+        .filter(o => o.isActive === true)
+        .map(o => ({ inventoryTypeFK, ...o }))
     }
 
     if (inventoryTypeFK === INVENTORY_TYPE.MEDICATION) {
       const activeOptions = filterActiveCode(this.state.MedicationItemList)
-      return  activeOptions
+      return activeOptions
     }
     if (inventoryTypeFK === INVENTORY_TYPE.VACCINATION) {
       const activeOptions = filterActiveCode(this.state.VaccinationItemList)
@@ -450,32 +462,22 @@ class Detail extends PureComponent {
       ({ value: id1 }) => !x.some(({ value: id2 }) => id2 === id1),
     )
 
-    const edittingBatchNo = filteredStockOptions.find(
-      (o) => o.batchNo === value,
-    )
+    const edittingBatchNo = filteredStockOptions.find(o => o.batchNo === value)
 
     const edittingBatchNo1 = this.state[getType.stateName].find(
-      (o) => o.id === row.batchNo,
+      o => o.id === row.batchNo,
     )
 
-    filteredStockOptions = [
-      ...x,
-      edittingBatchNo,
-    ]
+    filteredStockOptions = [...x, edittingBatchNo]
 
-    filteredStockOptions = [
-      ...new Set(filteredStockOptions),
-    ]
+    filteredStockOptions = [...new Set(filteredStockOptions)]
     let temp = []
     if (!filteredStockOptions.includes(undefined)) {
       temp = filteredStockOptions.filter(
         ({ value: id1 }) => !results.some(({ value: id2 }) => id2 === id1),
       )
     }
-    filteredStockOptions = [
-      ...temp,
-      edittingBatchNo1,
-    ]
+    filteredStockOptions = [...temp, edittingBatchNo1]
 
     if (filteredStockOptions.includes(undefined)) {
       return []
@@ -483,53 +485,45 @@ class Detail extends PureComponent {
     return filteredStockOptions
   }
 
-  stockOptions = (row) => {
+  stockOptions = row => {
     if (row.inventoryTypeFK === INVENTORY_TYPE.MEDICATION) {
-      let array = [
-        ...this.state.filterStockMedication,
-      ]
-      let x = array.filter((o) => o.inventoryItemFK === row.code)
+      let array = [...this.state.filterStockMedication]
+      let x = array.filter(o => o.inventoryItemFK === row.code)
       return x
     }
     if (row.inventoryTypeFK === INVENTORY_TYPE.VACCINATION) {
-      let array = [
-        ...this.state.filterStockVaccination,
-      ]
-      let x = array.filter((o) => o.inventoryItemFK === row.code)
+      let array = [...this.state.filterStockVaccination]
+      let x = array.filter(o => o.inventoryItemFK === row.code)
       return x
     }
     if (row.inventoryTypeFK === INVENTORY_TYPE.CONSUMABLE) {
-      let array = [
-        ...this.state.filterStockConsumable,
-      ]
-      let x = array.filter((o) => o.inventoryItemFK === row.code)
+      let array = [...this.state.filterStockConsumable]
+      let x = array.filter(o => o.inventoryItemFK === row.code)
       return x
     }
     return []
   }
 
-  filterStockOption = (e) => {
+  filterStockOption = e => {
     const { row } = e
     if (row.batchNo) {
       const getState = this.type(row.inventoryTypeFK)
-      this.setState((prevState) => {
+      this.setState(prevState => {
         return {
           [getState.filterStateName]: prevState[
             getState.filterStateName
-          ].filter((o) => o.id !== row.batchNo),
+          ].filter(o => o.id !== row.batchNo),
         }
       })
     }
   }
 
-  handleSelectedBatch = (e) => {
+  handleSelectedBatch = e => {
     const { option, row, val } = e
     if (option) {
       this.setState({ selectedItem: undefined })
       if (val && val.length > 0) {
-        const [
-          firstIndex,
-        ] = val
+        const [firstIndex] = val
         row.batchNo = val
         row.batchNoString = firstIndex
         if (option.length > 0) {
@@ -559,7 +553,7 @@ class Detail extends PureComponent {
     }
   }
 
-  type = (v) => {
+  type = v => {
     switch (v) {
       case INVENTORY_TYPE.MEDICATION:
         return {
@@ -628,12 +622,12 @@ class Detail extends PureComponent {
     return row
   }
 
-  handlePhysicStock = (e) => {
+  handlePhysicStock = e => {
     const { row } = e
     row.adjustmentQty = (e.value || 0) - row.stock
   }
 
-  handleAdjQuantity = (e) => {
+  handleAdjQuantity = e => {
     const { row } = e
     row.physicalStock = (e.value || 0) + row.stock
   }
@@ -642,27 +636,27 @@ class Detail extends PureComponent {
   onCommitChanges = ({ rows, deleted }) => {
     const { setValues, values } = this.props
     if (deleted) {
-      const deletedRow = rows.find((row) => this.getRowId(row) == deleted)
+      const deletedRow = rows.find(row => this.getRowId(row) == deleted)
       deletedRow.isDeleted = true
       this.setState({ inventoryAdjustmentItems: rows })
-      setValues({...values, inventoryAdjustmentItems: rows})
+      setValues({ ...values, inventoryAdjustmentItems: rows })
       return rows
     }
   }
 
-  onAddedRowsChange = (addedRows) => {
+  onAddedRowsChange = addedRows => {
     let returnRows = addedRows
     if (returnRows.length > 0 && !_.isEmpty(returnRows[0])) {
       if (this.state.selectedItem) {
         const { option } = this.state.selectedItem
         const { uom, expiryDate, stock } = option
         if (uom) {
-          returnRows = returnRows.map((r) => ({
+          returnRows = returnRows.map(r => ({
             ...r,
             uomDisplayValue: uom,
           }))
         } else {
-          returnRows = returnRows.map((r) => {
+          returnRows = returnRows.map(r => {
             const { uomDisplayValue } = r
             return {
               ...r,
@@ -674,7 +668,7 @@ class Detail extends PureComponent {
         }
         if (this.state.selectedBatch && returnRows) {
           this.setState({ selectedItem: undefined })
-          returnRows = returnRows.map((r) => ({
+          returnRows = returnRows.map(r => ({
             ...r,
             stock: this.state.selectedBatch.stock,
             batchNoString: this.state.selectedBatch.batchNo,
@@ -683,7 +677,7 @@ class Detail extends PureComponent {
       }
       return returnRows
     }
-    returnRows = returnRows.map((o) => ({
+    returnRows = returnRows.map(o => ({
       inventoryTypeFK: undefined,
       code: undefined,
       displayValue: undefined,
@@ -717,43 +711,67 @@ class Detail extends PureComponent {
     handleSubmit()
   }
 
-  changeEditingRowIds = (editingRowIds) => {
+  changeEditingRowIds = editingRowIds => {
     this.setState({ editingRowIds })
   }
 
   inventoryTypeChanged = e => {
-    this.props.setFieldValue('items',null)
+    this.props.setFieldValue('items', null)
     // eslint-disable-next-line no-nested-ternary
-    const inventoryType = (e === INVENTORY_TYPE.MEDICATION ? 'Drug' : e === INVENTORY_TYPE.CONSUMABLE ? 'Consumable' : e === INVENTORY_TYPE.VACCINATION ? 'Vaccination' : null)
-    this.setState({ inventoryItems: this.getInventoryItems(e), inventoryType: inventoryType})
+    const inventoryType =
+      e === INVENTORY_TYPE.MEDICATION
+        ? 'Drug'
+        : e === INVENTORY_TYPE.CONSUMABLE
+        ? 'Consumable'
+        : e === INVENTORY_TYPE.VACCINATION
+        ? 'Vaccination'
+        : null
+    this.setState({
+      inventoryItems: this.getInventoryItems(e),
+      inventoryType: inventoryType,
+    })
   }
 
-  inventoryItemChanged = (e) => {
-    const { values , setValues } = this.props
+  inventoryItemChanged = e => {
+    const { values, setValues } = this.props
     const { inventoryItems = [], inventoryAdjustmentItems = [] } = this.state
     const selectedItem = inventoryItems.find(x => x.value === e)
-    if(!selectedItem)
-      return
-    const existsStock = (selectedItem.stock || []).find(x => inventoryAdjustmentItems.find(y => !y.isDeleted && this.getRowId(y) === `${selectedItem.inventoryTypeFK}-${selectedItem.value}-${x.id}`))
-    if(existsStock){
+    if (!selectedItem) return
+    const existsStock = (selectedItem.stock || []).find(x =>
+      inventoryAdjustmentItems.find(
+        y =>
+          !y.isDeleted &&
+          this.getRowId(y) ===
+            `${selectedItem.inventoryTypeFK}-${selectedItem.value}-${x.id}`,
+      ),
+    )
+    if (existsStock) {
       notification.warning({
         message: `${this.state.inventoryType} already exists in current adjustment.`,
       })
       return
     }
-    const list = _.orderBy((selectedItem.stock || []),['expiryDate'],['desc'])
-      .filter(x => !inventoryAdjustmentItems.find(y => !y.isDeleted && this.getRowId(y) === `${selectedItem.inventoryTypeFK}-${selectedItem.value}-${x.id}`))
+    const list = _.orderBy(selectedItem.stock || [], ['expiryDate'], ['desc'])
+      .filter(
+        x =>
+          !inventoryAdjustmentItems.find(
+            y =>
+              !y.isDeleted &&
+              this.getRowId(y) ===
+                `${selectedItem.inventoryTypeFK}-${selectedItem.value}-${x.id}`,
+          ),
+      )
       .map(stockItem => this.handleSelectedItem(selectedItem, stockItem))
-    const newList = [...list,...inventoryAdjustmentItems]
+    const newList = [...list, ...inventoryAdjustmentItems]
     this.setState({ inventoryAdjustmentItems: newList })
     setValues({ ...values, inventoryAdjustmentItems: newList })
   }
-  
-  getRowId = (r) => {
+
+  getRowId = r => {
     return `${r.inventoryTypeFK}-${r.itemFK}-${r.stockFK}`
   }
 
-  render () {
+  render() {
     const { props } = this
     const { classes, theme, values, footer, errors } = props
     const { inventoryAdjustmentItems } = errors
@@ -763,8 +781,13 @@ class Detail extends PureComponent {
     if (!isEditable) {
       cfg.onRowDoubleClick = undefined
     }
-    if(values.inventoryAdjustmentStatusFK === INVENTORY_ADJUSTMENT_STATUS.FINALIZED)
-      this.tableParas.columns = this.tableParas.columns.filter((col) => col.name !== 'totalStock')
+    if (
+      values.inventoryAdjustmentStatusFK ===
+      INVENTORY_ADJUSTMENT_STATUS.FINALIZED
+    )
+      this.tableParas.columns = this.tableParas.columns.filter(
+        col => col.name !== 'totalStock',
+      )
     return (
       <React.Fragment>
         <AuthorizedContext.Provider
@@ -778,7 +801,7 @@ class Detail extends PureComponent {
                 <GridItem md={12}>
                   <FastField
                     name='adjustmentTransactionNo'
-                    render={(args) => (
+                    render={args => (
                       <TextField label='Transaction No' disabled {...args} />
                     )}
                   />
@@ -786,7 +809,7 @@ class Detail extends PureComponent {
                 <GridItem md={12}>
                   <Field
                     name='adjustmentTransactionDate'
-                    render={(args) => (
+                    render={args => (
                       <DatePicker label='Transaction Date' {...args} />
                     )}
                   />
@@ -795,7 +818,7 @@ class Detail extends PureComponent {
                 <GridItem md={12}>
                   <FastField
                     name='inventoryAdjustmentStatusFK'
-                    render={(args) => {
+                    render={args => {
                       return (
                         <Select
                           label='Status'
@@ -812,7 +835,7 @@ class Detail extends PureComponent {
                 <GridItem md={12}>
                   <Field
                     name='remarks'
-                    render={(args) => {
+                    render={args => {
                       return (
                         <OutlinedTextField
                           label='Remarks'
@@ -830,15 +853,24 @@ class Detail extends PureComponent {
                   <GridItem md={6}>
                     <Field
                       name='inventoryType'
-                      render={(args) => {
+                      render={args => {
                         return (
                           <Select
                             label='Inventory Type'
                             {...args}
                             options={[
-                              { value: INVENTORY_TYPE.MEDICATION, name: 'Medication' },
-                              { value: INVENTORY_TYPE.CONSUMABLE, name: 'Consumable' },
-                              { value: INVENTORY_TYPE.VACCINATION, name: 'Vaccination' },
+                              {
+                                value: INVENTORY_TYPE.MEDICATION,
+                                name: 'Medication',
+                              },
+                              {
+                                value: INVENTORY_TYPE.CONSUMABLE,
+                                name: 'Consumable',
+                              },
+                              {
+                                value: INVENTORY_TYPE.VACCINATION,
+                                name: 'Vaccination',
+                              },
                             ]}
                             onChange={this.inventoryTypeChanged}
                           />
@@ -849,7 +881,7 @@ class Detail extends PureComponent {
                   <GridItem md={6}>
                     <Field
                       name='items'
-                      render={(args) => {
+                      render={args => {
                         return (
                           <Select
                             label='Items'
@@ -865,33 +897,43 @@ class Detail extends PureComponent {
               </GridItem>
             </GridContainer>
             {inventoryAdjustmentItems &&
-            !Array.isArray(inventoryAdjustmentItems) && (
-              <p className={classes.errorMessage}>{inventoryAdjustmentItems}</p>
-            )}
-            <EditableTableGrid
-              style={{ marginTop: 10,maxHeight:'calc(50vh)',overflow:'scroll' }}
-              // forceRender
-              getRowId={this.getRowId}
-              // TableProps={{maxHeight:'calc(50vh)'}}
-              FuncProps={{
-                edit: isEditable,
-                pager: false,
-                // addNewLabelName: 'New Inventory Adjustment',
-              }}
-              schema={inventoryAdjustmentSchema}
-              EditingProps={{
-                showAddCommand: false,
-                  // values.inventoryAdjustmentStatusFK ===
-                  // INVENTORY_ADJUSTMENT_STATUS.DRAFT,
-                onCommitChanges: this.onCommitChanges,
-                onAddedRowsChange: this.onAddedRowsChange,
-                onEditingRowIdsChange: this.changeEditingRowIds,
-                editingRowIds: this.state.editingRowIds,
-              }}
-              {...cfg}
-              rows={this.state.inventoryAdjustmentItems}
-              {...this.tableParas}
-            />
+              !Array.isArray(inventoryAdjustmentItems) && (
+                <p className={classes.errorMessage}>
+                  {inventoryAdjustmentItems}
+                </p>
+              )}
+            <GridContainer>
+              <GridItem md={12}>
+                <EditableTableGrid
+                  style={{
+                    marginTop: 10,
+                    maxHeight: 'calc(50vh)',
+                    overflow: 'scroll',
+                  }}
+                  // forceRender
+                  getRowId={this.getRowId}
+                  // TableProps={{maxHeight:'calc(50vh)'}}
+                  FuncProps={{
+                    edit: isEditable,
+                    pager: false,
+                    // addNewLabelName: 'New Inventory Adjustment',
+                  }}
+                  schema={inventoryAdjustmentSchema}
+                  EditingProps={{
+                    showAddCommand: false,
+                    // values.inventoryAdjustmentStatusFK ===
+                    // INVENTORY_ADJUSTMENT_STATUS.DRAFT,
+                    onCommitChanges: this.onCommitChanges,
+                    onAddedRowsChange: this.onAddedRowsChange,
+                    onEditingRowIdsChange: this.changeEditingRowIds,
+                    editingRowIds: this.state.editingRowIds,
+                  }}
+                  {...cfg}
+                  rows={this.state.inventoryAdjustmentItems}
+                  {...this.tableParas}
+                />
+              </GridItem>
+            </GridContainer>
             {footer &&
               footer({
                 onConfirm: props.handleSubmit,

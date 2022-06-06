@@ -177,8 +177,11 @@ export const OrderDetails = ({ workitem, onCombinedOrderChange }) => {
                   '-'
                 ))}
               {(workitem.statusFK !== RADIOLOGY_WORKITEM_STATUS.NEW ||
-                isReadOnly) &&
-                (isCombinedOrder ? 'Yes' : 'No')}
+                isReadOnly) && (
+                <span className='baseOnCustomStyle'>
+                  {isCombinedOrder ? 'Yes' : 'No'}
+                </span>
+              )}
             </GridItem>
           </GridContainer>
         </GridItem>

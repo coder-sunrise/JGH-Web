@@ -155,10 +155,7 @@ class CheckboxGroup extends React.Component {
                     />
                   }
                   label={
-                    <span
-                      style={{ fontSize: 14 }}
-                      dangerouslySetInnerHTML={{ __html: o[textField] }}
-                    />
+                    <span dangerouslySetInnerHTML={{ __html: o[textField] }} />
                   }
                 />
               </div>

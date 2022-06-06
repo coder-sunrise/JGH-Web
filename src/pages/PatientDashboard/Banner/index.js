@@ -34,6 +34,7 @@ import {
   NumberInput,
   CommonModal,
   notification,
+  SizeContainer,
 } from '@/components'
 
 import Authorized from '@/utils/Authorized'
@@ -1529,95 +1530,70 @@ class Banner extends PureComponent {
       )
 
     return (
-      <Paper id='patientBanner' style={style}>
-        {/* Please do not change the height below (By default is 100) */}
-        {from != 'MedicalCheckup' && (
-          <GridContainer
-            style={{ minHeight: 100, width: '100%', padding: '5px 0' }}
-          >
-            <GridItem
-              style={{ padding: 0 }}
-              xs={this.getBannerMd()}
-              md={this.getBannerMd()}
+      <SizeContainer size='sm'>
+        <Paper id='patientBanner' style={style}>
+          {/* Please do not change the height below (By default is 100) */}
+          {from != 'MedicalCheckup' && (
+            <GridContainer
+              style={{ minHeight: 100, width: '100%', padding: '5px 0' }}
             >
-              <GridContainer>
-                <GridItem xs={10} md={10}>
-                  <GridContainer>
-                    <GridItem md={12}>{patientTitle}</GridItem>
-                    <GridItem xs={6} md={4}>
-                      {patientTag}
-                    </GridItem>
-                    <GridItem xs={6} md={4}>
-                      {patientG6PD}
-                    </GridItem>
-                    <GridItem xs={6} md={4}>
-                      {patientOS}
-                    </GridItem>
-                    <GridItem xs={6} md={4}>
-                      {patientSchemeDetails}
-                    </GridItem>
-                    <GridItem xs={6} md={4}>
-                      {patientRequest}
-                    </GridItem>
-                    <GridItem xs={6} md={4}>
-                      {patientHRP}
-                    </GridItem>
-                    <GridItem xs={6} md={4}>
-                      {patientPersistDiagnosis}
-                    </GridItem>
-                    <GridItem xs={6} md={4}>
-                      {longTermMedication}
-                    </GridItem>
-                    <GridItem xs={6} md={4}>
-                      {patientAllergy}
-                    </GridItem>
-                  </GridContainer>
-                </GridItem>
-                <GridItem xs={2} md={2}>
-                  {/* right half */}
-                  <GridContainer>
-                    {entity?.lastVisitDate ? (
-                      <GridItem
-                        xs={12}
-                        md={12}
-                        style={{ height: 26, paddingTop: 5 }}
-                      >
-                        <span className={classes.header}>Last Visit: </span>
-                        <span style={{ paddingLeft: 5 }}>
-                          {moment(entity.lastVisitDate).format('DD MMM YYYY')}
-                        </span>
+              <GridItem
+                style={{ padding: 0 }}
+                xs={this.getBannerMd()}
+                md={this.getBannerMd()}
+              >
+                <GridContainer>
+                  <GridItem xs={10} md={10}>
+                    <GridContainer>
+                      <GridItem md={12}>{patientTitle}</GridItem>
+                      <GridItem xs={6} md={4}>
+                        {patientTag}
                       </GridItem>
-                    ) : (
-                      <GridItem xs={12} md={12}></GridItem>
-                    )}
-                    <GridItem xs={12} md={12}>
-                      {viewNonClaimableHistoryRight.rights === 'enable' && (
-                        <span className={classes.header}>
-                          <span
-                            style={{
-                              display: 'block',
-                              textDecoration: 'underline',
-                              cursor: 'pointer',
-                            }}
-                            onClick={e => {
-                              this.openNonClaimableHistory()
-                            }}
-                          >
-                            {`Non Claimable History (${info.nonClaimableHistoryCount ||
-                              0})`}
+                      <GridItem xs={6} md={4}>
+                        {patientG6PD}
+                      </GridItem>
+                      <GridItem xs={6} md={4}>
+                        {patientOS}
+                      </GridItem>
+                      <GridItem xs={6} md={4}>
+                        {patientSchemeDetails}
+                      </GridItem>
+                      <GridItem xs={6} md={4}>
+                        {patientRequest}
+                      </GridItem>
+                      <GridItem xs={6} md={4}>
+                        {patientHRP}
+                      </GridItem>
+                      <GridItem xs={6} md={4}>
+                        {patientPersistDiagnosis}
+                      </GridItem>
+                      <GridItem xs={6} md={4}>
+                        {longTermMedication}
+                      </GridItem>
+                      <GridItem xs={6} md={4}>
+                        {patientAllergy}
+                      </GridItem>
+                    </GridContainer>
+                  </GridItem>
+                  <GridItem xs={2} md={2}>
+                    {/* right half */}
+                    <GridContainer>
+                      {entity?.lastVisitDate ? (
+                        <GridItem
+                          xs={12}
+                          md={12}
+                          style={{ height: 26, paddingTop: 5 }}
+                        >
+                          <span className={classes.header}>Last Visit: </span>
+                          <span style={{ paddingLeft: 5 }}>
+                            {moment(entity.lastVisitDate).format('DD MMM YYYY')}
                           </span>
-                        </span>
+                        </GridItem>
+                      ) : (
+                        <GridItem xs={12} md={12}></GridItem>
                       )}
-                      <div>
-                        {notesHistoryAccessRight.rights !== 'hidden' && (
-                          <span
-                            className={classes.header}
-                            style={{ marginRight: 10 }}
-                          >
-                            {patientNotesLinkElm}
-                          </span>
-                        )}
-                        {preOrderAccessRight.rights === 'enable' && (
+                      <GridItem xs={12} md={12}>
+                        {viewNonClaimableHistoryRight.rights === 'enable' && (
                           <span className={classes.header}>
                             <span
                               style={{
@@ -1626,216 +1602,245 @@ class Banner extends PureComponent {
                                 cursor: 'pointer',
                               }}
                               onClick={e => {
-                                e.preventDefault()
-                                if (preOrderAccessRight.rights === 'disable') {
-                                  notification.error({
-                                    message:
-                                      'Current user is not authorized to access',
-                                  })
-                                  return
-                                }
-
-                                if (
-                                  disablePreOrder &&
-                                  disablePreOrder.some(cond => {
-                                    if (cond.condition) {
-                                      dispatch({
-                                        type: 'global/updateAppState',
-                                        payload: {
-                                          openConfirm: true,
-                                          isInformType: true,
-                                          openConfirmText: 'OK',
-                                          openConfirmContent: cond.message,
-                                        },
-                                      })
-                                      return true
-                                    }
-                                    return false
-                                  })
-                                )
-                                  return
-
-                                this.openPreOrders()
+                                this.openNonClaimableHistory()
                               }}
                             >
-                              {`Pre-Order (${
-                                activePreOrderItems
-                                  ? activePreOrderItems.length
-                                  : (pendingPreOrderItems &&
-                                      pendingPreOrderItems.length) ||
-                                    0
-                              })`}
+                              {`Non Claimable History (${info.nonClaimableHistoryCount ||
+                                0})`}
                             </span>
                           </span>
                         )}
-                      </div>
-                      <span
-                        className={classes.header}
-                        style={{
-                          display: 'block',
-                          paddingRight: 10,
-                          textDecoration: 'underline',
-                          cursor: 'pointer',
-                        }}
-                        to={getAppendUrl({
-                          md: 'pt',
-                          cmt: 1,
-                          pid: info.id,
-                        })}
-                        onClick={e => {
-                          this.openExaminationResults()
-                        }}
-                        // disabled={}
-                        tabIndex='-1'
-                      >
-                        Examination Results
-                      </span>
-                    </GridItem>
-                  </GridContainer>
-                </GridItem>
-              </GridContainer>
-            </GridItem>
+                        <div>
+                          {notesHistoryAccessRight.rights !== 'hidden' && (
+                            <span
+                              className={classes.header}
+                              style={{ marginRight: 10 }}
+                            >
+                              {patientNotesLinkElm}
+                            </span>
+                          )}
+                          {preOrderAccessRight.rights === 'enable' && (
+                            <span className={classes.header}>
+                              <span
+                                style={{
+                                  display: 'block',
+                                  textDecoration: 'underline',
+                                  cursor: 'pointer',
+                                }}
+                                onClick={e => {
+                                  e.preventDefault()
+                                  if (
+                                    preOrderAccessRight.rights === 'disable'
+                                  ) {
+                                    notification.error({
+                                      message:
+                                        'Current user is not authorized to access',
+                                    })
+                                    return
+                                  }
 
-            {extraCmt && (
-              <GridItem xs={3} md={12 - this.getBannerMd()}>
-                {extraCmt()}
+                                  if (
+                                    disablePreOrder &&
+                                    disablePreOrder.some(cond => {
+                                      if (cond.condition) {
+                                        dispatch({
+                                          type: 'global/updateAppState',
+                                          payload: {
+                                            openConfirm: true,
+                                            isInformType: true,
+                                            openConfirmText: 'OK',
+                                            openConfirmContent: cond.message,
+                                          },
+                                        })
+                                        return true
+                                      }
+                                      return false
+                                    })
+                                  )
+                                    return
+
+                                  this.openPreOrders()
+                                }}
+                              >
+                                {`Pre-Order (${
+                                  activePreOrderItems
+                                    ? activePreOrderItems.length
+                                    : (pendingPreOrderItems &&
+                                        pendingPreOrderItems.length) ||
+                                      0
+                                })`}
+                              </span>
+                            </span>
+                          )}
+                        </div>
+                        <span
+                          className={classes.header}
+                          style={{
+                            display: 'block',
+                            paddingRight: 10,
+                            textDecoration: 'underline',
+                            cursor: 'pointer',
+                          }}
+                          to={getAppendUrl({
+                            md: 'pt',
+                            cmt: 1,
+                            pid: info.id,
+                          })}
+                          onClick={e => {
+                            this.openExaminationResults()
+                          }}
+                          // disabled={}
+                          tabIndex='-1'
+                        >
+                          Examination Results
+                        </span>
+                      </GridItem>
+                    </GridContainer>
+                  </GridItem>
+                </GridContainer>
               </GridItem>
-            )}
-          </GridContainer>
-        )}
-        {from === 'MedicalCheckup' && (
-          <GridContainer
-            style={{ minHeight: 100, width: '100%', padding: '5px' }}
-          >
-            <GridItem md={12}>{patientTitle}</GridItem>
-            <GridItem md={3}>{patientG6PD}</GridItem>
-            <GridItem md={3}>{patientHRP}</GridItem>
-            <GridItem md={3}>{visitDateElm}</GridItem>
-            <GridItem md={3}>{visitPriorityElm}</GridItem>
-            <GridItem md={3}>{patientSchemeDetails}</GridItem>
-            <GridItem md={3}>{patientAllergy}</GridItem>
-            <GridItem md={3}>{visitPurposeElm}</GridItem>
-            <GridItem md={3}>{visitLanguageElm}</GridItem>
-            <GridItem md={3}>{patientPersistDiagnosis}</GridItem>
-            <GridItem md={3}>{longTermMedication}</GridItem>
-            <GridItem md={3}>{visitRemarksElm}</GridItem>
-            <GridItem md={3}>
-              <div>
-                <span style={{ display: 'inline-block', marginRight: 10 }}>
-                  {patientNotesLinkElm}
-                </span>
-                {isEditVisitEnable && (
-                  <span style={{ display: 'inline-block' }}>
-                    {patientEditVisitElm}
-                  </span>
-                )}
-              </div>
-            </GridItem>
-          </GridContainer>
-        )}
 
-        <span
-          style={{
-            top: 5,
-            right: 5,
-            display: 'inline-block',
-            position: 'absolute',
-          }}
-        >
-          <IconButton onClick={this.expandOrCollespe}>
-            {this.state.isExpanded ? (
-              <Tooltip title='Expand Panel'>
-                <ExpandLessTwoTone />
-              </Tooltip>
-            ) : (
-              <Tooltip title='Collapse Panel'>
-                <ExpandMoreTwoTone />
-              </Tooltip>
-            )}
-          </IconButton>
-        </span>
-        <CommonModal
-          open={this.state.showPatientProfile}
-          onClose={this.closePatientProfile}
-          title='Patient Profile'
-          observe='PatientDetail'
-          authority='patient'
-          fullScreen
-          overrideLoading
-          showFooter={false}
-        >
-          <PatientDetail
-            history={this.props.history}
-            linkProps={{
-              to: '#',
+              {extraCmt && (
+                <GridItem xs={3} md={12 - this.getBannerMd()}>
+                  {extraCmt()}
+                </GridItem>
+              )}
+            </GridContainer>
+          )}
+          {from === 'MedicalCheckup' && (
+            <GridContainer
+              style={{ minHeight: 100, width: '100%', padding: '5px' }}
+            >
+              <GridItem md={12}>{patientTitle}</GridItem>
+              <GridItem md={3}>{patientG6PD}</GridItem>
+              <GridItem md={3}>{patientHRP}</GridItem>
+              <GridItem md={3}>{visitDateElm}</GridItem>
+              <GridItem md={3}>{visitPriorityElm}</GridItem>
+              <GridItem md={3}>{patientSchemeDetails}</GridItem>
+              <GridItem md={3}>{patientAllergy}</GridItem>
+              <GridItem md={3}>{visitPurposeElm}</GridItem>
+              <GridItem md={3}>{visitLanguageElm}</GridItem>
+              <GridItem md={3}>{patientPersistDiagnosis}</GridItem>
+              <GridItem md={3}>{longTermMedication}</GridItem>
+              <GridItem md={3}>{visitRemarksElm}</GridItem>
+              <GridItem md={3}>
+                <div>
+                  <span style={{ display: 'inline-block', marginRight: 10 }}>
+                    {patientNotesLinkElm}
+                  </span>
+                  {isEditVisitEnable && (
+                    <span style={{ display: 'inline-block' }}>
+                      {patientEditVisitElm}
+                    </span>
+                  )}
+                </div>
+              </GridItem>
+            </GridContainer>
+          )}
+
+          <span
+            style={{
+              top: 5,
+              right: 5,
+              display: 'inline-block',
+              position: 'absolute',
             }}
+          >
+            <IconButton onClick={this.expandOrCollespe}>
+              {this.state.isExpanded ? (
+                <Tooltip title='Expand Panel'>
+                  <ExpandLessTwoTone />
+                </Tooltip>
+              ) : (
+                <Tooltip title='Collapse Panel'>
+                  <ExpandMoreTwoTone />
+                </Tooltip>
+              )}
+            </IconButton>
+          </span>
+          <CommonModal
+            open={this.state.showPatientProfile}
             onClose={this.closePatientProfile}
-          />
-        </CommonModal>
-        <CommonModal
-          open={this.state.showNotesModal}
-          title='Notes'
-          onClose={this.closeNotes}
-          maxWidth='lg'
-        >
-          <PatientNurseNotes {...this.props} />
-        </CommonModal>
-        <CommonModal
-          open={this.state.showPreOrderModal}
-          title='Pre-Orders'
-          onClose={this.closePreOrders}
-          maxWidth='lg'
-        >
-          <SelectPreOrder
-            disabled={
-              !(
-                from === 'Appointment' ||
-                (from === 'VisitReg' && !isReadOnly) ||
-                from === 'Consultation' ||
-                (from === 'Dispense' && editingOrder) ||
-                (from === 'Pharmacy' && editingOrder)
-              ) || actualizePreOrderAccessRight.rights !== 'enable'
-            }
-            onSelectPreOrder={select => {
-              if (onSelectPreOrder) onSelectPreOrder(select)
-              this.closePreOrders()
-            }}
-            isRetail={isRetail}
-            activePreOrderItem={activePreOrderItems || pendingPreOrderItems}
-            actualizePreOrderAccessRight={actualizePreOrderAccessRight}
-          />
-        </CommonModal>
-        <CommonModal
-          open={this.state.showSchemeModal}
-          title='Co-Payer Details'
-          onClose={this.closeScheme}
-          onConfirm={this.confirmCopayer}
-          fullScreen
-        >
-          <CopayerDetails fromCommonModal />
-        </CommonModal>
-        <CommonModal
-          open={this.state.showNonClaimableHistoryModal}
-          title='Claim History'
-          onClose={this.closeNonClaimableHistory}
-          maxWidth='lg'
-        >
-          <ClaimHistory
-            defaultTab='NonClaimableHistory'
-            patientProfileFK={entity.id}
-            values={{ isActive: entity.isActive }}
-          />
-        </CommonModal>
-        <CommonModal
-          open={this.state.showExaminationDetailsModal}
-          title='Examination Details'
-          onClose={this.closeExaminationDetails}
-          maxWidth='lg'
-          fullHeight
-        >
-          <PatientResults patient={patient} patientProfileFK={entity.id} />
-        </CommonModal>
-      </Paper>
+            title='Patient Profile'
+            observe='PatientDetail'
+            authority='patient'
+            fullScreen
+            overrideLoading
+            showFooter={false}
+          >
+            <PatientDetail
+              history={this.props.history}
+              linkProps={{
+                to: '#',
+              }}
+              onClose={this.closePatientProfile}
+            />
+          </CommonModal>
+          <CommonModal
+            open={this.state.showNotesModal}
+            title='Notes'
+            onClose={this.closeNotes}
+            maxWidth='lg'
+          >
+            <PatientNurseNotes {...this.props} />
+          </CommonModal>
+          <CommonModal
+            open={this.state.showPreOrderModal}
+            title='Pre-Orders'
+            onClose={this.closePreOrders}
+            maxWidth='lg'
+          >
+            <SelectPreOrder
+              disabled={
+                !(
+                  from === 'Appointment' ||
+                  (from === 'VisitReg' && !isReadOnly) ||
+                  from === 'Consultation' ||
+                  (from === 'Dispense' && editingOrder) ||
+                  (from === 'Pharmacy' && editingOrder)
+                ) || actualizePreOrderAccessRight.rights !== 'enable'
+              }
+              onSelectPreOrder={select => {
+                if (onSelectPreOrder) onSelectPreOrder(select)
+                this.closePreOrders()
+              }}
+              isRetail={isRetail}
+              activePreOrderItem={activePreOrderItems || pendingPreOrderItems}
+              actualizePreOrderAccessRight={actualizePreOrderAccessRight}
+            />
+          </CommonModal>
+          <CommonModal
+            open={this.state.showSchemeModal}
+            title='Co-Payer Details'
+            onClose={this.closeScheme}
+            onConfirm={this.confirmCopayer}
+            fullScreen
+          >
+            <CopayerDetails fromCommonModal />
+          </CommonModal>
+          <CommonModal
+            open={this.state.showNonClaimableHistoryModal}
+            title='Claim History'
+            onClose={this.closeNonClaimableHistory}
+            maxWidth='lg'
+          >
+            <ClaimHistory
+              defaultTab='NonClaimableHistory'
+              patientProfileFK={entity.id}
+              values={{ isActive: entity.isActive }}
+            />
+          </CommonModal>
+          <CommonModal
+            open={this.state.showExaminationDetailsModal}
+            title='Examination Details'
+            onClose={this.closeExaminationDetails}
+            maxWidth='lg'
+            fullHeight
+          >
+            <PatientResults patient={patient} patientProfileFK={entity.id} />
+          </CommonModal>
+        </Paper>
+      </SizeContainer>
     )
   }
 }

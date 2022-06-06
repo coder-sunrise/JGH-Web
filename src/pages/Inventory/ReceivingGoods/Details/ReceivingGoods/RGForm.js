@@ -178,7 +178,7 @@ const RGForm = ({
                   render={args => {
                     return (
                       <Checkbox
-                        style={{ position: 'absolute', bottom: 2 }}
+                        style={{ position: 'absolute', bottom: 2, width: 165 }}
                         label='show in printout'
                         inputLabel=' '
                         {...args}

@@ -135,7 +135,7 @@ const Setting = ({ classes, showTransfer, dispatch, global, ...props }) => {
             )}
           />
         </GridItem>
-        <GridItem md={6} style={{ marginTop: 20 }}>
+        <GridItem md={6}>
           <Field
             name='medicationContraindications'
             render={args => (
@@ -157,7 +157,7 @@ const Setting = ({ classes, showTransfer, dispatch, global, ...props }) => {
             )}
           />
         </GridItem>
-        <GridItem md={6} style={{ marginTop: 20 }}>
+        <GridItem md={6}>
           <Field
             name='medicationInteractions'
             render={args => (

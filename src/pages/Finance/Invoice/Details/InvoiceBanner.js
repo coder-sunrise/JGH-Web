@@ -63,7 +63,9 @@ const InvoiceBanner = ({ classes, ...restProps }) => {
                     fontWeight: '600',
                   }}
                 >
-                  {pateintDisplayName}
+                  <span className='baseOnCustomStyle'>
+                    {pateintDisplayName}
+                  </span>
                 </span>
               </Tooltip>
               {entity && !entity.isActive && (
@@ -80,7 +82,9 @@ const InvoiceBanner = ({ classes, ...restProps }) => {
             <h5 className={classes.boldText}>Invoice No: </h5>
           </GridItem>
           <GridItem md={8}>
-            <div style={{ ...customStyle }}>{values.invoiceNo}</div>
+            <span className='baseOnCustomStyle' style={{ ...customStyle }}>
+              {values.invoiceNo}
+            </span>
           </GridItem>
           <GridItem md={4}>
             <h5 className={classes.boldText}>Invoice Date:</h5>

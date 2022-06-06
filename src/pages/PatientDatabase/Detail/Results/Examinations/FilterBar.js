@@ -189,7 +189,7 @@ const FilterBar = props => {
             return (
               <Checkbox
                 style={{
-                  width: 80,
+                  width: 100,
                   position: 'relative',
                   marginRight: 10,
                 }}

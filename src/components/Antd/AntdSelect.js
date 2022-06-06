@@ -59,7 +59,7 @@ const STYLES = () => {
         // with ant-select-select--single
         paddingBottom: 0,
         position: 'relative',
-        top: -4,
+        top: '-3px',
       },
       '& .ant-select-selection > div': {
         marginLeft: 0,
@@ -312,7 +312,7 @@ class AntdSelect extends React.PureComponent {
       return handleFilter(input, option)
     }
     try {
-      if (Array.isArray(option.props.children)) { 
+      if (Array.isArray(option.props.children)) {
         match = false
       }
       match = option.props.title.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -751,7 +751,7 @@ class AntdSelect extends React.PureComponent {
       if (labelProps.shrink === undefined) {
         labelProps.shrink = false
       }
-    } 
+    }
     return (
       <CustomInput
         labelProps={labelProps}

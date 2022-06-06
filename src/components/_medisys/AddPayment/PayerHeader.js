@@ -37,6 +37,7 @@ const PayerHeader = ({
           <h5 style={titleStyle}>Payer: </h5>
           <Tooltip title={invoicePayerName}>
             <div
+              className='baseOnCustomStyle'
               style={{
                 textOverflow: 'ellipsis',
                 overflow: 'hidden',
@@ -56,6 +57,7 @@ const PayerHeader = ({
           <h5 style={titleStyle}>Invoice No.: </h5>
           <Tooltip title={invoiceNo}>
             <div
+              className='baseOnCustomStyle'
               style={{
                 textOverflow: 'ellipsis',
                 overflow: 'hidden',
@@ -82,6 +84,7 @@ const PayerHeader = ({
             <h5 style={titleStyle}>Referrence No.: </h5>
             <Tooltip title={patientReferenceNo}>
               <div
+                className='baseOnCustomStyle'
                 style={{
                   textOverflow: 'ellipsis',
                   overflow: 'hidden',

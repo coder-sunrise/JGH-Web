@@ -19,7 +19,8 @@ import Authorized from '@/utils/Authorized'
 
 const styles = theme => ({
   checkbox: {
-    paddingTop: `${theme.spacing(2)}px !important`,
+    position: 'relative',
+    top: '24px',
   },
 })
 const FilterByAppointment = ({ classes, values, setFieldValue }) => {
@@ -128,19 +129,21 @@ const FilterByAppointment = ({ classes, values, setFieldValue }) => {
         />
       </GridItem>
 
-      <GridItem xs={4} className={classes.checkbox}>
-        <FastField
-          name='isExcludeReminderSent'
-          render={args => (
-            <Checkbox
-              simple
-              label={formatMessage({
-                id: 'sms.appointment.exclude',
-              })}
-              {...args}
-            />
-          )}
-        />
+      <GridItem xs={4}>
+        <div className={classes.checkbox}>
+          <FastField
+            name='isExcludeReminderSent'
+            render={args => (
+              <Checkbox
+                simple
+                label={formatMessage({
+                  id: 'sms.appointment.exclude',
+                })}
+                {...args}
+              />
+            )}
+          />
+        </div>
       </GridItem>
       <GridItem md={6} />
       <GridItem xs={2}>

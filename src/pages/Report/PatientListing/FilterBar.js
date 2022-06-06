@@ -38,7 +38,6 @@ const FilterBar = ({ handleSubmit, values, isSubmitting }) => {
               )}
             />
           </GridItem>
-          <GridItem md={1} />
           <GridItem md={1}>
             <FastField
               name='ageFrom'
@@ -60,27 +59,34 @@ const FilterBar = ({ handleSubmit, values, isSubmitting }) => {
               )}
             />
           </GridItem>
-          <GridItem md={5} />
+          <GridItem md={6} />
           {/* 2nd row  */}
           <ReportDateRangePicker
             fromDateLabel='Visit Date From'
             toDateLabel='Visit Date To'
           />
 
-          <GridItem md={1}>
+          <GridItem
+            md={3}
+            container
+            style={{ position: 'relative', paddingLeft: 140 }}
+          >
             <FastField
               name='isAllDate'
-              render={args => <Checkbox {...args} label='All Date' />}
+              render={args => (
+                <Checkbox
+                  style={{ position: 'absolute', top: 12, left: 8 }}
+                  {...args}
+                  label='All Date'
+                />
+              )}
             />
-          </GridItem>
-
-          <GridItem md={2}>
             <FastField
               name='noVisitDateFrom'
               render={args => <DatePicker {...args} label='No Visit Since' />}
             />
           </GridItem>
-          <GridItem md={4} />
+          <GridItem md={5} />
           <GridItem md={2}>
             <FastField
               name='patientStatus'
@@ -128,13 +134,21 @@ const FilterBar = ({ handleSubmit, values, isSubmitting }) => {
               )}
             />
           </GridItem>
-          <GridItem md={1}>
+          <GridItem
+            md={4}
+            container
+            style={{ position: 'relative', paddingLeft: 140 }}
+          >
             <FastField
               name='isGroupByDoctor'
-              render={args => <Checkbox {...args} label='Group By Doctor' />}
+              render={args => (
+                <Checkbox
+                  {...args}
+                  label='Group By Doctor'
+                  style={{ position: 'absolute', top: -6, left: 8 }}
+                />
+              )}
             />
-          </GridItem>
-          <GridItem md={2}>
             <Button
               color='primary'
               onClick={handleSubmit}

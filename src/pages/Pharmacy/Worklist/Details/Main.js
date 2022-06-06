@@ -31,6 +31,7 @@ import {
   DatePicker,
   CommonTableGrid,
   CodeSelect,
+  SizeContainer,
 } from '@/components'
 import { FileCopySharp } from '@material-ui/icons'
 import { Table } from '@devexpress/dx-react-grid-material-ui'
@@ -115,7 +116,9 @@ const ContentGridItem = ({ children, title }) => {
         >
           {title}
         </div>
-        <div style={{ marginLeft: 6 }}> {children}</div>
+        <div className='baseOnCustomStyle' style={{ marginLeft: 6 }}>
+          {children}
+        </div>
       </div>
     </GridItem>
   )
@@ -1046,7 +1049,7 @@ const Main = props => {
             <p style={{ height: 16 }}>Qty.</p>
           </div>
         ),
-        width: 80,
+        width: 85,
         onCell: row => ({ colSpan: row.isGroup ? 0 : 1 }),
         align: 'right',
         render: (_, row) => {
@@ -1885,41 +1888,50 @@ const Main = props => {
           )}
         </GridItem>
       </GridContainer>
-      {(pharmacyDetails.fromModule === 'Main' ||
-        (values.orderItems || []).length > 0) && (
-        <div style={{ margin: '8px 8px 0px 8px' }}>
+
+      <SizeContainer size='sm'>
+        <GridContainer>
+          {(pharmacyDetails.fromModule === 'Main' ||
+            (values.orderItems || []).length > 0) && (
+            <GridItem container md={12}>
+              <div style={{ margin: '8px 8px 0px 8px' }}>
+                {pharmacyDetails.fromModule === 'History' && (
+                  <div style={{ fontWeight: 600, margin: '3px 0px' }}>
+                    Pending Items
+                  </div>
+                )}
+                <AntdTable
+                  className={customtyles.table}
+                  size='small'
+                  bordered
+                  pagination={false}
+                  dataSource={getGroupDispenseItem('PendingItems')}
+                  columns={getColumns('PendingItems', onPendingValueChange)}
+                />
+              </div>
+            </GridItem>
+          )}
           {pharmacyDetails.fromModule === 'History' && (
-            <div style={{ fontWeight: 600, margin: '3px 0px' }}>
-              Pending Items
-            </div>
+            <GridItem container md={12}>
+              <div style={{ margin: '8px 8px 0px 8px' }}>
+                {(values.orderItems || []).length > 0 && (
+                  <div style={{ fontWeight: 600, margin: '3px 0px' }}>
+                    Completed Items
+                  </div>
+                )}
+                <AntdTable
+                  className={customtyles.table}
+                  size='small'
+                  bordered
+                  pagination={false}
+                  dataSource={getGroupDispenseItem('CompletedItems')}
+                  columns={getColumns('CompletedItems', onPendingValueChange)}
+                />
+              </div>
+            </GridItem>
           )}
-          <AntdTable
-            className={customtyles.table}
-            size='small'
-            bordered
-            pagination={false}
-            dataSource={getGroupDispenseItem('PendingItems')}
-            columns={getColumns('PendingItems', onPendingValueChange)}
-          />
-        </div>
-      )}
-      {pharmacyDetails.fromModule === 'History' && (
-        <div style={{ margin: '8px 8px 0px 8px' }}>
-          {(values.orderItems || []).length > 0 && (
-            <div style={{ fontWeight: 600, margin: '3px 0px' }}>
-              Completed Items
-            </div>
-          )}
-          <AntdTable
-            className={customtyles.table}
-            size='small'
-            bordered
-            pagination={false}
-            dataSource={getGroupDispenseItem('CompletedItems')}
-            columns={getColumns('CompletedItems', onPendingValueChange)}
-          />
-        </div>
-      )}
+        </GridContainer>
+      </SizeContainer>
       <GridContainer style={{ marginTop: 10 }}>
         <GridItem md={8}>
           <div style={{ position: 'relative' }}>

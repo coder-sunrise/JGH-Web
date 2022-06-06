@@ -131,7 +131,8 @@ const sharedOverrides = {
   },
   MuiTypography: {
     body1: {
-      fontSize: '1em',
+      fontSize: '1rem',
+      lineHeight: 'auto',
     },
     colorTextSecondary: {
       color: 'currentColor',
@@ -268,6 +269,50 @@ export const defaultTheme = createMuiTheme({
   },
   overrides: {
     ...sharedOverrides,
+    MuiTypography: {
+      body1: {
+        fontSize: defaultFontSize,
+        lineHeight: 'auto',
+      },
+      colorTextSecondary: {
+        color: 'currentColor',
+      },
+    },
+    MuiGrid: {
+      root: {
+        '& .ant-tag': {
+          fontSize: defaultFontSize,
+        },
+        '& .ant-radio-wrapper': {
+          fontSize: defaultFontSize,
+        },
+        '& .baseOnCustomStyle': {
+          fontSize: defaultFontSize,
+        },
+        '& .ant-input': {
+          fontSize: defaultFontSize,
+        },
+        '& .ant-select': {
+          fontSize: defaultFontSize,
+        },
+        '& .ant-table-tbody': {
+          '& > tr > td': {
+            fontSize: defaultFontSize,
+          },
+        },
+      },
+    },
+    MuiTableCell: {
+      root: {
+        '& > span': {
+          fontSize: defaultFontSize,
+        },
+        padding: '7px 8px',
+      },
+      footer: {
+        fontSize: defaultFontSize,
+      },
+    },
     MuiCheckbox: {
       root: {
         alignSelf: 'flex-start',
@@ -290,6 +335,9 @@ export const defaultTheme = createMuiTheme({
       root: {
         marginLeft: -10,
         width: '100%',
+      },
+      label: {
+        fontSize: defaultFontSize,
       },
     },
     MuiSvgIcon: {
@@ -339,6 +387,16 @@ export const defaultTheme = createMuiTheme({
         '& .anticon': {
           fontSize: defaultFontSize,
           color: defaultColor,
+        },
+        '& .ant-radio-wrapper': {
+          fontSize: defaultFontSize,
+        },
+        '& .ant-picker-input > input': {
+          fontSize: defaultFontSize,
+        },
+        '& .ant-select': {
+          fontSize: defaultFontSize,
+          minHeight: 22,
         },
         '& .ant-input-number, .ant-time-picker': {
           fontSize: defaultFontSize,
@@ -394,12 +452,20 @@ export const defaultTheme = createMuiTheme({
         '& .ant-select-selection-item': {
           lineHeight: '22px !important',
         },
+        BaseInput: {
+          textInput: {
+            fontSize: defaultFontSize,
+          },
+        },
       },
 
       input: {
         padding: '4px 0 1px',
         minHeight: 24,
         height: '1em',
+        '& > label': {
+          fontSize: defaultFontSize,
+        },
       },
       multiline: {
         padding: 0,
@@ -489,6 +555,7 @@ export const defaultTheme = createMuiTheme({
         '& > div': {
           top: 0,
         },
+        fontSize: defaultFontSize,
       },
     },
 
@@ -512,6 +579,48 @@ export const smallTheme = createMuiTheme({
   },
   overrides: {
     ...sharedOverrides,
+    MuiTypography: {
+      body1: {
+        fontSize: smallFontSize,
+        lineHeight: 'auto',
+      },
+      colorTextSecondary: {
+        color: 'currentColor',
+      },
+    },
+    MuiGrid: {
+      root: {
+        '& .ant-tag': {
+          fontSize: smallFontSize,
+        },
+        '& .ant-radio-wrapper': {
+          fontSize: smallFontSize,
+        },
+        '& .baseOnCustomStyle': {
+          fontSize: smallFontSize,
+        },
+        '& .ant-input': {
+          fontSize: smallFontSize,
+        },
+        '& .ant-select': {
+          fontSize: smallFontSize,
+        },
+        '& .ant-table-tbody': {
+          fontSize: smallFontSize,
+        },
+      },
+    },
+    MuiTableCell: {
+      root: {
+        '& > span': {
+          fontSize: smallFontSize,
+        },
+        padding: '7px 8px',
+      },
+      footer: {
+        fontSize: smallFontSize,
+      },
+    },
     MuiToggleButtonGroup: {
       ...sharedToggleButtonGroup,
       groupedSizeSmall: {
@@ -529,6 +638,9 @@ export const smallTheme = createMuiTheme({
       root: {
         marginLeft: -7,
         width: '100%',
+      },
+      label: {
+        fontSize: smallFontSize,
       },
     },
     MuiSvgIcon: {
@@ -570,6 +682,12 @@ export const smallTheme = createMuiTheme({
           height: 16,
           borderRadius: 3,
           top: 1,
+        },
+        '& .ant-radio-wrapper': {
+          fontSize: smallFontSize,
+        },
+        '& .ant-picker-input > input': {
+          fontSize: smallFontSize,
         },
         '& .ant-select': {
           fontSize: smallFontSize,
@@ -627,11 +745,19 @@ export const smallTheme = createMuiTheme({
         '& .ant-select-selection-item': {
           lineHeight: '18px !important',
         },
+        BaseInput: {
+          textInput: {
+            fontSize: smallFontSize,
+          },
+        },
       },
       input: {
         padding: '3px 0 0px',
         minHeight: 20,
         height: '1em',
+        '& > label': {
+          fontSize: smallFontSize,
+        },
       },
       multiline: {
         padding: 0,
@@ -705,6 +831,7 @@ export const smallTheme = createMuiTheme({
         '& > div': {
           top: -3,
         },
+        fontSize: smallFontSize,
       },
     },
     Tabs: {
@@ -739,12 +866,56 @@ export const largeTheme = createMuiTheme({
   },
   overrides: {
     ...sharedOverrides,
-
+    MuiTypography: {
+      body1: {
+        fontSize: largeFontSize,
+        lineHeight: 'auto',
+      },
+      colorTextSecondary: {
+        color: 'currentColor',
+      },
+    },
+    MuiGrid: {
+      root: {
+        '& .ant-tag': {
+          fontSize: largeFontSize,
+        },
+        '& .ant-radio-wrapper': {
+          fontSize: largeFontSize,
+        },
+        '& .baseOnCustomStyle': {
+          fontSize: largeFontSize,
+        },
+        '& .ant-input': {
+          fontSize: largeFontSize,
+        },
+        '& .ant-select': {
+          fontSize: largeFontSize,
+        },
+        '& .ant-table-tbody': {
+          fontSize: largeFontSize,
+        },
+      },
+    },
+    MuiTableCell: {
+      root: {
+        '& > span': {
+          fontSize: largeFontSize,
+        },
+        padding: '7px 8px',
+      },
+      footer: {
+        fontSize: largeFontSize,
+      },
+    },
     MuiFormControlLabel: {
       ...sharedFormControlLabel,
       root: {
         marginLeft: -12,
         width: '100%',
+      },
+      label: {
+        fontSize: largeFontSize,
       },
     },
     MuiSvgIcon: {
@@ -786,10 +957,16 @@ export const largeTheme = createMuiTheme({
           borderRadius: 3,
           top: 1,
         },
+        '& .ant-radio-wrapper': {
+          fontSize: largeFontSize,
+        },
+        '& .ant-picker-input > input': {
+          fontSize: largeFontSize,
+        },
         '& .ant-select': {
           fontSize: largeFontSize,
           minHeight: 25,
-          // padding: '3px 0 0px',
+          // padding: '1px 0 0px',
         },
         '& .ant-input-number, .ant-time-picker': {
           fontSize: largeFontSize,
@@ -834,11 +1011,19 @@ export const largeTheme = createMuiTheme({
         '& .ant-select-selection-item': {
           lineHeight: '22px !important',
         },
+        BaseInput: {
+          textInput: {
+            fontSize: largeFontSize,
+          },
+        },
       },
       input: {
         padding: '6px 0 3px',
         minHeight: 25,
         height: '1em',
+        '& > label': {
+          fontSize: largeFontSize,
+        },
       },
       multiline: {
         padding: 0,
@@ -897,6 +1082,7 @@ export const largeTheme = createMuiTheme({
         '& > div': {
           marginTop: 0,
         },
+        fontSize: largeFontSize,
       },
     },
   },

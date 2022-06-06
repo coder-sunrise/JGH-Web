@@ -10,8 +10,8 @@ export interface TagPanelProps {
   tagCategory: 'Service' | 'Patient'
   onChange: (value: string[], tags: object[]) => void
   defaultTagNames: string[]
-  label: string,
-  disabled: Boolean,
+  label: string
+  disabled: Boolean
 }
 
 type Tag = {
@@ -129,14 +129,20 @@ const TagPanel: React.FC<TagPanelProps> = ({
           const tagElem = (
             <Tag
               key={tag}
-              style={disabled ? { cursor: 'no-drop', margin: '3px' } : { margin: '3px' }}
+              style={
+                disabled
+                  ? { cursor: 'no-drop', margin: '3px' }
+                  : { margin: '3px' }
+              }
               closable={!disabled}
               onClose={() => handleRemoveTag(tag)}
             >
               <span>{tag}</span>
             </Tag>
           )
-          return disabled ? tagElem : (
+          return disabled ? (
+            tagElem
+          ) : (
             <Tooltip title={tag} key={tag}>
               {tagElem}
             </Tooltip>
@@ -196,7 +202,11 @@ const TagPanel: React.FC<TagPanelProps> = ({
         </Select>
       )}
       {!disabled && !inputVisible && (
-        <Tag className='site-tag-plus' onClick={showInput}>
+        <Tag
+          className='site-tag-plus'
+          style={{ margin: '3px' }}
+          onClick={showInput}
+        >
           <PlusOutlined /> New Tag
         </Tag>
       )}

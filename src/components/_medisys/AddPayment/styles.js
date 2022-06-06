@@ -1,10 +1,7 @@
-export default (theme) => ({
+export default theme => ({
   payerHeader: {
     '& h4': {
       display: 'inline',
-    },
-    '& input': {
-      fontSize: '1.3em',
     },
   },
   leftAlignText: {
