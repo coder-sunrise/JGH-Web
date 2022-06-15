@@ -13,7 +13,7 @@ import Yup from '@/utils/yup'
 import { subscribeNotification } from '@/utils/realtime'
 import { ReportViewer } from '@/components/_medisys'
 import { getRawData } from '@/services/report'
-import { REPORT_ID } from '@/utils/constants'
+import { REPORT_ID, SYSTEM_LANGUAGE } from '@/utils/constants'
 import { orderItemTypes } from '@/utils/codes'
 import Print from '@material-ui/icons/Print'
 import {
@@ -191,7 +191,7 @@ const Main = props => {
   }, [values.id])
 
   const {
-    primaryPrintoutLanguage = 'EN',
+    primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
     secondaryPrintoutLanguage = '',
     labelPrinterSize,
     isQueueNoDecimal,
@@ -406,7 +406,7 @@ const Main = props => {
     const data = await getRawData(REPORT_ID.PATIENT_INFO_LEAFLET, {
       visitinvoicedrugids,
       instructionIds,
-      language: 'JP',
+      language: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
       visitId: pharmacyDetails.entity?.visitFK,
     })
     const payload = [
@@ -418,12 +418,6 @@ const Main = props => {
       },
     ]
     handlePrint(JSON.stringify(payload))
-  }
-  const getInstruction = row => {
-    if (row.invoiceItemTypeFK !== 1) return ''
-    return row.language.isShowFirstValue
-      ? row.instruction
-      : row.secondInstruction
   }
 
   const getDrugInteraction = row => {
@@ -471,7 +465,7 @@ const Main = props => {
   const getDispenseUOM = row => {
     if (row.invoiceItemTypeFK === 1) {
       return (
-        (row.language.value === primaryPrintoutLanguage
+        (row.language.value === SYSTEM_LANGUAGE.PRIMARYLANGUAGE
           ? row.uomDisplayValue
           : row.secondUOMDisplayValue) || ''
       )
@@ -1266,6 +1260,16 @@ const Main = props => {
           colSpan: row.isGroup ? 0 : 1,
           rowSpan: row.groupNumber === 1 ? row.groupRowSpan : 0,
         }),
+        render: (_, row) => {
+          const instruction = row?.language?.isShowFirstValue
+            ? row.instruction
+            : row.secondInstruction
+          return (
+            <Tooltip title={instruction}>
+              <span>{instruction}</span>
+            </Tooltip>
+          )
+        },
       },
       {
         dataIndex: 'drugInteraction',
@@ -1836,12 +1840,12 @@ const Main = props => {
               value={showLanguage}
               options={[
                 {
-                  label: primaryPrintoutLanguage,
-                  value: primaryPrintoutLanguage,
+                  label: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+                  value: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
                 },
                 {
-                  label: secondaryPrintoutLanguage,
-                  value: secondaryPrintoutLanguage,
+                  label: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                  value: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
                 },
               ]}
               onChange={v => {
@@ -1854,7 +1858,7 @@ const Main = props => {
                       ...item,
                       language: {
                         value: v,
-                        isShowFirstValue: v === primaryPrintoutLanguage,
+                        isShowFirstValue: v === SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
                       },
                     }
                   }),
@@ -1867,7 +1871,7 @@ const Main = props => {
                       ...item,
                       language: {
                         value: v,
-                        isShowFirstValue: v === primaryPrintoutLanguage,
+                        isShowFirstValue: v === SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
                       },
                     }
                   }),
@@ -1960,8 +1964,8 @@ const Main = props => {
                   marginLeft: '6px',
                 }}
                 options={[
-                  { value: 'EN', label: 'EN' },
-                  { value: 'JP', label: 'JP' },
+                  { value: SYSTEM_LANGUAGE.PRIMARYLANGUAGE, label: SYSTEM_LANGUAGE.PRIMARYLANGUAGE },
+                  { value: SYSTEM_LANGUAGE.SECOUNDLANGUAGE, label: SYSTEM_LANGUAGE.SECOUNDLANGUAGE },
                 ]}
                 onChange={v => {
                   setPrintlanguage(v.target.value)

@@ -33,6 +33,7 @@ import {
   NOTIFICATION_TYPE,
   NOTIFICATION_STATUS,
   CLINICAL_ROLE,
+  SYSTEM_LANGUAGE,
 } from '@/utils/constants'
 import { sendNotification } from '@/utils/realtime'
 import * as queueServices from '@/services/queue'
@@ -584,14 +585,17 @@ class UserProfileForm extends React.PureComponent {
                 </GridItem>
                 <GridItem md={6}>
                   <Tooltip
-                    title='Name (JP) will display in report and printout.'
+                    title={`Name (${SYSTEM_LANGUAGE.SECOUNDLANGUAGE}) will display in report and printout.`}
                     placement='bottom-start'
                   >
                     <div>
                       <FastField
                         name='name_JP'
                         render={args => (
-                          <TextField {...args} label='Name (JP)' />
+                          <TextField
+                            {...args}
+                            label={`Name (${SYSTEM_LANGUAGE.SECOUNDLANGUAGE})`}
+                          />
                         )}
                       />
                     </div>

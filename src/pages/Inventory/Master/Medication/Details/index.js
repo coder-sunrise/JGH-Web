@@ -19,6 +19,7 @@ import {
   navigateDirtyCheck,
   roundTo,
 } from '@/utils/utils'
+import { SYSTEM_LANGUAGE } from '@/utils/constants'
 import {
   ProgressButton,
   Button,
@@ -275,12 +276,12 @@ const Detail = ({
                 }}
                 options={[
                   {
-                    label: primaryPrintoutLanguage,
-                    value: primaryPrintoutLanguage,
+                    label: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+                    value: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
                   },
                   {
-                    label: secondaryPrintoutLanguage,
-                    value: secondaryPrintoutLanguage,
+                    label: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                    value: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
                   },
                 ]}
               />
@@ -388,7 +389,8 @@ export default compose(
         secondaryPrintoutLanguage,
       } = clinicSettings
       const isMultiLanguage =
-        primaryPrintoutLanguage && secondaryPrintoutLanguage ? true : false
+        primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+        secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
       let checkboxGroup = []
       const {
         isChasAcuteClaimable,
@@ -437,7 +439,7 @@ export default compose(
       if (isMultiLanguage)
         indicationSecondary = getTranslationValue(
           medicationDetails.translationData,
-          secondaryPrintoutLanguage,
+          SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
           'indication',
         )
 

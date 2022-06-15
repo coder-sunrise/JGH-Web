@@ -26,7 +26,7 @@ import CommentDetails from './SummaryCommentDetails'
 import CommentVerification from '../CommentVerification'
 import ReportingDoctorTag from '../../ReportingDoctorList'
 import { mergeClasses } from '@material-ui/styles'
-import { REPORTINGDOCTOR_STATUS } from '@/utils/constants'
+import { REPORTINGDOCTOR_STATUS, SYSTEM_LANGUAGE } from '@/utils/constants'
 import { ListBoxComponent } from '@syncfusion/ej2-react-dropdowns'
 
 const SummaryComment = props => {
@@ -165,7 +165,11 @@ const SummaryComment = props => {
   const getDisplayValue = row => {
     const showValue =
       row[
-        `${selectedLanguage === 'EN' ? 'englishComment' : 'japaneseComment'}`
+        `${
+          selectedLanguage === SYSTEM_LANGUAGE.PRIMARYLANGUAGE
+            ? 'englishComment'
+            : 'japaneseComment'
+        }`
       ] || '-'
     return (
       <div
@@ -260,7 +264,7 @@ const SummaryComment = props => {
       }))
       if (index === 0) {
         let itemTemplate
-        if (selectedLanguage === 'EN') {
+        if (selectedLanguage === SYSTEM_LANGUAGE.PRIMARYLANGUAGE) {
           itemTemplate = row => {
             return (
               <div
@@ -489,10 +493,10 @@ const SummaryComment = props => {
         tabBarStyle={{ paddingRight: 8, fontWeight: 'bold' }}
         tabBarExtraContent={
           <Switch
-            checkedChildren='EN'
-            checkedValue='EN'
-            unCheckedChildren='JP'
-            unCheckedValue='JP'
+            checkedChildren={SYSTEM_LANGUAGE.PRIMARYLANGUAGE}
+            checkedValue={SYSTEM_LANGUAGE.PRIMARYLANGUAGE}
+            unCheckedChildren={SYSTEM_LANGUAGE.SECOUNDLANGUAGE}
+            unCheckedValue={SYSTEM_LANGUAGE.SECOUNDLANGUAGE}
             label=''
             value={selectedLanguage}
             onChange={setSelectedLanguage}

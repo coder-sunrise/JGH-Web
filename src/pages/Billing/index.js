@@ -94,11 +94,6 @@ const getDispenseEntity = (codetable, clinicSettings, entity = {}) => {
     ctmedicationunitofmeasurement = [],
   } = codetable
 
-  const {
-    primaryPrintoutLanguage = 'EN',
-    secondaryPrintoutLanguage = '',
-  } = clinicSettings
-
   let orderItems = []
   const defaultItem = (item, groupName) => {
     return {

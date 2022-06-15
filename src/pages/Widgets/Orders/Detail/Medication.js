@@ -12,6 +12,7 @@ import {
   VISIT_TYPE,
   CANNED_TEXT_TYPE,
   NURSE_WORKITEM_STATUS,
+  SYSTEM_LANGUAGE,
 } from '@/utils/constants'
 import {
   Button,
@@ -326,7 +327,7 @@ const getVisitDoctorUserId = props => {
       openPrescription,
     } = props
     const {
-      primaryPrintoutLanguage = 'EN',
+      primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       secondaryPrintoutLanguage = '',
     } = clinicSettings
     const {
@@ -347,14 +348,15 @@ const getVisitDoctorUserId = props => {
       values.drugName = medication?.displayValue
       values.dispenseUOMDisplayValue = getTranslationValue(
         uom?.translationData,
-        primaryPrintoutLanguage,
+        SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
         'displayValue',
       )
       values.secondDispenseUOMDisplayValue =
-        secondaryPrintoutLanguage !== ''
+        primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+        secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
           ? getTranslationValue(
               uom?.translationData,
-              secondaryPrintoutLanguage,
+              SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
               'displayValue',
             )
           : ''
@@ -364,14 +366,15 @@ const getVisitDoctorUserId = props => {
       )
       values.dispenseUOMDisplayValue = getTranslationValue(
         uom?.translationData,
-        primaryPrintoutLanguage,
+        SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
         'displayValue',
       )
       values.secondDispenseUOMDisplayValue =
-        secondaryPrintoutLanguage !== ''
+        primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+        secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
           ? getTranslationValue(
               uom?.translationData,
-              secondaryPrintoutLanguage,
+              SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
               'displayValue',
             )
           : ''
@@ -409,12 +412,12 @@ const getVisitDoctorUserId = props => {
           }
           let itemDuration = item.duration ? ` For ${item.duration} day(s)` : ''
           let separator = nextStepdose
-          if (language === 'JP') {
+          if (language === SYSTEM_LANGUAGE.SECOUNDLANGUAGE) {
             separator = nextStepdose === '' ? '<br>' : ''
             itemDuration = item.duration ? `${item.duration} 日分` : ''
           }
           let usagePrefix = ''
-          if (language === 'JP' && item.dosageFK) {
+          if (language === SYSTEM_LANGUAGE.SECOUNDLANGUAGE && item.dosageFK) {
             usagePrefix = '1回'
           } else {
             usagePrefix = getTranslationValue(
@@ -443,13 +446,14 @@ const getVisitDoctorUserId = props => {
 
     const instruction = getInstruction(
       values.corPrescriptionItemInstruction,
-      primaryPrintoutLanguage,
+      SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
     )
     const secondInstruction =
-      secondaryPrintoutLanguage !== ''
+      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
         ? getInstruction(
             values.corPrescriptionItemInstruction,
-            secondaryPrintoutLanguage,
+            SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
           )
         : ''
 
@@ -506,14 +510,15 @@ const getVisitDoctorUserId = props => {
         item.drugName = medication?.displayValue
         item.uomDisplayValue = getTranslationValue(
           uom?.translationData,
-          primaryPrintoutLanguage,
+          SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
           'displayValue',
         )
         item.secondUOMDisplayValue =
-          secondaryPrintoutLanguage !== ''
+          primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+          secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
             ? getTranslationValue(
                 uom?.translationData,
-                secondaryPrintoutLanguage,
+                SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
                 'displayValue',
               )
             : ''

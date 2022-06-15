@@ -13,6 +13,7 @@ import {
   ProgressButton,
   Select,
 } from '@/components'
+import { SYSTEM_LANGUAGE } from '@/utils/constants'
 
 @withFormikExtend({
   mapPropsToValues: ({ settingMedicineTrivia }) =>
@@ -42,12 +43,21 @@ class Filter extends PureComponent {
                 onClick={() => {
                   const { codeDisplayValue } = this.props.values
                   const { clinicSettings } = this.props
-                  const { secondaryPrintoutLanguage = '' } = clinicSettings
+                  const {
+                    primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+                    secondaryPrintoutLanguage = '',
+                  } = clinicSettings
                   this.props.dispatch({
                     type: 'settingMedicineTrivia/query',
                     payload: {
                       apiCriteria: {
-                        Language: secondaryPrintoutLanguage,
+                        Language:
+                          primaryPrintoutLanguage ===
+                            SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+                          secondaryPrintoutLanguage ===
+                            SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+                            ? SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+                            : '',
                         Key: 'displayValue',
                         SearchValue: codeDisplayValue,
                       },

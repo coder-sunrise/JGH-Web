@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 import Edit from '@material-ui/icons/Edit'
 import { status } from '@/utils/codes'
 import { CommonTableGrid, Button, Tooltip } from '@/components'
+import { SYSTEM_LANGUAGE } from '@/utils/constants'
 
 class Grid extends PureComponent {
   editRow = (row, e) => {
@@ -13,19 +14,32 @@ class Grid extends PureComponent {
       type: 'settingAdministrationRoute/updateState',
       payload: {
         showModal: true,
-        entity: list.find((o) => o.id === row.id),
+        entity: list.find(o => o.id === row.id),
       },
     })
   }
 
-  render () {
+  render() {
     const { height, clinicSettings } = this.props
-    const { primaryPrintoutLanguage = 'EN', secondaryPrintoutLanguage = '' } = clinicSettings
-    const isUseSecondLanguage = secondaryPrintoutLanguage !== ''
+    const {
+      primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+      secondaryPrintoutLanguage = '',
+    } = clinicSettings
+    const isUseSecondLanguage =
+      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
     let columns = [
       { name: 'code', title: 'Code' },
-      { name: 'displayValue', title: `Display Value${isUseSecondLanguage ? ` (${primaryPrintoutLanguage})` : ''}` },
-      { name: 'translatedDisplayValue', title: `Display Value (${secondaryPrintoutLanguage})` },
+      {
+        name: 'displayValue',
+        title: `Display Value${
+          isUseSecondLanguage ? ` (${SYSTEM_LANGUAGE.PRIMARYLANGUAGE})` : ''
+        }`,
+      },
+      {
+        name: 'translatedDisplayValue',
+        title: `Display Value (${SYSTEM_LANGUAGE.SECOUNDLANGUAGE})`,
+      },
       { name: 'description', title: 'Description' },
       { name: 'sortOrder', title: 'Sort Order' },
       { name: 'isActive', title: 'Status' },
@@ -63,7 +77,7 @@ class Grid extends PureComponent {
           {
             columnName: 'sortOrder',
             width: 120,
-            render: (row) => {
+            render: row => {
               return <p>{row.sortOrder === undefined ? '-' : row.sortOrder}</p>
             },
           },
@@ -72,9 +86,12 @@ class Grid extends PureComponent {
             sortingEnabled: false,
             align: 'center',
             width: 100,
-            render: (row) => {
+            render: row => {
               return (
-                <Tooltip title='Edit Route of Administration' placement='bottom'>
+                <Tooltip
+                  title='Edit Route of Administration'
+                  placement='bottom'
+                >
                   <Button
                     size='sm'
                     onClick={() => {

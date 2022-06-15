@@ -29,6 +29,7 @@ import {
   RADIOLOGY_CATEGORY,
   LAB_CATEGORY,
   VISIT_TYPE,
+  SYSTEM_LANGUAGE,
 } from '@/utils/constants'
 import {
   CommonTableGrid,
@@ -132,12 +133,12 @@ export default ({
 
         let itemDuration = item.duration ? ` For ${item.duration} day(s)` : ''
         let separator = nextStepdose
-        if (language === 'JP') {
+        if (language === SYSTEM_LANGUAGE.SECOUNDLANGUAGE) {
           separator = nextStepdose === '' ? '<br>' : ''
           itemDuration = item.duration ? `${item.duration} �շ�` : ''
         }
         let usagePrefix = ''
-        if (language === 'JP' && item.dosageFK) {
+        if (language === SYSTEM_LANGUAGE.SECOUNDLANGUAGE && item.dosageFK) {
           usagePrefix = '1��'
         } else {
           usagePrefix = getTranslationValue(
@@ -210,7 +211,7 @@ export default ({
     const { corVitalSign = [] } = orders
     let matchInstruction
     const {
-      primaryPrintoutLanguage = 'EN',
+      primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       secondaryPrintoutLanguage = '',
     } = settings
     const inventorymedication = codetables[0]
@@ -281,14 +282,15 @@ export default ({
 
     const instruction = getInstruction(
       [defaultInstruction],
-      primaryPrintoutLanguage,
+      SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       codetable,
     )
     const secondInstruction =
-      secondaryPrintoutLanguage !== ''
+      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
         ? getInstruction(
             [defaultInstruction],
-            secondaryPrintoutLanguage,
+            SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
             codetable,
           )
         : ''
@@ -357,14 +359,15 @@ export default ({
     )
     itemDispenseUOMDisplayValue = getTranslationValue(
       uom?.translationData,
-      primaryPrintoutLanguage,
+      SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       'displayValue',
     )
     itemSecondDispenseUOMDisplayValue =
-      secondaryPrintoutLanguage !== ''
+      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
         ? getTranslationValue(
             uom?.translationData,
-            secondaryPrintoutLanguage,
+            SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
             'displayValue',
           )
         : ''

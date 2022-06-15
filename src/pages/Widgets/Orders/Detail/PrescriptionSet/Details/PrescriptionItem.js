@@ -30,7 +30,7 @@ import {
 } from '@/components'
 import { currencySymbol } from '@/utils/config'
 import CannedTextButton from '@/pages/Widgets/Orders/Detail/CannedTextButton'
-import { CANNED_TEXT_TYPE } from '@/utils/constants'
+import { CANNED_TEXT_TYPE, SYSTEM_LANGUAGE } from '@/utils/constants'
 import LowStockInfo from '../../LowStockInfo'
 import { useForkRef } from '@material-ui/core'
 
@@ -223,7 +223,7 @@ const drugMixtureItemSchema = Yup.object().shape({
   handleSubmit: (values, { props, onConfirm, setValues }) => {
     const { dispatch, prescriptionSet, codetable, clinicSettings } = props
     const {
-      primaryPrintoutLanguage = 'EN',
+      primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       secondaryPrintoutLanguage = '',
     } = clinicSettings
     const {
@@ -276,12 +276,12 @@ const drugMixtureItemSchema = Yup.object().shape({
 
           let itemDuration = item.duration ? ` For ${item.duration} day(s)` : ''
           let separator = nextStepdose
-          if (language === 'JP') {
+          if (language === SYSTEM_LANGUAGE.SECOUNDLANGUAGE) {
             separator = nextStepdose === '' ? '<br>' : ''
             itemDuration = item.duration ? `${item.duration} 日分` : ''
           }
           let usagePrefix = ''
-          if (language === 'JP' && item.dosageFK) {
+          if (language === SYSTEM_LANGUAGE.SECOUNDLANGUAGE && item.dosageFK) {
             usagePrefix = '1回'
           } else {
             usagePrefix = getTranslationValue(
@@ -319,13 +319,14 @@ const drugMixtureItemSchema = Yup.object().shape({
 
     const instruction = getInstruction(
       values.prescriptionSetItemInstruction,
-      primaryPrintoutLanguage,
+      SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
     )
     let secondInstruction =
-      secondaryPrintoutLanguage !== ''
+      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
         ? getInstruction(
             values.prescriptionSetItemInstruction,
-            secondaryPrintoutLanguage,
+            SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
           )
         : ''
 

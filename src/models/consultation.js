@@ -7,7 +7,7 @@ import { sendQueueNotification } from '@/pages/Reception/Queue/utils'
 import { orderTypes } from '@/pages/Consultation/utils'
 import { getUserPreference, saveUserPreference } from '@/services/user'
 import service from '../services/consultation'
-import { USER_PREFERENCE_TYPE } from '@/utils/constants'
+import { SYSTEM_LANGUAGE, USER_PREFERENCE_TYPE } from '@/utils/constants'
 
 const getSequence = (sequence, maxSeq) => {
   if (sequence === 0) return sequence
@@ -341,13 +341,13 @@ export default createFormViewModel({
               )
             }
             let resultFavouriteDiagnosisLanguage = {
-              favouriteDiagnosisLanguage: 'EN',
+              favouriteDiagnosisLanguage: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
             }
             if (parsedFavouriteDiagnosisLanguage.length > 0) {
               resultFavouriteDiagnosisLanguage = {
                 favouriteDiagnosisLanguage: favouriteDiagnosisLanguage
                   ? favouriteDiagnosisLanguage.value
-                  : 'EN',
+                  : SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
               }
             }
             yield put({

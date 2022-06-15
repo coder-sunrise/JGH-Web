@@ -34,6 +34,7 @@ import {
   ORDER_TYPES,
   RADIOLOGY_CATEGORY,
   LAB_CATEGORY,
+  SYSTEM_LANGUAGE,
 } from '@/utils/constants'
 import { getClinicianProfile } from '../../ConsultationDocument/utils'
 
@@ -81,7 +82,7 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
       clinicSettings,
     } = props
     const {
-      primaryPrintoutLanguage = 'EN',
+      primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       secondaryPrintoutLanguage = '',
     } = clinicSettings
     const { corVitalSign = [] } = orders
@@ -244,14 +245,15 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
           instruction: getInstruction(
             inventoryMedication,
             matchInstruction,
-            primaryPrintoutLanguage,
+            SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
           ),
           secondInstruction:
-            secondaryPrintoutLanguage !== ''
+            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
               ? getInstruction(
                   inventoryMedication,
                   matchInstruction,
-                  secondaryPrintoutLanguage,
+                  SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
                 )
               : '',
           dispenseUOMFK: inventoryMedication.dispensingUOMFK,
@@ -262,14 +264,15 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
             : undefined,
           dispenseUOMDisplayValue: getTranslationValue(
             uom?.translationData,
-            primaryPrintoutLanguage,
+            SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
             'displayValue',
           ),
           secondDispenseUOMDisplayValue:
-            secondaryPrintoutLanguage !== ''
+            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
               ? getTranslationValue(
                   uom?.translationData,
-                  secondaryPrintoutLanguage,
+                  SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
                   'displayValue',
                 )
               : '',

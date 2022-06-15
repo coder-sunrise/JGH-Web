@@ -18,6 +18,7 @@ import {
   MEDICALCHECKUP_REPORTTYPE,
   MEDICALCHECKUP_REPORTSTATUS,
   REPORTINGDOCTOR_STATUS,
+  SYSTEM_LANGUAGE,
 } from '@/utils/constants'
 import {
   DoubleLeftOutlined,
@@ -57,7 +58,9 @@ const ReportingDetails = props => {
     clinicSettings,
   } = props
   const reportingStatus = medicalCheckupReportingDetails.entity?.statusFK
-  const { primaryPrintoutLanguage = 'EN' } = clinicSettings.settings
+  const {
+    primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+  } = clinicSettings.settings
   const height = window.innerHeight
   const banner = document.getElementById('patientBanner')
   const contentHeight = (height || 0) - (banner?.offsetHeight || 0) - 92

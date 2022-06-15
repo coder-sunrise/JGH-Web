@@ -17,6 +17,7 @@ import {
   RADIOLOGY_CATEGORY,
   LAB_CATEGORY,
   ORDER_TYPES,
+  SYSTEM_LANGUAGE,
 } from '@/utils/constants'
 
 const getNextSequence = props => {
@@ -74,7 +75,7 @@ const getType = typeId => {
       clinicSettings,
     } = props
     const {
-      primaryPrintoutLanguage = 'EN',
+      primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       secondaryPrintoutLanguage = '',
     } = clinicSettings
     const { pendingPackage } = values
@@ -204,14 +205,15 @@ const getType = typeId => {
           instruction: getInstruction(
             medication,
             matchInstruction,
-            primaryPrintoutLanguage,
+            SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
           ),
           secondInstruction:
-            secondaryPrintoutLanguage !== ''
+            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
               ? getInstruction(
                   medication,
                   matchInstruction,
-                  secondaryPrintoutLanguage,
+                  SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
                 )
               : '',
           dispenseUOMFK: medication?.dispensingUOM?.id,
@@ -222,14 +224,15 @@ const getType = typeId => {
             : undefined,
           dispenseUOMDisplayValue: getTranslationValue(
             uom?.translationData,
-            primaryPrintoutLanguage,
+            SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
             'displayValue',
           ),
           secondDispenseUOMDisplayValue:
-            secondaryPrintoutLanguage !== ''
+            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
               ? getTranslationValue(
                   uom?.translationData,
-                  secondaryPrintoutLanguage,
+                  SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
                   'displayValue',
                 )
               : '',

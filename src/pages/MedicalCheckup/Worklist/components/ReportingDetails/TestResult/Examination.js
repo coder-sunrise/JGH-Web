@@ -19,7 +19,7 @@ import {
   CheckCircleOutlined,
 } from '@ant-design/icons'
 import { getUniqueId, navigateDirtyCheck } from '@/utils/utils'
-import { EXAMINATION_STATUS } from '@/utils/constants'
+import { EXAMINATION_STATUS, SYSTEM_LANGUAGE } from '@/utils/constants'
 import customtyles from '../../Style.less'
 import IndividualCommentDetails from './IndividualCommentDetails'
 
@@ -175,7 +175,7 @@ const Examination = props => {
                 const showValue =
                   item[
                     `${
-                      row.selectedLanguage === 'EN'
+                      row.selectedLanguage === SYSTEM_LANGUAGE.PRIMARYLANGUAGE
                         ? 'englishComment'
                         : 'japaneseComment'
                     }`

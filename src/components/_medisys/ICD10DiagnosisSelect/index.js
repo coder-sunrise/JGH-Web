@@ -6,6 +6,7 @@ import Star from '@material-ui/icons/Star'
 import { Select, Tooltip, GridItem, Button, RadioGroup } from '@/components'
 import { queryList } from '@/services/common'
 import Authorized from '@/utils/Authorized'
+import { SYSTEM_LANGUAGE } from '@/utils/constants'
 
 const ICD10DiagnosisSelect = ({
   dispatch,
@@ -47,7 +48,11 @@ const ICD10DiagnosisSelect = ({
 
   useEffect(() => {
     setcurrentDiagnosisLanguage(defaultLanguage)
-    setLabelValue(defaultLanguage === 'EN' ? 'displayvalue' : 'JpnDisplayValue')
+    setLabelValue(
+      defaultLanguage === SYSTEM_LANGUAGE.PRIMARYLANGUAGE
+        ? 'displayvalue'
+        : 'JpnDisplayValue',
+    )
   }, [defaultLanguage])
 
   const onICD10DiagnosisSearch = async v => {
@@ -89,14 +94,20 @@ const ICD10DiagnosisSelect = ({
   const onLanguageChange = e => {
     onICD10AMLanguageChange(e.target.value)
     setcurrentDiagnosisLanguage(e.target.value)
-    e.target.value === 'EN'
+    e.target.value === SYSTEM_LANGUAGE.PRIMARYLANGUAGE
       ? setLabelValue('displayvalue')
       : setLabelValue('JpnDisplayValue')
   }
 
   const languageOptions = [
-    { label: ' EN ', value: 'EN' },
-    { label: ' JP ', value: 'JP' },
+    {
+      label: ` ${SYSTEM_LANGUAGE.PRIMARYLANGUAGE} `,
+      value: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+    },
+    {
+      label: ` ${SYSTEM_LANGUAGE.SECOUNDLANGUAGE} `,
+      value: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+    },
   ]
 
   return (
@@ -119,7 +130,8 @@ const ICD10DiagnosisSelect = ({
                   overflow: 'hidden',
                 }}
               >
-                {currentDiagnosisLanguage === 'EN' ? (
+                {currentDiagnosisLanguage ===
+                SYSTEM_LANGUAGE.PRIMARYLANGUAGE ? (
                   <div>{option.displayvalue}</div>
                 ) : (
                   <div>{option.JpnDisplayValue}</div>

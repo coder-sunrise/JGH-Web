@@ -1,12 +1,12 @@
 import { createFormViewModel } from 'medisys-model'
 import { useSelector } from 'dva'
-import { PHARMACY_STATUS } from '@/utils/constants'
+import { PHARMACY_STATUS, SYSTEM_LANGUAGE } from '@/utils/constants'
 import { getTranslationValue, getUniqueId } from '@/utils/utils'
 import service from '../../services'
 
 const getPharmacyItems = (codetable, clinicSettings, entity = {}) => {
   const {
-    primaryPrintoutLanguage = 'EN',
+    primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
     secondaryPrintoutLanguage = '',
   } = clinicSettings
   let orderItems = []
@@ -16,7 +16,8 @@ const getPharmacyItems = (codetable, clinicSettings, entity = {}) => {
       ...item,
       language: {
         value: primaryPrintoutLanguage,
-        isShowFirstValue: true,
+        isShowFirstValue:
+          primaryPrintoutLanguage === SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       },
       statusFK: entity.statusFK,
       dispenseGroupId: groupName,
@@ -63,14 +64,15 @@ const getPharmacyItems = (codetable, clinicSettings, entity = {}) => {
         if (entity.statusFK === PHARMACY_STATUS.NEW) {
           const primaryUOMDisplayValue = getTranslationValue(
             drugMixture.medication?.dispenseTranslationUOM || [],
-            primaryPrintoutLanguage,
+            SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
             'displayValue',
           )
           const secondUOMDisplayValue =
-            secondaryPrintoutLanguage !== ''
+            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
               ? getTranslationValue(
                   drugMixture.medication?.dispenseTranslationUOM || [],
-                  secondaryPrintoutLanguage,
+                  SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
                   'displayValue',
                 )
               : ''
@@ -241,14 +243,15 @@ const getPharmacyItems = (codetable, clinicSettings, entity = {}) => {
     if (entity.statusFK === PHARMACY_STATUS.NEW) {
       const primaryUOMDisplayValue = getTranslationValue(
         item.medication?.dispenseTranslationUOM || [],
-        primaryPrintoutLanguage,
+        SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
         'displayValue',
       )
       const secondUOMDisplayValue =
-        secondaryPrintoutLanguage !== ''
+        primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+        secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
           ? getTranslationValue(
               item.medication?.dispenseTranslationUOM || [],
-              secondaryPrintoutLanguage,
+              SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
               'displayValue',
             )
           : ''
@@ -463,7 +466,7 @@ const getPharmacyItems = (codetable, clinicSettings, entity = {}) => {
 
 const getPartialPharmacyItems = (codetable, clinicSettings, entity = {}) => {
   const {
-    primaryPrintoutLanguage = 'EN',
+    primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
     secondaryPrintoutLanguage = '',
   } = clinicSettings
   let orderItems = []
@@ -473,7 +476,8 @@ const getPartialPharmacyItems = (codetable, clinicSettings, entity = {}) => {
       ...item,
       language: {
         value: primaryPrintoutLanguage,
-        isShowFirstValue: true,
+        isShowFirstValue:
+          primaryPrintoutLanguage === SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       },
       statusFK: entity.statusFK,
       dispenseGroupId: groupName,
@@ -518,14 +522,15 @@ const getPartialPharmacyItems = (codetable, clinicSettings, entity = {}) => {
       if (drugMixture.isDispensedByPharmacy && totalRemainQty > 0) {
         const primaryUOMDisplayValue = getTranslationValue(
           drugMixture.medication?.dispenseTranslationUOM || [],
-          primaryPrintoutLanguage,
+          SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
           'displayValue',
         )
         const secondUOMDisplayValue =
-          secondaryPrintoutLanguage !== ''
+          primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+          secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
             ? getTranslationValue(
                 drugMixture.medication?.dispenseTranslationUOM || [],
-                secondaryPrintoutLanguage,
+                SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
                 'displayValue',
               )
             : ''
@@ -601,14 +606,15 @@ const getPartialPharmacyItems = (codetable, clinicSettings, entity = {}) => {
     const groupName = 'NormalDispense'
     const primaryUOMDisplayValue = getTranslationValue(
       item.medication?.dispenseTranslationUOM || [],
-      primaryPrintoutLanguage,
+      SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       'displayValue',
     )
     const secondUOMDisplayValue =
-      secondaryPrintoutLanguage !== ''
+      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
         ? getTranslationValue(
             item.medication?.dispenseTranslationUOM || [],
-            secondaryPrintoutLanguage,
+            SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
             'displayValue',
           )
         : ''
@@ -809,7 +815,7 @@ export default createFormViewModel({
           const clinicSettings = yield select(st => st.clinicSettings)
           const orderItems = getPharmacyItems(
             codetable,
-            clinicSettings,
+            clinicSettings.settings,
             pharmacyDetails.entity,
           )
           if (pharmacyDetails.fromModule === 'Main') {
@@ -831,7 +837,7 @@ export default createFormViewModel({
           } else {
             const partialItems = getPartialPharmacyItems(
               codetable,
-              clinicSettings,
+              clinicSettings.settings,
               pharmacyDetails.entity,
             )
             const defaultExpandedGroups = _.uniqBy(

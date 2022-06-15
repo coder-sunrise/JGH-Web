@@ -3,6 +3,7 @@ import Edit from '@material-ui/icons/Edit'
 import { status } from '@/utils/codes'
 import { CommonTableGrid, Button, Tooltip, Popconfirm } from '@/components'
 import Delete from '@material-ui/icons/Delete'
+import { SYSTEM_LANGUAGE } from '@/utils/constants'
 
 class Grid extends PureComponent {
   editRow = (row, e) => {
@@ -36,21 +37,23 @@ class Grid extends PureComponent {
   render() {
     const { height, codetable, clinicSettings } = this.props
     const {
-      primaryPrintoutLanguage = 'EN',
+      primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       secondaryPrintoutLanguage = '',
     } = clinicSettings
-    const isUseSecondLanguage = secondaryPrintoutLanguage !== ''
+    const isUseSecondLanguage =
+      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
     let columns = [
       { name: 'code', title: 'Code' },
       {
         name: 'displayValue',
         title: `Display Value${
-          isUseSecondLanguage ? ` (${primaryPrintoutLanguage})` : ''
+          isUseSecondLanguage ? ` (${SYSTEM_LANGUAGE.PRIMARYLANGUAGE})` : ''
         }`,
       },
       {
         name: 'translatedDisplayValue',
-        title: `Display Value (${secondaryPrintoutLanguage})`,
+        title: `Display Value (${SYSTEM_LANGUAGE.SECOUNDLANGUAGE})`,
       },
       {
         name: 'examinationItem',

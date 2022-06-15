@@ -14,6 +14,7 @@ import {
 import { ProTable } from '@medisys/component'
 import { ActionType } from '@ant-design/pro-table'
 import { useVisitTypes } from '@/utils/hooks'
+import { SYSTEM_LANGUAGE } from '@/utils/constants'
 import service from './services'
 import Details from './Details'
 
@@ -135,7 +136,7 @@ const ClaimTracking = ({
       },
       {
         key: 'diagnosisJP',
-        title: 'Diagnosis (JP)',
+        title: `Diagnosis (${SYSTEM_LANGUAGE.SECOUNDLANGUAGE})`,
         dataIndex: 'diagnosisJP',
         width: 150,
         sorter: false,

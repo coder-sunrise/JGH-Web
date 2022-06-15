@@ -13,6 +13,7 @@ import {
   NumberInput,
   dateFormatLong,
 } from '@/components'
+import { SYSTEM_LANGUAGE } from '@/utils/constants'
 
 const Detail = ({
   theme,
@@ -24,10 +25,12 @@ const Detail = ({
   setFieldValue,
 }) => {
   const {
-    primaryPrintoutLanguage = 'EN',
+    primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
     secondaryPrintoutLanguage = '',
   } = clinicSettings
-  const isUseSecondLanguage = secondaryPrintoutLanguage !== ''
+  const isUseSecondLanguage =
+    primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+    secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
 
   const [
     translation,
@@ -35,7 +38,10 @@ const Detail = ({
     setValue,
     setLanguage,
     translationData,
-  ] = useTranslation(values.translationData || [], primaryPrintoutLanguage)
+  ] = useTranslation(
+    values.translationData || [],
+    SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+  )
 
   const onSaveClick = async () => {
     await setFieldValue('translationData', [...translationData])
@@ -65,19 +71,21 @@ const Detail = ({
                 return (
                   <TextField
                     label={`Display Value${
-                      isUseSecondLanguage ? ` (${primaryPrintoutLanguage})` : ''
+                      isUseSecondLanguage
+                        ? ` (${SYSTEM_LANGUAGE.PRIMARYLANGUAGE})`
+                        : ''
                     }`}
                     {...args}
                     maxLength={200}
                     onChange={e => {
                       if (
-                        getValue(primaryPrintoutLanguage).displayValue !==
-                        e.target.value
+                        getValue(SYSTEM_LANGUAGE.PRIMARYLANGUAGE)
+                          .displayValue !== e.target.value
                       ) {
                         setValue(
                           'displayValue',
                           e.target.value,
-                          primaryPrintoutLanguage,
+                          SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
                         )
                       }
                     }}
@@ -99,18 +107,18 @@ const Detail = ({
                 render={args => {
                   return (
                     <TextField
-                      label={`Display Value (${secondaryPrintoutLanguage})`}
+                      label={`Display Value (${SYSTEM_LANGUAGE.SECOUNDLANGUAGE})`}
                       {...args}
                       maxLength={200}
                       onChange={e => {
                         if (
-                          getValue(secondaryPrintoutLanguage).displayValue !==
-                          e.target.value
+                          getValue(SYSTEM_LANGUAGE.SECOUNDLANGUAGE)
+                            .displayValue !== e.target.value
                         ) {
                           setValue(
                             'displayValue',
                             e.target.value,
-                            secondaryPrintoutLanguage,
+                            SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
                           )
                         }
                       }}
@@ -185,14 +193,20 @@ export default compose(
     mapPropsToValues: ({ settingMedicationDosage, clinicSettings }) => {
       let settings =
         settingMedicationDosage.entity || settingMedicationDosage.default
-      const { secondaryPrintoutLanguage = '' } = clinicSettings
-      settings.secondDisplayValue = getTranslationValue(
-        settings.translationData,
-        secondaryPrintoutLanguage,
-        'displayValue',
-      )
-      if (secondaryPrintoutLanguage !== '') {
-        settings.secondLanguage = secondaryPrintoutLanguage
+      const {
+        primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+        secondaryPrintoutLanguage = '',
+      } = clinicSettings
+      if (
+        primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+        secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+      ) {
+        settings.secondDisplayValue = getTranslationValue(
+          settings.translationData,
+          SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+          'displayValue',
+        )
+        settings.secondLanguage = SYSTEM_LANGUAGE.SECOUNDLANGUAGE
       }
       return settings
     },
@@ -226,13 +240,13 @@ export default compose(
       const { effectiveDates, ...restValues } = values
       const { dispatch, onConfirm, clinicSettings } = props
       const {
-        primaryPrintoutLanguage = 'EN',
+        primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
         secondaryPrintoutLanguage = '',
       } = clinicSettings
 
       let translationData = [
         {
-          language: primaryPrintoutLanguage,
+          language: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
           list: [
             {
               key: 'displayValue',
@@ -242,11 +256,14 @@ export default compose(
         },
       ]
 
-      if (secondaryPrintoutLanguage !== '') {
+      if (
+        primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+        secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+      ) {
         translationData = [
           ...translationData,
           {
-            language: secondaryPrintoutLanguage,
+            language: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
             list: [
               {
                 key: 'displayValue',

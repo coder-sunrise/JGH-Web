@@ -32,6 +32,7 @@ import {
   ORDER_TYPES,
   LAB_CATEGORY,
   RADIOLOGY_CATEGORY,
+  SYSTEM_LANGUAGE,
 } from '@/utils/constants'
 import {
   isMatchInstructionRule,
@@ -85,7 +86,7 @@ import { CollectionsOutlined } from '@material-ui/icons'
       clinicSettings,
     } = props
     const {
-      primaryPrintoutLanguage = 'EN',
+      primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       secondaryPrintoutLanguage = '',
     } = clinicSettings
     const { corVitalSign = [] } = orders
@@ -237,14 +238,15 @@ import { CollectionsOutlined } from '@material-ui/icons'
           instruction: getInstruction(
             medication,
             matchInstruction,
-            primaryPrintoutLanguage,
+            SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
           ),
           secondInstruction:
-            secondaryPrintoutLanguage !== ''
+            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
               ? getInstruction(
                   medication,
                   matchInstruction,
-                  secondaryPrintoutLanguage,
+                  SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
                 )
               : '',
           dispenseUOMFK: medication?.dispensingUOM?.id,
@@ -255,14 +257,15 @@ import { CollectionsOutlined } from '@material-ui/icons'
             : undefined,
           dispenseUOMDisplayValue: getTranslationValue(
             uom?.translationData,
-            primaryPrintoutLanguage,
+            SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
             'displayValue',
           ),
           secondDispenseUOMDisplayValue:
-            secondaryPrintoutLanguage !== ''
+            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
               ? getTranslationValue(
                   uom?.translationData,
-                  secondaryPrintoutLanguage,
+                  SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
                   'displayValue',
                 )
               : '',

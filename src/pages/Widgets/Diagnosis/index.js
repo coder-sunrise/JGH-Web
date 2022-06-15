@@ -8,7 +8,7 @@ import Add from '@material-ui/icons/Add'
 import { AuthorizedContext, Button } from '@/components'
 import Authorized from '@/utils/Authorized'
 import Item from './Item'
-import { USER_PREFERENCE_TYPE } from '@/utils/constants'
+import { USER_PREFERENCE_TYPE, SYSTEM_LANGUAGE } from '@/utils/constants'
 import codetable from '@/models/codetable'
 
 const styles = theme => ({
@@ -61,7 +61,8 @@ class Diagnosis extends PureComponent {
         this.props.dispatch({
           type: 'diagnosis/updateState',
           payload: {
-            favouriteDiagnosisLanguage: favouriteLanguage || 'EN',
+            favouriteDiagnosisLanguage:
+              favouriteLanguage || SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
           },
         })
       }

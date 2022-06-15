@@ -10,7 +10,11 @@ import {
   formatUrlPath,
   cleanFieldValue,
 } from '@/utils/utils'
-import { NOTIFICATION_TYPE, NOTIFICATION_STATUS } from '@/utils/constants'
+import {
+  NOTIFICATION_TYPE,
+  NOTIFICATION_STATUS,
+  SYSTEM_LANGUAGE,
+} from '@/utils/constants'
 import { getTranslationValue } from '@/utils/utils'
 // Pages with a second print language
 const secondaryPrintoutLanguageArr = [
@@ -452,7 +456,10 @@ export default class BaseCRUDViewModel {
         const {
           data,
           clinicSetting: {
-            settings: { secondaryPrintoutLanguage = '' },
+            settings: {
+              primaryPrintoutLanguage = '',
+              secondaryPrintoutLanguage = '',
+            },
           },
         } = payload
         return {
@@ -461,11 +468,15 @@ export default class BaseCRUDViewModel {
             return {
               ...o,
               effectiveDates: [o.effectiveStartDate, o.effectiveEndDate],
-              translatedDisplayValue: getTranslationValue(
-                o.translationData,
-                secondaryPrintoutLanguage,
-                'displayValue',
-              ),
+              translatedDisplayValue:
+                primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+                secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+                  ? getTranslationValue(
+                      o.translationData,
+                      SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                      'displayValue',
+                    )
+                  : '',
             }
           }),
           pagination: {

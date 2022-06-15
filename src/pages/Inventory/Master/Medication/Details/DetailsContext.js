@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState, createContext } from 'react'
 import { useSelector } from 'dva'
+import { SYSTEM_LANGUAGE } from '@/utils/constants'
 
 const DetailsContext = createContext(null)
 
@@ -15,15 +16,15 @@ export const DetailsContextProvider = props => {
 
   useEffect(() => {
     const internalIsMultiLang =
-      settings.primaryPrintoutLanguage && settings.secondaryPrintoutLanguage
-        ? true
-        : false
-    const internalCurrentLang = settings.primaryPrintoutLanguage ?? 'EN'
+      settings.primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+      settings.secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
 
     setIsMultiLanguage(internalIsMultiLang)
-    setCurrentLanguage(internalCurrentLang)
-    setPrimaryPrintoutLanguage(settings.primaryPrintoutLanguage)
-    setSecondaryPrintoutLanguage(settings.secondaryPrintoutLanguage)
+    setCurrentLanguage(SYSTEM_LANGUAGE.PRIMARYLANGUAGE)
+    setPrimaryPrintoutLanguage(SYSTEM_LANGUAGE.PRIMARYLANGUAGE)
+    setSecondaryPrintoutLanguage(
+      internalIsMultiLang ? SYSTEM_LANGUAGE.SECOUNDLANGUAGE : undefined,
+    )
   }, [settings])
 
   useEffect(() => {

@@ -11,7 +11,7 @@ import {
 } from '@/components'
 import { calculateAmount, navigateDirtyCheck } from '@/utils/utils'
 import Yup from '@/utils/yup'
-import { VISIT_TYPE } from '@/utils/constants'
+import { VISIT_TYPE, SYSTEM_LANGUAGE } from '@/utils/constants'
 import Authorized from '@/utils/Authorized'
 import { openCautionAlertOnStartConsultation } from '@/pages/Widgets/Orders/utils'
 import ViewPatientHistory from '@/pages/Consultation/ViewPatientHistory'
@@ -326,7 +326,7 @@ class Main extends Component {
     // set default language based on patient tranlsation and clinic setting.
     const preferLanguage =
       (patient && patient.translationLinkFK) === 5
-        ? 'JP'
+        ? SYSTEM_LANGUAGE.SECOUNDLANGUAGE
         : clinicSettings.primaryPrintoutLanguage
     this.setState({ selectedLanguage: [preferLanguage] })
   }

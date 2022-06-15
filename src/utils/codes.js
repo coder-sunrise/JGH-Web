@@ -8,6 +8,7 @@ import {
   UNFIT_TYPE,
   SCRIBBLE_NOTE_TYPE,
   VISITDOCTOR_CONSULTATIONSTATUS,
+  SYSTEM_LANGUAGE,
 } from './constants'
 import { calculateAgeFromDOB } from './dateUtils'
 
@@ -1028,12 +1029,12 @@ const tagCategory = [
 
 const languageCategory = [
   {
-    value: 'JP',
+    value: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
     name: 'Japanese',
     render: () => <span>Japanese</span>,
   },
   {
-    value: 'EN',
+    value: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
     name: 'English',
     render: () => <span>English</span>,
   },

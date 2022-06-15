@@ -18,6 +18,7 @@ import {
 } from '@/components'
 import { DoctorLabel } from '@/components/_medisys'
 import Delete from '@material-ui/icons/Delete'
+import { SYSTEM_LANGUAGE } from '@/utils/constants'
 
 const styles = theme => ({
   ...basicStyle(theme),
@@ -47,7 +48,7 @@ const MCCard = ({
       values?.medicalCheckupWorkitem[0].statusFK === 2)
   const getReportLanguage = () => {
     const {
-      primaryPrintoutLanguage = 'EN',
+      primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       secondaryPrintoutLanguage = '',
     } = clinicSettings.settings
     const primaryLanguage = ctlanguage.find(

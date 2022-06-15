@@ -3,7 +3,7 @@ import * as Yup from 'yup'
 import _ from 'lodash'
 import { getRawData } from '@/services/report'
 import { connect } from 'dva'
-import { REPORT_ID, LANGUAGES } from '@/utils/constants'
+import { REPORT_ID, LANGUAGES, SYSTEM_LANGUAGE } from '@/utils/constants'
 // common components
 import { withStyles } from '@material-ui/core'
 import {
@@ -117,20 +117,20 @@ class DrugLeafletSelection extends PureComponent {
           return _.join(x.instructionId, ',')
         }),
     )
-    if (this.state.printlanguage.includes('EN')) {
+    if (this.state.printlanguage.includes(SYSTEM_LANGUAGE.PRIMARYLANGUAGE)) {
       await this.doPrintLeaflet(
         visitid,
         visitinvoicedrugids,
         instructionIds,
-        'EN',
+        SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       )
     }
-    if (this.state.printlanguage.includes('JP')) {
+    if (this.state.printlanguage.includes(SYSTEM_LANGUAGE.SECOUNDLANGUAGE)) {
       await this.doPrintLeaflet(
         visitid,
         visitinvoicedrugids,
         instructionIds,
-        'JP',
+        SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
       )
     }
     this.props.onConfirmPrintLeaflet()
@@ -182,20 +182,20 @@ class DrugLeafletSelection extends PureComponent {
           return _.join(x.instructionId, ',')
         }),
     )
-    if (this.state.printlanguage.includes('EN')) {
+    if (this.state.printlanguage.includes(SYSTEM_LANGUAGE.PRIMARYLANGUAGE)) {
       await this.doPrintDrugSummaryLabel(
         visitid,
         visitinvoicedrugids,
         instructionIds,
-        'EN',
+        SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       )
     }
-    if (this.state.printlanguage.includes('JP')) {
+    if (this.state.printlanguage.includes(SYSTEM_LANGUAGE.SECOUNDLANGUAGE)) {
       await this.doPrintDrugSummaryLabel(
         visitid,
         visitinvoicedrugids,
         instructionIds,
-        'JP',
+        SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
       )
     }
     this.props.onConfirmPrintLeaflet()
@@ -231,7 +231,7 @@ class DrugLeafletSelection extends PureComponent {
             : ''
         // If language is EN, instruction need to auto breakline and show in 2 lines
         // If JP, then need to separate to 2 lines. last line will include the last remaining 2 step dose.
-        if (lan === 'JP') {
+        if (lan === SYSTEM_LANGUAGE.SECOUNDLANGUAGE) {
           t.ThirdLine = instructions.length > 0 ? instructions[0] : ''
           t.FourthLine = instructions.length > 1 ? instructions[1] : ''
           if (instructions.length > 2) {
@@ -251,7 +251,7 @@ class DrugLeafletSelection extends PureComponent {
         t.SecondLine = t.indication
         // If language is EN, instruction need to auto breakline and show in 2 lines
         // If JP, then need to separate to 2 lines. last line will include the last remaining 2 step dose.
-        if (lan === 'JP') {
+        if (lan === SYSTEM_LANGUAGE.SECOUNDLANGUAGE) {
           t.ThirdLine = instructions.length > 0 ? instructions[0] : ''
           t.FourthLine = instructions.length > 1 ? instructions[1] : ''
           if (instructions.length > 2) {
@@ -283,7 +283,7 @@ class DrugLeafletSelection extends PureComponent {
       showInvoiceAmountNegativeWarning,
     } = this.props
     const {
-      primaryPrintoutLanguage = 'EN',
+      primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       secondaryPrintoutLanguage = '',
     } = clinicSettings
     const showDrugWarning =
@@ -319,8 +319,14 @@ class DrugLeafletSelection extends PureComponent {
                       displayInlineBlock={true}
                       value={this.state.printlanguage}
                       options={[
-                        { value: 'EN', label: 'EN' },
-                        { value: 'JP', label: 'JP' },
+                        {
+                          value: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+                          label: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+                        },
+                        {
+                          value: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                          label: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                        },
                       ]}
                       onChange={v => {
                         this.setState({

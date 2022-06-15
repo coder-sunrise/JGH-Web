@@ -5,10 +5,11 @@ import { notification } from '@/components'
 import { getUniqueId, getTranslationValue } from '@/utils/utils'
 import service from '../services/dispense'
 import Authorized from '@/utils/Authorized'
+import { SYSTEM_LANGUAGE } from '@/utils/constants'
 
 const getDispenseItems = (clinicSettings, entity = {}) => {
   const {
-    primaryPrintoutLanguage = 'EN',
+    primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
     secondaryPrintoutLanguage = '',
   } = clinicSettings
 
@@ -109,14 +110,15 @@ const getDispenseItems = (clinicSettings, entity = {}) => {
       } else {
         const primaryUOMDisplayValue = getTranslationValue(
           drugMixture.medication?.dispenseTranslationUOM || [],
-          primaryPrintoutLanguage,
+          SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
           'displayValue',
         )
         const secondUOMDisplayValue =
-          secondaryPrintoutLanguage !== ''
+          primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+          secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
             ? getTranslationValue(
                 drugMixture.medication?.dispenseTranslationUOM || [],
-                secondaryPrintoutLanguage,
+                SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
                 'displayValue',
               )
             : ''
@@ -245,14 +247,15 @@ const getDispenseItems = (clinicSettings, entity = {}) => {
     } else {
       const primaryUOMDisplayValue = getTranslationValue(
         item.medication?.dispenseTranslationUOM || [],
-        primaryPrintoutLanguage,
+        SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
         'displayValue',
       )
       const secondUOMDisplayValue =
-        secondaryPrintoutLanguage !== ''
+        primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+        secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
           ? getTranslationValue(
               item.medication?.dispenseTranslationUOM || [],
-              secondaryPrintoutLanguage,
+              SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
               'displayValue',
             )
           : ''

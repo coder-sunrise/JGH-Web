@@ -18,6 +18,7 @@ import {
   notification,
 } from '@/components'
 import { hasValue } from '@/pages/Widgets/PatientHistory/config'
+import { SYSTEM_LANGUAGE } from '@/utils/constants'
 
 const SummaryCommentDetails = props => {
   const {
@@ -102,10 +103,10 @@ const SummaryCommentDetails = props => {
     const ctsummaryComment = useCodeTable('ctsummarycomment')
     return ctsummaryComment.map(item => {
       const englishComment = item.translationData
-        .find(l => l.language === 'EN')
+        .find(l => l.language === SYSTEM_LANGUAGE.PRIMARYLANGUAGE)
         ?.list?.find(l => (l.key = 'displayValue'))?.value
       const japaneseComment = item.translationData
-        .find(l => l.language === 'JP')
+        .find(l => l.language === SYSTEM_LANGUAGE.SECOUNDLANGUAGE)
         ?.list?.find(l => (l.key = 'displayValue'))?.value
       return {
         ...item,
@@ -160,7 +161,7 @@ const SummaryCommentDetails = props => {
           label='Template'
           disabled={!isCommentEditEnable}
           labelField={
-            selectedLanguage === 'EN'
+            selectedLanguage === SYSTEM_LANGUAGE.PRIMARYLANGUAGE
               ? 'englishDisplayValue'
               : 'japaneseDisplayValue'
           }
@@ -171,7 +172,7 @@ const SummaryCommentDetails = props => {
           onChange={onSelectComment}
           renderDropdown={option => {
             const textField =
-              selectedLanguage === 'EN'
+              selectedLanguage === SYSTEM_LANGUAGE.PRIMARYLANGUAGE
                 ? 'englishDisplayValue'
                 : 'japaneseDisplayValue'
             return (
@@ -185,7 +186,9 @@ const SummaryCommentDetails = props => {
       <GridItem md={12}>
         <Field
           name={
-            selectedLanguage === 'EN' ? 'englishComment' : 'japaneseComment'
+            selectedLanguage === SYSTEM_LANGUAGE.PRIMARYLANGUAGE
+              ? 'englishComment'
+              : 'japaneseComment'
           }
           render={args => (
             <MultipleTextField

@@ -1,6 +1,6 @@
 import { createFormViewModel } from 'medisys-model'
 import { getUserPreference, saveUserPreference } from '@/services/user'
-import { USER_PREFERENCE_TYPE } from '@/utils/constants'
+import { USER_PREFERENCE_TYPE, SYSTEM_LANGUAGE } from '@/utils/constants'
 
 export default createFormViewModel({
   namespace: 'diagnosis',
@@ -62,7 +62,7 @@ export default createFormViewModel({
         let favouriteDiagnosisCategory
         let favouriteDiagnosisLanguage
         let resultFavouriteDiagnosis = {
-          favouriteDiagnosisLanguage: 'EN',
+          favouriteDiagnosisLanguage: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
         }
         if (payload.type === USER_PREFERENCE_TYPE.FAVOURITEDIAGNOSISSETTING) {
           favouriteDiagnosis = parsedFavouriteDiagnosisSetting.find(
@@ -90,7 +90,7 @@ export default createFormViewModel({
           resultFavouriteDiagnosis = {
             favouriteDiagnosisLanguage: favouriteDiagnosisLanguage
               ? favouriteDiagnosisLanguage.value
-              : 'EN',
+              : SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
           }
         }
         yield put({

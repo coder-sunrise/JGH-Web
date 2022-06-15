@@ -14,6 +14,7 @@ import {
   Select,
   CodeSelect,
 } from '@/components'
+import { SYSTEM_LANGUAGE } from '@/utils/constants'
 
 @withFormikExtend({
   mapPropsToValues: ({ settingSummaryComment }) =>
@@ -58,13 +59,22 @@ class Filter extends PureComponent {
                     summaryCommentCategoryFK,
                   } = this.props.values
                   const { clinicSettings } = this.props
-                  const { secondaryPrintoutLanguage = '' } = clinicSettings
+                  const {
+                    primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+                    secondaryPrintoutLanguage = '',
+                  } = clinicSettings
                   this.props.dispatch({
                     type: 'settingSummaryComment/query',
                     payload: {
                       summaryCommentCategoryFK,
                       apiCriteria: {
-                        Language: secondaryPrintoutLanguage,
+                        Language:
+                          primaryPrintoutLanguage ===
+                            SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+                          secondaryPrintoutLanguage ===
+                            SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+                            ? SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+                            : '',
                         Key: 'displayValue',
                         SearchValue: codeDisplayValue,
                       },

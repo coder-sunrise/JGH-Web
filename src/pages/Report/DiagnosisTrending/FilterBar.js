@@ -14,7 +14,7 @@ import {
   RadioGroup,
 } from '@/components'
 import { DiagnosisSelect, ICD10DiagnosisSelect } from '@/components/_medisys'
-import { DIAGNOSIS_TYPE } from '@/utils/constants'
+import { DIAGNOSIS_TYPE, SYSTEM_LANGUAGE } from '@/utils/constants'
 import ReportDateRangePicker from '../ReportDateRangePicker'
 
 const styles = theme => ({
@@ -34,7 +34,9 @@ const FilterBar = ({
 }) => {
   const { values, setFieldValue } = formikProps
   const { diagnosisIds = [] } = values
-  const [currentDiagnosisLanguage, setcurrentDiagnosisLanguage] = useState('EN')
+  const [currentDiagnosisLanguage, setcurrentDiagnosisLanguage] = useState(
+    SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+  )
   const {
     diagnosisDataSource = DIAGNOSIS_TYPE.SNOMEDDIAGNOSIS,
     isEnableJapaneseICD10Diagnosis = false,
@@ -114,7 +116,7 @@ const FilterBar = ({
                     mode='multiple'
                     maxTagCount={0}
                     maxTagPlaceholder='Diagnosis'
-                    defaultLanguage='EN'
+                    defaultLanguage={SYSTEM_LANGUAGE.PRIMARYLANGUAGE}
                     filterStyle={{
                       position: 'absolute',
                       bottom: 0,
@@ -152,7 +154,7 @@ const FilterBar = ({
                 size='small'
                 variant='outlined'
                 label={
-                  currentDiagnosisLanguage === 'EN'
+                  currentDiagnosisLanguage === SYSTEM_LANGUAGE.PRIMARYLANGUAGE
                     ? item.displayvalue
                     : item.JpnDisplayValue
                 }

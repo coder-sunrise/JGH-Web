@@ -2101,7 +2101,7 @@ class PatientHistory extends Component {
                   style={{
                     width: !isFullScreen ? 160 : 240,
                     display: 'inline-Block',
-                    marginBottom: -10,
+                    marginBottom: -16,
                   }}
                   {...args}
                   allowClear={true}
@@ -2144,7 +2144,7 @@ class PatientHistory extends Component {
                   style={{
                     width: !isFullScreen ? 150 : 240,
                     display: 'inline-Block',
-                    marginBottom: -10,
+                    marginBottom: -16,
                   }}
                   options={this.getCategoriesOptions()}
                   {...args}

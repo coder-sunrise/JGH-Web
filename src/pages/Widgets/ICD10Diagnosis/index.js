@@ -8,7 +8,7 @@ import Add from '@material-ui/icons/Add'
 import { AuthorizedContext, Button } from '@/components'
 import Authorized from '@/utils/Authorized'
 import ICD10DiagnosisItem from './item'
-import { USER_PREFERENCE_TYPE } from '@/utils/constants'
+import { USER_PREFERENCE_TYPE, SYSTEM_LANGUAGE } from '@/utils/constants'
 
 const styles = theme => ({
   diagnosisRow: {
@@ -189,7 +189,8 @@ class ICD10Diagnosis extends PureComponent {
   render() {
     const { rights, diagnosis, dispatch } = this.props
 
-    const favLang = diagnosis.favouriteDiagnosisLanguage || 'EN'
+    const favLang =
+      diagnosis.favouriteDiagnosisLanguage || SYSTEM_LANGUAGE.PRIMARYLANGUAGE
     return (
       <div>
         <FieldArray

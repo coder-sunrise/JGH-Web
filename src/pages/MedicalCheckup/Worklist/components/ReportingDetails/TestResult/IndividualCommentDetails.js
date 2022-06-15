@@ -22,6 +22,7 @@ import {
 import { List, ListItem, ListItemText, withStyles } from '@material-ui/core'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { hasValue } from '@/pages/Widgets/PatientHistory/config'
+import { SYSTEM_LANGUAGE } from '@/utils/constants'
 
 const styles = theme => ({
   listRoot: {
@@ -140,7 +141,7 @@ class IndividualCommentDetails extends PureComponent {
         .map(
           item =>
             item.translationData
-              .find(l => l.language === 'EN')
+              .find(l => l.language === SYSTEM_LANGUAGE.PRIMARYLANGUAGE)
               ?.list?.find(l => (l.key = 'displayValue'))?.value,
         )
         .join(' ')
@@ -152,7 +153,7 @@ class IndividualCommentDetails extends PureComponent {
         .map(
           item =>
             item.translationData
-              .find(l => l.language === 'JP')
+              .find(l => l.language === SYSTEM_LANGUAGE.SECOUNDLANGUAGE)
               ?.list?.find(l => (l.key = 'displayValue'))?.value,
         )
         .join(' ')
@@ -377,13 +378,17 @@ class IndividualCommentDetails extends PureComponent {
           <TextField
             inputProps={{ placeholder: 'Enter Comment' }}
             onChange={e => {
-              if (selectedLanguage === 'EN') {
+              if (selectedLanguage === SYSTEM_LANGUAGE.PRIMARYLANGUAGE) {
                 this.setState({ englishComment: e.target.value })
               } else {
                 this.setState({ japaneseComment: e.target.value })
               }
             }}
-            value={selectedLanguage === 'EN' ? englishComment : japaneseComment}
+            value={
+              selectedLanguage === SYSTEM_LANGUAGE.PRIMARYLANGUAGE
+                ? englishComment
+                : japaneseComment
+            }
             disabled={!isModifyCommentEnable}
           />
           {isModifyCommentEnable && (
@@ -409,7 +414,7 @@ class IndividualCommentDetails extends PureComponent {
                   item => val.uid === item.uid,
                 )
                 const displayFieldName = `medicalCheckupIndividualComment[${i}].${
-                  selectedLanguage === 'EN'
+                  selectedLanguage === SYSTEM_LANGUAGE.PRIMARYLANGUAGE
                     ? 'englishComment'
                     : 'japaneseComment'
                 }`

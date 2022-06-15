@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 import { ReportDataGrid } from '@/components/_medisys'
-import { DIAGNOSIS_TYPE } from '@/utils/constants'
+import { DIAGNOSIS_TYPE, SYSTEM_LANGUAGE } from '@/utils/constants'
 
 class DiagnosisGroupDetails extends PureComponent {
   render() {
@@ -40,8 +40,14 @@ class DiagnosisGroupDetails extends PureComponent {
       DiagnosisDetailsColumns = [
         { name: 'groupName', title: 'Date' },
         { name: 'diagnosisCode', title: 'Diagnosis Code' },
-        { name: 'diagnosisName', title: 'Diagnosis Name (EN)' },
-        { name: 'diagnosisJpnName', title: 'Diagnosis Name (JP)' },
+        {
+          name: 'diagnosisName',
+          title: `Diagnosis Name (${SYSTEM_LANGUAGE.PRIMARYLANGUAGE})`,
+        },
+        {
+          name: 'diagnosisJpnName',
+          title: `Diagnosis Name (${SYSTEM_LANGUAGE.SECOUNDLANGUAGE})`,
+        },
         { name: 'patientCount', title: 'Patients' },
         { name: 'visitCount', title: 'Visits' },
       ]

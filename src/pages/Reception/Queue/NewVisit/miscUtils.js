@@ -6,6 +6,7 @@ import {
   VISIT_TYPE,
   VISITDOCTOR_CONSULTATIONSTATUS,
   MEDICALCHECKUP_WORKITEM_STATUS,
+  SYSTEM_LANGUAGE,
 } from '@/utils/constants'
 import { visitOrderTemplateItemTypes } from '@/utils/codes'
 import { notification } from '@/components'
@@ -128,7 +129,7 @@ const getVisitOrderTemplateTotal = (vType, template) => {
 
 export const getMCReportLanguage = (patient, clinicSettings) => {
   const {
-    primaryPrintoutLanguage = 'EN',
+    primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
     secondaryPrintoutLanguage = '',
   } = clinicSettings
   const { printLanguageCode = '' } = patient

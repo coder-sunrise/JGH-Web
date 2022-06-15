@@ -11,7 +11,7 @@ import {
 import { connect } from 'dva'
 
 import { getReportContext, getRawData } from '@/services/report'
-import { REPORT_ID, LANGUAGES } from '@/utils/constants'
+import { REPORT_ID, LANGUAGES, SYSTEM_LANGUAGE } from '@/utils/constants'
 import {
   DrugLabelSelectionColumns,
   DrugLabelSelectionColumnExtensions,
@@ -153,13 +153,17 @@ class DrugLabelSelection extends React.PureComponent {
     },
   }
   confirmPrint = async () => {
-    if (this.state.selectedLanguage.includes('JP')) {
-      let printResult = await this.getPrintResult('JP')
+    if (this.state.selectedLanguage.includes(SYSTEM_LANGUAGE.SECOUNDLANGUAGE)) {
+      let printResult = await this.getPrintResult(
+        SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+      )
       if (!printResult || printResult.length <= 0) return
       await this.props.handlePrint(JSON.stringify(printResult))
     }
-    if (this.state.selectedLanguage.includes('EN')) {
-      let printResult = await this.getPrintResult('EN')
+    if (this.state.selectedLanguage.includes(SYSTEM_LANGUAGE.PRIMARYLANGUAGE)) {
+      let printResult = await this.getPrintResult(
+        SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+      )
       if (!printResult || printResult.length <= 0) return
       await this.props.handlePrint(JSON.stringify(printResult))
     }
@@ -309,7 +313,7 @@ class DrugLabelSelection extends React.PureComponent {
       ...restProps
     } = this.props
     const {
-      primaryPrintoutLanguage = 'EN',
+      primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       secondaryPrintoutLanguage = '',
     } = clinicSettings
     const showDrugWarning = this.state.selectedRows.length === 0
@@ -348,8 +352,14 @@ class DrugLabelSelection extends React.PureComponent {
                       displayInlineBlock={true}
                       value={this.state.selectedLanguage}
                       options={[
-                        { value: 'EN', label: 'EN' },
-                        { value: 'JP', label: 'JP' },
+                        {
+                          value: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+                          label: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+                        },
+                        {
+                          value: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                          label: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                        },
                       ]}
                       onChange={v => {
                         this.handlePrintOutLanguageChanged(v.target.value)

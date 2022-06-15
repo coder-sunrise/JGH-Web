@@ -15,6 +15,7 @@ import {
   getDrugAllergy,
 } from '@/pages/Widgets/Orders/utils'
 import { getTranslationValue, getUniqueId } from '@/utils/utils'
+import { SYSTEM_LANGUAGE } from '@/utils/constants'
 import FitlerBar from './FilterBar'
 import Grid from './Grid'
 import { getClinicianProfile } from '../../../ConsultationDocument/utils'
@@ -125,12 +126,12 @@ class PastMedication extends PureComponent {
 
         let itemDuration = item.duration ? ` For ${item.duration} day(s)` : ''
         let separator = nextStepdose
-        if (language === 'JP') {
+        if (language === SYSTEM_LANGUAGE.SECOUNDLANGUAGE) {
           separator = nextStepdose === '' ? '<br>' : ''
           itemDuration = item.duration ? `${item.duration} 日分` : ''
         }
         let usagePrefix = ''
-        if (language === 'JP' && item.dosageFK) {
+        if (language === SYSTEM_LANGUAGE.SECOUNDLANGUAGE && item.dosageFK) {
           usagePrefix = '1回'
         } else {
           usagePrefix = getTranslationValue(
@@ -172,7 +173,7 @@ class PastMedication extends PureComponent {
   GetNewMedication = () => {
     const { getNextSequence, codetable, type, clinicSettings } = this.props
     const {
-      primaryPrintoutLanguage = 'EN',
+      primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       secondaryPrintoutLanguage = '',
     } = clinicSettings
     const {
@@ -233,11 +234,15 @@ class PastMedication extends PureComponent {
 
         const instruction = this.getInstruction(
           itemInstructions,
-          primaryPrintoutLanguage,
+          SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
         )
         const secondInstruction =
-          secondaryPrintoutLanguage !== ''
-            ? this.getInstruction(itemInstructions, secondaryPrintoutLanguage)
+          primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+          secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+            ? this.getInstruction(
+                itemInstructions,
+                SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+              )
             : ''
 
         let itemExpiryDate
@@ -329,14 +334,15 @@ class PastMedication extends PureComponent {
           )
           itemDispenseUOMDisplayValue = getTranslationValue(
             uom?.translationData,
-            primaryPrintoutLanguage,
+            SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
             'displayValue',
           )
           itemSecondDispenseUOMDisplayValue =
-            secondaryPrintoutLanguage !== ''
+            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
               ? getTranslationValue(
                   uom?.translationData,
-                  secondaryPrintoutLanguage,
+                  SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
                   'displayValue',
                 )
               : ''
@@ -365,14 +371,15 @@ class PastMedication extends PureComponent {
           )
           itemDispenseUOMDisplayValue = getTranslationValue(
             uom?.translationData,
-            primaryPrintoutLanguage,
+            SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
             'displayValue',
           )
           itemSecondDispenseUOMDisplayValue =
-            secondaryPrintoutLanguage !== ''
+            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
               ? getTranslationValue(
                   uom?.translationData,
-                  secondaryPrintoutLanguage,
+                  SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
                   'displayValue',
                 )
               : ''
@@ -439,14 +446,17 @@ class PastMedication extends PureComponent {
                   uomCode: drug.dispensingUOM.code,
                   uomDisplayValue: getTranslationValue(
                     uom?.translationData,
-                    primaryPrintoutLanguage,
+                    SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
                     'displayValue',
                   ),
                   secondUOMDisplayValue:
-                    secondaryPrintoutLanguage !== ''
+                    primaryPrintoutLanguage ===
+                      SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+                    secondaryPrintoutLanguage ===
+                      SYSTEM_LANGUAGE.SECOUNDLANGUAGE
                       ? getTranslationValue(
                           uom?.translationData,
-                          secondaryPrintoutLanguage,
+                          SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
                           'displayValue',
                         )
                       : '',

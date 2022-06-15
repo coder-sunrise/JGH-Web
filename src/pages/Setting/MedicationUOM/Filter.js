@@ -13,19 +13,18 @@ import {
   Select,
   ProgressButton,
 } from '@/components'
+import { SYSTEM_LANGUAGE } from '@/utils/constants'
 
 @withFormikExtend({
-  mapPropsToValues: ({ settingMedicationUOM }) =>
-  
-  ({
+  mapPropsToValues: ({ settingMedicationUOM }) => ({
     ...(settingMedicationUOM.filter || {}),
     isActive: true,
   }),
-  handleSubmit: () => { },
+  handleSubmit: () => {},
   displayName: 'MedicationUOMFilter',
 })
 class Filter extends PureComponent {
-  render () {
+  render() {
     const { classes } = this.props
     return (
       <div className={classes.filterBar}>
@@ -57,14 +56,23 @@ class Filter extends PureComponent {
                 onClick={() => {
                   const { codeDisplayValue, isActive } = this.props.values
                   const { clinicSettings } = this.props
-                  const { secondaryPrintoutLanguage = '' } = clinicSettings
+                  const {
+                    primaryPrintoutLanguage = SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+                    secondaryPrintoutLanguage = '',
+                  } = clinicSettings
                   this.props.dispatch({
                     type: 'settingMedicationUOM/query',
                     payload: {
                       isActive,
                       apiCriteria: {
-                        Language: secondaryPrintoutLanguage,
-                        Key: "displayValue",
+                        Language:
+                          primaryPrintoutLanguage ===
+                            SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+                          secondaryPrintoutLanguage ===
+                            SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+                            ? SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+                            : '',
+                        Key: 'displayValue',
                         SearchValue: codeDisplayValue,
                       },
                     },

@@ -8,41 +8,51 @@ import {
   OutlinedTextField,
   CommonTableGrid,
 } from '@/components'
+import { SYSTEM_LANGUAGE } from '@/utils/constants'
 
 class MedicalHistory extends PureComponent {
-
   constructor(props) {
     super(props)
-    this.state = { 
+    this.state = {
       persistentDiagnosis: [],
     }
   }
 
-  componentWillMount () {
+  componentWillMount() {
     const patientId = this.props.values.id
-    const diagnosis = Authorized.check('patientdatabase.patientprofiledetails.medicalhistory.persistentdiagnosis')
+    const diagnosis = Authorized.check(
+      'patientdatabase.patientprofiledetails.medicalhistory.persistentdiagnosis',
+    )
     if (diagnosis && diagnosis.rights !== 'hidden') {
-      this.props.dispatch({
-        type: 'patientHistory/queryPersistentDiagnosis',
-        payload: { id: patientId },
-      }).then((r) => {
-        if (r) {
-          this.setState({
-            persistentDiagnosis: r.data.data,
-          })
-        }
-      })
+      this.props
+        .dispatch({
+          type: 'patientHistory/queryPersistentDiagnosis',
+          payload: { id: patientId },
+        })
+        .then(r => {
+          if (r) {
+            this.setState({
+              persistentDiagnosis: r.data.data,
+            })
+          }
+        })
     }
   }
-  
+
   shouldComponentUpdate(nextProps, nextState) {
-    return true;
+    return true
   }
 
-  render () {
-    const accessRight = Authorized.check('patientdatabase.patientprofiledetails.medicalhistory')
-    const diagnosis = Authorized.check('patientdatabase.patientprofiledetails.medicalhistory.persistentdiagnosis')
-    const highRisk = Authorized.check('patientdatabase.patientprofiledetails.medicalhistory.highriskpatient')
+  render() {
+    const accessRight = Authorized.check(
+      'patientdatabase.patientprofiledetails.medicalhistory',
+    )
+    const diagnosis = Authorized.check(
+      'patientdatabase.patientprofiledetails.medicalhistory.persistentdiagnosis',
+    )
+    const highRisk = Authorized.check(
+      'patientdatabase.patientprofiledetails.medicalhistory.highriskpatient',
+    )
     let disabledByAccessRight = true
     let showPersistentDiagnosis = false
     let showHighRiskPatient = false
@@ -57,55 +67,64 @@ class MedicalHistory extends PureComponent {
       <div>
         <GridContainer alignItems='flex-start'>
           <GridItem xs={12} md={6}>
-          {showHighRiskPatient && 
-            <FastField
-              name='patientMedicalHistory.highRiskCondition'
-              render={(args) => {
-                return (
-                  <OutlinedTextField
-                    label='Prevalence of high-risk medical conditions (HRP)'
-                    maxLength={200}
-                    rows={1}
-                    disabled={disabledByAccessRight || disableEditHighRiskPatient}
-                    {...args}
-                  />
-                )
-              }}
-            />}
+            {showHighRiskPatient && (
+              <FastField
+                name='patientMedicalHistory.highRiskCondition'
+                render={args => {
+                  return (
+                    <OutlinedTextField
+                      label='Prevalence of high-risk medical conditions (HRP)'
+                      maxLength={200}
+                      rows={1}
+                      disabled={
+                        disabledByAccessRight || disableEditHighRiskPatient
+                      }
+                      {...args}
+                    />
+                  )
+                }}
+              />
+            )}
           </GridItem>
           <GridItem xs={12} md={6} />
-          {showPersistentDiagnosis && 
-          <GridItem xs={12} md={6} style={{ paddingBottom: 20 }}>
-            <div>
-              Persistent Diagnosis
-            </div>        
+          {showPersistentDiagnosis && (
+            <GridItem xs={12} md={6} style={{ paddingBottom: 20 }}>
+              <div>Persistent Diagnosis</div>
               <CommonTableGrid
                 disabled={disabledByAccessRight}
-                getRowId={(r) => r.uid}
+                getRowId={r => r.uid}
                 size='sm'
                 style={{ margin: 0 }}
                 rows={this.state.persistentDiagnosis}
-                columns={clinicSettings.isEnableJapaneseICD10Diagnosis ? [
-                  { name: 'diagnosisDescription', title: 'Diagnosis' },
-                  { name: 'jpnDiagnosisDescription', title: 'Diagnosis(JP)' },
-                  { name: 'onsetDate', title: 'Onset Date' },
-                ] : [
-                  { name: 'diagnosisDescription', title: 'Diagnosis' },
-                  { name: 'onsetDate', title: 'Onset Date' },
-                ]}
+                columns={
+                  clinicSettings.isEnableJapaneseICD10Diagnosis
+                    ? [
+                        { name: 'diagnosisDescription', title: 'Diagnosis' },
+                        {
+                          name: 'jpnDiagnosisDescription',
+                          title: `Diagnosis(${SYSTEM_LANGUAGE.SECOUNDLANGUAGE})`,
+                        },
+                        { name: 'onsetDate', title: 'Onset Date' },
+                      ]
+                    : [
+                        { name: 'diagnosisDescription', title: 'Diagnosis' },
+                        { name: 'onsetDate', title: 'Onset Date' },
+                      ]
+                }
                 columnExtensions={[
                   {
                     columnName: 'onsetDate',
                     type: 'date',
-                  }
+                  },
                 ]}
                 FuncProps={{ pager: false }}
               />
-          </GridItem>}
+            </GridItem>
+          )}
           <GridItem xs={12} md={12}>
             <FastField
               name='patientMedicalHistory.longTermMedication'
-              render={(args) => {
+              render={args => {
                 return (
                   <OutlinedTextField
                     label='Long Term Medication'
@@ -123,7 +142,7 @@ class MedicalHistory extends PureComponent {
           <GridItem xs={12} md={12}>
             <FastField
               name='patientMedicalHistory.medicalHistory'
-              render={(args) => {
+              render={args => {
                 return (
                   <OutlinedTextField
                     label='Medical History'
@@ -141,7 +160,7 @@ class MedicalHistory extends PureComponent {
           <GridItem xs={12} md={12}>
             <FastField
               name='patientMedicalHistory.familyHistory'
-              render={(args) => {
+              render={args => {
                 return (
                   <OutlinedTextField
                     label='Family History'
@@ -159,7 +178,7 @@ class MedicalHistory extends PureComponent {
           <GridItem xs={12} md={12}>
             <FastField
               name='patientMedicalHistory.socialHistory'
-              render={(args) => {
+              render={args => {
                 return (
                   <OutlinedTextField
                     label='Social History'
@@ -175,7 +194,8 @@ class MedicalHistory extends PureComponent {
             />
           </GridItem>
         </GridContainer>
-      </div>)
+      </div>
+    )
   }
 }
 
