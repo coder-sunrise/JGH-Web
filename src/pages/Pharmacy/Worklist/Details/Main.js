@@ -1261,9 +1261,14 @@ const Main = props => {
           rowSpan: row.groupNumber === 1 ? row.groupRowSpan : 0,
         }),
         render: (_, row) => {
-          const instruction = row?.language?.isShowFirstValue
-            ? row.instruction
-            : row.secondInstruction
+          let instruction
+          if (row.invoiceItemTypeFK !== 1) {
+            instruction = row.instruction
+          } else {
+            instruction = row.language.isShowFirstValue
+              ? row.instruction
+              : row.secondInstruction
+          }
           return (
             <Tooltip title={instruction}>
               <span>{instruction}</span>
@@ -1840,12 +1845,12 @@ const Main = props => {
               value={showLanguage}
               options={[
                 {
-                  label: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
-                  value: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+                  label: primaryPrintoutLanguage,
+                  value: primaryPrintoutLanguage,
                 },
                 {
-                  label: SYSTEM_LANGUAGE.SECONDLANGUAGE,
-                  value: SYSTEM_LANGUAGE.SECONDLANGUAGE,
+                  label: secondaryPrintoutLanguage,
+                  value: secondaryPrintoutLanguage,
                 },
               ]}
               onChange={v => {
@@ -1964,8 +1969,8 @@ const Main = props => {
                   marginLeft: '6px',
                 }}
                 options={[
-                  { value: SYSTEM_LANGUAGE.PRIMARYLANGUAGE, label: SYSTEM_LANGUAGE.PRIMARYLANGUAGE },
-                  { value: SYSTEM_LANGUAGE.SECONDLANGUAGE, label: SYSTEM_LANGUAGE.SECONDLANGUAGE },
+                  { value: primaryPrintoutLanguage, primaryPrintoutLanguage },
+                  { value: secondaryPrintoutLanguage, label: secondaryPrintoutLanguage },
                 ]}
                 onChange={v => {
                   setPrintlanguage(v.target.value)

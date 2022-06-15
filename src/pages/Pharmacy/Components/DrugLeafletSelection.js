@@ -320,12 +320,12 @@ class DrugLeafletSelection extends PureComponent {
                       value={this.state.printlanguage}
                       options={[
                         {
-                          value: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
-                          label: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
+                          value: primaryPrintoutLanguage,
+                          label: primaryPrintoutLanguage,
                         },
                         {
-                          value: SYSTEM_LANGUAGE.SECONDLANGUAGE,
-                          label: SYSTEM_LANGUAGE.SECONDLANGUAGE,
+                          value: secondaryPrintoutLanguage,
+                          label: secondaryPrintoutLanguage,
                         },
                       ]}
                       onChange={v => {
