@@ -153,9 +153,9 @@ class DrugLabelSelection extends React.PureComponent {
     },
   }
   confirmPrint = async () => {
-    if (this.state.selectedLanguage.includes(SYSTEM_LANGUAGE.SECOUNDLANGUAGE)) {
+    if (this.state.selectedLanguage.includes(SYSTEM_LANGUAGE.SECONDLANGUAGE)) {
       let printResult = await this.getPrintResult(
-        SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+        SYSTEM_LANGUAGE.SECONDLANGUAGE,
       )
       if (!printResult || printResult.length <= 0) return
       await this.props.handlePrint(JSON.stringify(printResult))
@@ -357,8 +357,8 @@ class DrugLabelSelection extends React.PureComponent {
                           label: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
                         },
                         {
-                          value: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
-                          label: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                          value: SYSTEM_LANGUAGE.SECONDLANGUAGE,
+                          label: SYSTEM_LANGUAGE.SECONDLANGUAGE,
                         },
                       ]}
                       onChange={v => {

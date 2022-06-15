@@ -102,7 +102,7 @@ class MedicalHistory extends PureComponent {
                         { name: 'diagnosisDescription', title: 'Diagnosis' },
                         {
                           name: 'jpnDiagnosisDescription',
-                          title: `Diagnosis(${SYSTEM_LANGUAGE.SECOUNDLANGUAGE})`,
+                          title: `Diagnosis(${SYSTEM_LANGUAGE.SECONDLANGUAGE})`,
                         },
                         { name: 'onsetDate', title: 'Onset Date' },
                       ]

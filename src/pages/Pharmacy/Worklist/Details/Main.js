@@ -406,7 +406,7 @@ const Main = props => {
     const data = await getRawData(REPORT_ID.PATIENT_INFO_LEAFLET, {
       visitinvoicedrugids,
       instructionIds,
-      language: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+      language: SYSTEM_LANGUAGE.SECONDLANGUAGE,
       visitId: pharmacyDetails.entity?.visitFK,
     })
     const payload = [
@@ -1844,8 +1844,8 @@ const Main = props => {
                   value: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
                 },
                 {
-                  label: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
-                  value: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                  label: SYSTEM_LANGUAGE.SECONDLANGUAGE,
+                  value: SYSTEM_LANGUAGE.SECONDLANGUAGE,
                 },
               ]}
               onChange={v => {
@@ -1965,7 +1965,7 @@ const Main = props => {
                 }}
                 options={[
                   { value: SYSTEM_LANGUAGE.PRIMARYLANGUAGE, label: SYSTEM_LANGUAGE.PRIMARYLANGUAGE },
-                  { value: SYSTEM_LANGUAGE.SECOUNDLANGUAGE, label: SYSTEM_LANGUAGE.SECOUNDLANGUAGE },
+                  { value: SYSTEM_LANGUAGE.SECONDLANGUAGE, label: SYSTEM_LANGUAGE.SECONDLANGUAGE },
                 ]}
                 onChange={v => {
                   setPrintlanguage(v.target.value)

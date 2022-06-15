@@ -58,8 +58,8 @@ class Grid extends PureComponent {
     } = clinicSettings
 
     const isUseSecondLanguage =
-      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
     let columns = [
       { name: 'code', title: 'Code' },
       {
@@ -70,7 +70,7 @@ class Grid extends PureComponent {
       },
       {
         name: 'translatedDisplayValue',
-        title: `Display Value (${SYSTEM_LANGUAGE.SECOUNDLANGUAGE})`,
+        title: `Display Value (${SYSTEM_LANGUAGE.SECONDLANGUAGE})`,
       },
       {
         name: 'action',

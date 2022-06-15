@@ -585,7 +585,7 @@ class UserProfileForm extends React.PureComponent {
                 </GridItem>
                 <GridItem md={6}>
                   <Tooltip
-                    title={`Name (${SYSTEM_LANGUAGE.SECOUNDLANGUAGE}) will display in report and printout.`}
+                    title={`Name (${SYSTEM_LANGUAGE.SECONDLANGUAGE}) will display in report and printout.`}
                     placement='bottom-start'
                   >
                     <div>
@@ -594,7 +594,7 @@ class UserProfileForm extends React.PureComponent {
                         render={args => (
                           <TextField
                             {...args}
-                            label={`Name (${SYSTEM_LANGUAGE.SECOUNDLANGUAGE})`}
+                            label={`Name (${SYSTEM_LANGUAGE.SECONDLANGUAGE})`}
                           />
                         )}
                       />

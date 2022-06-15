@@ -153,7 +153,7 @@ class IndividualCommentDetails extends PureComponent {
         .map(
           item =>
             item.translationData
-              .find(l => l.language === SYSTEM_LANGUAGE.SECOUNDLANGUAGE)
+              .find(l => l.language === SYSTEM_LANGUAGE.SECONDLANGUAGE)
               ?.list?.find(l => (l.key = 'displayValue'))?.value,
         )
         .join(' ')

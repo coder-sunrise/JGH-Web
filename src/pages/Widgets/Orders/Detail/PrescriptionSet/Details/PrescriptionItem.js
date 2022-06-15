@@ -276,12 +276,12 @@ const drugMixtureItemSchema = Yup.object().shape({
 
           let itemDuration = item.duration ? ` For ${item.duration} day(s)` : ''
           let separator = nextStepdose
-          if (language === SYSTEM_LANGUAGE.SECOUNDLANGUAGE) {
+          if (language === SYSTEM_LANGUAGE.SECONDLANGUAGE) {
             separator = nextStepdose === '' ? '<br>' : ''
             itemDuration = item.duration ? `${item.duration} 日分` : ''
           }
           let usagePrefix = ''
-          if (language === SYSTEM_LANGUAGE.SECOUNDLANGUAGE && item.dosageFK) {
+          if (language === SYSTEM_LANGUAGE.SECONDLANGUAGE && item.dosageFK) {
             usagePrefix = '1回'
           } else {
             usagePrefix = getTranslationValue(
@@ -322,11 +322,11 @@ const drugMixtureItemSchema = Yup.object().shape({
       SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
     )
     let secondInstruction =
-      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
         ? getInstruction(
             values.prescriptionSetItemInstruction,
-            SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+            SYSTEM_LANGUAGE.SECONDLANGUAGE,
           )
         : ''
 

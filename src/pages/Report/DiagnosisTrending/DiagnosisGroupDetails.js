@@ -46,7 +46,7 @@ class DiagnosisGroupDetails extends PureComponent {
         },
         {
           name: 'diagnosisJpnName',
-          title: `Diagnosis Name (${SYSTEM_LANGUAGE.SECOUNDLANGUAGE})`,
+          title: `Diagnosis Name (${SYSTEM_LANGUAGE.SECONDLANGUAGE})`,
         },
         { name: 'patientCount', title: 'Patients' },
         { name: 'visitCount', title: 'Visits' },

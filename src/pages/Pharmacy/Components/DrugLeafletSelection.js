@@ -125,12 +125,12 @@ class DrugLeafletSelection extends PureComponent {
         SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       )
     }
-    if (this.state.printlanguage.includes(SYSTEM_LANGUAGE.SECOUNDLANGUAGE)) {
+    if (this.state.printlanguage.includes(SYSTEM_LANGUAGE.SECONDLANGUAGE)) {
       await this.doPrintLeaflet(
         visitid,
         visitinvoicedrugids,
         instructionIds,
-        SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+        SYSTEM_LANGUAGE.SECONDLANGUAGE,
       )
     }
     this.props.onConfirmPrintLeaflet()
@@ -190,12 +190,12 @@ class DrugLeafletSelection extends PureComponent {
         SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
       )
     }
-    if (this.state.printlanguage.includes(SYSTEM_LANGUAGE.SECOUNDLANGUAGE)) {
+    if (this.state.printlanguage.includes(SYSTEM_LANGUAGE.SECONDLANGUAGE)) {
       await this.doPrintDrugSummaryLabel(
         visitid,
         visitinvoicedrugids,
         instructionIds,
-        SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+        SYSTEM_LANGUAGE.SECONDLANGUAGE,
       )
     }
     this.props.onConfirmPrintLeaflet()
@@ -231,7 +231,7 @@ class DrugLeafletSelection extends PureComponent {
             : ''
         // If language is EN, instruction need to auto breakline and show in 2 lines
         // If JP, then need to separate to 2 lines. last line will include the last remaining 2 step dose.
-        if (lan === SYSTEM_LANGUAGE.SECOUNDLANGUAGE) {
+        if (lan === SYSTEM_LANGUAGE.SECONDLANGUAGE) {
           t.ThirdLine = instructions.length > 0 ? instructions[0] : ''
           t.FourthLine = instructions.length > 1 ? instructions[1] : ''
           if (instructions.length > 2) {
@@ -251,7 +251,7 @@ class DrugLeafletSelection extends PureComponent {
         t.SecondLine = t.indication
         // If language is EN, instruction need to auto breakline and show in 2 lines
         // If JP, then need to separate to 2 lines. last line will include the last remaining 2 step dose.
-        if (lan === SYSTEM_LANGUAGE.SECOUNDLANGUAGE) {
+        if (lan === SYSTEM_LANGUAGE.SECONDLANGUAGE) {
           t.ThirdLine = instructions.length > 0 ? instructions[0] : ''
           t.FourthLine = instructions.length > 1 ? instructions[1] : ''
           if (instructions.length > 2) {
@@ -324,8 +324,8 @@ class DrugLeafletSelection extends PureComponent {
                           label: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
                         },
                         {
-                          value: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
-                          label: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                          value: SYSTEM_LANGUAGE.SECONDLANGUAGE,
+                          label: SYSTEM_LANGUAGE.SECONDLANGUAGE,
                         },
                       ]}
                       onChange={v => {

@@ -34,8 +34,8 @@ const Detail = ({
     secondaryPrintoutLanguage = '',
   } = clinicSettings
   const isUseSecondLanguage =
-    primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-    secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+    primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+    secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
   const [
     translation,
     getValue,
@@ -162,18 +162,18 @@ const Detail = ({
                 render={args => {
                   return (
                     <TextField
-                      label={`Display Value (${SYSTEM_LANGUAGE.SECOUNDLANGUAGE})`}
+                      label={`Display Value (${SYSTEM_LANGUAGE.SECONDLANGUAGE})`}
                       {...args}
                       maxLength={300}
                       onChange={e => {
                         if (
-                          getValue(SYSTEM_LANGUAGE.SECOUNDLANGUAGE)
+                          getValue(SYSTEM_LANGUAGE.SECONDLANGUAGE)
                             .displayValue !== e.target.value
                         ) {
                           setValue(
                             'displayValue',
                             e.target.value,
-                            SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                            SYSTEM_LANGUAGE.SECONDLANGUAGE,
                           )
                         }
                       }}
@@ -243,15 +243,15 @@ export default compose(
         secondaryPrintoutLanguage = '',
       } = clinicSettings
       if (
-        primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-        secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+        primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+        secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
       ) {
         settings.secondDisplayValue = getTranslationValue(
           settings.translationData,
-          SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+          SYSTEM_LANGUAGE.SECONDLANGUAGE,
           'displayValue',
         )
-        settings.secondLanguage = SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+        settings.secondLanguage = SYSTEM_LANGUAGE.SECONDLANGUAGE
       }
       return settings
     },
@@ -294,13 +294,13 @@ export default compose(
       ]
 
       if (
-        primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-        secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+        primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+        secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
       ) {
         translationData = [
           ...translationData,
           {
-            language: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+            language: SYSTEM_LANGUAGE.SECONDLANGUAGE,
             list: [
               {
                 key: 'displayValue',

@@ -133,12 +133,12 @@ export default ({
 
         let itemDuration = item.duration ? ` For ${item.duration} day(s)` : ''
         let separator = nextStepdose
-        if (language === SYSTEM_LANGUAGE.SECOUNDLANGUAGE) {
+        if (language === SYSTEM_LANGUAGE.SECONDLANGUAGE) {
           separator = nextStepdose === '' ? '<br>' : ''
           itemDuration = item.duration ? `${item.duration} �շ�` : ''
         }
         let usagePrefix = ''
-        if (language === SYSTEM_LANGUAGE.SECOUNDLANGUAGE && item.dosageFK) {
+        if (language === SYSTEM_LANGUAGE.SECONDLANGUAGE && item.dosageFK) {
           usagePrefix = '1��'
         } else {
           usagePrefix = getTranslationValue(
@@ -286,11 +286,11 @@ export default ({
       codetable,
     )
     const secondInstruction =
-      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
         ? getInstruction(
             [defaultInstruction],
-            SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+            SYSTEM_LANGUAGE.SECONDLANGUAGE,
             codetable,
           )
         : ''
@@ -363,11 +363,11 @@ export default ({
       'displayValue',
     )
     itemSecondDispenseUOMDisplayValue =
-      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
         ? getTranslationValue(
             uom?.translationData,
-            SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+            SYSTEM_LANGUAGE.SECONDLANGUAGE,
             'displayValue',
           )
         : ''

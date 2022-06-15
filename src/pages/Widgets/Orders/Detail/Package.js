@@ -241,12 +241,12 @@ import { CollectionsOutlined } from '@material-ui/icons'
             SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
           ),
           secondInstruction:
-            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
               ? getInstruction(
                   medication,
                   matchInstruction,
-                  SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                  SYSTEM_LANGUAGE.SECONDLANGUAGE,
                 )
               : '',
           dispenseUOMFK: medication?.dispensingUOM?.id,
@@ -261,11 +261,11 @@ import { CollectionsOutlined } from '@material-ui/icons'
             'displayValue',
           ),
           secondDispenseUOMDisplayValue:
-            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
               ? getTranslationValue(
                   uom?.translationData,
-                  SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                  SYSTEM_LANGUAGE.SECONDLANGUAGE,
                   'displayValue',
                 )
               : '',

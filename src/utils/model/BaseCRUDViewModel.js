@@ -1,4 +1,4 @@
-﻿/* eslint-disable consistent-return */
+/* eslint-disable consistent-return */
 import _ from 'lodash'
 
 import update from 'immutability-helper'
@@ -469,11 +469,11 @@ export default class BaseCRUDViewModel {
               ...o,
               effectiveDates: [o.effectiveStartDate, o.effectiveEndDate],
               translatedDisplayValue:
-                primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-                secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+                primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+                secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
                   ? getTranslationValue(
                       o.translationData,
-                      SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                      SYSTEM_LANGUAGE.SECONDLANGUAGE,
                       'displayValue',
                     )
                   : '',

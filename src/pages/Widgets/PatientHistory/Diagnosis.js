@@ -47,7 +47,7 @@ export default ({
     },
     {
       dataIndex: 'jpnDiagnosisDescription',
-      title: `Diagnosis (${SYSTEM_LANGUAGE.SECOUNDLANGUAGE})`,
+      title: `Diagnosis (${SYSTEM_LANGUAGE.SECONDLANGUAGE})`,
       width: isFullScreen ? 250 : 120,
       render: text => <div style={wrapCellTextStyle}>{text}</div>,
     },

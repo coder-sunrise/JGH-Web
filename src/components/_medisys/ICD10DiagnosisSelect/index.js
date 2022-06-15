@@ -105,8 +105,8 @@ const ICD10DiagnosisSelect = ({
       value: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
     },
     {
-      label: ` ${SYSTEM_LANGUAGE.SECOUNDLANGUAGE} `,
-      value: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+      label: ` ${SYSTEM_LANGUAGE.SECONDLANGUAGE} `,
+      value: SYSTEM_LANGUAGE.SECONDLANGUAGE,
     },
   ]
 

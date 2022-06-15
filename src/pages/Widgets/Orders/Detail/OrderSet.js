@@ -248,12 +248,12 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
             SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
           ),
           secondInstruction:
-            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
               ? getInstruction(
                   inventoryMedication,
                   matchInstruction,
-                  SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                  SYSTEM_LANGUAGE.SECONDLANGUAGE,
                 )
               : '',
           dispenseUOMFK: inventoryMedication.dispensingUOMFK,
@@ -268,11 +268,11 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
             'displayValue',
           ),
           secondDispenseUOMDisplayValue:
-            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
               ? getTranslationValue(
                   uom?.translationData,
-                  SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                  SYSTEM_LANGUAGE.SECONDLANGUAGE,
                   'displayValue',
                 )
               : '',

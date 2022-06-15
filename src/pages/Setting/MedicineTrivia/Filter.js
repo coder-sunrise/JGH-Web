@@ -53,10 +53,10 @@ class Filter extends PureComponent {
                       apiCriteria: {
                         Language:
                           primaryPrintoutLanguage ===
-                            SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
+                            SYSTEM_LANGUAGE.SECONDLANGUAGE ||
                           secondaryPrintoutLanguage ===
-                            SYSTEM_LANGUAGE.SECOUNDLANGUAGE
-                            ? SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+                            SYSTEM_LANGUAGE.SECONDLANGUAGE
+                            ? SYSTEM_LANGUAGE.SECONDLANGUAGE
                             : '',
                         Key: 'displayValue',
                         SearchValue: codeDisplayValue,

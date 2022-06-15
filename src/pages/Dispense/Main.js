@@ -326,7 +326,7 @@ class Main extends Component {
     // set default language based on patient tranlsation and clinic setting.
     const preferLanguage =
       (patient && patient.translationLinkFK) === 5
-        ? SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+        ? SYSTEM_LANGUAGE.SECONDLANGUAGE
         : clinicSettings.primaryPrintoutLanguage
     this.setState({ selectedLanguage: [preferLanguage] })
   }

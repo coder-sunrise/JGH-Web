@@ -280,8 +280,8 @@ const Detail = ({
                     value: SYSTEM_LANGUAGE.PRIMARYLANGUAGE,
                   },
                   {
-                    label: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
-                    value: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                    label: SYSTEM_LANGUAGE.SECONDLANGUAGE,
+                    value: SYSTEM_LANGUAGE.SECONDLANGUAGE,
                   },
                 ]}
               />
@@ -389,8 +389,8 @@ export default compose(
         secondaryPrintoutLanguage,
       } = clinicSettings
       const isMultiLanguage =
-        primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-        secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+        primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+        secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
       let checkboxGroup = []
       const {
         isChasAcuteClaimable,
@@ -439,7 +439,7 @@ export default compose(
       if (isMultiLanguage)
         indicationSecondary = getTranslationValue(
           medicationDetails.translationData,
-          SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+          SYSTEM_LANGUAGE.SECONDLANGUAGE,
           'indication',
         )
 

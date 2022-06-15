@@ -16,14 +16,14 @@ export const DetailsContextProvider = props => {
 
   useEffect(() => {
     const internalIsMultiLang =
-      settings.primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-      settings.secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+      settings.primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+      settings.secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
 
     setIsMultiLanguage(internalIsMultiLang)
     setCurrentLanguage(SYSTEM_LANGUAGE.PRIMARYLANGUAGE)
     setPrimaryPrintoutLanguage(SYSTEM_LANGUAGE.PRIMARYLANGUAGE)
     setSecondaryPrintoutLanguage(
-      internalIsMultiLang ? SYSTEM_LANGUAGE.SECOUNDLANGUAGE : undefined,
+      internalIsMultiLang ? SYSTEM_LANGUAGE.SECONDLANGUAGE : undefined,
     )
   }, [settings])
 

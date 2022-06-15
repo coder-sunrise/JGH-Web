@@ -495,8 +495,8 @@ const SummaryComment = props => {
           <Switch
             checkedChildren={SYSTEM_LANGUAGE.PRIMARYLANGUAGE}
             checkedValue={SYSTEM_LANGUAGE.PRIMARYLANGUAGE}
-            unCheckedChildren={SYSTEM_LANGUAGE.SECOUNDLANGUAGE}
-            unCheckedValue={SYSTEM_LANGUAGE.SECOUNDLANGUAGE}
+            unCheckedChildren={SYSTEM_LANGUAGE.SECONDLANGUAGE}
+            unCheckedValue={SYSTEM_LANGUAGE.SECONDLANGUAGE}
             label=''
             value={selectedLanguage}
             onChange={setSelectedLanguage}

@@ -68,11 +68,11 @@ const getPharmacyItems = (codetable, clinicSettings, entity = {}) => {
             'displayValue',
           )
           const secondUOMDisplayValue =
-            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+            primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+            secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
               ? getTranslationValue(
                   drugMixture.medication?.dispenseTranslationUOM || [],
-                  SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                  SYSTEM_LANGUAGE.SECONDLANGUAGE,
                   'displayValue',
                 )
               : ''
@@ -247,11 +247,11 @@ const getPharmacyItems = (codetable, clinicSettings, entity = {}) => {
         'displayValue',
       )
       const secondUOMDisplayValue =
-        primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-        secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+        primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+        secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
           ? getTranslationValue(
               item.medication?.dispenseTranslationUOM || [],
-              SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+              SYSTEM_LANGUAGE.SECONDLANGUAGE,
               'displayValue',
             )
           : ''
@@ -526,11 +526,11 @@ const getPartialPharmacyItems = (codetable, clinicSettings, entity = {}) => {
           'displayValue',
         )
         const secondUOMDisplayValue =
-          primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-          secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+          primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+          secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
             ? getTranslationValue(
                 drugMixture.medication?.dispenseTranslationUOM || [],
-                SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+                SYSTEM_LANGUAGE.SECONDLANGUAGE,
                 'displayValue',
               )
             : ''
@@ -610,11 +610,11 @@ const getPartialPharmacyItems = (codetable, clinicSettings, entity = {}) => {
       'displayValue',
     )
     const secondUOMDisplayValue =
-      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE ||
-      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECOUNDLANGUAGE
+      primaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE ||
+      secondaryPrintoutLanguage === SYSTEM_LANGUAGE.SECONDLANGUAGE
         ? getTranslationValue(
             item.medication?.dispenseTranslationUOM || [],
-            SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+            SYSTEM_LANGUAGE.SECONDLANGUAGE,
             'displayValue',
           )
         : ''

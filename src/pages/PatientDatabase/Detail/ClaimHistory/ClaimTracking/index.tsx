@@ -136,7 +136,7 @@ const ClaimTracking = ({
       },
       {
         key: 'diagnosisJP',
-        title: `Diagnosis (${SYSTEM_LANGUAGE.SECOUNDLANGUAGE})`,
+        title: `Diagnosis (${SYSTEM_LANGUAGE.SECONDLANGUAGE})`,
         dataIndex: 'diagnosisJP',
         width: 150,
         sorter: false,

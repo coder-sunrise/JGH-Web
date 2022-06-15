@@ -106,7 +106,7 @@ const SummaryCommentDetails = props => {
         .find(l => l.language === SYSTEM_LANGUAGE.PRIMARYLANGUAGE)
         ?.list?.find(l => (l.key = 'displayValue'))?.value
       const japaneseComment = item.translationData
-        .find(l => l.language === SYSTEM_LANGUAGE.SECOUNDLANGUAGE)
+        .find(l => l.language === SYSTEM_LANGUAGE.SECONDLANGUAGE)
         ?.list?.find(l => (l.key = 'displayValue'))?.value
       return {
         ...item,

@@ -1029,7 +1029,7 @@ const tagCategory = [
 
 const languageCategory = [
   {
-    value: SYSTEM_LANGUAGE.SECOUNDLANGUAGE,
+    value: SYSTEM_LANGUAGE.SECONDLANGUAGE,
     name: 'Japanese',
     render: () => <span>Japanese</span>,
   },
