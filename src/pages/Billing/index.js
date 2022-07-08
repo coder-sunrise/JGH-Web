@@ -316,6 +316,13 @@ const getDispenseEntity = (codetable, clinicSettings, entity = {}) => {
           invoice: {
             ...billing.entity.invoice,
           },
+          invoicePayer: (billing.entity.invoicePayer || []).map(ip => ({
+            ...ip,
+            invoicePayerItem: (ip.invoicePayerItem || []).map(ipitem => ({
+              ...ipitem,
+              isSelected: true,
+            })),
+          })),
           finalClaim,
           finalPayable,
           visitId: billing.visitID,

@@ -335,6 +335,7 @@ export const getInvoiceItemsWithClaimAmount = (
         schemeCoverage,
         itemName: item.itemDescription,
         claimAmountBeforeGST: _claimAmount,
+        isSelected: item.isClaimable ? true : false,
       },
     ]
   }, [])

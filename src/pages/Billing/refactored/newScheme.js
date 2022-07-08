@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import * as Yup from 'yup'
 import moment from 'moment'
 import _ from 'lodash'
@@ -106,6 +106,7 @@ const Scheme = ({
   isUpdatedAppliedInvoicePayerInfo,
   showRefreshOrder,
   visitOrderTemplateFK,
+  onSelectItemChange,
 }) => {
   const {
     name,
@@ -136,6 +137,13 @@ const Scheme = ({
   const handleApplyClick = () => onApplyClick(index)
   const handleDeleteClick = () => onDeleteClick(index)
   const [showPrintInvoiceMenu, setShowPrintInvoiceMenu] = useState(false)
+  const [selectedRows, setSelectedRows] = useState([])
+
+  useEffect(() => {
+    setSelectedRows(
+      invoicePayerItem.filter(item => item.isSelected).map(item => item.id),
+    )
+  }, [invoicePayerItem])
 
   const shouldDisableDelete = () => {
     if (invoicePayment.find(o => o.isCancelled === false)) {
@@ -158,7 +166,7 @@ const Scheme = ({
       width: 150,
       sortingEnabled: false,
       currency: true,
-      isDisabled: row => _isConfirmed || !row.isClaimable, // latter is for drug mixture
+      isDisabled: row => !row.isSelected || _isConfirmed || !row.isClaimable, // latter is for drug mixture
     },
   ]
 
@@ -316,7 +324,7 @@ const Scheme = ({
               <EditableTableGrid
                 key={`editable-${_key}`}
                 size='sm'
-                FuncProps={{ pager: false }}
+                forceRender
                 EditingProps={{
                   showCommandColumn: false,
                   onCommitChanges,
@@ -339,6 +347,20 @@ const Scheme = ({
                   ['desc', 'asc', 'asc'],
                 )}
                 schema={validationSchema}
+                selection={selectedRows}
+                onSelectionChange={selection => {
+                  setSelectedRows(selection)
+                  onSelectItemChange(selection)
+                }}
+                FuncProps={{
+                  pager: false,
+                  selectable: true,
+                  selectConfig: {
+                    showSelectAll: true,
+                    isSelectionEnabled: true,
+                    rowSelectionEnabled: row => row.isClaimable,
+                  },
+                }}
               />
             ) : (
               <CommonTableGrid

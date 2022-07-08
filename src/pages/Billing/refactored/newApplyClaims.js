@@ -949,6 +949,29 @@ const ApplyClaims = ({
     [tempInvoicePayer, updatedInvoiceItems],
   )
 
+  const onSelectItemChange = (selectItems = []) => {
+    const index = tempInvoicePayer.findIndex(item => item._isEditing)
+    const payer = { ...tempInvoicePayer[index] }
+
+    const newInvoicePayer = {
+      ...payer,
+      invoicePayerItem: payer.invoicePayerItem.map(item => {
+        if (item.isSelected && !selectItems.includes(item.id)) {
+          return { ...item, isSelected: false, claimAmountBeforeGST: 0 }
+        } else if (!item.isSelected && selectItems.includes(item.id)) {
+          return {
+            ...item,
+            isSelected: true,
+            claimAmountBeforeGST: item.payableBalance,
+          }
+        }
+        return { ...item }
+      }),
+    }
+    updateTempInvoicePayer(newInvoicePayer, index)
+    incrementCommitCount()
+  }
+
   const handleAddCoPayer = invoicePayer => {
     toggleCopayerModal()
     const newTempInvoicePayer = [...tempInvoicePayer, invoicePayer]
@@ -1216,6 +1239,7 @@ const ApplyClaims = ({
               index={index}
               onSchemeChange={handleSchemeChange}
               onCommitChanges={handleCommitChanges}
+              onSelectItemChange={onSelectItemChange}
               onCancelClick={handleCancelClick}
               onEditClick={handleEditClick}
               onApplyClick={handleApplyClick}

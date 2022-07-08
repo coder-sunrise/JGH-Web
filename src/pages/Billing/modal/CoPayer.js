@@ -196,7 +196,12 @@ class CoPayer extends Component {
     const { selectedRows, invoiceItems } = this.state
     const invoicePayerItem = invoiceItems
       .filter(item => selectedRows.includes(item.id))
-      .map(item => ({ ...item, id: getUniqueId(), invoiceItemFK: item.id }))
+      .map(item => ({
+        ...item,
+        id: getUniqueId(),
+        invoiceItemFK: item.id,
+        isSelected: true,
+      }))
     const copayerItem = codetable.ctcopayer.find(item => item.id === coPayer)
 
     const totalClaimAmountBeforeGST = roundTo(
