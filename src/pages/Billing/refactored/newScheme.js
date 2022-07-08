@@ -66,20 +66,7 @@ const styles = theme => ({
 const validationSchema = Yup.object().shape({
   eligibleAmount: Yup.number(),
   payableBalance: Yup.number(),
-  claimAmountBeforeGST: Yup.number().when(
-    ['eligibleAmount', 'payableBalance'],
-    (eligibleAmount, payableBalance) => {
-      const _checkAmount = eligibleAmount || payableBalance
-
-      if (_checkAmount) {
-        return Yup.number().max(
-          roundTo(_checkAmount),
-          `Cannot claim more than $${_checkAmount.toFixed(2)}`,
-        )
-      }
-      return Yup.number()
-    },
-  ),
+  claimAmountBeforeGST: Yup.number(),
 })
 
 const Scheme = ({

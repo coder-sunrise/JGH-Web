@@ -921,7 +921,13 @@ const ApplyClaims = ({
         if (item.id === id) {
           const currentChangesClaimAmount = changed[id].claimAmountBeforeGST
           if (currentChangesClaimAmount <= eligibleAmount) {
-            return { ...item, error: undefined }
+            return {
+              ...item,
+              error:
+                item.payableBalance < currentChangesClaimAmount
+                  ? `Cannot claim more than $${item.payableBalance.toFixed(2)}`
+                  : undefined,
+            }
           }
 
           hasError = true
@@ -931,17 +937,21 @@ const ApplyClaims = ({
           }
         }
 
-        return { ...item, error: undefined }
+        return { ...item }
       }
       const newRows = rows.map(mapAndCompareCurrentChangesAmount)
       const newInvoicePayer = {
         ...payer,
         invoicePayerItem: newRows,
-        _hasError:
-          rows.reduce(
-            (error, row) => (row._errors && row._errors.length > 0) || error,
-            false,
-          ) || hasError,
+      }
+      if (
+        newInvoicePayer.invoicePayerItem.find(
+          x => (x._errors && x._errors.length > 0) || x.error,
+        )
+      ) {
+        newInvoicePayer._hasError = true
+      } else {
+        newInvoicePayer._hasError = false
       }
       updateTempInvoicePayer(newInvoicePayer, index)
       incrementCommitCount()
@@ -957,16 +967,78 @@ const ApplyClaims = ({
       ...payer,
       invoicePayerItem: payer.invoicePayerItem.map(item => {
         if (item.isSelected && !selectItems.includes(item.id)) {
-          return { ...item, isSelected: false, claimAmountBeforeGST: 0 }
+          return {
+            ...item,
+            isSelected: false,
+            claimAmountBeforeGST: 0,
+            error: undefined,
+          }
         } else if (!item.isSelected && selectItems.includes(item.id)) {
+          let _absoluteValue = item.payableBalance
+          if (item.coverage) {
+            const isPercentage = item.coverage.indexOf('%') > 0
+            if (isPercentage) {
+              const percentage = parseFloat(item.coverage.slice(0, -1))
+              if (percentage === 100) {
+                _absoluteValue = item.payableBalance
+              } else {
+                _absoluteValue = roundTo(
+                  (item.payableBalance * percentage) / 100,
+                  4,
+                )
+              }
+            } else {
+              _absoluteValue = item.coverage.slice(1)
+            }
+          }
+
+          _absoluteValue =
+            _absoluteValue > item.payableBalance
+              ? item.payableBalance
+              : _absoluteValue
+
+          const originalItem = updatedInvoiceItems.find(
+            i => i.id === item.invoiceItemFK,
+          )
+
+          let eligibleAmount =
+            originalItem.totalBeforeGst - originalItem._claimedAmount
+          if (eligibleAmount === 0) {
+            const currentEditItemClaimedAmount = tempInvoicePayer
+              .filter((_rest, i) => i !== index)
+              .reduce(flattenInvoicePayersInvoiceItemList, [])
+              .reduce((remainingClaimable, item) => {
+                if (item.invoiceItemFK === changedItem.invoiceItemFK)
+                  return remainingClaimable + item.claimAmountBeforeGST
+
+                return remainingClaimable
+              }, 0)
+
+            eligibleAmount =
+              originalItem.totalBeforeGst - currentEditItemClaimedAmount
+          }
+          const _hasError = _absoluteValue > eligibleAmount
           return {
             ...item,
             isSelected: true,
-            claimAmountBeforeGST: item.payableBalance,
+            claimAmountBeforeGST: _absoluteValue,
+            error: _hasError
+              ? `Cannot claim more than $${eligibleAmount.toFixed(2)}`
+              : undefined,
           }
         }
         return { ...item }
       }),
+    }
+
+    if (
+      newInvoicePayer.invoicePayerItem.find(
+        x => (x._errors && x._errors.length > 0) || x.error,
+      )
+    ) {
+      newInvoicePayer._hasError = true
+    } else {
+      newInvoicePayer._hasError = false
     }
     updateTempInvoicePayer(newInvoicePayer, index)
     incrementCommitCount()
