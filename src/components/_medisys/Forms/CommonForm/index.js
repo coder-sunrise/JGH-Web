@@ -192,6 +192,21 @@ class CommonForm extends PureComponent {
   }
 
   print = () => {
+    window.g_app._store.dispatch({
+      type: 'report/updateState',
+      payload: {
+        reportTypeID: 10000,
+        reportParameters: {
+          isSaved: false,
+          isFromDocument: true,
+          reportContent: {
+            isVoid: false,
+            content: this.DEContainer.documentEditor.serialize(),
+          },
+        },
+      },
+    })
+    return
     this.showHideHighligth(false)
     this.DEContainer.documentEditor.print()
     this.showHideHighligth(true)

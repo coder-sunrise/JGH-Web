@@ -6,15 +6,9 @@ import { REPORT_TYPE } from '@/utils/constants'
 
 const ReportModal = ({ dispatch, report }) => {
   const { reportTypeID, reportParameters } = report
-  const [
-    showReport,
-    setShowReport,
-  ] = useState(false)
+  const [showReport, setShowReport] = useState(false)
 
-  const [
-    reportConfig,
-    setReportConfig,
-  ] = useState({})
+  const [reportConfig, setReportConfig] = useState({})
 
   const resetReportParameters = () => {
     dispatch({
@@ -29,30 +23,26 @@ const ReportModal = ({ dispatch, report }) => {
     setShowReport(!showReport)
   }
 
-  useEffect(
-    () => {
-      if (reportTypeID) {
-        setShowReport(true)
-      }
+  useEffect(() => {
+    if (reportTypeID) {
+      setShowReport(true)
+    }
 
-      const { isSaved, ...restParams } = reportParameters
-      if (isSaved) {
-        setReportConfig({
-          reportParameters: { ...restParams },
-          unsavedReport: false,
-        })
-      } else {
-        setReportConfig({
-          reportContent: restParams.reportContent,
-          unsavedReport: true,
-        })
-      }
-    },
-    [
-      reportTypeID,
-      reportParameters,
-    ],
-  )
+    const { isSaved, ...restParams } = reportParameters
+    if (isSaved) {
+      setReportConfig({
+        reportParameters: { ...restParams },
+        unsavedReport: false,
+        isFromDocument: reportParameters.isFromDocument,
+      })
+    } else {
+      setReportConfig({
+        reportContent: restParams.reportContent,
+        unsavedReport: true,
+        isFromDocument: reportParameters.isFromDocument,
+      })
+    }
+  }, [reportTypeID, reportParameters])
 
   return (
     <React.Fragment>

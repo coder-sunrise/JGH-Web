@@ -31,6 +31,8 @@ import {
   exportUnsavedReport,
   exportPdfReport,
   exportExcelReport,
+  exportDocumentReport,
+  getPDFFromDocument,
 } from '@/services/report'
 // styles
 import styles from './styles'
@@ -41,6 +43,7 @@ const ReportViewer = ({
   reportID,
   reportParameters = {},
   reportContent = '',
+  isFromDocument = false,
   unsavedReport = false,
   classes,
   showTopDivider = true,
@@ -61,8 +64,8 @@ const ReportViewer = ({
   useEffect(() => {
     setScreenSize({ height: window.innerHeight, width: window.innerWidth })
     // fetchReport().then((result) => setPdfData(result))
-    if (!unsavedReport) {
-      getPDF(reportID, reportParameters).then(result => {
+    if (isFromDocument) {
+      getPDFFromDocument(reportContent).then(result => {
         if (result) {
           const base64Result = arrayBufferToBase64(result)
           setPdfData(base64Result)
@@ -71,14 +74,25 @@ const ReportViewer = ({
         }
       })
     } else {
-      getUnsavedPDF(reportID, reportContent).then(result => {
-        if (result) {
-          const base64Result = arrayBufferToBase64(result)
-          setPdfData(base64Result)
-        } else {
-          setShowError(true)
-        }
-      })
+      if (!unsavedReport) {
+        getPDF(reportID, reportParameters).then(result => {
+          if (result) {
+            const base64Result = arrayBufferToBase64(result)
+            setPdfData(base64Result)
+          } else {
+            setShowError(true)
+          }
+        })
+      } else {
+        getUnsavedPDF(reportID, reportContent).then(result => {
+          if (result) {
+            const base64Result = arrayBufferToBase64(result)
+            setPdfData(base64Result)
+          } else {
+            setShowError(true)
+          }
+        })
+      }
     }
     return () => {
       // clean up, invoke on unmounting
@@ -111,17 +125,21 @@ const ReportViewer = ({
 
   const onExportClick = async ({ key }) => {
     setExporting(true)
-    if (unsavedReport) {
-      const reportFormat = key === 'export-excel' ? 'Excel' : 'PDF'
-      await exportUnsavedReport(reportID, reportFormat, reportContent)
-      setExporting(false)
-      return true
-    }
-    if (key === 'export-excel') {
-      await exportExcelReport(reportID, reportParameters)
-      // fileExtension = '.xls'
+    if (isFromDocument) {
+      exportDocumentReport(reportID, reportContent)
     } else {
-      await exportPdfReport(reportID, reportParameters)
+      if (unsavedReport) {
+        const reportFormat = key === 'export-excel' ? 'Excel' : 'PDF'
+        await exportUnsavedReport(reportID, reportFormat, reportContent)
+        setExporting(false)
+        return true
+      }
+      if (key === 'export-excel') {
+        await exportExcelReport(reportID, reportParameters)
+        // fileExtension = '.xls'
+      } else {
+        await exportPdfReport(reportID, reportParameters)
+      }
     }
     setExporting(false)
     return true
@@ -149,9 +167,11 @@ const ReportViewer = ({
                   <Menu.Item key='export-pdf' id='PDF'>
                     <span>PDF</span>
                   </Menu.Item>
-                  <Menu.Item key='export-excel' id='Excel'>
-                    <span>Excel</span>
-                  </Menu.Item>
+                  {!isFromDocument && (
+                    <Menu.Item key='export-excel' id='Excel'>
+                      <span>Excel</span>
+                    </Menu.Item>
+                  )}
                 </Menu>
               }
               trigger={['click']}

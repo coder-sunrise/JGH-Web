@@ -41,6 +41,17 @@ export const getPDF = async (reportID, payload) => {
   })
 }
 
+export const getPDFFromDocument = async payload => {
+  const baseURL = '/api/reports'
+  return request(`${baseURL}/DocumentToPDF`, {
+    method: 'POST',
+    xhrFields: {
+      responseType: 'arraybuffer',
+    },
+    body: payload,
+  })
+}
+
 export const getUnsavedPDF = async (reportID, payload) => {
   const baseURL = '/api/reports'
   return request(`${baseURL}/${reportID}?ReportFormat=pdf`, {
@@ -152,6 +163,22 @@ export const exportUnsavedReport = (
       data: {
         reportContent,
       },
+    },
+  )
+}
+
+export const exportDocumentReport = (reportID, reportContent, subject) => {
+  const _subject = subject || REPORT_FILE_NAME[reportID]
+  let type = 'PDF'
+  download(
+    `/api/Reports/DocumentToPDF`,
+    {
+      subject: _subject,
+      type: type,
+    },
+    {
+      method: 'POST',
+      body: reportContent,
     },
   )
 }

@@ -108,7 +108,7 @@ class DocumentEditor extends SampleBase {
 
   static instance = undefined
   static print = ({ ...printProps }) => {
-    const { documentName, document: content } = printProps
+    const { documentName, document: content, isVoid = false } = printProps
     if (!this.instance) {
       const container = new DocumentEditorContainerComponent()
       container.element = document.createElement('div')
@@ -123,7 +123,21 @@ class DocumentEditor extends SampleBase {
     documentEditor.documentName = documentName
     setTimeout(() => {
       this.showHideHighligth(false)
-      documentEditor.print()
+      window.g_app._store.dispatch({
+        type: 'report/updateState',
+        payload: {
+          reportTypeID: 10000,
+          reportParameters: {
+            isSaved: false,
+            isFromDocument: true,
+            reportContent: {
+              isVoid: isVoid,
+              content: documentEditor.serialize(),
+            },
+          },
+        },
+      })
+      //documentEditor.print()
       this.showHideHighligth(true)
     }, 1)
   }

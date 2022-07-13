@@ -10,6 +10,7 @@ const printRow = row => {
   DocumentEditor.print({
     documentName: row.formName,
     document: row.formData,
+    isVoid: row.statusFK === 4,
   })
 }
 

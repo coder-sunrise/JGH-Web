@@ -160,7 +160,7 @@ class VisitFormGrid extends PureComponent {
     DocumentEditor.print({
       documentName: row.formName,
       document: row.formData.content,
-      strWatermark: 'VOIDED',
+      isVoid: row.statusFK === 4,
     })
   }
 

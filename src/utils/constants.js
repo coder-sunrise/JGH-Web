@@ -62,11 +62,11 @@ export const APPOINTMENT_CANCELLEDBY = {
 }
 
 export const PATIENT_LAB = {
-         PATIENT_PROFILE: 1,
-         CONSULTATION: 2,
-         LAB_TRACKING: 3,
-         MEDICAL_CHECKUP: 4,
-       }
+  PATIENT_PROFILE: 1,
+  CONSULTATION: 2,
+  LAB_TRACKING: 3,
+  MEDICAL_CHECKUP: 4,
+}
 
 export const CANCELLATION_REASON_TYPE = {
   NOSHOW: 1,
@@ -243,6 +243,7 @@ export const REPORT_TYPE = {
   61: 'Refraction Form Report',
   68: 'Patient History Report',
   80: 'Invoice',
+  10000: 'Form',
 }
 
 export const IGNORED_REPORT_SETTING_REPORT_IDS = [
@@ -373,6 +374,7 @@ export const REPORT_FILE_NAME = {
   92: 'Lab Specimen Label',
   93: 'Medical Report',
   94: 'Laboratory Test Report',
+  10000: 'Form',
 }
 export const REPORT_ID = {
   DRUG_LABEL_80MM_45MM: 24,
