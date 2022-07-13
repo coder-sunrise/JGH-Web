@@ -9,7 +9,7 @@ import tablestyles from './PatientHistoryStyle.less'
 const printRow = row => {
   DocumentEditor.print({
     documentName: row.formName,
-    document: row.formData,
+    document: JSON.parse(row.formData).content,
     isVoid: row.statusFK === 4,
   })
 }
@@ -19,13 +19,13 @@ export default ({ current }) => {
   const [includeVoidForms, setIncludeVoidForms] = useState(false)
   return (
     <div>
-      {/* <Checkbox
+      <Checkbox
         label='Include voided forms'
         value={includeVoidForms}
         onChange={() => {
           setIncludeVoidForms(!includeVoidForms)
         }}
-      /> */}
+      />
       <Table
         size='small'
         bordered
