@@ -95,7 +95,6 @@ class Grid extends React.Component {
 
   computeQueueListingData = () => {
     const {
-      user,
       calendarEvents = [],
       eQueueEvents = [],
       filter = StatusIndicator.ALL,
@@ -105,7 +104,9 @@ class Grid extends React.Component {
       visitType = [],
       doctor = [],
     } = this.props
-
+    const user = JSON.parse(
+      sessionStorage.getItem('user') || localStorage.getItem('user'),
+    )
     const { clinicianProfile } = user.data
     if (filter === StatusIndicator.APPOINTMENT) {
       let result = calendarEvents
