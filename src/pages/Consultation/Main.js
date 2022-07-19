@@ -196,7 +196,7 @@ const generatePrintData = async (
               description: ReportsOnSignOffOption.PrescriptionSheet,
               Copies: 1,
               print: true,
-              ReportId: REPORT_ID.PRESCRIPTION,
+              ReportId: REPORT_ID.PRESCRIPTIONA4,
               ReportDate: null,
             },
           ])
@@ -249,7 +249,7 @@ const autoPrintSelection = async (action, props) => {
                 let printedData = result
                 const token = localStorage.getItem('token')
                 if (
-                  printedData.some(x => x.ReportId === REPORT_ID.PRESCRIPTION)
+                  printedData.some(x => x.ReportId === REPORT_ID.PRESCRIPTIONA4)
                 ) {
                   const {
                     visitRegistration: {
@@ -258,7 +258,7 @@ const autoPrintSelection = async (action, props) => {
                       },
                     },
                   } = props
-                  getRawData(REPORT_ID.PRESCRIPTION, {
+                  getRawData(REPORT_ID.PRESCRIPTIONA4, {
                     visitFK,
                     patientProfileFK,
                   }).then(r => {
@@ -268,11 +268,11 @@ const autoPrintSelection = async (action, props) => {
                       return {
                         ReportId: item.ReportId,
                         DocumentName:
-                          item.ReportId === REPORT_ID.PRESCRIPTION
+                          item.ReportId === REPORT_ID.PRESCRIPTIONA4
                             ? item.description
                             : `${item.item}(${item.description})`,
                         ReportData:
-                          item.ReportId === REPORT_ID.PRESCRIPTION
+                          item.ReportId === REPORT_ID.PRESCRIPTIONA4
                             ? JSON.stringify(
                                 (delete r.ReportSettingParameter,
                                 delete r.ReportContext,

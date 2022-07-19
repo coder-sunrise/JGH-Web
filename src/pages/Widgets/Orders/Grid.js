@@ -383,7 +383,7 @@ export default ({
       type: ORDER_TYPES.MEDICATION,
       adjAmount: currentVisitOrderTemplate.adjAmt,
       adjType: currentVisitOrderTemplate.adjType,
-      adjValue: currentVisitOrderTemplate.value,
+      adjValue: currentVisitOrderTemplate.adjValue,
       isMinus: !!(
         currentVisitOrderTemplate.adjValue &&
         currentVisitOrderTemplate.adjValue < 0
@@ -540,7 +540,7 @@ export default ({
       totalPrice: currentVisitOrderTemplate.total,
       adjAmount: currentVisitOrderTemplate.adjAmt,
       adjType: currentVisitOrderTemplate.adjType,
-      adjValue: currentVisitOrderTemplate.value,
+      adjValue: currentVisitOrderTemplate.adjValue,
       isMinus: !!(
         currentVisitOrderTemplate.adjValue &&
         currentVisitOrderTemplate.adjValue < 0
@@ -628,7 +628,7 @@ export default ({
     const newService = {
       adjAmount: currentVisitOrderTemplate.adjAmt,
       adjType: currentVisitOrderTemplate.adjType,
-      adjValue: currentVisitOrderTemplate.value,
+      adjValue: currentVisitOrderTemplate.adjValue,
       isActive: true,
       isDeleted: false,
       isDisplayValueChangable: service.isDisplayValueChangable,
@@ -682,7 +682,7 @@ export default ({
     const newConsumable = {
       adjAmount: currentVisitOrderTemplate.adjAmt,
       adjType: currentVisitOrderTemplate.adjType,
-      adjValue: currentVisitOrderTemplate.value,
+      adjValue: currentVisitOrderTemplate.adjValue,
       batchNo: defaultBatch?.batchNo,
       consumableCode: consumable.code,
       consumableName: consumable.displayValue,

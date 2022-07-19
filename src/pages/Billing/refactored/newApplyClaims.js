@@ -811,7 +811,7 @@ const ApplyClaims = ({
         ) === invoice.totalAftAdj
 
       // make sure the total gst of invoice payer will not over than invoice gst.
-      if (index === tempInvoicePayer.length - 1 > isFullyClaimed) {
+      if (index === tempInvoicePayer.length - 1 && isFullyClaimed) {
         const otherPayerGST =
           _.sumBy(
             tempInvoicePayer.filter(t => t.isCancelled),
@@ -976,6 +976,8 @@ const ApplyClaims = ({
     newTempInvoicePayer.forEach(payer => {
       if (!payer.isCancelled) {
         payer.payerOutstanding =
+          payer.payerDistributedAmtBeforeGST + payer.gstAmount
+        payer.payerDistributedAmt =
           payer.payerDistributedAmtBeforeGST + payer.gstAmount
       }
     })

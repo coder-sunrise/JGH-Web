@@ -64,7 +64,7 @@ const CombinedOrderIcon = ({ workitemId, ...restProps }) => {
           {
             dataIndex: 'itemDescription',
             title: 'Examination',
-            width: 70,
+            width: 100,
             sortingEnabled: false,
           },
           {

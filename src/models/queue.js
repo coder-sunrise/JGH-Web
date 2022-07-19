@@ -42,7 +42,7 @@ export default createListViewModel({
       patientList: [],
       appointmentList: [],
       currentFilter: StatusIndicator.ALL,
-      selfOnly: false,
+      selfOnly: undefined,
       hideSelfOnlyFilter: false,
       _modifiedSelftOnly: false,
       error: {
@@ -86,23 +86,12 @@ export default createListViewModel({
           })
         }
       })
-
-      subscribeNotification('QueueListing', {
-        callback: response => {
-          const { location } = history
-          const { user } = window.g_app._store.getState()
-          const { senderId } = response
-          if (
-            user.data.id !== senderId &&
-            location.pathname === '/reception/queue'
-          )
-            dispatch({ type: 'refresh' })
-        },
-      })
     },
     effects: {
       *initState(_, { select, put }) {
-        let user = yield select(state => state.user.data)
+        let user = JSON.parse(
+          sessionStorage.getItem('user') || localStorage.getItem('user'),
+        ).data
         const queueLogState = yield select(state => state.queueLog)
         let {
           clinicianProfile: {
@@ -136,14 +125,16 @@ export default createListViewModel({
             list: [],
             sessionInfo: { ...InitialSessionInfo },
             hideSelfOnlyFilter: startConsultPermissionIsHidden,
-            selfOnly: !queueLogState._modifiedSelftOnly
-              ? userRole &&
-                ((userRole.clinicRoleFK === 1 &&
-                  !startConsultPermissionIsHidden) ||
-                  (userRole.clinicRoleFK === 6 &&
-                    servePatientRight &&
-                    servePatientRight.rights !== 'hidden'))
-              : queueLogState.selfOnly,
+            selfOnly:
+              queueLogState.selfOnly !== undefined &&
+              queueLogState.selfOnly !== null
+                ? queueLogState.selfOnly
+                : userRole &&
+                  ((userRole.clinicRoleFK === 1 &&
+                    !startConsultPermissionIsHidden) ||
+                    (userRole.clinicRoleFK === 6 &&
+                      servePatientRight &&
+                      servePatientRight.rights !== 'hidden')),
           },
         })
       },
@@ -467,15 +458,26 @@ export default createListViewModel({
                 newVisitType = [-99, ...newVisitType]
               }
             }
-            yield put({
-              type: 'updateState',
-              payload: {
+            let newPayload = {
+              queueFilterBar: {
+                ...queue,
+                visitType: newVisitType,
+                doctor: doctor,
+              },
+            }
+            if (queue.selfOnly !== undefined && queue.selfOnly !== null) {
+              newPayload = {
                 queueFilterBar: {
                   ...queue,
                   visitType: newVisitType,
                   doctor: doctor,
                 },
-              },
+                selfOnly: queue.selfOnly,
+              }
+            }
+            yield put({
+              type: 'updateState',
+              payload: newPayload,
             })
           } else {
             yield put({

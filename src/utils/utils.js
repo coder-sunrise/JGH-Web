@@ -1057,7 +1057,7 @@ const calculateAmount = (
       !o.isDeleted &&
       (!o.isPreOrder || o.isChargeToday) &&
       !o.hasPaid &&
-      o.totalAfterItemAdjustment > 0,
+      o[totalField] > 0,
   )
   // zero amount
   allOrderRows
@@ -1066,7 +1066,7 @@ const calculateAmount = (
         !o.isDeleted &&
         (!o.isPreOrder || o.isChargeToday) &&
         !o.hasPaid &&
-        o.totalAfterItemAdjustment === 0,
+        o[totalField] === 0,
     )
     .forEach(r => {
       r[adjustedField] = r[totalField]
@@ -1161,15 +1161,25 @@ const calculateAmount = (
     } else {
       gst = roundTo((totalAfterAdj * gstValue) / 100)
     }
+    let currentItemTotalGst = 0
     activeOrderRows.forEach(r => {
       if (isGSTInclusive) {
-        r[gstField] = r[adjustedField]
-        r[gstAmtField] = roundTo(
+        let itemGST = roundTo(
           r[adjustedField] - r[adjustedField] / (1 + gstValue / 100),
         )
+        if (currentItemTotalGst + itemGST > gst) {
+          itemGST = gst - currentItemTotalGst
+        }
+        r[gstAmtField] = itemGST
+        r[gstField] = r[adjustedField]
+        currentItemTotalGst += itemGST
       } else {
-        r[gstAmtField] = roundTo((r[adjustedField] * gstValue) / 100)
-        r[gstField] = roundTo(r[adjustedField] * (1 + gstValue / 100))
+        let itemGST = roundTo((r[adjustedField] * gstValue) / 100)
+        if (currentItemTotalGst + itemGST > gst) {
+          itemGST = gst - currentItemTotalGst
+        }
+        r[gstAmtField] = itemGST
+        r[gstField] = r[adjustedField] + itemGST
       }
       // console.log(r[gstField], r[gstAmtField])
     })

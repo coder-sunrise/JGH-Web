@@ -227,7 +227,8 @@ const Detail = ({
                             disabled:
                               hasActiveSession &&
                               values?.id &&
-                              values?.isActive,
+                              values?.isActive &&
+                              values?.isNurseActualizable,
                             layoutConfig: {
                               style: {},
                             },

@@ -47,7 +47,22 @@ const Filterbar = props => {
     values,
   } = props
 
-  const onSwitchClick = () => dispatch({ type: 'queueLog/toggleSelfOnly' })
+  const onSwitchClick = e => {
+    dispatch({ type: 'queueLog/toggleSelfOnly' })
+    dispatch({
+      type: 'queueLog/saveUserPreference',
+      payload: {
+        userPreferenceDetails: {
+          value: {
+            selfOnly: e.target.value,
+          },
+          Identifier: 'Queue',
+        },
+        itemIdentifier: 'Queue',
+        type: '9',
+      },
+    })
+  }
   const clinicRoleFK = user.clinicianProfile.userProfile.role?.clinicRoleFK
   const servePatientRight = Authorized.check('queue.servepatient')
   // const { currentFilter } = queueLog

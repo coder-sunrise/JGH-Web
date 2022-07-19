@@ -9,6 +9,7 @@ import {
   CommonModal,
   Tooltip,
   TextField,
+  Checkbox,
 } from '@/components'
 import { Button, Tag } from 'antd'
 import {
@@ -28,25 +29,43 @@ class FolderList extends Component {
     showNewFolder: false,
     folderList: [],
     filterValue: '',
+    isShowEmptyTags: false,
   }
 
   debouncedAction = _.debounce(e => {
-    this.setState({ filterValue: e.target.value }, () => {
-      const { onSelectionChange, selectedFolderFK } = this.props
-      if (
-        !this.state.folderList.find(
-          f =>
-            !f.isDeleted &&
-            f.id === selectedFolderFK &&
-            (f.displayValue || '')
-              .toUpperCase()
-              .indexOf((this.state.filterValue || '').toUpperCase()) >= 0,
-        )
-      ) {
-        onSelectionChange({ id: -99 })
-      }
-    })
+    this.setState({ filterValue: e.target.value }, () =>
+      this.checkToSelectAll(this.props),
+    )
   }, 100)
+
+  onShowEmptyTagChange = e => {
+    this.setState({ isShowEmptyTags: e.target.value }, () =>
+      this.checkToSelectAll(this.props),
+    )
+  }
+
+  checkToSelectAll = props => {
+    const { onSelectionChange, selectedFolderFK } = props
+    if (selectedFolderFK === -99) return
+    const {
+      folderList = [],
+      filterValue = '',
+      isShowEmptyTags = true,
+    } = this.state
+    if (
+      !folderList.find(
+        f =>
+          !f.isDeleted &&
+          f.id === selectedFolderFK &&
+          (f.displayValue || '')
+            .toUpperCase()
+            .indexOf((filterValue || '').toUpperCase()) >= 0 &&
+          (isShowEmptyTags || f.fileCount > 0),
+      )
+    ) {
+      onSelectionChange({ id: -99 })
+    }
+  }
 
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -64,9 +83,12 @@ class FolderList extends Component {
     const diff = _.differenceWith(nextList, currentList, _.isEqual)
 
     if (diff.length > 0) {
-      this.setState({
-        folderList: nextList,
-      })
+      this.setState(
+        {
+          folderList: nextList,
+        },
+        () => this.checkToSelectAll(nextProps),
+      )
     }
   }
 
@@ -219,7 +241,13 @@ class FolderList extends Component {
       isEnableDeleteFolder = true,
       isEnableEditDocument = true,
     } = this.props
-    const { showNewFolder, folderList, isEditMode } = this.state
+    const {
+      showNewFolder,
+      folderList,
+      isEditMode,
+      isShowEmptyTags = true,
+      filterValue,
+    } = this.state
 
     return (
       <GridContainer style={{ height: 'auto' }}>
@@ -241,7 +269,7 @@ class FolderList extends Component {
                   </Tooltip>
                 )}
                 {isEnableEditDocument && (
-                  <div>
+                  <div style={{ marginRight: 8 }}>
                     <FastField
                       name={`${modelName}`}
                       render={args => {
@@ -283,6 +311,13 @@ class FolderList extends Component {
                     />
                   </div>
                 )}
+                <div>
+                  <Checkbox
+                    label='Show Empty Tags'
+                    checked={isShowEmptyTags}
+                    onChange={this.onShowEmptyTagChange}
+                  />
+                </div>
               </div>
               {isEnableEditFolder && (
                 <div
@@ -339,7 +374,7 @@ class FolderList extends Component {
             <TextField
               inputProps={{ placeholder: 'Key in to filter tags' }}
               onChange={this.debouncedAction}
-              value={this.state.filterValue}
+              value={filterValue}
             />
             <DragableList
               readOnly={readOnly}
@@ -348,10 +383,10 @@ class FolderList extends Component {
                 f =>
                   !f.isDeleted &&
                   (f.id === -99 ||
-                    (f.displayValue || '')
+                    ((f.displayValue || '')
                       .toUpperCase()
-                      .indexOf((this.state.filterValue || '').toUpperCase()) >=
-                      0),
+                      .indexOf((filterValue || '').toUpperCase()) >= 0 &&
+                      (isShowEmptyTags || f.fileCount > 0))),
               )}
               selectedFolderFK={selectedFolderFK}
               onMoving={this.handleOnMoving}

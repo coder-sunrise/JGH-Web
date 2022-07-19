@@ -70,16 +70,27 @@ class Document extends PureComponent {
         title='Patient Document'
         keepMounted={false}
       >
-        <AttachmentDocument
-          {...this.props}
-          type={FOLDER_TYPE.PATIENT}
-          readOnly={!patientIsActive}
-          modelName='patientAttachment'
-          isEnableEditDocument={editDocumentAccessRight.rights === 'enable'}
-          isEnableDeleteDocument={deleteDocumentAccessRight.rights === 'enable'}
-          isEnableEditFolder={editFolderAccessRight.rights === 'enable'}
-          isEnableDeleteFolder={deleteFolderAccessRight.rights === 'enable'}
-        />
+        <div>
+          <div style={{ marginLeft: 8, marginTop: '-10px' }}>
+            Name:&nbsp;
+            <span style={{ fontWeight: 600 }}>{`${entity.name ||
+              ''} (${entity.patientReferenceNo || ''})`}</span>
+            &nbsp;-&nbsp;
+            <span>{entity.patientAccountNo || ''}</span>
+          </div>
+          <AttachmentDocument
+            {...this.props}
+            type={FOLDER_TYPE.PATIENT}
+            readOnly={!patientIsActive}
+            modelName='patientAttachment'
+            isEnableEditDocument={editDocumentAccessRight.rights === 'enable'}
+            isEnableDeleteDocument={
+              deleteDocumentAccessRight.rights === 'enable'
+            }
+            isEnableEditFolder={editFolderAccessRight.rights === 'enable'}
+            isEnableDeleteFolder={deleteFolderAccessRight.rights === 'enable'}
+          />
+        </div>
       </CommonModal>
     )
   }

@@ -135,7 +135,7 @@ const RadiologyExaminations = props => {
                 >
                   <Descriptions.Item
                     label='Technologist:'
-                    labelStyle={{ width: 190, verticalAlign: 'top' }}
+                    labelStyle={{ width: 150, verticalAlign: 'top' }}
                     span={2}
                   >
                     {radiology.technologist ?? '-'}
@@ -148,7 +148,7 @@ const RadiologyExaminations = props => {
                     {visitDoctor}
                   </Descriptions.Item>
                   <Descriptions.Item
-                    label='Accession No.'
+                    label='Accession No.:'
                     contentStyle={{ width: 200 }}
                     labelStyle={{ verticalAlign: 'top' }}
                   >

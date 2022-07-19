@@ -334,7 +334,7 @@ class UserProfileForm extends React.PureComponent {
         const deactivating = today.isSameOrAfter(effectiveEndDate)
         const isPrimaryClinician =
           currentSelectedRole.clinicalRoleName === 'Doctor'
-            ? parseInt(doctorProfile.id, 10) ===
+            ? parseInt(doctorProfile?.id, 10) ===
               parseInt(primaryRegisteredDoctorFK, 10)
             : false
 

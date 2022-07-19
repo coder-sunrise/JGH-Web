@@ -1140,6 +1140,8 @@ class Banner extends PureComponent {
             value={info.dob}
           />
         </span>
+        <span className={classes.part}>{`, ${info.contact?.mobileContactNumber
+          ?.number || ''}`}</span>
         {', '}
         <span className={classes.part}>
           <CodeSelect

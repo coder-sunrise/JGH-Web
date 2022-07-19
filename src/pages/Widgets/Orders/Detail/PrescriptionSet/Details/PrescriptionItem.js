@@ -1267,7 +1267,7 @@ class Detail extends PureComponent {
                         label='Drug Mixture'
                         {...args}
                         autocomplete='off'
-                        maxLength={60}
+                        maxLength={70}
                       />
                     )
                   }}
@@ -1287,7 +1287,7 @@ class Detail extends PureComponent {
                       fontWeight: 500,
                     }}
                   >
-                    {`Characters left: ${90 - (values.drugName || '').length}`}
+                    {`Characters left: ${70 - (values.drugName || '').length}`}
                   </span>
                 </div>
               </div>

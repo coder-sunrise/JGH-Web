@@ -5,14 +5,16 @@ import { defaultConfigs } from './config'
 export const getConfig = (clinicSettings = {}) => {
   return {
     ...defaultConfigs,
-    fields: defaultConfigs.fields.filter(note => clinicSettings[note.enableSetting] === true)
+    fields: defaultConfigs.fields.filter(
+      note => clinicSettings[note.enableSetting] === true,
+    ),
   }
 }
 
-export const getContent = (config) => {
+export const getContent = config => {
   const { fields } = config
 
-  return fields.map((field) => ({
+  return fields.map(field => ({
     title: field.fieldTitle,
     name: field.fieldName,
     categoryIndex: field.scribbleNoteTypeFK,
@@ -28,13 +30,12 @@ export const getDefaultActivePanel = (
   panels,
 ) => {
   try {
+    if (panels.length === 0) return []
     const { fields } = config
     const { corScribbleNotes = [] } = entity
     const notes = entity[prefix] || []
 
-    let defaultActive = [
-      0,
-    ]
+    let defaultActive = [0]
 
     if (notes.length === 0 && corScribbleNotes.length === 0)
       return defaultActive
@@ -42,34 +43,37 @@ export const getDefaultActivePanel = (
     // check if panel contains doctor notes
     if (notes.length > 0) {
       const doctorNote = { ...notes[0] }
-      const panelWithData = fields.filter((field) => {
+      const panelWithData = fields.filter(field => {
         if (doctorNote[field.fieldName]) return true
         return false
       })
 
-      defaultActive = panelWithData.map((i) =>
-        panels.findIndex((field) => field.index === i.index),
-      )
+      defaultActive = [
+        ...defaultActive,
+        ...panelWithData.map(i =>
+          panels.findIndex(field => field.index === i.index),
+        ),
+      ]
     }
 
     // check if panel contains scribble notes
     if (corScribbleNotes.length > 0) {
-      const panelWithScribble = fields.filter((field) => {
+      const panelWithScribble = fields.filter(field => {
         const data = corScribbleNotes.filter(
-          (sn) => sn.scribbleNoteTypeFK === field.scribbleNoteTypeFK,
+          sn => sn.scribbleNoteTypeFK === field.scribbleNoteTypeFK,
         )
         return data.length > 0
       })
       defaultActive = [
         ...defaultActive,
-        ...panelWithScribble.map((i) => i.index),
+        ...panelWithScribble.map(i =>
+          panels.findIndex(field => field.index === i.index),
+        ),
       ]
     }
 
     // to get rid of duplicate elements
-    const result = [
-      ...new Set(defaultActive),
-    ]
+    const result = [...new Set(defaultActive)]
     // console.log({ result })
     return result
   } catch (error) {
@@ -111,11 +115,9 @@ export const generateData = () => {
 }
 
 export const applyFilter = (filter, rows) => {
-  let returnData = [
-    ...rows,
-  ]
+  let returnData = [...rows]
   if (filter !== '') {
-    returnData = returnData.filter((each) => {
+    returnData = returnData.filter(each => {
       const { title, cannedText } = each
       return (
         title.toLowerCase().indexOf(filter) >= 0 ||

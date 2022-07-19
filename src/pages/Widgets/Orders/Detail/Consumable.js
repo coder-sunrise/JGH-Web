@@ -702,6 +702,7 @@ class Consumable extends PureComponent {
                   name='adjValue'
                   render={args => {
                     args.min = 0
+                    args.precision = 2
                     if (values.isExactAmount) {
                       return (
                         <NumberInput

@@ -38,85 +38,99 @@ export const constructPayload = values => {
   }
   let copayerTotalGstAmount = 0
   let copayerTotalClaimedAmount = 0
-  _invoicePayer = _invoicePayer
-    .filter(payer => (payer.id ? payer.isModified : true))
-    .map(payer => {
-      const {
-        schemeConfig,
-        _indexInClaimableSchemes,
-        _isConfirmed,
-        claimableSchemes,
-        _isDeleted,
-        _isEditing,
-        _isValid,
-        isModified,
-        ...restPayer
-      } = payer
-      // let invoicePayerGstAmount = 0
-      const _payer = {
-        ...restPayer,
-        isModified: restPayer.id ? isModified : false,
-        invoicePayerItem: payer.invoicePayerItem
-          .filter(item => item.claimAmountBeforeGST > 0)
-          .map(item => {
-            if (typeof item.id !== 'string') {
-              const gstAmount = roundTo(
-                (item.claimAmountBeforeGST * gstValue) / 100,
-              )
-              // invoicePayerGstAmount += gstAmount
-              return {
-                ...item,
-                claimAmount: item.claimAmountBeforeGST + gstAmount,
-                outstanding: item.claimAmountBeforeGST + gstAmount,
-              }
-            }
-            const {
-              invoiceItemFK,
-              _claimedAmount,
-              disabled,
-              itemCode,
-              rowIndex,
-              notClaimableBySchemeIds,
-              invoiceItemTypeFK,
-              itemDescription,
-              coverage,
-              payableBalance,
-              claimAmountBeforeGST,
-              id,
-              ...restItem
-            } = item
-            const gstItemAmount = roundTo(
-              (claimAmountBeforeGST * gstValue) / 100,
+  _invoicePayer = _invoicePayer.filter(payer =>
+    payer.id ? payer.isModified : true,
+  )
+  const isFullyClaimed =
+    _.sumBy(
+      _invoicePayer.filter(t => !t.isCancelled),
+      'payerDistributedAmtBeforeGST',
+    ) === invoice.totalAftAdj
+  _invoicePayer = _invoicePayer.map((payer, index) => {
+    const {
+      schemeConfig,
+      _indexInClaimableSchemes,
+      _isConfirmed,
+      claimableSchemes,
+      _isDeleted,
+      _isEditing,
+      _isValid,
+      isModified,
+      ...restPayer
+    } = payer
+    // let invoicePayerGstAmount = 0
+    const _payer = {
+      ...restPayer,
+      isModified: restPayer.id ? isModified : false,
+      invoicePayerItem: payer.invoicePayerItem
+        .filter(item => item.claimAmountBeforeGST > 0)
+        .map(item => {
+          if (typeof item.id !== 'string') {
+            const gstAmount = roundTo(
+              (item.claimAmountBeforeGST * gstValue) / 100,
             )
-            // invoicePayerGstAmount += gstItemAmount
-            const _invoicePayerItem = {
-              ...restItem,
-              invoiceItemFK,
-              claimAmountBeforeGST: claimAmountBeforeGST,
-              claimAmount: claimAmountBeforeGST + gstItemAmount,
-              outstanding: claimAmountBeforeGST + gstItemAmount,
-              payableBalance,
-              invoiceItemTypeFK,
-              itemName: itemDescription,
+            // invoicePayerGstAmount += gstAmount
+            return {
+              ...item,
+              claimAmount: item.claimAmountBeforeGST + gstAmount,
+              outstanding: item.claimAmountBeforeGST + gstAmount,
             }
-            return _invoicePayerItem
-          }),
-      }
+          }
+          const {
+            invoiceItemFK,
+            _claimedAmount,
+            disabled,
+            itemCode,
+            rowIndex,
+            notClaimableBySchemeIds,
+            invoiceItemTypeFK,
+            itemDescription,
+            coverage,
+            payableBalance,
+            claimAmountBeforeGST,
+            id,
+            ...restItem
+          } = item
+          const gstItemAmount = roundTo((claimAmountBeforeGST * gstValue) / 100)
+          // invoicePayerGstAmount += gstItemAmount
+          const _invoicePayerItem = {
+            ...restItem,
+            invoiceItemFK,
+            claimAmountBeforeGST: claimAmountBeforeGST,
+            claimAmount: claimAmountBeforeGST + gstItemAmount,
+            outstanding: claimAmountBeforeGST + gstItemAmount,
+            payableBalance,
+            invoiceItemTypeFK,
+            itemName: itemDescription,
+          }
+          return _invoicePayerItem
+        }),
+    }
 
-      // copayerTotalGstAmount += invoicePayerGstAmount
-      // if (copayerTotalGstAmount > gstAmount) {
-      //   invoicePayerGstAmount = gstAmount - copayerTotalGstAmount
-      //   _payer.gstAmount = invoicePayerGstAmount
-      // } else {
-      //   _payer.gstAmount = invoicePayerGstAmount
-      // }
+    // copayerTotalGstAmount += invoicePayerGstAmount
+    // if (copayerTotalGstAmount > gstAmount) {
+    //   invoicePayerGstAmount = gstAmount - copayerTotalGstAmount
+    //   _payer.gstAmount = invoicePayerGstAmount
+    // } else {
+    //   _payer.gstAmount = invoicePayerGstAmount
+    // }
+    if (isFullyClaimed && index === _invoicePayer.length - 1) {
+      _payer.gstAmount = roundTo(
+        invoice.gstAmount -
+          _.sumBy(
+            _invoicePayer.filter(t => t.sequence !== _payer.sequence),
+            'gstAmount',
+          ),
+      )
+    } else {
       _payer.gstAmount = roundTo(
         (_payer.payerDistributedAmtBeforeGST * gstValue) / 100,
       )
-      _payer.payerDistributedAmt =
-        _payer.gstAmount + _payer.payerDistributedAmtBeforeGST
-      return _payer
-    })
+    }
+    _payer.payerDistributedAmt =
+      _payer.gstAmount + _payer.payerDistributedAmtBeforeGST
+    return _payer
+  })
 
   const payload = {
     visitPurposeFK,

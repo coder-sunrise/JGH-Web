@@ -292,8 +292,10 @@ const PendingPreOrder: React.FC = (props: any) => {
       row.preOrderItemType === preOrderItemCategory[3].value ||
       row.preOrderItemType == preOrderItemCategory[4].value ||
       row.preOrderItemType == preOrderItemCategory[5].value
-    )
+    ) {
       row.preOrderServiceItem = { ServiceCenterServiceFK: option?.id }
+      row.serviceCenterName = option?.serviceCenter || '-'
+    }
     row.quantity = 1
     row.amount = 0
     row.remarks = undefined
@@ -367,11 +369,28 @@ const PendingPreOrder: React.FC = (props: any) => {
       {
         columnName: 'itemName',
         type: 'select',
-        labelField: 'combinDisplayValue',
+        // labelField: 'combinDisplayValue',
         valueField: 'id',
         sortingEnabled: false,
-        width: 250,
+        width: 380,
         options: generateItemDataSource,
+        dropdownMatchSelectWidth: false,
+        dropdownStyle: { width: '770px' },
+        renderDropdown: option => {
+          return (
+            <Tooltip
+              title={
+                <div>
+                  {option?.combinDisplayValue}
+                  <br />
+                  {option?.serviceCenter}
+                </div>
+              }
+            >
+              <div>{option?.combinDisplayValue}</div>
+            </Tooltip>
+          )
+        },
         onChange: handleItemChanged,
         render: row => {
           return (
@@ -381,6 +400,11 @@ const PendingPreOrder: React.FC = (props: any) => {
                   {`Code: ${row.code}`}
                   <br />
                   {`Name: ${row.itemName}`}
+                  <br />
+                  {row.preOrderServiceItem &&
+                    `Service Center: ${row.serviceCenterName ??
+                      row.preOrderServiceItem.serviceCenterName ??
+                      '-'}`}
                 </div>
               }
             >

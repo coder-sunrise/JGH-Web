@@ -146,7 +146,8 @@ const Detail = ({
                               disabled:
                                 hasActiveSession &&
                                 consumableDetail.entity?.id &&
-                                consumableDetail.entity?.isActive,
+                                consumableDetail.entity?.isActive &&
+                                consumableDetail.entity?.orderable,
                               layoutConfig: {
                                 style: {},
                               },
@@ -165,7 +166,9 @@ const Detail = ({
                                 disabled:
                                   hasActiveSession &&
                                   consumableDetail.entity?.id &&
-                                  consumableDetail.entity?.isActive,
+                                  consumableDetail.entity?.isActive &&
+                                  consumableDetail.entity
+                                    ?.isDispensedByPharmacy,
                                 layoutConfig: {
                                   style: {},
                                 },
@@ -184,7 +187,8 @@ const Detail = ({
                                 disabled:
                                   hasActiveSession &&
                                   consumableDetail.entity?.id &&
-                                  consumableDetail.entity?.isActive,
+                                  consumableDetail.entity?.isActive &&
+                                  consumableDetail.entity?.isNurseActualizable,
                                 layoutConfig: {
                                   style: {},
                                 },
