@@ -56,9 +56,9 @@ class CorporateBillingGrid extends PureComponent {
         width: 130,
         sortingEnabled: false,
         render: row => {
-          const contactPerson = (row.contactPersons || []).find(
-            x => x.isDefault,
-          )
+          const contactPerson = row.contactPersons
+            ? (JSON.parse(row.contactPersons) || []).find(x => x.isDefault)
+            : undefined
           return (
             <Tooltip title={contactPerson?.name}>
               <span>{contactPerson?.name || '-'}</span>
@@ -79,9 +79,9 @@ class CorporateBillingGrid extends PureComponent {
         sortingEnabled: false,
         width: 130,
         render: row => {
-          const contactPerson = (row.contactPersons || []).find(
-            x => x.isDefault,
-          )
+          const contactPerson = row.contactPersons
+            ? (JSON.parse(row.contactPersons) || []).find(x => x.isDefault)
+            : undefined
           return (
             <Tooltip title={contactPerson?.workNumber}>
               <span>{contactPerson?.workNumber || '-'}</span>
@@ -94,9 +94,9 @@ class CorporateBillingGrid extends PureComponent {
         sortingEnabled: false,
         width: 130,
         render: row => {
-          const contactPerson = (row.contactPersons || []).find(
-            x => x.isDefault,
-          )
+          const contactPerson = row.contactPersons
+            ? (JSON.parse(row.contactPersons) || []).find(x => x.isDefault)
+            : undefined
           return (
             <Tooltip title={contactPerson?.faxNumber}>
               <span>{contactPerson?.faxNumber || '-'}</span>
@@ -109,9 +109,9 @@ class CorporateBillingGrid extends PureComponent {
         sortingEnabled: false,
         width: 130,
         render: row => {
-          const contactPerson = (row.contactPersons || []).find(
-            x => x.isDefault,
-          )
+          const contactPerson = row.contactPersons
+            ? (JSON.parse(row.contactPersons) || []).find(x => x.isDefault)
+            : undefined
           return (
             <Tooltip title={contactPerson?.emailAddress}>
               <span>{contactPerson?.emailAddress || '-'}</span>
@@ -157,10 +157,9 @@ class CorporateBillingGrid extends PureComponent {
     this.props.dispatch({
       type: 'corporateBilling/query',
       payload: {
-        id: undefined,
-        isActive: true,
+        sorting: [{ columnName: 'displayValue', direction: 'asc' }],
         apiCriteria: {
-          outstandingBalanceStatus: undefined,
+          IsActive: true,
         },
       },
     })
