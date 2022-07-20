@@ -125,7 +125,7 @@ class DragableItem extends Component {
                     <Button
                       type='danger'
                       size='small'
-                      disabled={!item.isEmpty}
+                      // disabled={!item.isEmpty}
                       style={{
                         float: 'right',
                         marginTop: 8,

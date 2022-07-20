@@ -67,10 +67,16 @@ class Document extends PureComponent {
         open
         fullScreen
         onClose={this.props.onClose}
+        showFooter={true}
+        footProps={{
+          confirmProps: {
+            hidden: true,
+          },
+        }}
         title='Patient Document'
         keepMounted={false}
       >
-        <div>
+        <div style={{ height: '85vh' }}>
           <div style={{ marginLeft: 8, marginTop: '-10px' }}>
             Name:&nbsp;
             <span style={{ fontWeight: 600 }}>{`${entity.name ||

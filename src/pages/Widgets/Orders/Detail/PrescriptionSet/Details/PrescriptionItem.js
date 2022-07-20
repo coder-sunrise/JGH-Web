@@ -963,13 +963,13 @@ class Detail extends PureComponent {
     row.uomfk = option.dispensingUOM.id
     row.uomCode = option.dispensingUOM.code
     row.uomDisplayValue = option.dispensingUOM.name
-    row.prescribeUOMFK = option.prescribingUOM.id
-    row.prescribeUOMCode = option.prescribingUOM.code
-    row.prescribeUOMDisplayValue = option.prescribingUOM.name
+    row.prescribeUOMFK = option.prescribingUOM?.id
+    row.prescribeUOMCode = option.prescribingUOM?.code
+    row.prescribeUOMDisplayValue = option.prescribingUOM?.name
     row.drugName = option.displayValue
     row.revenueCategoryFK = option.revenueCategoryFK
     row.inventoryDispenseUOMFK = option.dispensingUOM.id
-    row.inventoryPrescribingUOMFK = option.prescribingUOM.id
+    row.inventoryPrescribingUOMFK = option.prescribingUOM?.id
     row.isActive = option.isActive
     row.orderable = option.orderable
   }

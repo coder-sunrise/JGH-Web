@@ -1263,11 +1263,11 @@ class Medication extends PureComponent {
     row.revenueCategoryFK = option.revenueCategoryFK
     row.isDispensedByPharmacy = option.isDispensedByPharmacy
     row.isNurseActualizeRequired = option.isNurseActualizable
-    row.prescribeUOMFK = option.prescribingUOM.id
-    row.prescribeUOMCode = option.prescribingUOM.code
-    row.prescribeUOMDisplayValue = option.prescribingUOM.name
+    row.prescribeUOMFK = option.prescribingUOM?.id
+    row.prescribeUOMCode = option.prescribingUOM?.code
+    row.prescribeUOMDisplayValue = option.prescribingUOM?.name
     row.inventoryDispenseUOMFK = option.dispensingUOM.id
-    row.inventoryPrescribingUOMFK = option.prescribingUOM.id
+    row.inventoryPrescribingUOMFK = option.prescribingUOM?.id
     row.isActive = option.isActive
     row.orderable = option.orderable
   }

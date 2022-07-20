@@ -4,6 +4,7 @@ import $ from 'jquery'
 import Yup from '@/utils/yup'
 import Refresh from '@material-ui/icons/Refresh'
 import moment from 'moment'
+import { CannedTextButton } from './CannedTextButton'
 import {
   GridContainer,
   GridItem,
@@ -18,6 +19,7 @@ import {
   Tooltip,
   RichEditor,
 } from '@/components'
+import { CANNED_TEXT_TYPE } from '@/utils/constants'
 import { withStyles, TextField } from '@material-ui/core'
 // import model from './models'
 import PatientNurseNotesContent from './content'
@@ -164,6 +166,29 @@ class PatientNurseNotes extends PureComponent {
     setFieldValue('notes', v || '')
   }
 
+  handleSelectCannedText = async cannedText => {
+    const result = await this.getCannedText(cannedText)
+    this.updateEditor(result)
+  }
+  getCannedText = cannedText => {
+    const { cannedTextRow = {} } = this.props
+    const { authority } = cannedTextRow
+    const accessRight = Authorized.check(authority)
+    if (accessRight && accessRight.rights !== 'enable') return ''
+    const { text } = cannedText
+    return text
+  }
+  updateEditor = async result => {
+    if (this.richEditor && this.richEditor.props) {
+      const { editorState } = this.richEditor.props
+      this.richEditor.update(
+        RichEditor.insertHtml(editorState, '<br/>' + result),
+      )
+      setTimeout(() => {
+        this.richEditor.focus()
+      }, 1)
+    }
+  }
   render() {
     const {
       dispatch,
@@ -245,7 +270,21 @@ class PatientNurseNotes extends PureComponent {
                     render={args => {
                       return (
                         <div ref={this.divElement}>
+                          <CannedTextButton
+                            style={{
+                              position: 'absolute',
+                              zIndex: 1,
+                              right: 12,
+                              top: 25,
+                            }}
+                            buttonType='icon'
+                            cannedTextTypeFK={CANNED_TEXT_TYPE.NURSENOTES}
+                            handleSelectCannedText={this.handleSelectCannedText}
+                          />
                           <RichEditor
+                            editorRef={ref => {
+                              this.richEditor = ref
+                            }}
                             disabled={!isEditableNotes}
                             strongLabel
                             autoFocus

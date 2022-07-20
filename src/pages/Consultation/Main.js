@@ -366,6 +366,7 @@ const saveConsultation = ({
     values.isPharmacyOrderUpdated = isPharmacyOrderUpdated(orders)
   }
 
+
   const onConfirmSave = () => {
     const newValues = convertToConsultation(
       {

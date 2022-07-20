@@ -314,7 +314,10 @@ class AntdSelect extends React.PureComponent {
       if (Array.isArray(option.props.children)) {
         match = false
       }
-      match = option.props.title.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      match =
+        (option.props.label ?? option.props.title)
+          .toLowerCase()
+          .indexOf(input.toLowerCase()) >= 0
       if (
         !match &&
         additionalSearchField &&

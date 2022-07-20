@@ -441,6 +441,14 @@ export default createListViewModel({
           let newVisitType = [-99, ...activeVisitType]
           let doctor = []
           if (data) {
+            let user = JSON.parse(
+              sessionStorage.getItem('user') || localStorage.getItem('user'),
+            ).data
+            let {
+              clinicianProfile: {
+                userProfile: { role: userRole },
+              },
+            } = user
             const filterBar = JSON.parse(data)
             let queueFilterBar
             if (payload.type === '9') {
@@ -465,7 +473,12 @@ export default createListViewModel({
                 doctor: doctor,
               },
             }
-            if (queue.selfOnly !== undefined && queue.selfOnly !== null) {
+            if (
+              queue.selfOnly !== undefined &&
+              queue.selfOnly !== null &&
+              userRole &&
+              (userRole.clinicRoleFK === 1 || userRole.clinicRoleFK === 6)
+            ) {
               newPayload = {
                 queueFilterBar: {
                   ...queue,

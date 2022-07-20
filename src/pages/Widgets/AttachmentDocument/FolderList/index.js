@@ -9,6 +9,7 @@ import {
   CommonModal,
   Tooltip,
   TextField,
+  notification,
   Checkbox,
 } from '@/components'
 import { Button, Tag } from 'antd'
@@ -18,7 +19,7 @@ import {
   CloseCircleFilled,
   FolderAddFilled,
 } from '@ant-design/icons'
-import { AttachmentWithThumbnail } from '@/components/_medisys'
+import { AttachmentWithThumbnail, Notification } from '@/components/_medisys'
 import { FILE_CATEGORY, FILE_STATUS } from '@/utils/constants'
 import TextEditor from '../TextEditor'
 import DragableList from './DragableList'
@@ -196,11 +197,30 @@ class FolderList extends Component {
   }
 
   onItemChanged = item => {
+    if (item.isDeleted) {
+      this.props
+        .dispatch({
+          type: 'folder/checkIfEmpty',
+          payload: item.id,
+        })
+        .then(r => {
+          if (r && r.data === true) {
+            notification.warning({
+              message: `Delete failed, attachment already associated to tag '${item.displayValue}'.`,
+            })
+            return
+          }
+          this.updateList(item)
+        })
+    } else {
+      this.updateList(item)
+    }
+  }
+  updateList = item => {
     const { folderList = [] } = this.state
     let stateItem = folderList.find(i => i.id === item.id)
     stateItem.displayValue = item.displayValue
     stateItem.isDeleted = item.isDeleted
-
     this.setState({ folderList })
   }
 

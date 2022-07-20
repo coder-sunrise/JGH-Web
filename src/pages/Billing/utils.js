@@ -114,11 +114,16 @@ export const constructPayload = values => {
     // } else {
     //   _payer.gstAmount = invoicePayerGstAmount
     // }
-    if (isFullyClaimed && index === _invoicePayer.length - 1) {
+    if (
+      isFullyClaimed &&
+      index === _invoicePayer.filter(t => !t.isCancelled).length - 1
+    ) {
       _payer.gstAmount = roundTo(
         invoice.gstAmount -
           _.sumBy(
-            _invoicePayer.filter(t => t.sequence !== _payer.sequence),
+            _invoicePayer.filter(
+              t => t.sequence !== _payer.sequence && !t.isCancelled,
+            ),
             'gstAmount',
           ),
       )

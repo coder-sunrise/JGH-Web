@@ -120,6 +120,7 @@ const TagSelect = ({
           onChange={handleInputConfirm}
           onSearch={v => setNewTagInput(v)}
           onBlur={e => handleInputCancel(e)}
+          dropdownMatchSelectWidth={false}
           onDropdownVisibleChange={open => {
             setDropdownOpen(open)
           }}

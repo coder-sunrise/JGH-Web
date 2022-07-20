@@ -339,14 +339,14 @@ const cleanConsultation = values => {
   }
 }
 
-const isPharmacyOrderUpdated = orders => {
+const isPharmacyOrderUpdated = (orders, ignorePharmacy) => {
   const { rows, _originalRows } = orders
 
   let isUpdatedPharmacy = false
   const isPushToPharmacy = item => {
     let isPushToPharmacy = false
     if (item.type === '1' || item.type === '4' || item.type === '5') {
-      isPushToPharmacy = item.isDispensedByPharmacy
+      isPushToPharmacy = ignorePharmacy || item.isDispensedByPharmacy
     }
     return isPushToPharmacy
   }

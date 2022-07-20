@@ -91,118 +91,118 @@ export const DentalCategory = [
 ]
 
 export const categoryTypes = [
-         {
-           value: WIDGETS_ID.ASSOCIATED_HISTORY,
-           name: 'History',
-           authority: 'queue.consultation.clinicalnotes.history',
-         },
-         {
-           value: WIDGETS_ID.CHIEF_COMPLAINTS,
-           name: 'Chief Complaints',
-           authority: 'queue.consultation.clinicalnotes.chiefcomplaints',
-         },
-         {
-           value: WIDGETS_ID.CLINICAL_NOTE,
-           name: 'Clinic Notes',
-           authority: 'queue.consultation.clinicalnotes.clinicalnotes',
-         },
-         {
-           value: WIDGETS_ID.PLAN,
-           name: 'Plan',
-           authority: 'queue.consultation.clinicalnotes.plan',
-         },
-         {
-           value: WIDGETS_ID.DENTAL_CHART,
-           name: 'Dental Chart',
-           authority: 'queue.consultation.widgets.dentalchart',
-         },
-         {
-           value: WIDGETS_ID.TREATMENT,
-           name: 'Treatment',
-           authority: 'queue.consultation.widgets.dentalchart',
-         },
-         {
-           value: WIDGETS_ID.DIAGNOSIS,
-           name: 'Diagnosis',
-           authority: 'queue.consultation.widgets.diagnosis',
-         },
-         {
-           value: WIDGETS_ID.VISUALACUITYTEST,
-           name: 'Visual Acuity Test',
-           shortname: 'Visual Acuity',
-           authority: 'queue.consultation.widgets.eyevisualacuity',
-         },
-         {
-           value: WIDGETS_ID.REFRACTIONFORM,
-           name: 'Refraction Form',
-           authority: 'queue.consultation.widgets.eyerefractionform',
-         },
-         {
-           value: WIDGETS_ID.EXAMINATIONFORM,
-           name: 'Examination Form',
-           authority: 'queue.consultation.widgets.eyeexaminationform',
-         },
-         {
-           value: WIDGETS_ID.VISITREMARKS,
-           name: 'Visit Remarks',
-           authority: 'queue.visitregistrationdetails',
-         },
-         {
-           value: WIDGETS_ID.REFERRAL,
-           name: 'Referral',
-           authority: '',
-         },
-         {
-           value: WIDGETS_ID.VITALSIGN,
-           name: 'Basic Examinations',
-           shortname: 'Basic Exam.',
-           authority: 'queue.consultation.widgets.vitalsign',
-         },
-         {
-           value: WIDGETS_ID.EYEEXAMINATIONS,
-           name: 'Eye Examinations',
-           shortname: 'Eye Exam.',
-           authority: 'queue.consultation.widgets.eyeexaminations',
-         },
-         {
-           value: WIDGETS_ID.AUDIOMETRYTEST,
-           name: 'Audiometry Test',
-           shortname: 'Audiometry',
-           authority: 'queue.consultation.widgets.audiometrytest',
-         },
-         {
-           value: WIDGETS_ID.ORDERS,
-           name: 'Order',
-           authority: 'queue.consultation.widgets.order',
-         },
-         {
-           value: WIDGETS_ID.INVOICE,
-           name: 'Invoice',
-           authority: 'finance/invoicepayment',
-         },
-         {
-           value: WIDGETS_ID.CONSULTATION_DOCUMENT,
-           name: 'Consultation Document',
-           shortname: 'Cons. Doc.',
-           authority: 'queue.consultation.widgets.consultationdocument',
-         },
-         {
-           value: WIDGETS_ID.FORMS,
-           name: 'Forms',
-           authority: 'queue.consultation.form',
-         },
-         {
-           value: WIDGETS_ID.ATTACHMENT,
-           name: 'Attachment',
-           authority: 'queue.consultation.widgets.attachment',
-         },
-         {
-           value: WIDGETS_ID.NURSENOTES,
-           name: 'Notes',
-           authority:
-             'patientdatabase.patientprofiledetails.patienthistory.nursenotes',
-         },
-       ]
+  {
+    value: WIDGETS_ID.ASSOCIATED_HISTORY,
+    name: 'History',
+    authority: 'queue.consultation.clinicalnotes.history',
+  },
+  {
+    value: WIDGETS_ID.CHIEF_COMPLAINTS,
+    name: 'Chief Complaints',
+    authority: 'queue.consultation.clinicalnotes.chiefcomplaints',
+  },
+  {
+    value: WIDGETS_ID.CLINICAL_NOTE,
+    name: 'Clinic Notes',
+    authority: 'queue.consultation.clinicalnotes.clinicalnotes',
+  },
+  {
+    value: WIDGETS_ID.PLAN,
+    name: 'Plan',
+    authority: 'queue.consultation.clinicalnotes.plan',
+  },
+  {
+    value: WIDGETS_ID.DENTAL_CHART,
+    name: 'Dental Chart',
+    authority: 'queue.consultation.widgets.dentalchart',
+  },
+  {
+    value: WIDGETS_ID.TREATMENT,
+    name: 'Treatment',
+    authority: 'queue.consultation.widgets.dentalchart',
+  },
+  {
+    value: WIDGETS_ID.DIAGNOSIS,
+    name: 'Diagnosis',
+    authority: 'queue.consultation.widgets.diagnosis',
+  },
+  {
+    value: WIDGETS_ID.VISUALACUITYTEST,
+    name: 'Visual Acuity Test',
+    shortname: 'Visual Acuity',
+    authority: 'queue.consultation.widgets.eyevisualacuity',
+  },
+  {
+    value: WIDGETS_ID.REFRACTIONFORM,
+    name: 'Refraction Form',
+    authority: 'queue.consultation.widgets.eyerefractionform',
+  },
+  {
+    value: WIDGETS_ID.EXAMINATIONFORM,
+    name: 'Examination Form',
+    authority: 'queue.consultation.widgets.eyeexaminationform',
+  },
+  {
+    value: WIDGETS_ID.VISITREMARKS,
+    name: 'Visit Remarks',
+    authority: 'queue.visitregistrationdetails',
+  },
+  {
+    value: WIDGETS_ID.REFERRAL,
+    name: 'Referral',
+    authority: '',
+  },
+  {
+    value: WIDGETS_ID.VITALSIGN,
+    name: 'Basic Examinations',
+    shortname: 'Basic Exam.',
+    authority: 'queue.consultation.widgets.vitalsign',
+  },
+  {
+    value: WIDGETS_ID.EYEEXAMINATIONS,
+    name: 'Eye Examinations',
+    shortname: 'Eye Exam.',
+    authority: 'queue.consultation.widgets.eyeexaminations',
+  },
+  {
+    value: WIDGETS_ID.AUDIOMETRYTEST,
+    name: 'Audiometry Test',
+    shortname: 'Audiometry',
+    authority: 'queue.consultation.widgets.audiometrytest',
+  },
+  {
+    value: WIDGETS_ID.ORDERS,
+    name: 'Order',
+    authority: 'queue.consultation.widgets.order',
+  },
+  {
+    value: WIDGETS_ID.INVOICE,
+    name: 'Invoice',
+    authority: 'finance/invoicepayment',
+  },
+  {
+    value: WIDGETS_ID.CONSULTATION_DOCUMENT,
+    name: 'Consultation Document',
+    shortname: 'Cons. Doc.',
+    authority: 'queue.consultation.widgets.consultationdocument',
+  },
+  {
+    value: WIDGETS_ID.FORMS,
+    name: 'Forms',
+    authority: 'queue.consultation.form',
+  },
+  {
+    value: WIDGETS_ID.ATTACHMENT,
+    name: 'Attachment',
+    authority: 'queue.consultation.widgets.attachment',
+  },
+  {
+    value: WIDGETS_ID.NURSENOTES,
+    name: 'Notes',
+    authority:
+      'patientdatabase.patientprofiledetails.patienthistory.nursenotes',
+  },
+]
 
 export const notesTypes = [
   {
@@ -631,7 +631,7 @@ export const showWidget = (current, widgetId, selectNoteTypes = []) => {
   // check show orders
   if (
     widgetId === WIDGETS_ID.ORDERS &&
-    (!current.orders || current.orders.length === 0)
+    (!current.orders || current.orders.length === 0) && !current.isFromEditOrder
   )
     return false
   // check show document

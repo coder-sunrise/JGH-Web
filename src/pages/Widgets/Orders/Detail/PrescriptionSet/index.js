@@ -311,7 +311,7 @@ class PrescriptionSetList extends PureComponent {
               isNurseActualizeRequired = drug.isNurseActualizable
               isExclusive = drug.isExclusive
               inventoryDispenseUOMFK = drug.dispensingUOM.id
-              inventoryPrescribingUOMFK = drug.prescribingUOM.id
+              inventoryPrescribingUOMFK = drug.prescribingUOM?.id
               orderable = drug.orderable
             } else if (item.isDrugMixture) {
               // Drug Mixture
@@ -377,9 +377,9 @@ class PrescriptionSetList extends PureComponent {
                               'displayValue',
                             )
                           : '',
-                      prescribeUOMFK: drug.prescribingUOM.id,
-                      prescribeUOMCode: drug.prescribingUOM.code,
-                      prescribeUOMDisplayValue: drug.prescribingUOM.name,
+                      prescribeUOMFK: drug.prescribingUOM?.id,
+                      prescribeUOMCode: drug.prescribingUOM?.code,
+                      prescribeUOMDisplayValue: drug.prescribingUOM?.name,
                       batchNo: o.batchNo,
                       expiryDate: o.expiryDate,
                       revenueCategoryFK: drug.revenueCategoryFK,
@@ -391,7 +391,7 @@ class PrescriptionSetList extends PureComponent {
                       isDispensedByPharmacy: drug.isDispensedByPharmacy,
                       isNurseActualizeRequired: drug.isNurseActualizable,
                       inventoryDispenseUOMFK: drug.dispensingUOM.id,
-                      inventoryPrescribingUOMFK: drug.prescribingUOM.id,
+                      inventoryPrescribingUOMFK: drug.prescribingUOM?.id,
                       isActive: drug.isActive,
                       orderable: drug.orderable,
                     }
