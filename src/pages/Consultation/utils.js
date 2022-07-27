@@ -367,7 +367,9 @@ const isPharmacyOrderUpdated = (orders, isPrescriptionSheetUpdated) => {
       isExclusive: item.isExclusive,
       isNurseActualizeRequired: item.isNurseActualizeRequired,
       isPreOrder: item.isPreOrder,
-      isExternalPrescription: isPrescriptionSheetUpdated ? item.isExternalPrescription : undefined,
+      isExternalPrescription: isPrescriptionSheetUpdated
+        ? item.isExternalPrescription
+        : undefined,
       performingUserFK: item.performingUserFK,
       quantity: item.quantity,
       remarks: item.remarks,
@@ -488,7 +490,11 @@ const isPharmacyOrderUpdated = (orders, isPrescriptionSheetUpdated) => {
             r.type === pharmacyOrder[index].type,
         )
 
-        if (currentRow.corPrescriptionItemDrugMixture.find(d => !d.id)) {
+        if (
+          currentRow.corPrescriptionItemDrugMixture.find(
+            d => !d.id && !d.isDeleted,
+          )
+        ) {
           isUpdatedPharmacy = true
           break
         }
@@ -515,9 +521,179 @@ const isPharmacyOrderUpdated = (orders, isPrescriptionSheetUpdated) => {
 
   if (!isUpdatedPharmacy) {
     isUpdatedPharmacy =
-      rows.filter(r => !r.id && !r.isPreOrder && (!isPrescriptionSheetUpdated || !r.isExternalPrescription) && isPushToPharmacy(r)).length > 0
+      rows.filter(
+        r =>
+          !r.id &&
+          !r.isDeleted &&
+          !r.isPreOrder &&
+          (!isPrescriptionSheetUpdated || !r.isExternalPrescription) &&
+          isPushToPharmacy(r),
+      ).length > 0
   }
   return isUpdatedPharmacy
+}
+
+const isOrderUpdated = (orders, consultationDocument) => {
+  const { rows, _originalRows } = orders
+  let isUpdated = false
+
+  const generateMedication = item => {
+    if (!item) return {}
+    return {
+      drugName: item.drugName,
+      inventoryMedicationFK: item.inventoryMedicationFK,
+      isDeleted: item.isDeleted,
+      isPreOrder: item.isPreOrder,
+      quantity: item.quantity,
+      totalPrice: item.totalPrice,
+      adjAmount: item.adjAmount,
+      totalAfterItemAdjustment: item.totalAfterItemAdjustment,
+      totalAfterOverallAdjustment: item.totalAfterOverallAdjustment,
+    }
+  }
+
+  const generateConsumable = item => {
+    if (!item) return {}
+    return {
+      inventoryConsumableFK: item.inventoryConsumableFK,
+      isDeleted: item.isDeleted,
+      isPreOrder: item.isPreOrder,
+      quantity: item.quantity,
+      totalPrice: item.totalPrice,
+      adjAmount: item.adjAmount,
+      totalAfterItemAdjustment: item.totalAfterItemAdjustment,
+      totalAfterOverallAdjustment: item.totalAfterOverallAdjustment,
+    }
+  }
+
+  const generateVaccination = item => {
+    if (!item) return {}
+    return {
+      inventoryVaccinationFK: item.inventoryVaccinationFK,
+      isDeleted: item.isDeleted,
+      isPreOrder: item.isPreOrder,
+      quantity: item.quantity,
+      totalPrice: item.totalPrice,
+      adjAmount: item.adjAmount,
+      totalAfterItemAdjustment: item.totalAfterItemAdjustment,
+      totalAfterOverallAdjustment: item.totalAfterOverallAdjustment,
+    }
+  }
+
+  const generateService = item => {
+    if (!item) return {}
+    return {
+      serviceCenterServiceFK: item.serviceCenterServiceFK,
+      newServiceName: item.newServiceName,
+      isDeleted: item.isDeleted,
+      isPreOrder: item.isPreOrder,
+      quantity: item.quantity,
+      total: item.total,
+      adjAmount: item.adjAmount,
+      totalAfterItemAdjustment: item.totalAfterItemAdjustment,
+      totalAfterOverallAdjustment: item.totalAfterOverallAdjustment,
+    }
+  }
+
+  const generateDrudMixture = item => {
+    return {
+      inventoryMedicationFK: item.inventoryMedicationFK,
+      isDeleted: item.isDeleted,
+      quantity: item.quantity,
+    }
+  }
+  const isItemUpdate = item => {
+    let isEqual = true
+    const currentRow = rows.find(r => r.id === item.id && r.type === item.type)
+    if (item.type === '1' || item.type === '5') {
+      if (
+        !_.isEqual(generateMedication(item), generateMedication(currentRow))
+      ) {
+        isEqual = false
+      } else {
+        isEqual = isPrecationEqual(
+          item.corPrescriptionItemPrecaution,
+          currentRow.corPrescriptionItemPrecaution,
+        )
+      }
+    } else if (item.type === '4') {
+      isEqual = _.isEqual(
+        generateConsumable(item),
+        generateConsumable(currentRow),
+      )
+    } else if (item.type === '2') {
+      isEqual = _.isEqual(
+        generateVaccination(item),
+        generateVaccination(currentRow),
+      )
+    } else {
+      isEqual = _.isEqual(generateService(item), generateService(currentRow))
+    }
+    return !isEqual
+  }
+
+  const isItemDrugMixtureUpdate = (item, drugMixture) => {
+    const currentDrugMixture = drugMixture.find(r => r.id === item.id)
+    const isEqual = _.isEqual(
+      generateDrudMixture(item),
+      generateDrudMixture(currentDrugMixture),
+    )
+    return !isEqual
+  }
+
+  for (let index = 0; index < _originalRows.length; index++) {
+    if (
+      _originalRows[index].type === '1' ||
+      _originalRows[index].type === '5'
+    ) {
+      if (isItemUpdate(_originalRows[index])) {
+        isUpdated = true
+        break
+      }
+
+      if (_originalRows[index].isDrugMixture) {
+        const currentRow = rows.find(
+          r =>
+            r.id === _originalRows[index].id &&
+            r.type === _originalRows[index].type,
+        )
+
+        if (
+          currentRow.corPrescriptionItemDrugMixture.find(
+            d => !d.id && !d.isDeleted,
+          )
+        ) {
+          isUpdated = true
+          break
+        }
+        const drugMixture = _originalRows[index].corPrescriptionItemDrugMixture
+        for (let i = 0; i < drugMixture.length; i++) {
+          if (
+            isItemDrugMixtureUpdate(
+              drugMixture[i],
+              currentRow.corPrescriptionItemDrugMixture,
+            )
+          ) {
+            isUpdated = true
+            return
+          }
+        }
+      }
+    } else {
+      if (isItemUpdate(_originalRows[index])) {
+        isUpdated = true
+        break
+      }
+    }
+  }
+
+  if (!isUpdated) {
+    isUpdated = rows.filter(r => !r.id && !r.isDeleted).length > 0
+  }
+
+  if (!isUpdated) {
+  }
+  return isUpdated
 }
 
 const getOrdersData = val => {

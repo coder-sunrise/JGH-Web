@@ -25,6 +25,7 @@ import Yup from '@/utils/yup'
 import {
   convertToConsultation,
   isPharmacyOrderUpdated,
+  isOrderUpdated,
 } from '@/pages/Consultation/utils'
 // utils
 import { getAppendUrl } from '@/utils/utils'
@@ -297,7 +298,8 @@ class EditOrder extends Component {
         payload: {
           ...payload,
           isPharmacyOrderUpdated: isPharmacyOrderUpdate,
-          isPrescriptionSheetUpdated: isPharmacyOrderUpdated(orders,true)
+          isPrescriptionSheetUpdated: isPharmacyOrderUpdated(orders, true),
+          isOrderUpdated: isOrderUpdated(orders),
         },
       })
       if (signResult) {

@@ -33,6 +33,7 @@ import {
   convertToConsultation,
   convertConsultationDocument,
   isPharmacyOrderUpdated,
+  isOrderUpdated,
   getOrdersData,
 } from '@/pages/Consultation/utils'
 // import model from '@/pages/Widgets/Orders/models'
@@ -363,10 +364,10 @@ const saveConsultation = ({
 
   const { isEnablePharmacyModule } = clinicSettings
   if (isEnablePharmacyModule) {
-    values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders,true)
+    values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders, true)
     values.isPharmacyOrderUpdated = isPharmacyOrderUpdated(orders)
   }
-
+  values.isOrderUpdated = isOrderUpdated(orders)
 
   const onConfirmSave = () => {
     const newValues = convertToConsultation(
@@ -532,9 +533,10 @@ const pauseConsultation = async ({
   let settings = JSON.parse(localStorage.getItem('clinicSettings'))
   const { diagnosisDataSource, isEnablePharmacyModule } = settings
   if (isEnablePharmacyModule) {
-    values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders,true)
+    values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders, true)
     values.isPharmacyOrderUpdated = isPharmacyOrderUpdated(orders)
   }
+  values.isOrderUpdated = isOrderUpdated(orders)
   const newValues = convertToConsultation(
     {
       ...values,
@@ -717,9 +719,10 @@ const saveDraftDoctorNote = ({ values, visitRegistration }) => {
     const { summary } = orders
     const { isEnablePharmacyModule } = clinicSettings
     if (isEnablePharmacyModule) {
-    values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders,true)
-    values.isPharmacyOrderUpdated = isPharmacyOrderUpdated(orders)
+      values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders, true)
+      values.isPharmacyOrderUpdated = isPharmacyOrderUpdated(orders)
     }
+    values.isOrderUpdated = isOrderUpdated(orders)
     if (!(await autoPrintSelection('sign', { values, ...props }))) {
       saveConsultation({
         props: {
