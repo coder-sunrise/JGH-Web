@@ -112,11 +112,12 @@ class Grid extends PureComponent {
                   { name: 'code', title: 'Code' },
                   { name: 'displayValue', title: 'Name' },
                   { name: 'coPayerTypeName', title: 'Type' },
+                  { name: 'creditFacility', title: 'Credit Facility' },
+                  { name: 'copayerAddress', title: 'Address' },
                   { name: 'copayerContactPerson', title: 'Contact Person' },
                   { name: 'contactNo', title: 'Contact No.' },
                   { name: 'copayerContactPersonEmail', title: 'Email' },
                   { name: 'remark', title: 'Remarks' },
-                  { name: 'creditFacility', title: 'Credit Facility' },
                   { name: 'isActive', title: 'Status' },
                   { name: 'action', title: 'Action' },
                 ]
@@ -160,9 +161,35 @@ class Grid extends PureComponent {
               },
             },
             {
+              columnName: 'copayerAddress',
+              sortingEnabled: false,
+              width: 350,
+              render: row => {
+                let address = `${
+                  row.address?.blockNo ? row.address?.blockNo + ', ' : ''
+                }${row.address?.street ? row.address?.street + ', ' : ''}${
+                  row.address?.unitNo ? row.address?.unitNo + ', ' : ''
+                }${
+                  row.address?.buildingName
+                    ? row.address?.buildingName + ', '
+                    : ''
+                }${
+                  row.address?.countryName
+                    ? row.address?.countryName + ', '
+                    : ''
+                }${row.address?.postcode ? row.address?.postcode + ', ' : ''}`
+                address = _.trimEnd(address, ', ')
+                return (
+                  <Tooltip title={address}>
+                    <span>{address}</span>
+                  </Tooltip>
+                )
+              },
+            },
+            {
               columnName: 'coPayerTypeName',
               sortBy: 'coPayerTypeFK',
-              width: 120,
+              width: 90,
             },
             {
               columnName: 'code',
@@ -171,6 +198,7 @@ class Grid extends PureComponent {
             },
             {
               columnName: 'displayValue',
+              width: 300,
             },
             {
               columnName: 'officeNum',
@@ -244,7 +272,7 @@ class Grid extends PureComponent {
             {
               columnName: 'creditFacility',
               sortBy: 'creditFacilityFKNavigation.DisplayValue',
-              width: 120,
+              width: 200,
             },
             {
               columnName: 'faxNo',
@@ -516,6 +544,7 @@ class Grid extends PureComponent {
               },
             },
           ]}
+          leftColumns={['code', 'displayValue']}
         />
       </Fragment>
     )
