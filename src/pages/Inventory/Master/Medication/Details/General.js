@@ -58,6 +58,7 @@ const General = ({
   const entity = medicationDetail.entity
   const [attachments, setAttachments] = useState([])
 
+  console.log(entity)
   useEffect(() => {
     checkHasActiveSession()
     if (entity && entity.fileIndexFK) {
@@ -65,6 +66,7 @@ const General = ({
         {
           thumbnailIndexFK: entity.thumbnailIndexFK,
           fileIndexFK: entity.fileIndexFK,
+          fileExtension: entity.fileExtension,
           id: entity.fileIndexFK,
         },
       ]

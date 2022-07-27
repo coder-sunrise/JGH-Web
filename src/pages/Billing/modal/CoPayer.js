@@ -308,7 +308,14 @@ class CoPayer extends Component {
     const { selectedRows, invoiceItems } = this.state
     return (
       <div className={classes.container}>
-        <GridContainer style={{ maxHeight: 700, overflow: 'auto' }}>
+        <GridContainer
+          style={{
+            maxHeight: 800,
+            minHeight: 450,
+            overflow: 'auto',
+            alignContent: 'flex-start',
+          }}
+        >
           <GridItem md={6} className={classes.dropdown}>
             <FastField
               name='coPayer'
@@ -319,11 +326,15 @@ class CoPayer extends Component {
                     code='ctcopayer'
                     labelField='displayValue'
                     additionalSearchField='code'
+                    dropdownMatchSelectWidth={false}
                     localFilter={item =>
                       [COPAYER_TYPE.CORPORATE, COPAYER_TYPE.INSURANCE].indexOf(
                         item.coPayerTypeFK,
                       ) >= 0 && !copayers.includes(item.id)
                     }
+                    dropdownStyle={{
+                      width: 650,
+                    }}
                     renderDropdown={option => {
                       return (
                         <CopayerDropdownOption

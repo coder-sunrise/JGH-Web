@@ -414,7 +414,7 @@ class CommonTableGrid extends PureComponent {
             backgroundClip: 'border-box',
           },
           dividerRight: {
-            borderRightWidth: 0,
+            borderRightWidth: 1,
           },
         },
         TableCell: cellStyle,

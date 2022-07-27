@@ -109,7 +109,7 @@ export const Findings = ({
     setEditorState(newEditorState)
     onChange({
       examinationFinding: getHtmlFromEditorState(newEditorState),
-      radiologyScribbleNote,
+      radiologyScribbleNote: scribbleNotes,
     })
   }
 
@@ -237,9 +237,11 @@ export const Findings = ({
       })
       previousData.push(newData)
     }
-
+    previousData = _.concat(
+      previousData.filter(x => !x.isDeleted),
+      scribbleNotes.filter(x => x.id && x.isDeleted),
+    )
     setScribbleNotes(previousData)
-
     onChange({
       examinationFinding: getHtmlFromEditorState(editorState),
       radiologyScribbleNote: previousData,
