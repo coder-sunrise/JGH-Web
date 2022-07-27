@@ -1003,20 +1003,7 @@ const ApplyClaims = ({
 
           let eligibleAmount =
             originalItem.totalBeforeGst - originalItem._claimedAmount
-          if (eligibleAmount === 0) {
-            const currentEditItemClaimedAmount = tempInvoicePayer
-              .filter((_rest, i) => i !== index)
-              .reduce(flattenInvoicePayersInvoiceItemList, [])
-              .reduce((remainingClaimable, item) => {
-                if (item.invoiceItemFK === changedItem.invoiceItemFK)
-                  return remainingClaimable + item.claimAmountBeforeGST
 
-                return remainingClaimable
-              }, 0)
-
-            eligibleAmount =
-              originalItem.totalBeforeGst - currentEditItemClaimedAmount
-          }
           const _hasError = _absoluteValue > eligibleAmount
           return {
             ...item,
