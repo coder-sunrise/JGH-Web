@@ -297,6 +297,7 @@ class EditOrder extends Component {
         payload: {
           ...payload,
           isPharmacyOrderUpdated: isPharmacyOrderUpdate,
+          isPrescriptionSheetUpdated: isPharmacyOrderUpdated(orders,true)
         },
       })
       if (signResult) {

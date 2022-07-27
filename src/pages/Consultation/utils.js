@@ -339,14 +339,14 @@ const cleanConsultation = values => {
   }
 }
 
-const isPharmacyOrderUpdated = (orders, ignorePharmacy) => {
+const isPharmacyOrderUpdated = (orders, isPrescriptionSheetUpdated) => {
   const { rows, _originalRows } = orders
 
   let isUpdatedPharmacy = false
   const isPushToPharmacy = item => {
     let isPushToPharmacy = false
     if (item.type === '1' || item.type === '4' || item.type === '5') {
-      isPushToPharmacy = ignorePharmacy || item.isDispensedByPharmacy
+      isPushToPharmacy = item.isDispensedByPharmacy
     }
     return isPushToPharmacy
   }
@@ -367,6 +367,7 @@ const isPharmacyOrderUpdated = (orders, ignorePharmacy) => {
       isExclusive: item.isExclusive,
       isNurseActualizeRequired: item.isNurseActualizeRequired,
       isPreOrder: item.isPreOrder,
+      isExternalPrescription: isPrescriptionSheetUpdated ? item.isExternalPrescription : undefined,
       performingUserFK: item.performingUserFK,
       quantity: item.quantity,
       remarks: item.remarks,
@@ -514,7 +515,7 @@ const isPharmacyOrderUpdated = (orders, ignorePharmacy) => {
 
   if (!isUpdatedPharmacy) {
     isUpdatedPharmacy =
-      rows.filter(r => !r.id && !r.isPreOrder && isPushToPharmacy(r)).length > 0
+      rows.filter(r => !r.id && !r.isPreOrder && (!isPrescriptionSheetUpdated || !r.isExternalPrescription) && isPushToPharmacy(r)).length > 0
   }
   return isUpdatedPharmacy
 }
