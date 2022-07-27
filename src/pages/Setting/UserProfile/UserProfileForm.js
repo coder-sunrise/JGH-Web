@@ -40,6 +40,7 @@ import clinicServices from '@/services/clinicInfo'
 import { constructUserProfile } from './utils'
 import PrimaryClinicianChanges from './PrimaryClinicianChanges'
 import roomAssignment from '@/models/roomAssignment'
+import { resetToDefaultPassword } from '@/services/user'
 
 const styles = theme => ({
   container: {
@@ -122,7 +123,6 @@ const styles = theme => ({
                 'Must have at least 2 letter, do not contains whitespace and special characters.',
               )
               .required('Login ID is a required field'),
-            password: Yup.string().required('Password is a required field'),
           }),
         })
   },
@@ -238,14 +238,29 @@ class UserProfileForm extends React.PureComponent {
     isValidating: false,
     currentPrimaryRegisteredDoctorFK: undefined,
     showActiveSessionWarning: false,
-    showChangePassword: false,
     showPrimaryClinicianChanges: false,
   }
 
-  toggleChangePasswordModal = () => {
-    this.setState(preState => ({
-      showChangePassword: !preState.showChangePassword,
-    }))
+  handleResetPassword = async () => {
+    const { values } = this.props
+    const { userProfile } = values
+    const payload = {
+      userName: userProfile.userName,
+    }
+    const response = await resetToDefaultPassword(payload)
+    const { data } = response
+
+    if (data) {
+      if (data.succeeded) {
+        notification.success({
+          message: 'Password reset to default password successfully.',
+        })
+      } else {
+        notification.error({
+          message: 'Failed to reset password.',
+        })
+      }
+    }
   }
 
   togglePrimaryClinicianChangesModal = () => {
@@ -438,46 +453,11 @@ class UserProfileForm extends React.PureComponent {
                     />
                   )}
                 </GridItem>
-                {!isEdit ? (
-                  <React.Fragment>
-                    <GridItem md={6}>
-                      <FastField
-                        name='userProfile.password'
-                        render={args => (
-                          <TextField
-                            {...args}
-                            label='Password'
-                            type='password'
-                            autocomplete='off'
-                            maxLength={18}
-                          />
-                        )}
-                      />
-                    </GridItem>
-                    <GridItem md={6} />
-                    <GridItem md={6}>
-                      <i>User must create a new password at next sign in.</i>
-                    </GridItem>
-                    <GridItem md={6} />
-                    <GridItem md={6}>
-                      <span>Password must be</span>
-                      <ul>
-                        <li>8 to 18 characters long</li>
-                        <li>
-                          contain a mix of letters, numbers, and/or special
-                          characters
-                        </li>
-                      </ul>
-                    </GridItem>
-                  </React.Fragment>
-                ) : (
+                {isEdit && (
                   <GridItem md={6}>
-                    <Button
-                      color='primary'
-                      onClick={this.toggleChangePasswordModal}
-                    >
+                    <Button color='primary' onClick={this.handleResetPassword}>
                       <Key />
-                      Change Password
+                      Reset Password
                     </Button>
                   </GridItem>
                 )}
@@ -712,17 +692,6 @@ class UserProfileForm extends React.PureComponent {
               onConfirmClick={this.handleConfirmChangePrimaryClinician}
             />
           </CommonModal>
-          {isEdit && (
-            <CommonModal
-              title='Change Password'
-              open={showChangePassword}
-              onClose={this.toggleChangePasswordModal}
-              onConfirm={this.toggleChangePasswordModal}
-              maxWidth='sm'
-            >
-              <ChangePassword userID={values.userProfileFK} changeTargetUser />
-            </CommonModal>
-          )}
           {footer &&
             footer({
               onConfirm: this.validateBeforeSubmit,
