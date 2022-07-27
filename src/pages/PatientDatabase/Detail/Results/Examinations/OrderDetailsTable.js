@@ -56,7 +56,10 @@ export const OrderDetailsTable = props => {
     },
   ]
   const [columns, setColumns] = useState(defaultColumns)
-
+  const { doctorName = '', doctorTitle = '' } = data
+  const visitDoctor = `${
+    doctorTitle.trim().length ? doctorTitle + '. ' : ''
+  }${doctorName}`
   return (
     <div>
       <Table
@@ -79,6 +82,8 @@ export const OrderDetailsTable = props => {
               >
                 Order Details
               </span>
+              <span style={{ marginLeft: 10 }}>{'Visit Doctor: '}</span>
+              <span>{visitDoctor}</span>
             </p>
           )
         }}

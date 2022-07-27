@@ -126,7 +126,7 @@ import { CollectionsOutlined } from '@material-ui/icons'
         usage => usage.id === medication.medicationUsage?.id,
       )
       const uom = ctmedicationunitofmeasurement.find(
-        uom => uom.id === medication.prescribingUOM.id,
+        uom => uom.id === medication.prescribingUOM?.id,
       )
       const frequency = ctmedicationfrequency.find(
         frequency => frequency.id === matchInstruction?.medicationFrequency?.id,

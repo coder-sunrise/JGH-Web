@@ -146,6 +146,7 @@
     "umi": "^3.5.0",
     "umi-request": "^1.0.8",
     "universal-cookie": "^4.0.2",
+    "virtualizedtableforantd4": "^1.1.6",
     "yup": "0.26.10"
   },
   "devDependencies": {

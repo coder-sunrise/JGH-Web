@@ -21,7 +21,7 @@ class MedicalHistory extends PureComponent {
   componentWillMount () {
     const patientId = this.props.values.id
     const diagnosis = Authorized.check('patientdatabase.patientprofiledetails.medicalhistory.persistentdiagnosis')
-    if (diagnosis && diagnosis.rights !== 'hidden') {
+    if (patientId&& diagnosis && diagnosis.rights !== 'hidden') {
       this.props.dispatch({
         type: 'patientHistory/queryPersistentDiagnosis',
         payload: { id: patientId },

@@ -5,6 +5,7 @@ const url = '/api/ctfolder'
 
 const fns = {
   queryList: params => service.queryList(url, params),
+  checkIfEmpty: params => service.query(url + '/isEmpty', params),
   upsert: params => service.upsert(url, params),
   upsertList: params => {
     return request(`${url}/list`, {

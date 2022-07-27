@@ -146,7 +146,14 @@ export const ApptColumnExtensions = [
   {
     columnName: 'remarks',
     width: 180,
-    render: row => row.remarks || '-',
+    render: row => {
+      const remarks = row.remarks || '-'
+      return (
+        <Tooltip title={remarks}>
+          <span>{remarks}</span>
+        </Tooltip>
+      )
+    },
   },
   {
     columnName: 'appointmentTime',

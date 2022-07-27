@@ -6,7 +6,7 @@ import InfoCircleOutlined from '@ant-design/icons/InfoCircleOutlined'
 import moment from 'moment'
 import Search from '@material-ui/icons/Search'
 import Refresh from '@material-ui/icons/Refresh'
-import { CLINICAL_ROLE, PRIORITY_OPTIONS, VISIT_TYPE } from '@/utils/constants'
+import { CLINICAL_ROLE, VISIT_TYPE } from '@/utils/constants'
 import {
   TextField,
   DatePicker,
@@ -83,7 +83,6 @@ export const WorklistFilter = () => {
     const {
       searchValue,
       visitType,
-      priority,
       visitDoctor,
       dateFrom,
       dateTo,
@@ -96,9 +95,6 @@ export const WorklistFilter = () => {
           searchValue: searchValue,
           visitType: visitType
             ? visitType.filter(t => t !== -99).join(',')
-            : undefined,
-          priority: priority
-            ? priority.filter(t => t !== -99).join(',')
             : undefined,
           visitDoctor:
             visitDoctor && !visitDoctor.includes(-99)
@@ -160,16 +156,6 @@ export const WorklistFilter = () => {
                     maxTagPlaceholder='Visit Doctor'
                   />
                 </Tooltip>
-              </Form.Item>
-              <Form.Item name='priority' initialValue={[]}>
-                <Select
-                  label={formatMessage({ id: 'lab.search.priority' })}
-                  options={PRIORITY_OPTIONS}
-                  style={{ width: 170 }}
-                  mode='multiple'
-                  maxTagCount={0}
-                  maxTagPlaceholder='Priority'
-                />
               </Form.Item>
               <Form.Item name='visitType' initialValue={[-99]}>
                 <VisitTypeSelect

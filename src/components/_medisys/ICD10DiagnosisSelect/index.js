@@ -106,6 +106,10 @@ const ICD10DiagnosisSelect = ({
         options={ctICD10Diagnosis}
         valueField='id'
         labelField={labelValue}
+        dropdownMatchSelectWidth={false}
+        dropdownStyle={{
+          width: 450,
+        }}
         handleFilter={(input, opt) => true}
         renderDropdown={option => {
           const { code } = option

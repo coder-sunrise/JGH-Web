@@ -38,13 +38,13 @@ const Examinations = props => {
     const visitFromDate =
       visitDate && visitDate.length > 0
         ? moment(visitDate[0])
-            .set({ hour: 0, minute: 0, second: 0 })
-            .formatUTC(false)
+            .startOf('day')
+            .formatUTC()
         : undefined
     const visitToDate =
       visitDate && visitDate.length > 1
         ? moment(visitDate[1])
-            .set({ hour: 23, minute: 59, second: 59 })
+            .endOf('day')
             .formatUTC(false)
         : undefined
     const payload = {
@@ -57,6 +57,7 @@ const Examinations = props => {
       status: status,
     }
     setFilterCondition(payload)
+    console.log(payload)
     dispatch({
       type: 'patientResults/queryExaminationsList',
       payload: { ...payload, currentPage: append ? currentPage : 1 },
@@ -110,10 +111,10 @@ const Examinations = props => {
         patientProfileFK: patientProfileFK,
         currentPage: currentPage,
         visitFromDate: moment(new Date())
-          .set({ hour: 0, minute: 0, second: 0 })
-          .formatUTC(false),
+          .startOf('day')
+          .formatUTC(),
         visitToDate: moment(new Date())
-          .set({ hour: 23, minute: 59, second: 59 })
+          .endOf('day')
           .formatUTC(false),
         status: 6,
       }
@@ -128,9 +129,9 @@ const Examinations = props => {
           if (response.data?.length < 10) {
             setAllRetrieved(true)
           }
-           setActiveKey(
-             response.data.filter(t => !t.isAcknowledged).map(x => x.id),
-           )
+          setActiveKey(
+            response.data.filter(t => !t.isAcknowledged).map(x => x.id),
+          )
         }
       })
     }

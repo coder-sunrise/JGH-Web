@@ -1,3 +1,4 @@
+import { connect } from 'dva'
 import React, { useContext, useEffect, useState } from 'react'
 import ReactDOM from 'react-dom'
 import { useDispatch, useSelector } from 'dva'
@@ -55,10 +56,11 @@ import { TestPanelColumn } from './TestPanelColumn'
 import styles from './WorklistGrid.less'
 import { LabResultReportPreview } from './LabResultReportPreview'
 import { RetestDetails } from './RetestDetails'
+import { useVT } from 'virtualizedtableforantd4'
 
 const allSpecimenStatuses = Object.values(LAB_SPECIMEN_STATUS)
 
-export const WorklistGrid = ({ labWorklist, clinicSettings }) => {
+const WorklistGrid = ({ global, labWorklist, clinicSettings }) => {
   const { list: originalWorklist = [] } = labWorklist
   const { setIsAnyWorklistModelOpened } = useContext(WorklistContext)
 
@@ -69,6 +71,8 @@ export const WorklistGrid = ({ labWorklist, clinicSettings }) => {
   const cttestpanel = useCodeTable('cttestpanel')
   const cttestcategory = useCodeTable('cttestcategory')
   const ctspecimentype = useCodeTable('ctspecimentype')
+  const tableheight = global.mainDivHeight - 250
+  const [vt] = useVT(() => ({ scroll: { y: tableheight } }), [])
   const dispatch = useDispatch()
   const visitTypes = useVisitTypes()
   const [discardSpecimenPara, setDiscardSpecimenPara] = useState({
@@ -540,6 +544,8 @@ export const WorklistGrid = ({ labWorklist, clinicSettings }) => {
         />
       </div>
       <Table
+        scroll={{ y: tableheight }} // It's important for using VT!!! DO NOT FORGET!!!
+        components={vt}
         className={styles.table}
         size='small'
         columns={columns}
@@ -616,3 +622,9 @@ export const WorklistGrid = ({ labWorklist, clinicSettings }) => {
     </Card>
   )
 }
+
+export default connect(({ global, clinicSettings, labWorklist }) => ({
+  global,
+  labWorklist,
+  clinicSettings,
+}))(WorklistGrid)

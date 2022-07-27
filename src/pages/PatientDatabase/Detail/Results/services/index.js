@@ -9,7 +9,7 @@ const fns = {
   queryExaminationsList: async params => {
     return await request(`${url}/examinations`, {
       method: 'GET',
-      body: params,
+      data: params,
     })
   },
 }

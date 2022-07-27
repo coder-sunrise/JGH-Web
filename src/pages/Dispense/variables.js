@@ -646,13 +646,17 @@ export const DispenseItemsColumns1 = (
               label=''
               step={1}
               format='0.0'
-              max={maxQuantity}
+              //max={maxQuantity}
               min={0}
               disabled={row.isDispensedByPharmacy}
               precision={1}
               value={row.dispenseQuantity}
               onChange={e => {
-                onValueChange(row.uid, 'dispenseQuantity', e.target.value)
+                onValueChange(
+                  row.uid,
+                  'dispenseQuantity',
+                  e.target.value < 0 ? 0 : e.target.value,
+                )
               }}
             />
             {row.dispenseQuantity > maxQuantity && (
@@ -1274,7 +1278,7 @@ export const DispenseItemsColumnExtensions = (
               label=''
               step={1}
               format='0.0'
-              max={maxQuantity}
+              //max={maxQuantity}
               min={0}
               disabled={row.isDispensedByPharmacy}
               precision={1}

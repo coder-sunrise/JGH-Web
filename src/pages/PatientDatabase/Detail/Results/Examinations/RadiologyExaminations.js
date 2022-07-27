@@ -118,6 +118,10 @@ const RadiologyExaminations = props => {
           className='noPaddingCollapse'
         >
           {data.map(radiology => {
+            const { doctorName = '', doctorTitle = '' } = radiology
+            const visitDoctor = `${
+              doctorTitle.trim().length ? doctorTitle + '. ' : ''
+            }${doctorName}`
             return (
               <Panel
                 header={radiology.name}
@@ -131,13 +135,20 @@ const RadiologyExaminations = props => {
                 >
                   <Descriptions.Item
                     label='Technologist:'
-                    labelStyle={{ width: 190, verticalAlign: 'top' }}
-                    span={3}
+                    labelStyle={{ width: 150, verticalAlign: 'top' }}
+                    span={2}
                   >
                     {radiology.technologist ?? '-'}
                   </Descriptions.Item>
                   <Descriptions.Item
-                    label='Accession No.'
+                    label='Visit Doctor:'
+                    labelStyle={{ width: 160, verticalAlign: 'top' }}
+                    contentStyle={{ width: 400 }}
+                  >
+                    {visitDoctor}
+                  </Descriptions.Item>
+                  <Descriptions.Item
+                    label='Accession No.:'
                     contentStyle={{ width: 200 }}
                     labelStyle={{ verticalAlign: 'top' }}
                   >
@@ -150,11 +161,7 @@ const RadiologyExaminations = props => {
                   >
                     {moment(radiology.orderDate).format('DD MMM YYYY HH:mm')}
                   </Descriptions.Item>
-                  <Descriptions.Item
-                    label='Modality:'
-                    labelStyle={{ width: 150, verticalAlign: 'top' }}
-                    contentStyle={{ width: 400 }}
-                  >
+                  <Descriptions.Item label='Modality:'>
                     {radiology.modality ?? '-'}
                   </Descriptions.Item>
                   <Descriptions.Item

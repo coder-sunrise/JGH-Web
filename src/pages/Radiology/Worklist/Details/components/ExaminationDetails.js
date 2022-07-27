@@ -296,7 +296,7 @@ export const ExaminationDetails = ({
                       <div>
                         <div
                           dangerouslySetInnerHTML={{
-                            __html: workitem.examinationFinding,
+                            __html: workitem.examinationFinding.replaceAll('<br></p>','</p><br>'),
                           }}
                         />
                         {scribbleLink.length > 0 && (

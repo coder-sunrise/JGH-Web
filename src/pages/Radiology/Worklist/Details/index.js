@@ -290,7 +290,7 @@ const RadiologyDetails = () => {
             handleSave()
           },
           confirmProps: {
-            disabled:
+            hidden:
               showOnlyCloseButton ||
               (
                 Authorized.check('radiologyworklist.saveexamination') || {

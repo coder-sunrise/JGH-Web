@@ -245,7 +245,7 @@ class VisitFormGrid extends PureComponent {
 
     return (
       <div>
-        {/* <Checkbox
+        <Checkbox
           label='Include voided forms'
           value={this.state.includeVoidForms}
           onChange={() => {
@@ -256,7 +256,7 @@ class VisitFormGrid extends PureComponent {
               }
             })
           }}
-        /> */}
+        />
         <CommonTableGrid
           getRowId={r => r.id}
           forceRender
@@ -363,7 +363,7 @@ class VisitFormGrid extends PureComponent {
                         </Button>
                       </Tooltip>
                     )}
-                    {!isHiddenModify && (
+                    {row.statusFK === 1 && !isHiddenModify && (
                       <Popconfirm
                         onConfirm={() => {
                           const { formCategory } = this.props
@@ -406,14 +406,14 @@ class VisitFormGrid extends PureComponent {
                         </Tooltip>
                       </Popconfirm>
                     )}
-                    {/* {row.statusFK === 2 && !isHiddenVoid && (
+                    {row.statusFK === 2 && !isHiddenVoid && (
                       <this.VoidForm
                         classes={classes}
                         dispatch={dispatch}
                         row={row}
                         user={user}
                       />
-                    )} */}
+                    )}
                   </React.Fragment>
                 )
               },

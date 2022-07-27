@@ -1,6 +1,6 @@
 import moment from 'moment'
 // common component
-import { timeFormat24Hour } from '@/components'
+import { timeFormat24Hour, dateFormatLong } from '@/components'
 // utils
 import { COUNTRY_CODE_NUMBER, NUMBER_TYPE } from '@/utils/constants'
 
@@ -15,6 +15,7 @@ export const constructTitle = (
   patientName,
   patientProfile,
   patientContactNo,
+  patientDOB,
 ) => {
   if (patientProfile) {
     const { contactNumbers = [] } = patientProfile
@@ -25,7 +26,9 @@ export const constructTitle = (
     const number = mobile ? mobile.number : ''
     return `${patientName} (${countryCode} ${number})`
   }
-  return `${patientName} (${patientContactNo})`
+  return `${patientName} (${patientContactNo}${
+    patientDOB ? `, ${moment(patientDOB).format(dateFormatLong)}` : ''
+  })`
 }
 
 export const parseDateToDay = date => date.format('dddd')

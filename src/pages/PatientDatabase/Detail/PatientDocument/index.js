@@ -67,19 +67,36 @@ class Document extends PureComponent {
         open
         fullScreen
         onClose={this.props.onClose}
+        showFooter={true}
+        footProps={{
+          confirmProps: {
+            hidden: true,
+          },
+        }}
         title='Patient Document'
         keepMounted={false}
       >
-        <AttachmentDocument
-          {...this.props}
-          type={FOLDER_TYPE.PATIENT}
-          readOnly={!patientIsActive}
-          modelName='patientAttachment'
-          isEnableEditDocument={editDocumentAccessRight.rights === 'enable'}
-          isEnableDeleteDocument={deleteDocumentAccessRight.rights === 'enable'}
-          isEnableEditFolder={editFolderAccessRight.rights === 'enable'}
-          isEnableDeleteFolder={deleteFolderAccessRight.rights === 'enable'}
-        />
+        <div style={{ height: '85vh' }}>
+          <div style={{ marginLeft: 8, marginTop: '-10px' }}>
+            Name:&nbsp;
+            <span style={{ fontWeight: 600 }}>{`${entity.name ||
+              ''} (${entity.patientReferenceNo || ''})`}</span>
+            &nbsp;-&nbsp;
+            <span>{entity.patientAccountNo || ''}</span>
+          </div>
+          <AttachmentDocument
+            {...this.props}
+            type={FOLDER_TYPE.PATIENT}
+            readOnly={!patientIsActive}
+            modelName='patientAttachment'
+            isEnableEditDocument={editDocumentAccessRight.rights === 'enable'}
+            isEnableDeleteDocument={
+              deleteDocumentAccessRight.rights === 'enable'
+            }
+            isEnableEditFolder={editFolderAccessRight.rights === 'enable'}
+            isEnableDeleteFolder={deleteFolderAccessRight.rights === 'enable'}
+          />
+        </div>
       </CommonModal>
     )
   }

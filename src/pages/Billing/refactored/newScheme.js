@@ -581,6 +581,7 @@ const Scheme = ({
                 payerDistributedAmtBeforeGST={payerDistributedAmtBeforeGST}
                 outstanding={payerOutstanding}
                 gstAmount={gstAmount}
+                showTotalClaimAmount
               />
             </GridItem>
           </GridContainer>

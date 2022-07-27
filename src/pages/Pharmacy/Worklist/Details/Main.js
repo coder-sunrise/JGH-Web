@@ -1069,13 +1069,17 @@ const Main = props => {
                 label=''
                 step={1}
                 format='0.0'
-                max={maxQuantity}
+                //max={maxQuantity}
                 min={0}
                 disabled={!row.isDispensedByPharmacy}
                 precision={1}
                 value={row.dispenseQuantity}
                 onChange={e => {
-                  onValueChange(row.uid, 'dispenseQuantity', e.target.value)
+                  onValueChange(
+                    row.uid,
+                    'dispenseQuantity',
+                    e.target.value < 0 ? 0 : e.target.value,
+                  )
                 }}
               />
               {row.dispenseQuantity > maxQuantity && (
@@ -1400,7 +1404,7 @@ const Main = props => {
         )
       }
       const balanceQty =
-        editRow.remainQty - _.sumBy(matchItems, 'dispenseQuantity')
+        editRow.remainQty - _.sumBy(matchItems, r => r.dispenseQuantity || 0)
       matchItems.forEach(item => (item.stockBalance = balanceQty))
       setFieldValue('orderItems', rows)
     }
@@ -1694,7 +1698,7 @@ const Main = props => {
         )
       }
       const balanceQty =
-        editRow.quantity - _.sumBy(matchItems, 'dispenseQuantity')
+        editRow.quantity - _.sumBy(matchItems, r => r.dispenseQuantity || 0)
       matchItems.forEach(item => (item.stockBalance = balanceQty))
     }
     setFieldValue('orderItems', newItems)

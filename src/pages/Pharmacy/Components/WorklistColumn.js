@@ -56,7 +56,7 @@ const WorlklistColumnTitle = ({ title, workItemCount }) => {
   )
 }
 
-const WorklistColumnBody = ({ data, renderWorkitem }) => {
+const WorklistColumnBody = ({ data, renderWorkitem, ...restProps }) => {
   let sortedData = data.workitems || []
 
   return (
@@ -64,12 +64,18 @@ const WorklistColumnBody = ({ data, renderWorkitem }) => {
       {sortedData.length === 0 && (
         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
       )}
-      {sortedData.length > 0 && sortedData.map(item => renderWorkitem(item))}
+      {sortedData.length > 0 &&
+        sortedData.map(item => renderWorkitem(item, restProps))}
     </div>
   )
 }
 
-export const WorklistColumn = ({ data, renderWorkitem, columnPercentage }) => (
+export const WorklistColumn = ({
+  data,
+  renderWorkitem,
+  columnPercentage,
+  ...restProps
+}) => (
   <div
     style={{
       ...defaultColumnStyle,
@@ -82,6 +88,10 @@ export const WorklistColumn = ({ data, renderWorkitem, columnPercentage }) => (
       title={data.title}
       workItemCount={data.workitems.length}
     />
-    <WorklistColumnBody data={data} renderWorkitem={renderWorkitem} />
+    <WorklistColumnBody
+      data={data}
+      {...restProps}
+      renderWorkitem={renderWorkitem}
+    />
   </div>
 )

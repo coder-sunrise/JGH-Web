@@ -90,6 +90,19 @@ class Grid extends PureComponent {
       [`filter${stateName}`]: inventoryItemList,
     })
 
+    row.type = value
+    row.itemTypeFK = value
+    row.code = ''
+    row.itemCode = ''
+    row.codeString = ''
+    row.name = ''
+    row.itemFK = ''
+    row.itemName = ''
+    row.nameString = ''
+    row.uom = ''
+    row.uomString = ''
+    row.qty = 0
+
     this.setState({ onClickColumn: 'type' })
   }
 
@@ -102,7 +115,9 @@ class Grid extends PureComponent {
     }
     row.itemFK = option.itemFK
     row.codeString = option.code
+    row.itemCode = option.code
     row.nameString = option.name
+    row.itemName = option.name
     row.uom = option.value
     row.uomString = option.uom
     // row.qty = 0

@@ -31,10 +31,7 @@ const InvoicePaymentDetails = ({ invoice = {}, classes }) => {
   const { invoiceNo, invoiceItems = [], invoiceAdjustments = [] } = invoice
   let data = invoiceItems.map(item => ({
     ...item,
-    outstanding:
-      (item.isPreOrder && !item.isChargeToday) || item.hasPaid
-        ? 0
-        : roundTo(item.totalAfterGst - item.totalClaim - item.paidAmount, 2),
+    outstanding: item.patientOutstanding,
   }))
   data = _.orderBy(
     data,

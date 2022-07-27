@@ -719,6 +719,7 @@ export default compose(
           isPharmacyOrderUpdated: isPharmacyOrderUpdate,
           retailInvoiceItem,
           retailInvoiceAdjustment: finalAdjustments,
+          isPrescriptionSheetUpdated: isPharmacyOrderUpdated(orders,true)
         }
 
         dispatch({

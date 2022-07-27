@@ -601,7 +601,7 @@ const DispenseDetails = ({
         )
       }
       const balanceQty =
-        editRow.quantity - _.sumBy(matchItems, 'dispenseQuantity')
+        editRow.quantity - _.sumBy(matchItems, r => r.dispenseQuantity || 0)
       matchItems.forEach(item => (item.stockBalance = balanceQty))
       updateSelectAll(rows)
       setFieldValue('dispenseItems', rows)
@@ -826,7 +826,7 @@ const DispenseDetails = ({
         )
       }
       const balanceQty =
-        editRow.quantity - _.sumBy(matchItems, 'dispenseQuantity')
+        editRow.quantity - _.sumBy(matchItems, r => r.dispenseQuantity || 0)
       matchItems.forEach(item => (item.stockBalance = balanceQty))
     }
     if (valueField === 'isCheckActualize') {

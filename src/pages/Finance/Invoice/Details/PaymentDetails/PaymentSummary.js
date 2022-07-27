@@ -18,18 +18,21 @@ const PaymentSummary = ({
   payerDistributedAmtBeforeGST = 0.0,
   outstanding = 0.0,
   gstAmount,
+  showTotalClaimAmount,
 }) => {
   return (
     <SizeContainer size='sm'>
       <React.Fragment>
-        <GridItem xs={6} md={12}>
-          <NumberInput
-            prefix='Total Claim Amount:'
-            value={payerDistributedAmtBeforeGST}
-            size='sm'
-            {...amountProps}
-          />
-        </GridItem>
+        {showTotalClaimAmount && (
+          <GridItem xs={6} md={12}>
+            <NumberInput
+              prefix='Total Claim Amount:'
+              value={payerDistributedAmtBeforeGST}
+              size='sm'
+              {...amountProps}
+            />
+          </GridItem>
+        )}
         {gstAmount !== undefined && (
           <GridItem xs={6} md={12}>
             <NumberInput

@@ -20,6 +20,7 @@ import {
   CommonModal,
   RadioGroup,
 } from '@/components'
+import Authorized from '@/utils/Authorized'
 
 const { queryList, query } = service
 @connect(
@@ -349,14 +350,16 @@ class ReferralDetails extends PureComponent {
                 />
               </GridItem>
               <GridItem xs md={4}>
-                <Button
-                  color='primary'
-                  style={{ marginTop: '15px' }}
-                  onClick={this.addNewReferralSource}
-                  size='sm'
-                >
-                  <Add /> New Referral Source
-                </Button>
+                <Authorized authority='settings.contact.referralsource'>
+                  <Button
+                    color='primary'
+                    style={{ marginTop: '15px' }}
+                    onClick={this.addNewReferralSource}
+                    size='sm'
+                  >
+                    <Add /> New Referral Source
+                  </Button>
+                </Authorized>
               </GridItem>
               <GridItem xs md={8}>
                 <Field
@@ -375,14 +378,16 @@ class ReferralDetails extends PureComponent {
                 />
               </GridItem>
               <GridItem xs md={4}>
-                <Button
-                  color='primary'
-                  style={{ marginTop: '15px' }}
-                  onClick={this.addNewReferralPerson}
-                  size='sm'
-                >
-                  <Add /> New Referral Person
-                </Button>
+                <Authorized authority='settings.contact.referralperson'>
+                  <Button
+                    color='primary'
+                    style={{ marginTop: '15px' }}
+                    onClick={this.addNewReferralPerson}
+                    size='sm'
+                  >
+                    <Add /> New Referral Person
+                  </Button>
+                </Authorized>
               </GridItem>
               <GridItem xs md={12}>
                 <FastField

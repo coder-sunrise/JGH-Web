@@ -73,6 +73,7 @@ const ApptPopover = ({ classes, popoverEvent, ctappointmenttype = [] }) => {
     resourceName,
     visitPurposeValue,
     preOrder = [],
+    patientDOB,
   } = popoverEvent
 
   const date = moment(appointmentDate)
@@ -80,6 +81,7 @@ const ApptPopover = ({ classes, popoverEvent, ctappointmenttype = [] }) => {
     patientName,
     patientProfile,
     patientContactNo,
+    patientDOB,
   )
 
   const AppointmentDateLabel = (

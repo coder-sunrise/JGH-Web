@@ -1263,11 +1263,11 @@ class Medication extends PureComponent {
     row.revenueCategoryFK = option.revenueCategoryFK
     row.isDispensedByPharmacy = option.isDispensedByPharmacy
     row.isNurseActualizeRequired = option.isNurseActualizable
-    row.prescribeUOMFK = option.prescribingUOM.id
-    row.prescribeUOMCode = option.prescribingUOM.code
-    row.prescribeUOMDisplayValue = option.prescribingUOM.name
+    row.prescribeUOMFK = option.prescribingUOM?.id
+    row.prescribeUOMCode = option.prescribingUOM?.code
+    row.prescribeUOMDisplayValue = option.prescribingUOM?.name
     row.inventoryDispenseUOMFK = option.dispensingUOM.id
-    row.inventoryPrescribingUOMFK = option.prescribingUOM.id
+    row.inventoryPrescribingUOMFK = option.prescribingUOM?.id
     row.isActive = option.isActive
     row.orderable = option.orderable
   }
@@ -1982,7 +1982,7 @@ class Medication extends PureComponent {
                           <TextField
                             label='Drug Mixture'
                             {...args}
-                            maxLength={90}
+                            maxLength={70}
                             disabled={isStartedMedication}
                           />
                         </div>
@@ -2004,7 +2004,7 @@ class Medication extends PureComponent {
                         fontWeight: 500,
                       }}
                     >
-                      {`Characters left: ${90 -
+                      {`Characters left: ${70 -
                         (drugName ? drugName.length : 0)}`}
                     </span>
                   </div>
@@ -2765,6 +2765,7 @@ class Medication extends PureComponent {
                   name='adjValue'
                   render={args => {
                     args.min = 0
+                    args.precision = 2
                     if (values.isExactAmount) {
                       return (
                         <NumberInput

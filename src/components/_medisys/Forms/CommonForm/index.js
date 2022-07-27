@@ -68,9 +68,12 @@ const exportPDF = container => {
 class CommonForm extends PureComponent {
   componentDidMount() {
     const {
-      values: { id, formTemplateFK },
+      values: {
+        formData: { content },
+        formTemplateFK,
+      },
     } = this.props
-    if (id) return
+    if (content) return
     // setTimeout(() => {
     this.props
       .dispatch({
@@ -232,14 +235,13 @@ class CommonForm extends PureComponent {
       statusFK,
       formData: { content, signatureCounter = 0 },
     } = this.props.values
-    if (!content) return
-
-    this.fillFormFields()
     const isSigningMode = statusFK === 2 || signatureCounter > 0
     this.DEContainer.documentEditor.editor.enforceProtection(
       '',
       isSigningMode ? 'ReadOnly' : 'FormFieldsOnly',
     )
+    // if (!content) return
+    this.fillFormFields()
     this.DEContainer.documentEditor.showRestrictEditingPane(false)
     this.DEContainer.showHidePropertiesPane(false)
     const deElement = this.DEContainer.documentEditor.getDocumentEditorElement()
@@ -311,20 +313,27 @@ class CommonForm extends PureComponent {
           documentName={formName}
           document={content}
           ref={r => (this.DEContainer = r?.container)}
-          initialized={()=>{
-            const {values: { statusFK }} = this.props
+          initialized={() => {
+            const {
+              values: { statusFK },
+            } = this.props
             this.documentChange()
             this.DEContainer.contentChange = this.contentChange
             this.DEContainer.documentChange = this.documentChange
-            this.DEContainer.selectionChange = _.debounce(this.selectionChange,100) 
+            this.DEContainer.selectionChange = _.debounce(
+              this.selectionChange,
+              100,
+            )
             this.DEContainer.disableEdit = statusFK === 2
           }}
           zoomTarget='FitPageWidth'
           // height={'78vh'}
-          height={height-105}
+          height={height - 105}
           showPropertiesPane={false}
           enableToolbar={false}
           restrictEditing={disableEdit}
+          enableContextMenu={false}
+          enableImageResizer={false}
           // userColor={'#FFFF00'}
           // contentChange={this.contentChange}
           // documentChange={this.documentChange}

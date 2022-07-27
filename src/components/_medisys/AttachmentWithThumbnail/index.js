@@ -10,7 +10,7 @@ import {
   MenuItem,
 } from '@material-ui/core'
 // common components
-import { CardContainer, Danger, GridContainer } from '@/components'
+import { CardContainer, Danger, GridContainer, CommonModal } from '@/components'
 import { Button } from 'antd'
 import { CloudUploadOutlined, ScanOutlined } from '@ant-design/icons'
 import { LoadingWrapper } from '@/components/_medisys'
@@ -28,6 +28,8 @@ import withWebSocket from '@/components/Decorator/withWebSocket'
 import { generateThumbnailAsync } from './utils'
 import styles from './styles'
 import Thumbnail from './Thumbnail'
+import ImagePreviewer from './ImagePreviewer'
+const imageExt = ['JPG', 'JPEG', 'PNG', 'BMP', 'GIF']
 
 const allowedFiles = '.png, .jpg, .jpeg, .xls, .xlsx, .doc, .docx, .pdf'
 
@@ -56,6 +58,8 @@ class AttachmentWithThumbnail extends Component {
       errorText: undefined,
       uploading: false,
       downloading: false,
+      showImagePreview: false,
+      selectedFileId: 0,
     }
 
     this.inputEl = React.createRef()
@@ -338,6 +342,13 @@ class AttachmentWithThumbnail extends Component {
       this.onUploadClick()
     }
   }
+  showImagePreview = attachment => {
+    this.setState({
+      ...this.state,
+      showImagePreview: true,
+      selectedFileId: attachment.id,
+    })
+  }
 
   render() {
     const {
@@ -529,6 +540,7 @@ class AttachmentWithThumbnail extends Component {
                   index={index}
                   indexInAllAttachments={indexInAllAttachments}
                   attachment={attachment}
+                  showImagePreview={this.showImagePreview}
                   {...commonProps}
                 />
               )
@@ -540,7 +552,12 @@ class AttachmentWithThumbnail extends Component {
     if (simple && !allowedMultiple)
       Body = fileAttachments.map((attachment, index) => {
         return (
-          <Thumbnail index={index} attachment={attachment} {...commonProps} />
+          <Thumbnail
+            index={index}
+            attachment={attachment}
+            showImagePreview={this.showImagePreview}
+            {...commonProps}
+          />
         )
       })
 
@@ -554,6 +571,23 @@ class AttachmentWithThumbnail extends Component {
     }
     return (
       <div className={classes.root}>
+        <CommonModal
+          open={this.state.showImagePreview}
+          title='Results Attachment Preview'
+          fullScreen
+          onClose={() =>
+            this.setState({ ...this.state, showImagePreview: false })
+          }
+        >
+          <ImagePreviewer
+            defaultSelectedFileId={this.state.selectedFileId}
+            files={fileAttachments.filter(attachmentItem =>
+              imageExt.includes(attachmentItem.fileExtension.toUpperCase())
+                ? attachmentItem
+                : null,
+            )}
+          />
+        </CommonModal>
         <input
           style={{ display: 'none' }}
           type='file'

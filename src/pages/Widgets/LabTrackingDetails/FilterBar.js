@@ -101,14 +101,7 @@ class FilterBar extends PureComponent {
     const { setFieldValue } = props
 
     setTimeout(() => {
-      setFieldValue('visitDate', [
-        moment()
-          .add(-1, 'd')
-          .toDate(),
-        moment()
-          .add(-1, 'd')
-          .toDate(),
-      ])
+      setFieldValue('visitDate', [moment().toDate(), moment().toDate()])
       setFieldValue('visitTypeIDs', [-99])
     }, 1)
   }

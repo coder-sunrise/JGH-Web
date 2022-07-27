@@ -813,11 +813,6 @@ class PatientHistory extends Component {
         </div>
       )
     }
-    const {
-      isFromEditOrder,
-      editDispenseType,
-      editDispenseReason,
-    } = history.patientHistoryDetail
     let current = {
       ...history.patientHistoryDetail,
       visitAttachments: history.visitAttachments,
@@ -851,7 +846,7 @@ class PatientHistory extends Component {
     const { labelPrinterSize } = settings
     const showDrugLabelRemark = labelPrinterSize === '8.0cmx4.5cm_V2'
 
-    const isShowContent = currentTagWidgets.length > 0 || isFromEditOrder
+    const isShowContent = currentTagWidgets.length > 0
 
     return (
       <div
@@ -905,48 +900,6 @@ class PatientHistory extends Component {
                 </div>
               )
             })}
-            {isFromEditOrder && (
-              <div style={{ marginBottom: 6 }}>
-                <div style={{ position: 'relative' }}>
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      textAlign: 'right',
-                    }}
-                  >
-                    Edit Order Type:
-                  </div>
-                  <div style={{ paddingLeft: 130, whiteSpace: 'pre-wrap' }}>
-                    {editDispenseType}
-                  </div>
-                </div>
-                {WidgetConfig.hasValue(editDispenseReason) &&
-                  editDispenseReason.trim().length && (
-                    <div style={{ position: 'relative' }}>
-                      <div
-                        style={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          textAlign: 'right',
-                        }}
-                      >
-                        Edit Order Reason:
-                      </div>
-                      <div
-                        style={{
-                          paddingLeft: 130,
-                          whiteSpace: 'pre-wrap',
-                        }}
-                      >
-                        {editDispenseReason}
-                      </div>
-                    </div>
-                  )}
-              </div>
-            )}
           </div>
         ) : (
           <div> No Data</div>

@@ -1236,7 +1236,7 @@ export const inventoryItemListing = (
   let inventoryItemList = list.map(x => {
     const { code, displayValue, sellingPrice = 0 } = x
     const uom = x.dispensingUOM ? x.dispensingUOM.name : x.uom?.name
-
+    const itemFKObj = itemFKName ? { [itemFKName]: x.id } : {}
     return {
       value: x.id,
       name: displayValue,
@@ -1246,7 +1246,6 @@ export const inventoryItemListing = (
       sellingPrice: x.sellingPrice,
       lastCostPriceBefBonus: x.lastCostPriceBefBonus,
       id: x.id,
-      [itemFKName]: x.id,
       stateName,
       itemFK: x.id,
       isActive: x.isActive,
@@ -1254,6 +1253,7 @@ export const inventoryItemListing = (
       displayValue: `${displayValue} - ${code} (${currencySymbol}${sellingPrice.toFixed(
         2,
       )} / ${uom})`,
+      ...itemFKObj,
     }
   })
   return {

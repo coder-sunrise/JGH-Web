@@ -963,13 +963,13 @@ class Detail extends PureComponent {
     row.uomfk = option.dispensingUOM.id
     row.uomCode = option.dispensingUOM.code
     row.uomDisplayValue = option.dispensingUOM.name
-    row.prescribeUOMFK = option.prescribingUOM.id
-    row.prescribeUOMCode = option.prescribingUOM.code
-    row.prescribeUOMDisplayValue = option.prescribingUOM.name
+    row.prescribeUOMFK = option.prescribingUOM?.id
+    row.prescribeUOMCode = option.prescribingUOM?.code
+    row.prescribeUOMDisplayValue = option.prescribingUOM?.name
     row.drugName = option.displayValue
     row.revenueCategoryFK = option.revenueCategoryFK
     row.inventoryDispenseUOMFK = option.dispensingUOM.id
-    row.inventoryPrescribingUOMFK = option.prescribingUOM.id
+    row.inventoryPrescribingUOMFK = option.prescribingUOM?.id
     row.isActive = option.isActive
     row.orderable = option.orderable
   }
@@ -1267,7 +1267,7 @@ class Detail extends PureComponent {
                         label='Drug Mixture'
                         {...args}
                         autocomplete='off'
-                        maxLength={60}
+                        maxLength={70}
                       />
                     )
                   }}
@@ -1287,7 +1287,7 @@ class Detail extends PureComponent {
                       fontWeight: 500,
                     }}
                   >
-                    {`Characters left: ${90 - (values.drugName || '').length}`}
+                    {`Characters left: ${70 - (values.drugName || '').length}`}
                   </span>
                 </div>
               </div>

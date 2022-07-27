@@ -307,7 +307,7 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
                 : undefined,
               duration: matchInstruction?.duration,
               stepdose: 'AND',
-              sequence: 0,
+              sequence: 1,
             },
           ],
           performingUserFK: visitDoctorUserId,

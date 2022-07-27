@@ -103,6 +103,7 @@ const Thumbnail = ({
   size = { width: 64, height: 64 },
   hideRemarks,
   hiddenDelete,
+  showImagePreview,
 }) => {
   const {
     fileIndexFK,
@@ -166,13 +167,14 @@ const Thumbnail = ({
       useImageViewer &&
       imageFileExtensions.includes(attachment.fileExtension.toLowerCase())
     ) {
+      showImagePreview(attachment)
       // show image preview
-      dispatch({
-        type: 'imageViewer/updateState',
-        payload: {
-          attachment,
-        },
-      })
+      // dispatch({
+      //   type: 'imageViewer/updateState',
+      //   payload: {
+      //     attachment,
+      //   },
+      // })
       return
     }
 

@@ -383,7 +383,7 @@ export default ({
       type: ORDER_TYPES.MEDICATION,
       adjAmount: currentVisitOrderTemplate.adjAmt,
       adjType: currentVisitOrderTemplate.adjType,
-      adjValue: currentVisitOrderTemplate.value,
+      adjValue: currentVisitOrderTemplate.adjValue,
       isMinus: !!(
         currentVisitOrderTemplate.adjValue &&
         currentVisitOrderTemplate.adjValue < 0
@@ -540,7 +540,7 @@ export default ({
       totalPrice: currentVisitOrderTemplate.total,
       adjAmount: currentVisitOrderTemplate.adjAmt,
       adjType: currentVisitOrderTemplate.adjType,
-      adjValue: currentVisitOrderTemplate.value,
+      adjValue: currentVisitOrderTemplate.adjValue,
       isMinus: !!(
         currentVisitOrderTemplate.adjValue &&
         currentVisitOrderTemplate.adjValue < 0
@@ -628,7 +628,7 @@ export default ({
     const newService = {
       adjAmount: currentVisitOrderTemplate.adjAmt,
       adjType: currentVisitOrderTemplate.adjType,
-      adjValue: currentVisitOrderTemplate.value,
+      adjValue: currentVisitOrderTemplate.adjValue,
       isActive: true,
       isDeleted: false,
       isDisplayValueChangable: service.isDisplayValueChangable,
@@ -682,7 +682,7 @@ export default ({
     const newConsumable = {
       adjAmount: currentVisitOrderTemplate.adjAmt,
       adjType: currentVisitOrderTemplate.adjType,
-      adjValue: currentVisitOrderTemplate.value,
+      adjValue: currentVisitOrderTemplate.adjValue,
       batchNo: defaultBatch?.batchNo,
       consumableCode: consumable.code,
       consumableName: consumable.displayValue,
@@ -1981,19 +1981,6 @@ export default ({
                     deleteMessage =
                       'Specimen Collected. No modification is allowed on processed order'
                   }
-                }
-
-                if (
-                  deleteEnable &&
-                  nurseWorkitem.statusFK === NURSE_WORKITEM_STATUS.ACTUALIZED
-                ) {
-                  const lastNuseActualize = _.orderBy(
-                    nuseActualize,
-                    ['actulizeDate'],
-                    ['desc'],
-                  )[0]
-                  deleteEnable = false
-                  deleteMessage = `Item actualized by ${lastNuseActualize.actulizeByUser}. Deletion allowed after nurse cancel actualization`
                 }
               }
               if (

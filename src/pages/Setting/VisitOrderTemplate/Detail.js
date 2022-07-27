@@ -255,6 +255,7 @@ class Detail extends PureComponent {
                     code='ctcopayer'
                     labelField='displayValue'
                     additionalSearchField='code'
+                    disableAll
                     renderDropdown={option => {
                       return (
                         <CopayerDropdownOption

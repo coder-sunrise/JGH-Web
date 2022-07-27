@@ -32,6 +32,10 @@ export default createListViewModel({
         if (response) notification.success({ message: 'Updated.' })
         return response
       },
+      *checkIfEmpty({ payload }, { call, put }) {
+        const response = yield call(service.checkIfEmpty, payload)
+        return response
+      },
     },
     reducers: {
       queryDone(st, { payload }) {

@@ -4,10 +4,8 @@ import ProCard from '@ant-design/pro-card'
 import { Icon } from '@/components'
 import { WorklistColumn } from './WorklistColumn'
 import PharmacyWorkItem from './PharmacyWorkItem'
-
-export const Worklist = ({ columns }) => {
+export const Worklist = ({ columns, ...restProps }) => {
   const [columnPercentage, setColumnPercentage] = useState(100)
-
   useEffect(() => {
     if (columns) {
       setColumnPercentage(100 / columns.length)
@@ -22,8 +20,9 @@ export const Worklist = ({ columns }) => {
           columnPercentage={columnPercentage}
           data={column}
           renderWorkitem={item => {
-            return <PharmacyWorkItem item={item} />
+            return <PharmacyWorkItem item={item} {...restProps} />
           }}
+          {...restProps}
         />
       ))}
     </div>

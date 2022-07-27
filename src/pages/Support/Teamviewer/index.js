@@ -9,7 +9,7 @@ import logoPic from '@/assets/img/contacttop.jpg'
 import { GridContainer, CardContainer, GridItem } from '@/components'
 
 class Teamviewer extends PureComponent {
-  render () {
+  render() {
     const imgStyle = {
       backgroundImage: `url(${logoPic})`,
       width: '100%',
@@ -107,19 +107,35 @@ class Teamviewer extends PureComponent {
               style={{ textAlign: 'left', display: 'inline-block', width: 550 }}
             >
               <h3>
-                <b> Call-in Support</b>
+                <b> Call-In or Email Support</b>
               </h3>
               <div style={{ marginLeft: 10, fontSize: 16 }}>
                 <p>Our support engineers are standing by to help.</p>
-                <p style={{ marginTop: 10 }}>6283 5016 (Press 3)</p>
+                <p style={{ marginTop: 10 }}>
+                  Contact 6283 5016 (Press 3) or email to{' '}
+                  <span style={{ color: '#4255bd' }}>
+                    semr_support@medinno.com
+                  </span>
+                </p>
+                <div style={{ marginTop: 10 }}>
+                  <div>Operating Hours:</div>
+                  <div>
+                    <div>09:00 - 18:00 (Mon - Fri)</div>
+                    <div>
+                      18:00 - 21:00 (Mon - Fri) or 09:00 - 18:00 (Sat - Sun)
+                      only URGENT cases
+                    </div>
+                  </div>
+                </div>
                 <p style={{ marginTop: 10 }}>
                   Download&nbsp;
                   <a
                     target='_blank'
-                    href='https://get.teamviewer.com/v10/medisyssupport'
+                    href='https://www.teamviewer.com/en/download/windows/'
                   >
                     TeamViewer
-                  </a>&nbsp; for better support.
+                  </a>
+                  &nbsp; for better support.
                 </p>
               </div>
             </div>

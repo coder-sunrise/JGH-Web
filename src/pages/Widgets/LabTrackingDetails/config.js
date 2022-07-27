@@ -28,7 +28,7 @@ export const widgets = (props, setShowMessage) => [
          },
          {
            id: WIDGETS_ID.LAB_RESULTS,
-           name: 'Lab Results',
+           name: 'Results',
            component: Loadable({
              loader: () => import('./LabResult'),
              render: (loaded, p) => {

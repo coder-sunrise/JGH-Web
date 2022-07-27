@@ -350,6 +350,14 @@ class Detail extends PureComponent {
           <GridContainer>
             <GridItem md={4}>
               <FastField
+                name='patientName'
+                render={args => (
+                  <TextField label='Patient Name' {...args} disabled />
+                )}
+              />
+            </GridItem>
+            <GridItem md={4}>
+              <FastField
                 name='patientAccountNo'
                 render={args => (
                   <TextField label='Patient Acc No.' {...args} disabled />
@@ -358,15 +366,13 @@ class Detail extends PureComponent {
             </GridItem>
             <GridItem md={4}>
               <FastField
-                name='patientName'
+                name='referreceNo'
                 render={args => (
-                  <TextField label='Patient Name' {...args} disabled />
+                  <TextField label='Patient Ref No.' {...args} disabled />
                 )}
               />
             </GridItem>
-            <GridItem md={4}>
-              <TextField disabled label='Doctor' value={doctorNameLabel} />
-            </GridItem>
+
             <GridItem md={4}>
               <FastField
                 name='visitDate'
@@ -384,12 +390,7 @@ class Detail extends PureComponent {
               />
             </GridItem>
             <GridItem md={4}>
-              <FastField
-                name='serviceName'
-                render={args => (
-                  <TextField label='Service Name' {...args} disabled />
-                )}
-              />
+              <TextField disabled label='Doctor' value={doctorNameLabel} />
             </GridItem>
             <GridItem md={4}>
               <FastField
@@ -414,11 +415,20 @@ class Detail extends PureComponent {
                 )}
               />
             </GridItem>
+            <GridItem md={8}>
+              <FastField
+                name='serviceName'
+                render={args => (
+                  <TextField label='Service Name' {...args} disabled />
+                )}
+              />
+            </GridItem>
           </GridContainer>
         </div>
         <div>
           <div>
             <Accordion
+              defaultActive={[0, 1]}
               ref={this.myRef}
               onChange={this.changeToggle}
               mode='multiple'

@@ -57,7 +57,8 @@ const General = ({
 
   const entity = medicationDetail.entity
   const [attachments, setAttachments] = useState([])
- 
+
+  console.log(entity)
   useEffect(() => {
     checkHasActiveSession()
     if (entity && entity.fileIndexFK) {
@@ -65,6 +66,7 @@ const General = ({
         {
           thumbnailIndexFK: entity.thumbnailIndexFK,
           fileIndexFK: entity.fileIndexFK,
+          fileExtension: entity.fileExtension,
           id: entity.fileIndexFK,
         },
       ]
@@ -130,7 +132,8 @@ const General = ({
         id: 'orderable',
         name: 'Orderable',
         tooltip: 'Item is orderable and dispensable to patient',
-        disabled: hasActiveSession && values.id && values.isActive,
+        disabled:
+          hasActiveSession && values.id && values.isActive && values.orderable,
         layoutConfig: {
           style: {},
         },
@@ -168,7 +171,11 @@ const General = ({
         name: 'Dispensed by Pharmacy',
         tooltip:
           "Item’s stock is deducted and dispense by pharmacy. If unchecked the setting, stock deduction will take place during finalization of patient's order",
-        disabled: hasActiveSession && values.id && values.isActive,
+        disabled:
+          hasActiveSession &&
+          values.id &&
+          values.isActive &&
+          values.isDispensedByPharmacy,
         layoutConfig: {
           style: {},
         },
@@ -180,7 +187,11 @@ const General = ({
         id: 'isNurseActualizable',
         name: 'Actualized by Nurse',
         tooltip: 'Item will generate task for nurse to actualize',
-        disabled: hasActiveSession && values.id && values.isActive,
+        disabled:
+          hasActiveSession &&
+          values.id &&
+          values.isActive &&
+          values.isNurseActualizable,
         layoutConfig: {
           style: {},
         },

@@ -372,9 +372,9 @@ export const WorklistHistoryGrid = ({ labWorklistHistory }) => {
               </Typography.Text>
               <VisitTypeTag type={record.visitPurposeFK} />
             </Space>
-            <Space style={{ fontWeight: 'bold' }}>
+            {/* <Space style={{ fontWeight: 'bold' }}>
               <span>{getSpecimenCountByCategory(record.visitFK)}</span>
-            </Space>
+            </Space> */}
           </div>
         )
       },

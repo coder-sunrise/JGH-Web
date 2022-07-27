@@ -16,6 +16,7 @@ import WorklistContext, {
 import PharmacyDetails from './Details'
 import { WorklistFilter } from '../Components'
 import { withStyles } from '@material-ui/core'
+import withWebSocket from '@/components/Decorator/withWebSocket'
 const columnsTemplate = [
   {
     backgroundColor: '#009933',
@@ -213,7 +214,7 @@ const PharmacyWorklist = props => {
           </div>
         }
       >
-        <Worklist columns={columns} />
+        <Worklist columns={columns} {...props} />
         <PharmacyDetails
           refreshClick={refreshClick}
           startRefreshTimer={startRefreshTimer}
@@ -230,7 +231,8 @@ const PharmacyWorklistWithProvider = props => (
   </WorklistContextProvider>
 )
 
-export default withStyles(styles, { name: 'PharmacyWorklistWithProvider' })(
-  PharmacyWorklistWithProvider,
-)
+export default compose(
+  withStyles(styles, { name: 'PharmacyWorklistWithProvider' }),
+  withWebSocket(),
+)(PharmacyWorklistWithProvider)
 

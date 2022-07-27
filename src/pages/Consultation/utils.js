@@ -339,7 +339,7 @@ const cleanConsultation = values => {
   }
 }
 
-const isPharmacyOrderUpdated = orders => {
+const isPharmacyOrderUpdated = (orders, isPrescriptionSheetUpdated) => {
   const { rows, _originalRows } = orders
 
   let isUpdatedPharmacy = false
@@ -367,6 +367,7 @@ const isPharmacyOrderUpdated = orders => {
       isExclusive: item.isExclusive,
       isNurseActualizeRequired: item.isNurseActualizeRequired,
       isPreOrder: item.isPreOrder,
+      isExternalPrescription: isPrescriptionSheetUpdated ? item.isExternalPrescription : undefined,
       performingUserFK: item.performingUserFK,
       quantity: item.quantity,
       remarks: item.remarks,
@@ -440,7 +441,7 @@ const isPharmacyOrderUpdated = orders => {
   const isItemUpdate = item => {
     let isEqual = true
     const currentRow = rows.find(r => r.id === item.id && r.type === item.type)
-    if (item.type === '1') {
+    if (item.type === '1' || item.type === '5') {
       if (
         !_.isEqual(generateMedication(item), generateMedication(currentRow))
       ) {
@@ -451,7 +452,7 @@ const isPharmacyOrderUpdated = orders => {
           currentRow.corPrescriptionItemPrecaution,
         )
       }
-    } else if (item.type === '5') {
+    } else if (item.type === '4') {
       isEqual = _.isEqual(
         generateConsumable(item),
         generateConsumable(currentRow),
@@ -514,7 +515,7 @@ const isPharmacyOrderUpdated = orders => {
 
   if (!isUpdatedPharmacy) {
     isUpdatedPharmacy =
-      rows.filter(r => !r.id && isPushToPharmacy(r)).length > 0
+      rows.filter(r => !r.id && !r.isPreOrder && (!isPrescriptionSheetUpdated || !r.isExternalPrescription) && isPushToPharmacy(r)).length > 0
   }
   return isUpdatedPharmacy
 }

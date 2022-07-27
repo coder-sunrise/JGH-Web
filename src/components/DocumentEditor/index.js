@@ -20,10 +20,16 @@ class DocumentEditor extends SampleBase {
   constructor() {
     super(...arguments)
     this.onLoadDefault = () => {
-      const { documentName, document, enableTitleBar, zoomTarget, initialized } = this.props
+      const {
+        documentName,
+        document,
+        enableTitleBar,
+        zoomTarget,
+        initialized,
+      } = this.props
       this.container.documentEditor.open(document)
       this.container.documentEditor.documentName = documentName
-      if(initialized) initialized.call()
+      if (initialized) initialized.call()
       if (enableTitleBar) {
         this.titleBar.updateDocumentTitle()
       }
@@ -41,11 +47,17 @@ class DocumentEditor extends SampleBase {
   }
 
   rendereComplete() {
-    const { enableTitleBar } = this.props
+    const {
+      enableTitleBar,
+      enableContextMenu = true,
+      enableImageResizer = true,
+    } = this.props
     this.container.serviceUrl = this.hostUrl + 'api/documenteditor/'
     this.container.documentEditor.pageOutline = '#E0E0E0'
     this.container.documentEditor.acceptTab = true
     this.container.documentEditor.resize()
+    this.container.documentEditor.enableContextMenu = enableContextMenu
+    this.container.documentEditor.enableImageResizer = enableImageResizer
     if (enableTitleBar) {
       this.titleBar = new TitleBar(
         document.getElementById('documenteditor_titlebar'),
@@ -88,7 +100,8 @@ class DocumentEditor extends SampleBase {
 
   static showHideHighligth(isShow) {
     const selection = this.instance.documentEditor.editor.selection
-    const formFieldSettings = this.instance.documentEditorSettings.formFieldSettings
+    const formFieldSettings = this.instance.documentEditorSettings
+      .formFieldSettings
     formFieldSettings.applyShading = isShow
     selection.isHighlightEditRegion = isShow
   }
@@ -104,11 +117,13 @@ class DocumentEditor extends SampleBase {
       this.instance = container
     }
     const documentEditor = this.instance.documentEditor
-    documentEditor.open(typeof content === 'object' ? JSON.stringify(content) : content)
+    documentEditor.open(
+      typeof content === 'object' ? JSON.stringify(content) : content,
+    )
     documentEditor.documentName = documentName
     setTimeout(() => {
-      this.showHideHighligth(false) 
-      documentEditor.print() 
+      this.showHideHighligth(false)
+      documentEditor.print()
       this.showHideHighligth(true)
     }, 1)
   }

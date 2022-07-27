@@ -59,6 +59,7 @@ import {
   FastField,
   Select,
   notification,
+  Popconfirm,
 } from '@/components'
 import _ from 'lodash'
 import {
@@ -315,23 +316,24 @@ class ScribbleTemplateItem extends React.Component {
                   <CopyOutlined />
                 </Button>
               </Tooltip>
-              <Tooltip title='Delete'>
-                <Button
-                  disabled={isTemplateEditing}
-                  {...this.buttonProps}
-                  onClick={() => {
-                    const deledItem = {
-                      ...item,
-                      isDeleted: true,
-                      concurrencyToken,
-                    }
-                    this.setState({ item: deledItem })
-                    upsertTemplate(deledItem)
-                  }}
-                >
-                  <DeleteIcon />
-                </Button>
-              </Tooltip>
+              <Popconfirm
+                title='Are you sure?'
+                onConfirm={() => {
+                  const deledItem = {
+                    ...item,
+                    isDeleted: true,
+                    concurrencyToken,
+                  }
+                  this.setState({ item: deledItem })
+                  upsertTemplate(deledItem)
+                }}
+              >
+                <Tooltip title='Delete'>
+                  <Button disabled={isTemplateEditing} {...this.buttonProps}>
+                    <DeleteIcon />
+                  </Button>
+                </Tooltip>
+              </Popconfirm>
             </span>
           )}
         </div>
