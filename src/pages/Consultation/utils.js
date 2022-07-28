@@ -478,11 +478,6 @@ const isPharmacyOrderUpdated = (orders, isPrescriptionSheetUpdated) => {
       pharmacyOrder[index].type === '1' ||
       pharmacyOrder[index].type === '5'
     ) {
-      if (isItemUpdate(pharmacyOrder[index])) {
-        isUpdatedPharmacy = true
-        break
-      }
-
       if (pharmacyOrder[index].isDrugMixture) {
         const currentRow = rows.find(
           r =>
@@ -507,7 +502,7 @@ const isPharmacyOrderUpdated = (orders, isPrescriptionSheetUpdated) => {
             )
           ) {
             isUpdatedPharmacy = true
-            return
+            break
           }
         }
       }

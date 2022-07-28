@@ -541,6 +541,14 @@ const WorklistGrid = ({
         },
       },
       {
+        key: 'days',
+        title: 'Days',
+        dataIndex: 'days',
+        sorter: (a, b) => a.days - b.days,
+        search: false,
+        width: 60,
+      },
+      {
         key: 'action',
         title: 'Action',
         dataIndex: 'action',
