@@ -533,167 +533,30 @@ const isPharmacyOrderUpdated = (orders, isPrescriptionSheetUpdated) => {
   return isUpdatedPharmacy
 }
 
-const isOrderUpdated = (orders, consultationDocument) => {
-  const { rows, _originalRows } = orders
-  let isUpdated = false
+const isOrderUpdated = (orders, consultationDocument = {}) => {
+  const {
+    rows,
+    finalAdjustments = [],
+    isGSTInclusive,
+    gstValue,
+    _originalIsGSTInclusive,
+    _originalGstValue,
+  } = orders
 
-  const generateMedication = item => {
-    if (!item) return {}
-    return {
-      drugName: item.drugName,
-      inventoryMedicationFK: item.inventoryMedicationFK,
-      isDeleted: item.isDeleted,
-      isPreOrder: item.isPreOrder,
-      quantity: item.quantity,
-      totalPrice: item.totalPrice,
-      adjAmount: item.adjAmount,
-      totalAfterItemAdjustment: item.totalAfterItemAdjustment,
-      totalAfterOverallAdjustment: item.totalAfterOverallAdjustment,
-    }
-  }
-
-  const generateConsumable = item => {
-    if (!item) return {}
-    return {
-      inventoryConsumableFK: item.inventoryConsumableFK,
-      isDeleted: item.isDeleted,
-      isPreOrder: item.isPreOrder,
-      quantity: item.quantity,
-      totalPrice: item.totalPrice,
-      adjAmount: item.adjAmount,
-      totalAfterItemAdjustment: item.totalAfterItemAdjustment,
-      totalAfterOverallAdjustment: item.totalAfterOverallAdjustment,
-    }
-  }
-
-  const generateVaccination = item => {
-    if (!item) return {}
-    return {
-      inventoryVaccinationFK: item.inventoryVaccinationFK,
-      isDeleted: item.isDeleted,
-      isPreOrder: item.isPreOrder,
-      quantity: item.quantity,
-      totalPrice: item.totalPrice,
-      adjAmount: item.adjAmount,
-      totalAfterItemAdjustment: item.totalAfterItemAdjustment,
-      totalAfterOverallAdjustment: item.totalAfterOverallAdjustment,
-    }
-  }
-
-  const generateService = item => {
-    if (!item) return {}
-    return {
-      serviceCenterServiceFK: item.serviceCenterServiceFK,
-      newServiceName: item.newServiceName,
-      isDeleted: item.isDeleted,
-      isPreOrder: item.isPreOrder,
-      quantity: item.quantity,
-      total: item.total,
-      adjAmount: item.adjAmount,
-      totalAfterItemAdjustment: item.totalAfterItemAdjustment,
-      totalAfterOverallAdjustment: item.totalAfterOverallAdjustment,
-    }
-  }
-
-  const generateDrudMixture = item => {
-    return {
-      inventoryMedicationFK: item.inventoryMedicationFK,
-      isDeleted: item.isDeleted,
-      quantity: item.quantity,
-    }
-  }
-  const isItemUpdate = item => {
-    let isEqual = true
-    const currentRow = rows.find(r => r.id === item.id && r.type === item.type)
-    if (item.type === '1' || item.type === '5') {
-      if (
-        !_.isEqual(generateMedication(item), generateMedication(currentRow))
-      ) {
-        isEqual = false
-      } else {
-        isEqual = isPrecationEqual(
-          item.corPrescriptionItemPrecaution,
-          currentRow.corPrescriptionItemPrecaution,
-        )
-      }
-    } else if (item.type === '4') {
-      isEqual = _.isEqual(
-        generateConsumable(item),
-        generateConsumable(currentRow),
-      )
-    } else if (item.type === '2') {
-      isEqual = _.isEqual(
-        generateVaccination(item),
-        generateVaccination(currentRow),
-      )
-    } else {
-      isEqual = _.isEqual(generateService(item), generateService(currentRow))
-    }
-    return !isEqual
-  }
-
-  const isItemDrugMixtureUpdate = (item, drugMixture) => {
-    const currentDrugMixture = drugMixture.find(r => r.id === item.id)
-    const isEqual = _.isEqual(
-      generateDrudMixture(item),
-      generateDrudMixture(currentDrugMixture),
-    )
-    return !isEqual
-  }
-
-  for (let index = 0; index < _originalRows.length; index++) {
-    if (
-      _originalRows[index].type === '1' ||
-      _originalRows[index].type === '5'
-    ) {
-      if (isItemUpdate(_originalRows[index])) {
-        isUpdated = true
-        break
-      }
-
-      if (_originalRows[index].isDrugMixture) {
-        const currentRow = rows.find(
-          r =>
-            r.id === _originalRows[index].id &&
-            r.type === _originalRows[index].type,
-        )
-
-        if (
-          currentRow.corPrescriptionItemDrugMixture.find(
-            d => !d.id && !d.isDeleted,
-          )
-        ) {
-          isUpdated = true
-          break
-        }
-        const drugMixture = _originalRows[index].corPrescriptionItemDrugMixture
-        for (let i = 0; i < drugMixture.length; i++) {
-          if (
-            isItemDrugMixtureUpdate(
-              drugMixture[i],
-              currentRow.corPrescriptionItemDrugMixture,
-            )
-          ) {
-            isUpdated = true
-            return
-          }
-        }
-      }
-    } else {
-      if (isItemUpdate(_originalRows[index])) {
-        isUpdated = true
-        break
-      }
-    }
-  }
-
-  if (!isUpdated) {
-    isUpdated = rows.filter(r => !r.id && !r.isDeleted).length > 0
-  }
-
-  if (!isUpdated) {
-  }
-  return isUpdated
+  const { rows: documents = [] } = consultationDocument
+  return (
+    rows.filter(
+      x => (!x.id && !x.isDeleted) || (x.id && (x.isUpdated || x.isDeleted)),
+    ).length > 0 ||
+    documents.filter(
+      x => (!x.id && !x.isDeleted) || (x.id && (x.isUpdated || x.isDeleted)),
+    ).length > 0 ||
+    finalAdjustments.filter(
+      x => (!x.id && !x.isDeleted) || (x.id && (x.isUpdated || x.isDeleted)),
+    ).length > 0 ||
+    isGSTInclusive != _originalIsGSTInclusive ||
+    gstValue != _originalGstValue
+  )
 }
 
 const getOrdersData = val => {
@@ -1142,4 +1005,5 @@ export {
   cleanFields,
   isPharmacyOrderUpdated,
   getOrdersData,
+  isOrderUpdated,
 }

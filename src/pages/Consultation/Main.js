@@ -367,7 +367,7 @@ const saveConsultation = ({
     values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders, true)
     values.isPharmacyOrderUpdated = isPharmacyOrderUpdated(orders)
   }
-  values.isOrderUpdated = isOrderUpdated(orders)
+  values.isOrderUpdated = isOrderUpdated(orders, consultationDocument)
 
   const onConfirmSave = () => {
     const newValues = convertToConsultation(
@@ -536,7 +536,7 @@ const pauseConsultation = async ({
     values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders, true)
     values.isPharmacyOrderUpdated = isPharmacyOrderUpdated(orders)
   }
-  values.isOrderUpdated = isOrderUpdated(orders)
+  values.isOrderUpdated = isOrderUpdated(orders, consultationDocument)
   const newValues = convertToConsultation(
     {
       ...values,
@@ -715,14 +715,20 @@ const saveDraftDoctorNote = ({ values, visitRegistration }) => {
   notDirtyDuration: 0, // this page should alwasy show warning message when leave
   onDirtyDiscard: discardConsultation,
   handleSubmit: async (values, { props }) => {
-    const { dispatch, handlePrint, orders = {}, clinicSettings } = props
+    const {
+      dispatch,
+      handlePrint,
+      orders = {},
+      clinicSettings,
+      consultationDocument = {},
+    } = props
     const { summary } = orders
     const { isEnablePharmacyModule } = clinicSettings
     if (isEnablePharmacyModule) {
       values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders, true)
       values.isPharmacyOrderUpdated = isPharmacyOrderUpdated(orders)
     }
-    values.isOrderUpdated = isOrderUpdated(orders)
+    values.isOrderUpdated = isOrderUpdated(orders, consultationDocument)
     if (!(await autoPrintSelection('sign', { values, ...props }))) {
       saveConsultation({
         props: {
