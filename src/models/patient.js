@@ -145,8 +145,7 @@ export default createFormViewModel({
         if (
           !newPatient &&
           Number(currentId) &&
-          (patient.version !== version ||
-            (patient.entity?.id !== currentId))
+          (patient.version !== version || patient.entity?.id !== currentId)
         ) {
           yield put({
             type: 'query',
@@ -247,6 +246,12 @@ export default createFormViewModel({
               showPatientInfoPanel: false,
               fullscreen: false,
               currentPatientId: null,
+            },
+          }),
+          yield put({
+            type: 'consultation/updateState',
+            payload: {
+              patientMedicalHistory: undefined,
             },
           }),
           // reset patient model state to default state

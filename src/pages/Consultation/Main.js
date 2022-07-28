@@ -367,7 +367,6 @@ const saveConsultation = ({
     values.isPharmacyOrderUpdated = isPharmacyOrderUpdated(orders)
   }
 
-
   const onConfirmSave = () => {
     const newValues = convertToConsultation(
       {
@@ -822,6 +821,18 @@ class Main extends React.Component {
     })
   }
   shouldComponentUpdate = (nextProps, nextState) => {
+    if (nextProps.consultation.patientMedicalHistory) {
+      const { setFieldValue } = nextProps
+      setFieldValue('patientMedicalHistory', {
+        ...nextProps.consultation.patientMedicalHistory,
+      })
+      nextProps.dispatch({
+        type: 'consultation/updateState',
+        payload: {
+          patientMedicalHistory: undefined,
+        },
+      })
+    }
     if (nextProps.values.id !== this.props.values.id) return true
     if (nextProps.consultation.version !== this.props.consultation.version)
       return true
