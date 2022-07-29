@@ -76,6 +76,7 @@ export default ({
   const [showRevertVisitPurposeItem, setShowRevertVisitPurposeItem] = useState(
     false,
   )
+  const [showEditVisitPurpose, setShowEditVisitPurpose] = useState(false)
 
   const [expandedGroups, setExpandedGroups] = useState([])
 
@@ -1400,6 +1401,62 @@ export default ({
     })
     setShowRevertVisitPurposeItem(false)
   }
+
+  const getAvailableOrderTemplate = () => {
+    const { visitOrderTemplateOptions = [] } = visitRegistration
+    const patientInfo = patient
+    let availableVisitOrderTemplate = []
+    var patientCopayers = patientInfo?.patientScheme
+      ?.filter(x => !x.isExpired && x.isSchemeActive && x.isCopayerActive)
+      ?.map(x => x.copayerFK)
+    if (patientInfo) {
+      visitOrderTemplateOptions
+        .filter(x => x.isActive)
+        .forEach(template => {
+          if ((template.visitOrderTemplate_Copayers || []).length === 0) {
+            availableVisitOrderTemplate.push({
+              ...template,
+              type: 'general',
+              value: template.id,
+              name: template.displayValue,
+            })
+          } else {
+            if (
+              _.intersection(
+                template.visitOrderTemplate_Copayers.map(x => x.copayerFK),
+                patientCopayers,
+              ).length > 0
+            ) {
+              availableVisitOrderTemplate.push({
+                ...template,
+                type: 'copayer',
+                value: template.id,
+                name: template.displayValue,
+              })
+            }
+          }
+        })
+    } else {
+      visitOrderTemplateOptions
+        .fitler(x => x.isActive)
+        .forEach(template => {
+          // if haven't select patient profile, then only show general package
+          if ((template.visitOrderTemplate_Copayers || []).length === 0) {
+            availableVisitOrderTemplate.push({
+              ...template,
+              value: template.id,
+              name: template.displayValue,
+            })
+          }
+        })
+    }
+    availableVisitOrderTemplate = _.orderBy(
+      availableVisitOrderTemplate,
+      [data => data?.type?.toLowerCase(), data => data?.name?.toLowerCase()],
+      ['asc', 'asc'],
+    )
+    return availableVisitOrderTemplate
+  }
   return (
     <Fragment>
       <CommonTableGrid
@@ -1560,15 +1617,29 @@ export default ({
                           </div>
                           <div>
                             {isEnableEditOrder && (
-                              <Link
-                                style={{ textDecoration: 'underline' }}
-                                onClick={e => {
-                                  e.preventDefault()
-                                  revertVisitPurpose()
-                                }}
-                              >
-                                Click to Revert Visit Purpose Item
-                              </Link>
+                              <div>
+                                <Link
+                                  style={{
+                                    textDecoration: 'underline',
+                                    marginRight: 10,
+                                  }}
+                                  onClick={e => {
+                                    e.preventDefault()
+                                    revertVisitPurpose()
+                                  }}
+                                >
+                                  Revert Visit Purpose Item
+                                </Link>
+                                <Link
+                                  style={{ textDecoration: 'underline' }}
+                                  onClick={e => {
+                                    e.preventDefault()
+                                    setShowEditVisitPurpose(true)
+                                  }}
+                                >
+                                  Edit Visit Purpose
+                                </Link>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -2150,6 +2221,97 @@ export default ({
           open={showRevertVisitPurposeItem}
           confirmRevert={confirmRevert}
         ></VisitOrderTemplateRevert>
+      </CommonModal>
+      <CommonModal
+        open={showEditVisitPurpose}
+        title='Edit Visit Purpose'
+        cancelText='Cancel'
+        maxWidth='sm'
+        onClose={() => {
+          setShowEditVisitPurpose(false)
+        }}
+        onConfirm={() => {
+          setShowEditVisitPurpose(false)
+        }}
+      >
+        <div>
+          <Select
+            options={getAvailableOrderTemplate()}
+            label='Visit Purpose'
+            dropdownStyle={{ width: 500 }}
+            dropdownMatchSelectWidth={false}
+            authority='none'
+            onChange={
+              (e, opts) => {}
+              // handleVisitOrderTemplateChange(visitType, opts)
+            }
+            renderDropdown={option => {
+              const copayers = _.orderBy(
+                option.visitOrderTemplate_Copayers.map(x => x.copayerName),
+                data => data.toLowerCase(),
+                'asc',
+              ).join(', ')
+              const tooltip = (
+                <div>
+                  <div>{option.name}</div>
+                  {(option.visitOrderTemplate_Copayers || []).length > 0 && (
+                    <div>Co-Payer(s): {copayers}</div>
+                  )}
+                  {(option.visitOrderTemplate_Copayers || []).length === 0 && (
+                    <div>
+                      <i>General</i>
+                    </div>
+                  )}
+                </div>
+              )
+              return (
+                <Tooltip placement='right' title={tooltip}>
+                  <div>
+                    <div
+                      style={{
+                        fontWeight: '550',
+                        width: '100%',
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {option.name}
+                    </div>
+                    {(option.visitOrderTemplate_Copayers || []).length > 0 && (
+                      <div
+                        style={{
+                          width: '100%',
+                          textOverflow: 'ellipsis',
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        <span>Co-Payer(s): </span>
+                        <span style={{ color: '#4255bd' }}>{copayers}</span>
+                      </div>
+                    )}
+                    {(option.visitOrderTemplate_Copayers || []).length ===
+                      0 && (
+                      <div
+                        style={{
+                          width: '100%',
+                          textOverflow: 'ellipsis',
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        <span style={{ color: 'green' }}>
+                          <i>General</i>
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </Tooltip>
+              )
+            }}
+          />
+        </div>
       </CommonModal>
     </Fragment>
   )
