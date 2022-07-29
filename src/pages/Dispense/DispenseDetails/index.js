@@ -967,7 +967,11 @@ const DispenseDetails = ({
                   color='primary'
                   onClick={openPopper}
                   size='sm'
-                  style={{ height: 25, marginTop: -20 }}
+                  style={{
+                    height: 25,
+                    marginTop:
+                      orderCreateTime && invoice.finalizedDateTime ? -20 : 2,
+                  }}
                 >
                   <Print /> Label
                 </Button>
