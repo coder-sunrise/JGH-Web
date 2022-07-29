@@ -49,6 +49,7 @@ const FilterBar = ({
                   label='Co-Payer'
                   labelField='name'
                   additionalSearchField='code'
+                  showOptionTitle={false}
                   renderDropdown={option => {
                     return (
                       <CopayerDropdownOption

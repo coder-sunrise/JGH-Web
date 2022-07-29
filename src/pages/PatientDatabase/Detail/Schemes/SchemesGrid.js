@@ -405,20 +405,91 @@ class SchemesGrid extends PureComponent {
         sortingEnabled: false,
         type: 'codeSelect',
         additionalSearchField: 'code',
+        showOptionTitle: false,
+        dropdownMatchSelectWidth: false,
+        dropdownStyle: { width: '1250px' },
+        dropdownClassName: 'ant-select-dropdown-bottom-bordered',
         renderDropdown: option => {
+          let {
+            copayerName,
+            creditFacility,
+            copayerAddress: {
+              countryName,
+              street,
+              buildingName,
+              unitNo,
+              blockNo,
+              postcode,
+            },
+          } = option
           return (
-            <div
-              style={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
+            <Tooltip
+              placement='left'
+              title={
+                <div>
+                  <span>
+                    {option.code ? `${option.code} - ` : ''}
+                    {option.name}
+                  </span>
+                  <br />
+                  <span>{`Copayer: ${copayerName}`}</span>
+                  <br />
+                  <span>
+                    {`Credit Facility: ${
+                      creditFacility ? creditFacility : ' - '
+                    }`}
+                  </span>
+                  <br />
+                  <span>
+                    {`Addr.: ${[
+                      blockNo,
+                      street,
+                      unitNo,
+                      buildingName,
+                      countryName,
+                      postcode,
+                    ]
+                      .filter(item => item?.trim() != '')
+                      .join(', ')}`}
+                  </span>
+                </div>
+              }
             >
-              {option.code ? `${option.code} - ` : ''}
-              <span style={{ fontWeight: option.code ? 'bold' : 'normal' }}>
-                {`${option.name}`}
-              </span>
-            </div>
+              <div
+                style={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <div style={{ display: 'block', lineHeight: '17px' }}>
+                  {option.code ? `${option.code} - ` : ''}
+                  <span style={{ fontWeight: option.code ? 'bold' : 'normal' }}>
+                    {`${option.name}`}
+                  </span>
+                </div>
+                <span
+                  style={{ display: 'block', lineHeight: '17px' }}
+                >{`Copayer: ${copayerName}`}</span>
+                <span style={{ display: 'block', lineHeight: '17px' }}>
+                  {`Credit Facility: ${
+                    creditFacility ? creditFacility : ' - '
+                  }`}
+                </span>
+                <span style={{ display: 'block', lineHeight: '17px' }}>
+                  {`Addr.: ${[
+                    blockNo,
+                    street,
+                    unitNo,
+                    buildingName,
+                    countryName,
+                    postcode,
+                  ]
+                    .filter(item => item?.trim() != '')
+                    .join(', ')}`}
+                </span>
+              </div>
+            </Tooltip>
           )
         },
         options: row => {

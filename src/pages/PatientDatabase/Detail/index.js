@@ -40,7 +40,7 @@ import {
   CommonModal,
 } from '@/components'
 import Authorized from '@/utils/Authorized'
-
+import { menuViewableByAuthoritys } from '@/utils/utils'
 import services from '@/services/patient'
 import { getBizSession } from '@/services/queue'
 import schema from './schema'
@@ -103,6 +103,7 @@ class PatientDetail extends PureComponent {
       rights: 'enable',
     },
     hasActiveSession: false,
+    preSelectedMenu: '1',
   }
 
   constructor(props) {
@@ -198,6 +199,22 @@ class PatientDetail extends PureComponent {
         ],
         component: Loadable({
           loader: () => import('./ClaimHistory'),
+          render: (loaded, p) => {
+            let Cmpnet = loaded.default
+            return <Cmpnet {...p} patientProfileFK={props.values.id} />
+          },
+          loading: Loading,
+        }),
+      },
+      {
+        id: '13',
+        name: 'Patient Account',
+        access: [
+          'patientdatabase.newpatient',
+          'patientdatabase.patientprofiledetails',
+        ],
+        component: Loadable({
+          loader: () => import('./PatientAccount'),
           render: (loaded, p) => {
             let Cmpnet = loaded.default
             return <Cmpnet {...p} patientProfileFK={props.values.id} />
@@ -397,6 +414,15 @@ class PatientDetail extends PureComponent {
     ) || { rights: 'hidden' }
     if (viewPatientResultsRight.rights === 'hidden') {
       this.widgets = this.widgets.filter(t => t.id !== '5')
+    }
+
+    if (
+      !menuViewableByAuthoritys([
+        'patientdatabase.patientprofiledetails.patienthistory.deposit',
+        'finance/invoicepayment',
+      ])
+    ) {
+      this.widgets = this.widgets.filter(t => t.id !== '13')
     }
   }
 
