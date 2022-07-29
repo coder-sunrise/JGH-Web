@@ -39,6 +39,7 @@ import {
   notification,
   Switch,
   AuthorizedContext,
+  Select,
 } from '@/components'
 import { Button } from 'antd'
 import { orderTypes } from '@/pages/Consultation/utils'
@@ -77,6 +78,7 @@ export default ({
     false,
   )
   const [showEditVisitPurpose, setShowEditVisitPurpose] = useState(false)
+  const [newVisitPurpose, setNewVisitPurpose] = useState(undefined)
 
   const [expandedGroups, setExpandedGroups] = useState([])
 
@@ -2229,88 +2231,119 @@ export default ({
         maxWidth='sm'
         onClose={() => {
           setShowEditVisitPurpose(false)
+          setNewVisitPurpose(undefined)
         }}
         onConfirm={() => {
           setShowEditVisitPurpose(false)
+          //setNewVisitPurpose(undefined)
         }}
+        showFooter
       >
-        <div>
-          <Select
-            options={getAvailableOrderTemplate()}
-            label='Visit Purpose'
-            dropdownStyle={{ width: 500 }}
-            dropdownMatchSelectWidth={false}
-            authority='none'
-            onChange={
-              (e, opts) => {}
-              // handleVisitOrderTemplateChange(visitType, opts)
-            }
-            renderDropdown={option => {
-              const copayers = _.orderBy(
-                option.visitOrderTemplate_Copayers.map(x => x.copayerName),
-                data => data.toLowerCase(),
-                'asc',
-              ).join(', ')
-              const tooltip = (
-                <div>
-                  <div>{option.name}</div>
-                  {(option.visitOrderTemplate_Copayers || []).length > 0 && (
-                    <div>Co-Payer(s): {copayers}</div>
-                  )}
-                  {(option.visitOrderTemplate_Copayers || []).length === 0 && (
-                    <div>
-                      <i>General</i>
-                    </div>
-                  )}
-                </div>
-              )
-              return (
-                <Tooltip placement='right' title={tooltip}>
+        <div style={{ margin: '0px 16px 8px 16px' }}>
+          <div style={{ position: 'relative', paddingLeft: 150 }}>
+            <div
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: 1,
+                width: 145,
+                textAlign: 'right',
+                fontWeight: 400,
+              }}
+            >
+              Current Visit Purpose:
+            </div>
+            <div style={{ fontWeight: 600, fontSize: '1rem' }}>1111111</div>
+          </div>
+          <div style={{ position: 'relative', paddingLeft: 150 }}>
+            <div
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: 11,
+                width: 145,
+                textAlign: 'right',
+                fontWeight: 400,
+              }}
+            >
+              New Visit Purpose:
+            </div>
+            <Select
+              options={getAvailableOrderTemplate()}
+              authority='none'
+              onChange={(e, opts) => {
+                setNewVisitPurpose(opts)
+              }}
+              value={newVisitPurpose?.id}
+              renderDropdown={option => {
+                const copayers = _.orderBy(
+                  option.visitOrderTemplate_Copayers.map(x => x.copayerName),
+                  data => data.toLowerCase(),
+                  'asc',
+                ).join(', ')
+                const tooltip = (
                   <div>
-                    <div
-                      style={{
-                        fontWeight: '550',
-                        width: '100%',
-                        textOverflow: 'ellipsis',
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {option.name}
-                    </div>
+                    <div>{option.name}</div>
                     {(option.visitOrderTemplate_Copayers || []).length > 0 && (
-                      <div
-                        style={{
-                          width: '100%',
-                          textOverflow: 'ellipsis',
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        <span>Co-Payer(s): </span>
-                        <span style={{ color: '#4255bd' }}>{copayers}</span>
-                      </div>
+                      <div>Co-Payer(s): {copayers}</div>
                     )}
                     {(option.visitOrderTemplate_Copayers || []).length ===
                       0 && (
+                      <div>
+                        <i>General</i>
+                      </div>
+                    )}
+                  </div>
+                )
+                return (
+                  <Tooltip placement='right' title={tooltip}>
+                    <div>
                       <div
                         style={{
+                          fontWeight: '550',
                           width: '100%',
                           textOverflow: 'ellipsis',
                           overflow: 'hidden',
                           whiteSpace: 'nowrap',
                         }}
                       >
-                        <span style={{ color: 'green' }}>
-                          <i>General</i>
-                        </span>
+                        {option.name}
                       </div>
-                    )}
-                  </div>
-                </Tooltip>
-              )
-            }}
-          />
+                      {(option.visitOrderTemplate_Copayers || []).length >
+                        0 && (
+                        <div
+                          style={{
+                            width: '100%',
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          <span>Co-Payer(s): </span>
+                          <span style={{ color: '#4255bd' }}>{copayers}</span>
+                        </div>
+                      )}
+                      {(option.visitOrderTemplate_Copayers || []).length ===
+                        0 && (
+                        <div
+                          style={{
+                            width: '100%',
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          <span style={{ color: 'green' }}>
+                            <i>General</i>
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </Tooltip>
+                )
+              }}
+            />
+          </div>
         </div>
       </CommonModal>
     </Fragment>
