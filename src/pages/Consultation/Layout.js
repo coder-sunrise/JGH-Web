@@ -96,7 +96,9 @@ class Layout extends PureComponent {
       }
     } else {
       // disable local setting(!localStorage.getItem('consultationLayout')) {
-      defaultLayout = JSON.parse(localStorage.getItem('consultationLayout'))
+      defaultLayout =
+        JSON.parse(localStorage.getItem('consultationLayout')) ||
+        this.getDefaultLayout()
     }
     if (!defaultLayout.widgets) {
       defaultLayout = this.getDefaultLayout()
