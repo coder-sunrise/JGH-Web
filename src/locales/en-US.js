@@ -18,7 +18,7 @@ import general from './en-US/general'
 import claimsubmission from './en-US/claimSubmission'
 import radiology from './en-US/radiology'
 import pharmacy from './en-US/pharmacy'
-import lab from './en-Us/lab'
+import lab from './en-US/lab'
 
 export default {
   'navBar.lang': 'Languages',
