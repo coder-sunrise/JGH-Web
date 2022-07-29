@@ -1,18 +1,11 @@
 import { navigateDirtyCheck, getRemovedUrl, getAppendUrl } from '@/utils/utils'
 
-const mapEntityToValues = (entity) => {
+const mapEntityToValues = entity => {
   const mappedValues = {
     ...entity,
     pdpaConsent: entity.patientPdpaConsent.reduce(
       (consents, item) =>
-        item.isConsent
-          ? [
-            ...consents,
-            item.pdpaConsentTypeFK,
-          ]
-          : [
-            ...consents,
-          ],
+        item.isConsent ? [...consents, item.pdpaConsentTypeFK] : [...consents],
       [],
     ),
   }
@@ -20,8 +13,7 @@ const mapEntityToValues = (entity) => {
   if (entity.id) {
     if (entity.referralSourceFK || entity.referralPersonFK) {
       referralType = 'Company'
-    }
-    else if (entity.referredByPatientFK) {
+    } else if (entity.referredByPatientFK) {
       referralType = 'Patient'
     }
   }
@@ -53,7 +45,7 @@ const upsertPatient = async ({
     type: 'patient/upsert',
     payload: {
       ...values,
-      patientScheme: values.patientScheme.map((ps) => {
+      patientScheme: values.patientScheme.map(ps => {
         if (ps.isDeleted)
           return {
             ...ps,
@@ -83,9 +75,7 @@ const upsertPatient = async ({
       if (!patient.callback) {
         history.push(
           getRemovedUrl(
-            [
-              'new',
-            ],
+            ['new'],
             getAppendUrl({
               pid: response.id,
             }),
@@ -94,7 +84,7 @@ const upsertPatient = async ({
       }
     }
     // form submit then call back refresh data
-    if(patient.submitCallback){
+    if (patient.submitCallback) {
       patient.submitCallback()
     }
     const newPatient = await dispatch({
@@ -108,6 +98,12 @@ const upsertPatient = async ({
       if (patient.callback) patient.callback(response.id)
       const newEntity = mapEntityToValues(newPatient)
       resetForm(newEntity)
+      dispatch({
+        type: 'consultation/updateState',
+        payload: {
+          patientMedicalHistory: newEntity.patientMedicalHistory,
+        },
+      })
     }
     if (onConfirm && shouldCloseForm) {
       onConfirm()

@@ -1,18 +1,25 @@
-import { PageContainer, Button } from '@/components'
-import { ProTable, Select, Input } from '@medisys/component'
+import { Button } from '@/components'
+import { ProTable } from '@medisys/component'
 import patientService from '@/services/patient'
 import PersonAdd from '@material-ui/icons/PersonAdd'
-import PersonSharp from '@material-ui/icons/PersonSharp'
 import { connect, history } from 'umi'
 import { formatMessage } from 'umi'
-import { getAppendUrl } from '@/utils/utils'
+import {
+  getAppendUrl,
+  ableToViewByAuthority,
+  menuViewableByAuthoritys,
+} from '@/utils/utils'
 import Authorized from '@/utils/Authorized'
 
 import { TextField, DatePicker, CodeSelect } from '@/components'
-import { useState, useRef } from 'react'
+import { useRef } from 'react'
 import { ActionType } from '@ant-design/pro-table'
 import { Tooltip } from '@material-ui/core'
+import { primaryColor } from '@/assets/jss'
+import ArrowForwardIosOutlinedIcon from '@material-ui/icons/ArrowForwardIosOutlined'
 import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
+import { GridContextMenuButton as GridButton } from 'medisys-components'
+
 const { queryList, upsert, query, remove } = patientService
 const api = {
   remove,
@@ -21,6 +28,67 @@ const api = {
   queryList,
   query,
 }
+
+const iconStyle = {
+  height: 14,
+  width: 14,
+  color: 'rgba(0, 0, 0, 0.54)',
+  position: 'relative',
+  top: 3,
+}
+
+const menus = [
+  {
+    id: 1,
+    label: 'Claim History',
+    Icon: ArrowForwardIosOutlinedIcon,
+    access: ['patientdatabase.patientprofiledetails.claimhistory'],
+    cmt: 12,
+    style: iconStyle,
+  },
+  {
+    id: 2,
+    label: 'Patient Account',
+    access: [
+      'patientdatabase.patientprofiledetails.patienthistory.deposit',
+      'finance/invoicepayment',
+    ],
+    Icon: ArrowForwardIosOutlinedIcon,
+    cmt: 13,
+    style: iconStyle,
+  },
+  {
+    id: 3,
+    label: 'Patient Result',
+    Icon: ArrowForwardIosOutlinedIcon,
+    access: ['patientdatabase.patientprofiledetails.patientresults'],
+    cmt: 5,
+    style: iconStyle,
+  },
+  {
+    id: 4,
+    label: 'Patient History',
+    Icon: ArrowForwardIosOutlinedIcon,
+    cmt: 6,
+    style: iconStyle,
+  },
+  {
+    id: 5,
+    label: 'Patient Document',
+    access: ['patientdatabase.patientprofiledetails.patientdocument'],
+    Icon: ArrowForwardIosOutlinedIcon,
+    cmt: 7,
+    style: iconStyle,
+  },
+  {
+    id: 6,
+    label: 'Pre-Order List',
+    access: ['patientdatabase.modifypreorder'],
+    Icon: ArrowForwardIosOutlinedIcon,
+    cmt: 11,
+    style: iconStyle,
+  },
+]
 
 const defaultColumns = [
   {
@@ -51,6 +119,47 @@ const defaultColumns = [
     search: false,
     width: 200,
     fixed: 'left',
+    render: (_dom: any, entity: any) => {
+      const isDisabled = !ableToViewByAuthority(
+        'patientdatabase.patientprofiledetails',
+      )
+      return (
+        <Tooltip title={entity.name}>
+          {isDisabled ? (
+            <span
+              style={{
+                color: primaryColor,
+              }}
+            >
+              {entity.name}
+            </span>
+          ) : (
+            <Button
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-start',
+                textAlign: 'left',
+                width: '100%',
+              }}
+              color='primary'
+              size='sm'
+              link
+              onClick={() => {
+                if (
+                  !ableToViewByAuthority(
+                    'patientdatabase.patientprofiledetails',
+                  )
+                )
+                  return
+                showPatient(entity)
+              }}
+            >
+              {entity.name}
+            </Button>
+          )}
+        </Tooltip>
+      )
+    },
   },
   {
     key: 'lastVisitDate',
@@ -181,6 +290,7 @@ const defaultColumns = [
             })}
             maxTagCount={0}
             mode='multiple'
+            showOptionTitle={false}
             renderDropdown={option => {
               return (
                 <CopayerDropdownOption option={option}></CopayerDropdownOption>
@@ -203,21 +313,11 @@ const defaultColumns = [
     width: 60,
   },
 ]
-const showPatient = row => {
-  const viewPatProfileAccessRight = Authorized.check(
-    'patientdatabase.patientprofiledetails',
-  )
-  const disableRights = ['disable', 'hidden']
-  if (
-    viewPatProfileAccessRight &&
-    disableRights.includes(viewPatProfileAccessRight.rights)
-  )
-    return
-
+const showPatient = (row: any, cmt = 1) => {
   history.push(
     getAppendUrl({
       md: 'pt',
-      cmt: '1',
+      cmt: cmt,
       pid: row.id,
       v: Date.now(),
     }),
@@ -249,7 +349,7 @@ const PatientIndex = ({
   patient: { favPatDBColumnSetting = {}, onRefresh = false },
   mainDivHeight = 700,
 }) => {
-  const createPatProfileAccessRight = Authorized.check(
+  const createPatProfileAccessRight = ableToViewByAuthority(
     'patientdatabase.newpatient',
   )
   const actionRef = useRef<ActionType>()
@@ -292,15 +392,11 @@ const PatientIndex = ({
         onColumnsStateChange={map => saveColumnsSetting(dispatch, map)}
         options={{ density: false, reload: false, width: 60 }}
         toolBarRender={() => {
-          if (
-            createPatProfileAccessRight &&
-            createPatProfileAccessRight.rights !== 'hidden'
-          )
+          if (createPatProfileAccessRight)
             return [
               <Button
                 color='primary'
                 size='sm'
-                disabled={createPatProfileAccessRight.rights == 'disable'}
                 onClick={() => {
                   dispatch({
                     type: 'patient/updateState',
@@ -320,23 +416,34 @@ const PatientIndex = ({
             ]
           return []
         }}
-        onRowDblClick={showPatient}
         defaultColumns={['options']}
         features={[
           {
             code: 'myedit',
             render: row => {
+              if (
+                !ableToViewByAuthority('patientdatabase.patientprofiledetails')
+              )
+                return ''
+              const activeMenus = menus.filter(m =>
+                menuViewableByAuthoritys(m.access),
+              )
+              if (activeMenus.length <= 0) return ''
               return (
-                <Button
-                  onClick={() => {
-                    showPatient(row)
-                  }}
-                  color='primary'
-                  size='sm'
-                  justIcon
-                >
-                  <PersonSharp />
-                </Button>
+                <Tooltip title='More Options'>
+                  <div>
+                    <GridButton
+                      row={row}
+                      contextMenuOptions={activeMenus}
+                      onClick={(entity: any, id: any) => {
+                        var selectMenu = activeMenus.find(
+                          x => x.id === parseInt(id, 10),
+                        )
+                        showPatient(entity, selectMenu.cmt)
+                      }}
+                    />
+                  </div>
+                </Tooltip>
               )
             },
           },
@@ -362,6 +469,11 @@ const PatientIndex = ({
         onRow={row => {
           return {
             onDoubleClick: () => {
+              if (
+                !ableToViewByAuthority('patientdatabase.patientprofiledetails')
+              ) {
+                return
+              }
               showPatient(row)
             },
           }

@@ -599,6 +599,9 @@ class Queue extends React.Component {
       case '3': // view patient profile
         this.onViewPatientProfileClick(row.patientProfileFK, row.id)
         break
+      case '3.1': // view patient document
+        this.onViewPatientProfileClick(row.patientProfileFK, row.id, 7)
+        break
       case '4': // patient dashboard
         history.push(
           `/reception/queue/patientdashboard?qid=${row.id}&v=${Date.now()}`,
@@ -813,11 +816,11 @@ class Queue extends React.Component {
       })
     }, (autoRefreshQueueListingInterval || 120) * 1000)
   }
-  onViewPatientProfileClick = (patientProfileFK, qid) => {
+  onViewPatientProfileClick = (patientProfileFK, qid, cmt = 1) => {
     this.props.history.push(
       getAppendUrl({
         md: 'pt',
-        cmt: '1',
+        cmt: cmt,
         pid: patientProfileFK,
         qid,
         v: Date.now(),

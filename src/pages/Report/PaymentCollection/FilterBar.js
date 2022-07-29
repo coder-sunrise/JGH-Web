@@ -59,6 +59,7 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
                   // code='ctcopayer,ctsupplier'
                   code='ctcopayer'
                   additionalSearchField='code'
+                  showOptionTitle={false}
                   renderDropdown={option => {
                     return (
                       <CopayerDropdownOption
