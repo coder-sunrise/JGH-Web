@@ -48,7 +48,7 @@ import {
 } from './variables'
 import PatientSearchModal from './PatientSearch'
 import DetailsGrid from './Grid'
-import DetailsActionBar from './FilterBar'
+import DetailsActionBar from './Filterbar'
 import EmptySession from './EmptySession'
 import VisitForms from './VisitForms'
 import RightClickContextMenu from './Grid/RightClickContextMenu'

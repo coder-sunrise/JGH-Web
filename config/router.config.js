@@ -331,7 +331,7 @@ const _routes = [
           {
             path: '/communication/sms',
             name: 'sms',
-            component: './sms',
+            component: './SMS',
             authority: ['communication/sms'],
           },
           // {
@@ -804,7 +804,7 @@ const _routes = [
           {
             path: '/report/purchasereceivinglistingreport',
             name: 'purchasereceivinglistingreport',
-            component: './Report/purchasereceivinglistingreport',
+            component: './Report/PurchaseReceivingListingReport',
             authority: ['report.inventory.purchasereceivinglistingreport'],
           },
           {
@@ -846,7 +846,7 @@ const _routes = [
           {
             path: '/report/expiringstockreport',
             name: 'expiringstockreport',
-            component: './Report/expiringstockreport',
+            component: './Report/ExpiringStockReport',
             authority: ['report.inventory.expiringstockreport'],
           },
           {
@@ -1150,43 +1150,43 @@ const _routes = [
           {
             path: '/setting/servicecenter',
             name: 'servicecenter',
-            component: './Setting/serviceCenter',
+            component: './Setting/ServiceCenter',
             authority: ['settings.clinicsetting.servicecenter'],
           },
           {
             path: '/setting/servicecentercategory',
             name: 'servicecentercategory',
-            component: './Setting/serviceCenterCategory',
+            component: './Setting/ServiceCenterCategory',
             authority: ['settings.clinicsetting.servicecentercategory'],
           },
           {
             path: '/setting/servicecategory',
             name: 'servicecategory',
-            component: './Setting/serviceCategory',
+            component: './Setting/ServiceCategory',
             authority: ['settings.clinicsetting.servicecategory'],
           },
           {
             path: '/setting/medicationfrequency',
             name: 'medicationfrequency',
-            component: './Setting/medicationFrequency',
+            component: './Setting/MedicationFrequency',
             authority: ['settings.clinicsetting.medicationfrequency'],
           },
           {
             path: '/setting/medicationprecautions',
             name: 'medicationprecautions',
-            component: './Setting/medicationPrecautions',
+            component: './Setting/MedicationPrecautions',
             authority: ['settings.clinicsetting.medicationprecaution'],
           },
           {
             path: '/setting/medicationconsumptionmethod',
             name: 'medicationconsumptionmethod',
-            component: './Setting/medicationConsumptionMethod',
+            component: './Setting/MedicationConsumptionMethod',
             authority: ['settings.clinicsetting.medicationconsumptionmethod'],
           },
           {
             path: '/setting/smstemplate',
             name: 'smstemplate',
-            component: './Setting/SMSTemplate',
+            component: './Setting/SmsTemplate',
             authority: ['settings.templates.smstemplate'],
           },
           {
@@ -1240,7 +1240,7 @@ const _routes = [
           {
             path: '/setting/medicinetrivia',
             name: 'medicinetrivia',
-            component: './Setting/medicineTrivia',
+            component: './Setting/MedicineTrivia',
             authority: ['settings.clinicsetting.medicinetrivia'],
           },
           {
@@ -1270,7 +1270,7 @@ const _routes = [
           {
             path: '/setting/tag',
             name: 'tag',
-            component: './Setting/tag',
+            component: './Setting/Tag',
             authority: ['settings.clinicsetting.tag'],
           },
           {
@@ -1336,7 +1336,7 @@ const _routes = [
           {
             path: '/setting/creditfacility',
             name: 'creditfacility',
-            component: './Setting/creditfacility',
+            component: './Setting/CreditFacility',
             authority: ['settings.clinicsetting.creditfacility'],
           },
         ],
@@ -1376,17 +1376,17 @@ const _routes = [
           {
             path: '/support/contactus',
             name: 'contactus',
-            component: './support/teamviewer',
+            component: './Support/Teamviewer',
           },
           {
             path: '/support/printingtool',
             name: 'printingtool',
-            component: './support/PrintingTool',
+            component: './Support/PrintingTool',
           },
           {
             path: '/support/queueprocessor',
             name: 'queueprocessor',
-            component: './support/QueueProcessor',
+            component: './Support/QueueProcessor',
           },
         ],
       },
