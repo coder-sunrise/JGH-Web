@@ -1464,6 +1464,7 @@ export default ({
   }
 
   const checkOrderDeleteable = row => {
+    console.log('1111111', row)
     if (row.isAnyPayment) return false
 
     if (!row.isPreOrder) {
@@ -1494,7 +1495,7 @@ export default ({
     newVisitOrderTemplateItemDtos = [],
   ) => {
     //if new select null visit purpose, keep items
-    if (!newVisitOrderTemplateFK) {
+    if (!newVisitOrderTemplateFK || newVisitOrderTemplateItemDtos.length <= 0) {
       dispatch({
         type: 'updateState',
         payload: {
@@ -1698,7 +1699,7 @@ export default ({
           },
         },
       })
-      await replaceWithNewVisitPurpose()
+      await replaceWithNewVisitPurpose(newVisitPurposeFK)
     } else {
       const response = await dispatch({
         type: 'settingVisitOrderTemplate/queryOne',
