@@ -1464,7 +1464,6 @@ export default ({
   }
 
   const checkOrderDeleteable = row => {
-    console.log('1111111', row)
     if (row.isAnyPayment) return false
 
     if (!row.isPreOrder) {
