@@ -421,7 +421,6 @@ export default ({
       totalPrice: itemTotalPrice,
       totalAfterItemAdjustment: currentVisitOrderTemplate.totalAftAdj,
       isExternalPrescription: false,
-      visitPurposeFK: currentVisitOrderTemplate.visitOrderTemplateFK,
       isDrugMixture: false,
       isClaimable: false,
       caution: itemDrugCaution,
@@ -576,31 +575,30 @@ export default ({
         dt => dt.isDefaultTemplate === true && dt.documentTemplateTypeFK === 3,
       )
       if (defaultTemplate) {
-        dispatch({
+        var response = await dispatch({
           type: 'settingDocumentTemplate/queryOne',
           payload: { id: defaultTemplate.id },
-        }).then(r => {
-          if (!r) {
-            return
-          }
-          newCORVaccinationCert = [
-            {
-              type: '3',
-              certificateDate: moment().date(),
-              issuedByUserFK: user.data.clinicianProfile.userProfile.id,
-              subject: `Vaccination Certificate - ${name}, ${patientAccountNo}, ${gender.code ||
-                ''}, ${Math.floor(
-                moment.duration(moment().diff(dob)).asYears(),
-              )}`,
-              content: ReplaceCertificateTeplate(
-                r.templateContent,
-                newVaccination,
-              ),
-              sequence: vaccCertSequence,
-            },
-          ]
-          isGenerateVaccCert = true
         })
+        if (!response) {
+          return
+        }
+        newCORVaccinationCert = [
+          {
+            type: '3',
+            certificateDate: moment().date(),
+            issuedByUserFK: user.data.clinicianProfile.userProfile.id,
+            subject: `Vaccination Certificate - ${name}, ${patientAccountNo}, ${gender.code ||
+              ''}, ${Math.floor(
+              moment.duration(moment().diff(dob)).asYears(),
+            )}`,
+            content: ReplaceCertificateTeplate(
+              response.templateContent,
+              newVaccination,
+            ),
+            sequence: vaccCertSequence,
+          },
+        ]
+        isGenerateVaccCert = true
       }
     }
     const newVaccine = {
@@ -660,7 +658,6 @@ export default ({
       type: type,
       priority: 'Normal',
       unitPrice: currentVisitOrderTemplate.unitPrice,
-      visitPurposeFK: currentVisitOrderTemplate.visitOrderTemplateFK,
       visitOrderTemplateItemFK: currentVisitOrderTemplate.id,
     }
     return newService
@@ -1466,10 +1463,37 @@ export default ({
     return availableVisitOrderTemplate
   }
 
+  const checkOrderDeleteable = row => {
+    if (row.isAnyPayment) return false
+
+    if (!row.isPreOrder) {
+      if (row.type === ORDER_TYPES.RADIOLOGY) {
+        if (
+          [
+            RADIOLOGY_WORKITEM_STATUS.INPROGRESS,
+            RADIOLOGY_WORKITEM_STATUS.MODALITYCOMPLETED,
+            RADIOLOGY_WORKITEM_STATUS.COMPLETED,
+          ].indexOf(radiologyWorkitem.statusFK) >= 0
+        ) {
+          return false
+        }
+      } else if (row.type === ORDER_TYPES.LAB) {
+        if (
+          labWorkitems.filter(item => item.statusFK !== LAB_WORKITEM_STATUS.NEW)
+            .length > 0
+        ) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
   const replaceWithNewVisitPurpose = async (
     newVisitOrderTemplateFK,
     newVisitOrderTemplateItemDtos = [],
   ) => {
+    //if new select null visit purpose, keep items
     if (!newVisitOrderTemplateFK) {
       dispatch({
         type: 'updateState',
@@ -1477,7 +1501,7 @@ export default ({
           rows: [
             ...rows.map(x => ({
               ...x,
-              visitPurposeFK: undefined,
+              visitOrderTemplateItemFK: undefined,
             })),
           ],
         },
@@ -1491,19 +1515,33 @@ export default ({
     let newItems = [...rows.filter(t => !t.isDeleted)]
 
     const checkUpdateOrderItem = (orderItem, orderTemplateItems) => {
+      if (!orderItem.orderable) return null
       if (orderItem.visitOrderTemplateMedicationItemDto) {
+        if (!orderItem.visitOrderTemplateMedicationItemDto.isActive) return null
         const templateItem = orderTemplateItems.find(
           item =>
             item.visitOrderTemplateMedicationItemDto?.inventoryMedicationFK ===
             orderItem.visitOrderTemplateMedicationItemDto.inventoryMedicationFK,
         )
-        const selectRow = newItems.find(
+        let selectRow = newItems.find(
           item =>
+            item.visitOrderTemplateFK &&
             item.inventoryMedicationFK ===
-            orderItem.visitOrderTemplateMedicationItemDto.inventoryMedicationFK,
+              orderItem.visitOrderTemplateMedicationItemDto
+                .inventoryMedicationFK,
         )
+        if (!selectRow) {
+          selectRow = newItems.find(
+            item =>
+              item.inventoryMedicationFK ===
+              orderItem.visitOrderTemplateMedicationItemDto
+                .inventoryMedicationFK,
+          )
+        }
         return { templateItem, selectRow }
       } else if (orderItem.visitOrderTemplateVaccinationItemDto) {
+        if (!orderItem.visitOrderTemplateVaccinationItemDto.isActive)
+          return null
         const templateItem = orderTemplateItems.find(
           item =>
             item.visitOrderTemplateVaccinationItemDto
@@ -1511,42 +1549,71 @@ export default ({
             orderItem.visitOrderTemplateVaccinationItemDto
               .inventoryVaccinationFK,
         )
-        const selectRow = newItems.find(
+        let selectRow = newItems.find(
           item =>
+            item.visitOrderTemplateFK &&
             item.inventoryVaccinationFK ===
-            orderItem.visitOrderTemplateVaccinationItemDto
-              .inventoryVaccinationFK,
+              orderItem.visitOrderTemplateVaccinationItemDto
+                .inventoryVaccinationFK,
         )
+        if (!selectRow) {
+          selectRow = newItems.find(
+            item =>
+              item.inventoryVaccinationFK ===
+              orderItem.visitOrderTemplateVaccinationItemDto
+                .inventoryVaccinationFK,
+          )
+        }
         return { templateItem, selectRow }
       } else if (orderItem.visitOrderTemplateConsumableItemDto) {
+        if (!orderItem.visitOrderTemplateConsumableItemDto.isActive) return null
         const templateItem = orderTemplateItems.find(
           item =>
             item.visitOrderTemplateConsumableItemDto?.inventoryConsumableFK ===
             orderItem.visitOrderTemplateConsumableItemDto.inventoryConsumableFK,
         )
-        const selectRow = newItems.find(
+        let selectRow = newItems.find(
           item =>
+            item.visitOrderTemplateFK &&
             item.inventoryConsumableFK ===
-            orderItem.visitOrderTemplateConsumableItemDto.inventoryConsumableFK,
+              orderItem.visitOrderTemplateConsumableItemDto
+                .inventoryConsumableFK,
         )
+        if (!selectRow) {
+          selectRow = newItems.find(
+            item =>
+              item.inventoryConsumableFK ===
+              orderItem.visitOrderTemplateConsumableItemDto
+                .inventoryConsumableFK,
+          )
+        }
         return { templateItem, selectRow }
       } else if (orderItem.visitOrderTemplateServiceItemDto) {
+        if (!orderItem.visitOrderTemplateServiceItemDto.isActive) return null
         const templateItem = orderTemplateItems.find(
           item =>
             item.visitOrderTemplateServiceItemDto?.serviceCenterServiceFK ===
             orderItem.visitOrderTemplateServiceItemDto.serviceCenterServiceFK,
         )
-        const selectRow = newItems.find(
+        let selectRow = newItems.find(
           item =>
+            item.visitOrderTemplateFK &&
             item.serviceCenterServiceFK ===
-            orderItem.visitOrderTemplateServiceItemDto.serviceCenterServiceFK,
+              orderItem.visitOrderTemplateServiceItemDto.serviceCenterServiceFK,
         )
+        if (!selectRow) {
+          selectRow = newItems.find(
+            item =>
+              item.serviceCenterServiceFK ===
+              orderItem.visitOrderTemplateServiceItemDto.serviceCenterServiceFK,
+          )
+        }
         return { templateItem, selectRow }
       }
     }
 
     let newOrderItems = []
-    //add item that added
+    //add or replace item
     newVisitOrderTemplateItemDtos.forEach(newOrderItem => {
       const result = checkUpdateOrderItem(
         newOrderItem,
@@ -1555,9 +1622,10 @@ export default ({
       if (result) {
         const { templateItem, selectRow } = result
         if (!templateItem && !selectRow) {
+          //if item not in package A and not in orders, add to orders
           newOrderItems.push({ ...newOrderItem })
         } else if (selectRow) {
-          //update price and adjustment
+          //if item in orders, update price and adjustment
           selectRow.visitOrderTemplateItemFK = newOrderItem.id
           selectRow.quantity = newOrderItem.quantity || 0
           selectRow.unitPrice = newOrderItem.unitPrice
@@ -1566,9 +1634,9 @@ export default ({
             selectRow.type === ORDER_TYPES.RADIOLOGY ||
             selectRow.type === ORDER_TYPES.LAB
           ) {
-            selectRow.total = newOrderItem.total
+            selectRow.total = newOrderItem.total || 0
           } else {
-            selectRow.totalPrice = newOrderItem.total
+            selectRow.totalPrice = newOrderItem.total || 0
           }
           selectRow.adjAmount = newOrderItem.adjAmt
           selectRow.adjType = newOrderItem.adjType
@@ -1581,52 +1649,32 @@ export default ({
           )
           selectRow.isOrderedByDoctor =
             user.data.clinicianProfile.userProfile.role.clinicRoleFK === 1
-          selectRow.totalAfterItemAdjustment = newOrderItem.totalAftAdj
+          selectRow.totalAfterItemAdjustment = newOrderItem.totalAftAdj || 0
         }
       }
     })
 
-    //remove item that in package A not in B
-    visitOrderTemplateItemDtos.forEach(orderItem => {
-      const result = checkUpdateOrderItem(
-        orderItem,
-        newVisitOrderTemplateItemDtos,
-      )
-      if (result) {
-        const { templateItem, selectRow } = result
-        if (selectRow && !templateItem) {
-          selectRow.isDeleted = true
-          selectRow.visitOrderTemplateItemFK = undefined
-        }
-      } else {
-        const selectRow = rows.find(
-          item => item.visitOrderTemplateItemFK === orderItem.id,
-        )
-        if (selectRow) {
-          selectRow.isDeleted = true
-          selectRow.visitOrderTemplateItemFK = undefined
-        }
-      }
-    })
-
-    //Add New Order Item
-    let newAddItems = await addOrderItems(newOrderItems)
-    newItems = [...newItems, ...newAddItems]
+    //remove item that belongs A but not B
     newItems
       .filter(
         item =>
           !item.isDeleted &&
-          item.visitPurposeFK &&
-          item.visitPurposeFK !== newVisitOrderTemplateFK,
+          item.visitOrderTemplateItemFK &&
+          !newVisitOrderTemplateItemDtos.find(
+            x => x.id === item.visitOrderTemplateItemFK,
+          ),
       )
-      .forEach(item => (item.isDeleted = true))
-    newItems.forEach(item => ({
-      ...item,
-      visitPurposeFK:
-        item.visitPurposeFK && item.visitPurposeFK !== newVisitOrderTemplateFK
-          ? undefined
-          : item.visitPurposeFK,
-    }))
+      .forEach(item => {
+        if (checkOrderDeleteable(item)) {
+          item.isDeleted = true
+        }
+        item.visitOrderTemplateItemFK = undefined
+      })
+
+    //Add New Order Item
+    let newAddItems = await addOrderItems(newOrderItems)
+    newItems = [...newItems, ...newAddItems]
+
     dispatch({
       type: 'orders/updateRows',
       payload: {
@@ -2503,7 +2551,11 @@ export default ({
               New Visit Purpose:
             </div>
             <Select
-              options={getAvailableOrderTemplate()}
+              options={getAvailableOrderTemplate().filter(
+                x =>
+                  x.id !==
+                  visitRegistration.entity?.visit?.visitOrderTemplateFK,
+              )}
               popupContainer='body'
               authority='none'
               onChange={val => {

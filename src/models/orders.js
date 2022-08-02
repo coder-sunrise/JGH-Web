@@ -460,6 +460,7 @@ export default createListViewModel({
             ...amount,
             rows: tempRows,
             finalAdjustments,
+            entity: undefined,
           },
         })
       },
