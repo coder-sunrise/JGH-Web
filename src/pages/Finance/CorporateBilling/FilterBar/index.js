@@ -112,16 +112,19 @@ export default compose(
     }),
     handleSubmit: (values, { props }) => {
       const { copayerFK, isActive, outstandingBalanceStatus } = values
+      let isOutstanding
+      if (outstandingBalanceStatus === 'yes') {
+        isOutstanding = true
+      } else if (outstandingBalanceStatus === 'no') {
+        isOutstanding = false
+      }
       props.dispatch({
         type: 'corporateBilling/query',
         payload: {
-          id: typeof copayerFK === 'number' ? copayerFK : undefined,
-          isActive,
           apiCriteria: {
-            outstandingBalanceStatus:
-              outstandingBalanceStatus === 'all'
-                ? undefined
-                : outstandingBalanceStatus,
+            CopayerId: typeof copayerFK === 'number' ? copayerFK : undefined,
+            IsOutstanding: isOutstanding,
+            IsActive: isActive,
           },
         },
       })

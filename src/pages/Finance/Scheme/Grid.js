@@ -53,6 +53,32 @@ const Grid = ({ history, height }) => {
       columnName: 'coPayerName',
       sortBy: 'CopayerFKNavigation.displayValue',
       width: 300,
+      render: row => {
+        let {
+          coPayerCode,
+          coPayerName = '',
+          creditFacility = '',
+          copayerAddress = '',
+        } = row
+        return (
+          <Tooltip
+            title={
+              <>
+                <div>
+                  <span>{coPayerCode ? `${coPayerCode} - ` : ''} </span>
+                  <span> {coPayerName} </span>
+                </div>
+                <div>{`Cr. Facility: ${
+                  creditFacility !== '' ? creditFacility : '-'
+                }`}</div>
+                <div>{`Addr.: ${copayerAddress || ' - '}`}</div>
+              </>
+            }
+          >
+            <div>{coPayerName}</div>
+          </Tooltip>
+        )
+      },
     },
     {
       columnName: 'coPayerCode',
