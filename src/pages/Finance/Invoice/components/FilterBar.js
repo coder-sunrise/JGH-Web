@@ -14,6 +14,7 @@ import {
   Tooltip,
   CodeSelect,
   Select,
+  LocalSearchSelect,
 } from '@/components'
 import { FilterBarDate } from '@/components/_medisys'
 import { getBizSession } from '@/services/queue'
@@ -154,7 +155,7 @@ const FilterBar = ({ classes, dispatch, values, handleSubmit }) => {
               <FastField
                 name='coPayerFk'
                 render={args => (
-                  <CodeSelect
+                  <LocalSearchSelect
                     code='ctCopayer'
                     labelField='displayValue'
                     additionalSearchField='code'
@@ -231,7 +232,7 @@ export default withFormik({
       apiCriteria: {
         SessionID,
         SessionType,
-        coPayerFk
+        coPayerFk,
       },
       group: [
         {

@@ -1,17 +1,56 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Tooltip } from '@/components'
+import { connect } from 'dva'
 import Select from '../Antd/AntdSelect'
-
+@connect(({ codetable }) => ({ codetable }))
 class LocalSearchSelect extends React.PureComponent {
   constructor(props) {
     super(props)
-    let defaultOptions = []
-    const { isFromTable, value, valueField = 'id' } = props
-    if (isFromTable && value) {
-      defaultOptions = props.options.filter(x => x[valueField] === props.value)
+    this.state = {
+      options: [],
+      filterOptions: [],
     }
-    this.state = { filterOptions: defaultOptions }
+  }
+
+  componentDidMount = async () => {
+    const {
+      code,
+      dispatch,
+      options = [],
+      localFilter = () => true,
+    } = this.props
+    let currentOptions = [...options]
+    if (code && code.trim().length) {
+      const result = await dispatch({
+        type: 'codetable/fetchCodes',
+        payload: {
+          code,
+        },
+      })
+      if (result) {
+        currentOptions = result
+      }
+    }
+
+    this.setState(
+      { options: currentOptions.filter(x => localFilter(x)) },
+      () => {
+        this.setSelectValue(this.props)
+      },
+    )
+  }
+
+  setSelectValue = props => {
+    const { value, valueField = 'id' } = props
+    let defaultOptions = []
+    const { options = [] } = this.state
+    if (props.field) {
+      defaultOptions = options.filter(x => x[valueField] === props.field.value)
+    } else {
+      defaultOptions = options.filter(x => x[valueField] === props.value)
+    }
+    this.setState({ filterOptions: defaultOptions })
   }
 
   onSearch = v => {
@@ -20,7 +59,7 @@ class LocalSearchSelect extends React.PureComponent {
       this.setState({ filterOptions: [] })
       return
     }
-    const { options = [] } = this.props
+    const { options = [] } = this.state
 
     const currentOptions = _.take(
       options.filter(m => matchSearch(m, v)),
@@ -40,18 +79,8 @@ class LocalSearchSelect extends React.PureComponent {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    const { isFromTable = false, options = [], valueField = 'id' } = nextProps
-    if (!isFromTable) {
-      if (nextProps.field?.value) {
-        this.setState({
-          filterOptions: options.filter(
-            x => x[valueField] === nextProps.field.value,
-          ),
-        })
-      } else {
-        this.setState({ filterOptions: [] })
-      }
-    }
+    this.setSelectValue(nextProps)
+    //this.setDefaultOption(nextProps)
   }
   render() {
     const { filterOptions } = this.state

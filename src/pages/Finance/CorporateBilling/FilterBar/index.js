@@ -14,6 +14,7 @@ import {
   CodeSelect,
   Select,
   ProgressButton,
+  LocalSearchSelect,
 } from '@/components'
 import { osBalanceStatus, status } from '@/utils/codes'
 import Authorized from '@/utils/Authorized'
@@ -44,7 +45,7 @@ const FilterBar = ({
             name='copayerFK'
             render={args => {
               return (
-                <CodeSelect
+                <LocalSearchSelect
                   options={ctCoPayer}
                   label='Co-Payer'
                   labelField='name'

@@ -14,6 +14,7 @@ import {
   Button,
   CodeSelect,
   ProgressButton,
+  LocalSearchSelect,
 } from '@/components'
 import { FilterBarDate } from '@/components/_medisys'
 import Authorized from '@/utils/Authorized'
@@ -258,7 +259,7 @@ class SearchBar extends PureComponent {
                 name='copayerFK'
                 render={args => {
                   return (
-                    <CodeSelect
+                    <LocalSearchSelect
                       {...args}
                       label='Co-Payer'
                       code='ctCopayer'

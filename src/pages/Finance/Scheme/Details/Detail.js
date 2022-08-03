@@ -13,6 +13,7 @@ import {
   Select,
   Field,
   Tooltip,
+  LocalSearchSelect,
 } from '@/components'
 import { SCHEME_TYPE, COPAYER_TYPE, SCHEME_CATEGORY } from '@/utils/constants'
 import Setting from './Setting'
@@ -182,7 +183,7 @@ const Detail = ({ height, ...props }) => {
             <Field
               name='copayerFK'
               render={args => (
-                <CodeSelect
+                <LocalSearchSelect
                   code='ctcopayer'
                   label={formatMessage({
                     id: 'finance.scheme.detail.coPayer',
