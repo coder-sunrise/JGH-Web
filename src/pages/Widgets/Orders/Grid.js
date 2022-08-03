@@ -1502,6 +1502,7 @@ export default ({
             ...rows.map(x => ({
               ...x,
               visitOrderTemplateItemFK: undefined,
+              isUpdated: true,
             })),
           ],
         },
