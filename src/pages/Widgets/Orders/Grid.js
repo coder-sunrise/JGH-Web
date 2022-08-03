@@ -1464,7 +1464,7 @@ export default ({
   }
 
   const checkOrderDeleteable = row => {
-    if (row.isAnyPayment) return false
+    if (row.isAnyPayment || row.isPrepared) return false
 
     if (!row.isPreOrder) {
       if (row.type === ORDER_TYPES.RADIOLOGY) {
@@ -1626,6 +1626,7 @@ export default ({
           newOrderItems.push({ ...newOrderItem })
         } else if (selectRow) {
           //if item in orders, update price and adjustment
+          selectRow.isUpdated = true
           selectRow.visitOrderTemplateItemFK = newOrderItem.id
           selectRow.quantity = newOrderItem.quantity || 0
           selectRow.unitPrice = newOrderItem.unitPrice
