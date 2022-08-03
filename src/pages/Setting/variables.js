@@ -225,12 +225,12 @@ export const menuData = [
     text: 'User Group',
     url: '/setting/userrole',
   },
-  {
-    title: 'Print Setup',
-    text: 'Master Printout Setting',
-    url: '/setting/masterprintoutsetting',
-    authority: 'settings.printsetup.masterprintoutsetting',
-  },
+  //{
+  //  title: 'Print Setup',
+  //  text: 'Master Printout Setting',
+  //  url: '/setting/masterprintoutsetting',
+  //  authority: 'settings.printsetup.masterprintoutsetting',
+  //},
   {
     authority: 'settings.printsetup.printoutsetting',
     title: 'Print Setup',
