@@ -187,7 +187,7 @@ const generatePrintData = async (
             !f.isPreOrder &&
             !f.isExternalPrescription &&
             f.isDispensedByPharmacy &&
-            ['1', '2'].some(x => x === f.type),
+            ['1', '2', '4'].some(x => x === f.type),
         )
         if (anyPharmacyItem)
           printData = printData.concat([
