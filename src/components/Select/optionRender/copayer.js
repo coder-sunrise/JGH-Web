@@ -1,5 +1,10 @@
+import { Tooltip } from '@/components'
 const CopayerDropdownOption = props => {
-  const { option, labelField = 'displayValue' } = props
+  const {
+    option,
+    option: { creditFacility = '', copayerAddress = '' },
+    labelField = 'displayValue',
+  } = props
   return (
     <div
       style={{
@@ -7,6 +12,11 @@ const CopayerDropdownOption = props => {
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
       }}
+      title={`${option.code ? `${option.code} - ` : ''}${
+        option[labelField]
+      }\nCr. Facility: ${
+        creditFacility == '' ? ' - ' : creditFacility
+      } \nAddr.: ${copayerAddress || ' - '} `}
     >
       {option.code ? `${option.code} - ` : ''}
       <span style={{ fontWeight: option.code ? 'bold' : 'normal' }}>

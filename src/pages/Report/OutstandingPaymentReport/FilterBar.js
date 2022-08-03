@@ -52,6 +52,7 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
                   code='ctcopayer'
                   style={{ width: 300 }}
                   labelField='displayValue'
+                  showOptionTitle={false}
                   renderDropdown={option => {
                     return (
                       <CopayerDropdownOption

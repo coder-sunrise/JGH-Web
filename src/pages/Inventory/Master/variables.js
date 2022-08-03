@@ -1,7 +1,7 @@
 import Authorized from '@/utils/Authorized'
 import Consumable from './Consumable'
 import Medication from './Medication'
-import MedicationV2 from './MedicationV2/index.tsx'
+import MedicationV2 from './Medicationv2/index.tsx'
 
 import Vaccination from './Vaccination'
 import OrderSet from './OrderSet'
