@@ -75,6 +75,7 @@ const menus = [
   {
     id: 5,
     label: 'Patient Document',
+    authority: 'patientdatabase.patientprofiledetails.patientdocument',
     access: ['patientdatabase.patientprofiledetails.patientdocument'],
     Icon: ArrowForwardIosOutlinedIcon,
     cmt: 7,
@@ -83,6 +84,7 @@ const menus = [
   {
     id: 6,
     label: 'Pre-Order List',
+    authority: 'patientdatabase.modifypreorder',
     access: ['patientdatabase.modifypreorder'],
     Icon: ArrowForwardIosOutlinedIcon,
     cmt: 11,
@@ -425,9 +427,12 @@ const PatientIndex = ({
                 !ableToViewByAuthority('patientdatabase.patientprofiledetails')
               )
                 return ''
-              const activeMenus = menus.filter(m =>
-                menuViewableByAuthoritys(m.access),
-              )
+              const activeMenus = menus.filter(m => {
+                if (m.id === 6) {
+                  return ableToViewByAuthority(m.authority)
+                }
+                return menuViewableByAuthoritys(m.access)
+              })
               if (activeMenus.length <= 0) return ''
               return (
                 <Tooltip title='More Options'>

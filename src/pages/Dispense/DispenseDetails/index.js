@@ -1073,8 +1073,7 @@ const DispenseDetails = ({
             }
             {(!isFromMedicalCheckup ||
               (medicalCheckupWorkitemStatusFK !== 3 &&
-                medicalCheckupWorkitemStatusFK !== 4 &&
-                !isClinicSessionClosed)) &&
+                medicalCheckupWorkitemStatusFK !== 4)) &&
               !isRetailVisit &&
               visitStatus !== VISIT_STATUS.PAUSED && (
                 <Authorized authority='queue.dispense.editorder'>

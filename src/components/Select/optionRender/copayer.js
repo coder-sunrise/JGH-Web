@@ -6,36 +6,23 @@ const CopayerDropdownOption = props => {
     labelField = 'displayValue',
   } = props
   return (
-    <Tooltip
-      placement='right'
-      title={
-        <>
-          <div>
-            {option.code ? `${option.code} - ` : ''}
-            <span>{`${option[labelField]}`}</span>
-          </div>
-          <div>{`Cr. Facility: ${
-            creditFacility == '' ? ' - ' : creditFacility
-          } `}</div>
-          <div>{`Addr.: ${
-            copayerAddress == '' ? ' - ' : copayerAddress
-          } `}</div>
-        </>
-      }
+    <div
+      style={{
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+      }}
+      title={`${option.code ? `${option.code} - ` : ''}${
+        option[labelField]
+      }\nCr. Facility: ${
+        creditFacility == '' ? ' - ' : creditFacility
+      } \nAddr.: ${copayerAddress || ' - '} `}
     >
-      <div
-        style={{
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {option.code ? `${option.code} - ` : ''}
-        <span style={{ fontWeight: option.code ? 'bold' : 'normal' }}>
-          {`${option[labelField]}`}
-        </span>
-      </div>
-    </Tooltip>
+      {option.code ? `${option.code} - ` : ''}
+      <span style={{ fontWeight: option.code ? 'bold' : 'normal' }}>
+        {`${option[labelField]}`}
+      </span>
+    </div>
   )
 }
 export default CopayerDropdownOption

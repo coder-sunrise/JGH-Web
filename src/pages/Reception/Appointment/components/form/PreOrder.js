@@ -28,6 +28,7 @@ const PreOrder = ({ values, deletePreOrderItem, disabled }) => {
       <CommonTableGrid
         forceRender
         size='sm'
+        defaultSorting={[{ columnName: 'orderDateDisplay', direction: 'desc' }]}
         rows={appointmentPreOrderItem
           .filter(x => !x.isDeleted)
           .map(appt => {

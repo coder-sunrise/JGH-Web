@@ -472,32 +472,27 @@ const isPharmacyOrderUpdated = (orders, isPrescriptionSheetUpdated) => {
 
   const pharmacyOrder = _originalRows.filter(r => isPushToPharmacy(r))
   for (let index = 0; index < pharmacyOrder.length; index++) {
-    if (
-      pharmacyOrder[index].type === '1' ||
-      pharmacyOrder[index].type === '5'
-    ) {
-      if (pharmacyOrder[index].isDrugMixture) {
-        const currentRow = rows.find(
-          r =>
-            r.id === pharmacyOrder[index].id &&
-            r.type === pharmacyOrder[index].type,
-        )
+    if (pharmacyOrder[index].isDrugMixture) {
+      const currentRow = rows.find(
+        r =>
+          r.id === pharmacyOrder[index].id &&
+          r.type === pharmacyOrder[index].type,
+      )
 
-        if (currentRow.corPrescriptionItemDrugMixture.find(d => !d.id)) {
+      if (currentRow.corPrescriptionItemDrugMixture.find(d => !d.id)) {
+        isUpdatedPharmacy = true
+        break
+      }
+      const drugMixture = pharmacyOrder[index].corPrescriptionItemDrugMixture
+      for (let i = 0; i < drugMixture.length; i++) {
+        if (
+          isItemDrugMixtureUpdate(
+            drugMixture[i],
+            currentRow.corPrescriptionItemDrugMixture,
+          )
+        ) {
           isUpdatedPharmacy = true
           break
-        }
-        const drugMixture = pharmacyOrder[index].corPrescriptionItemDrugMixture
-        for (let i = 0; i < drugMixture.length; i++) {
-          if (
-            isItemDrugMixtureUpdate(
-              drugMixture[i],
-              currentRow.corPrescriptionItemDrugMixture,
-            )
-          ) {
-            isUpdatedPharmacy = true
-            break
-          }
         }
       }
     } else {

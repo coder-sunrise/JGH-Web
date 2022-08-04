@@ -60,7 +60,17 @@ export default ({
               ? `${row.signedByUserTitle} ${row.signedByUserName || ''}`
               : `${row.signedByUserName || ''}`
           }`
-          return <span>{noteUserName}</span>
+          return (
+            <>
+              <span>{noteUserName}</span>
+              <br />
+              <span style={{ fontSize: 'smaller' }}>
+                Last updated on
+                <br />
+                {moment(row.signedDate).format(dateFormatLongWithTimeNoSec)}
+              </span>
+            </>
+          )
         },
       },
       {
@@ -83,18 +93,6 @@ export default ({
             })}
           </div>
         ),
-      },
-      {
-        dataIndex: 'signedDate',
-        title: 'Last Update Time',
-        width: 140,
-        render: (text, row) => {
-          return (
-            <span>
-              {moment(row.signedDate).format(dateFormatLongWithTimeNoSec)}
-            </span>
-          )
-        },
       },
     ]
     return columns

@@ -203,52 +203,37 @@ const Detail = ({ height, ...props }) => {
                       labelField = 'displayValue',
                     } = option
                     return (
-                      <Tooltip
-                        placement='left'
-                        title={
-                          <>
-                            <span>
-                              {code ? `${code} - ` : ''}
-                              <span>{`${option[labelField]}`}</span>
-                            </span>
-                            <br />
-                            <span>{`Cr. Facility: ${
-                              creditFacility == '' ? ' - ' : creditFacility
-                            }`}</span>
-                            <br />
-                            <span>{`Addr.: ${
-                              copayerAddress == '' ? ' - ' : copayerAddress
-                            }`}</span>
-                          </>
-                        }
+                      <div
+                        style={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                        title={`${code ? `${code} - ` : ''}${
+                          option[labelField]
+                        }\nCr. Facility: ${
+                          creditFacility == '' ? ' - ' : creditFacility
+                        } \nAddr.: ${copayerAddress || ' - '} `}
                       >
-                        <div
-                          style={{
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          <span>
-                            {option.code ? `${option.code} - ` : ''}
-                            <span
-                              style={{
-                                fontWeight: option.code ? 'bold' : 'normal',
-                              }}
-                            >
-                              {`${option[labelField]}`}
-                            </span>
-                          </span>
+                        <span>
+                          {option.code ? `${option.code} - ` : ''}
                           <span
-                            style={{ display: 'block', lineHeight: '15px' }}
-                          >{`Cr. Facility: ${
-                            creditFacility == '' ? ' - ' : creditFacility
-                          }`}</span>
-                          <span style={{ display: 'block' }}>{`Addr.: ${
-                            copayerAddress == '' ? ' - ' : copayerAddress
-                          }`}</span>
-                        </div>
-                      </Tooltip>
+                            style={{
+                              fontWeight: option.code ? 'bold' : 'normal',
+                            }}
+                          >
+                            {`${option[labelField]}`}
+                          </span>
+                        </span>
+                        <span
+                          style={{ display: 'block', lineHeight: '15px' }}
+                        >{`Cr. Facility: ${
+                          creditFacility == '' ? ' - ' : creditFacility
+                        }`}</span>
+                        <span
+                          style={{ display: 'block' }}
+                        >{`Addr.: ${copayerAddress || ' - '}`}</span>
+                      </div>
                     )
                   }}
                   {...args}

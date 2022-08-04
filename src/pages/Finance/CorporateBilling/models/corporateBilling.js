@@ -28,6 +28,8 @@ export default createListViewModel({
                   code: item.code,
                   name: item.displayValue,
                   id: item.id,
+                  creditFacility: item.creditFacility,
+                  copayerAddress: item.copayerAddress,
                 }
               }),
             },
