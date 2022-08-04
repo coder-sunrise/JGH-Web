@@ -415,7 +415,9 @@ export default createListViewModel({
           } else {
             if (item.uid) {
               tempRows = tempRows.map(oldItem =>
-                oldItem.uid === item.uid ? { ...item } : oldItem,
+                oldItem.uid === item.uid
+                  ? { ...item, isUpdated: true }
+                  : oldItem,
               )
             } else {
               const uid = getUniqueId()

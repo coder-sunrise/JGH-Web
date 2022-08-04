@@ -1467,6 +1467,8 @@ export default ({
     if (row.isAnyPayment || row.isPrepared) return false
 
     if (!row.isPreOrder) {
+      const { workitem = {} } = row
+      const { radiologyWorkitem = {}, labWorkitems = [] } = workitem
       if (row.type === ORDER_TYPES.RADIOLOGY) {
         if (
           [
@@ -1494,7 +1496,17 @@ export default ({
     newVisitOrderTemplateItemDtos = [],
   ) => {
     //if new select null visit purpose, keep items
-    if (!newVisitOrderTemplateFK || newVisitOrderTemplateItemDtos.length <= 0) {
+    if (
+      !newVisitOrderTemplateFK ||
+      !newVisitOrderTemplateItemDtos.find(
+        item =>
+          item.orderable &&
+          (item.visitOrderTemplateMedicationItemDto?.isActive ||
+            item.visitOrderTemplateVaccinationItemDto?.isActive ||
+            item.visitOrderTemplateConsumableItemDto?.isActive ||
+            item.visitOrderTemplateServiceItemDto?.isActive),
+      )
+    ) {
       dispatch({
         type: 'updateState',
         payload: {
@@ -1627,7 +1639,6 @@ export default ({
           newOrderItems.push({ ...newOrderItem })
         } else if (selectRow) {
           //if item in orders, update price and adjustment
-          selectRow.isUpdated = true
           selectRow.visitOrderTemplateItemFK = newOrderItem.id
           selectRow.quantity = newOrderItem.quantity || 0
           selectRow.unitPrice = newOrderItem.unitPrice
