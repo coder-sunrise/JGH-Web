@@ -95,7 +95,6 @@ const ResultDetails = props => {
     window.g_app._store.dispatch({
       type: 'scriblenotes/updateState',
       payload: {
-        showViewScribbleModal: true,
         isReadonly: true,
         entity: scribbleNote,
       },
@@ -106,7 +105,6 @@ const ResultDetails = props => {
     window.g_app._store.dispatch({
       type: 'scriblenotes/updateState',
       payload: {
-        showViewScribbleModal: isShowScribbleNote,
         isReadonly: false,
       },
     })

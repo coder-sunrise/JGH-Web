@@ -114,7 +114,6 @@ export const ExaminationDetails = ({
     window.g_app._store.dispatch({
       type: 'scriblenotes/updateState',
       payload: {
-        showViewScribbleModal: true,
         isReadonly: true,
         entity: scribbleNote,
       },
@@ -164,7 +163,6 @@ export const ExaminationDetails = ({
     window.g_app._store.dispatch({
       type: 'scriblenotes/updateState',
       payload: {
-        showViewScribbleModal: isShowScribbleNote,
         isReadonly: false,
       },
     })
@@ -296,7 +294,10 @@ export const ExaminationDetails = ({
                       <div>
                         <div
                           dangerouslySetInnerHTML={{
-                            __html: workitem.examinationFinding.replaceAll('<br></p>','</p><br>'),
+                            __html: workitem.examinationFinding.replaceAll(
+                              '<br></p>',
+                              '</p><br>',
+                            ),
                           }}
                         />
                         {scribbleLink.length > 0 && (
