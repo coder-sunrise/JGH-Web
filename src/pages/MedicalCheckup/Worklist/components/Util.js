@@ -87,7 +87,6 @@ export const getMedicalCheckupReportPayload = data => {
       beforeLastDate: p.beforeLastDate
         ? moment(p.beforeLastDate).format(dateFormatLong)
         : '',
-      isWaistOverRange: false,
     })),
     BasicExamination: basicExamination,
     VisualAcuity: visualAcuity,
