@@ -416,11 +416,12 @@ class Vaccination extends PureComponent {
   calculateQuantity = vaccination => {
     const { codetable, setFieldValue, values } = this.props
     if (values.isPackage) return
-    const { minQuantity = 0.1, uomfk } = values
+    const { uomfk } = values
     let currentVaccination =
       vaccination && Object.values(vaccination).length ? vaccination : undefined
     if (!currentVaccination) currentVaccination = this.state.selectedVaccination
     let newTotalQuantity = 0
+    let calculated = false
     if (
       vaccination &&
       currentVaccination &&
@@ -440,8 +441,9 @@ class Vaccination extends PureComponent {
       )
       if (dosage) {
         newTotalQuantity = roundTo(dosage.multiplier, 1)
+        calculated = true
       }
-      if (currentVaccination.prescribingUOM.id === uomfk) {
+      if (currentVaccination?.prescribingUOM?.id === uomfk) {
         const { prescriptionToDispenseConversion } = currentVaccination
         if (prescriptionToDispenseConversion)
           newTotalQuantity = roundTo(
@@ -450,8 +452,12 @@ class Vaccination extends PureComponent {
           )
       }
     }
+    let minDispenseQty = 1
+    if (calculated) {
+      minDispenseQty = 0.1
+    }
     newTotalQuantity =
-      newTotalQuantity < minQuantity ? minQuantity : newTotalQuantity
+      newTotalQuantity < minDispenseQty ? minDispenseQty : newTotalQuantity
 
     setFieldValue(`quantity`, newTotalQuantity)
 
