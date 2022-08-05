@@ -406,6 +406,7 @@ const VisitInfoCard = ({
       values.visitStatus !== VISIT_STATUS.UPCOMING_APPT) ||
     visitMode === 'view'
 
+  const hasCOR = values.clinicalObjectRecordFK
   const mcWorkItemInProgress =
     values?.medicalCheckupWorkitem &&
     values?.medicalCheckupWorkitem.length > 0 &&
@@ -420,7 +421,7 @@ const VisitInfoCard = ({
               name={FormField['visit.visitType']}
               render={args => (
                 <CodeSelect
-                  disabled={notWaiting || isReadOnly}
+                  disabled={notWaiting || isReadOnly || hasCOR}
                   label={formatMessage({
                     id: 'reception.queue.visitRegistration.visitType',
                   })}
