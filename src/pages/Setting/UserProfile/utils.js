@@ -1,7 +1,6 @@
 export const constructUserProfile = (values, role) => {
   return {
     ...values.userProfile,
-    password: values.userProfile.password,
     phoneNumber: values.phoneNumber,
     email: values.email,
     role: {

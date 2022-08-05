@@ -80,6 +80,7 @@ import WorklistContext, {
 } from '@/pages/Radiology/Worklist/WorklistContext'
 import DispenseDetailsSpecimenCollection from '@/pages/Lab/SpecimenCollection/components/DispenseDetailsSpecimenCollection'
 import customtyles from './Style.less'
+import style from '@/components/CommonCard/style'
 
 const styles = theme => ({
   paper: {
@@ -876,121 +877,148 @@ const DispenseDetails = ({
       <GridContainer>
         <GridItem justify='flex-start' md={7} className={classes.actionButtons}>
           <div style={{ display: 'inline-block' }}>
-            <Popper
-              open={popperOpen}
-              style={{ marginTop: 10 }}
-              placement='bottom-start'
-              transition
-              overlay={
-                <ClickAwayListener onClickAway={closePopper}>
-                  <MenuList role='menu'>
-                    <MenuItem>
-                      <Button
-                        color='primary'
-                        size='sm'
-                        style={{ width: 120 }}
-                        onClick={() => {
-                          onPrint({
-                            type: CONSTANTS.PATIENT_LABEL,
-                            undefined,
-                            undefined,
-                            undefined,
-                            copies: patientLabelCopies,
-                          })
-                        }}
-                        disabled={sendingJob}
-                      >
-                        Patient Label
-                      </Button>
-                      <InputNumber
-                        size='small'
-                        min={1}
-                        max={10}
-                        value={patientLabelCopies}
-                        onChange={v => {
-                          setPatientLabelCopies(v || 1)
-                          console.log(v)
-                        }}
-                        className={classes.inputStyle}
-                      />
-                      <span className={classes.qtyFont}>&nbsp;Copies</span>
-                    </MenuItem>
-                    <MenuItem>
-                      <Button
-                        color='primary'
-                        size='sm'
-                        style={{ width: 120 }}
-                        onClick={() => {
-                          onPrint({
-                            type: CONSTANTS.LAB_LABEL,
-                            undefined,
-                            undefined,
-                            undefined,
-                            copies: labLabelCopies,
-                          })
-                        }}
-                        disabled={sendingJob}
-                      >
-                        Lab Label
-                      </Button>
-                      <InputNumber
-                        size='small'
-                        min={1}
-                        max={10}
-                        value={labLabelCopies}
-                        onChange={v => {
-                          setLabLabelCopies(v || 1)
-                          console.log(v)
-                        }}
-                        className={classes.inputStyle}
-                      />
-                      <span className={classes.qtyFont}>&nbsp;Copies</span>
-                    </MenuItem>
-                    <MenuItem>
-                      <Button
-                        color='primary'
-                        size='sm'
-                        onClick={printDrugLabel}
-                        disabled={sendingJob}
-                        style={{ width: 120 }}
-                      >
-                        Drug Label
-                      </Button>
-                    </MenuItem>
-                  </MenuList>
-                </ClickAwayListener>
-              }
-            >
-              <Button
-                color='primary'
-                onClick={openPopper}
-                size='sm'
-                style={{ height: 25, marginTop: 2 }}
-              >
-                <Print /> Label
-              </Button>
-            </Popper>
-          </div>
-          {orderCreateTime && (
-            <span style={{ color: '#999999' }}>
-              Visit Doctor:
-              <span style={{ fontWeight: 500 }}>{` ${orderCreateBy}. `}</span>
-              <span style={{ color: '#999999' }}>
-                Order created at:
-                <span style={{ fontWeight: 500 }}>
-                  {` ${orderCreateTime.format('DD MMM yyyy HH:mm')}`}.
-                </span>
-              </span>{' '}
-            </span>
-          )}
-          {servingPersons.length > 0 && (
             <span>
-              Served by{' '}
-              <span style={{ fontWeight: 500 }}>{`${servingPersons
-                .map(x => x.servingBy)
-                .join(', ')}.`}</span>
+              <Popper
+                open={popperOpen}
+                style={{ marginTop: 10 }}
+                placement='bottom-start'
+                transition
+                overlay={
+                  <ClickAwayListener onClickAway={closePopper}>
+                    <MenuList role='menu'>
+                      <MenuItem>
+                        <Button
+                          color='primary'
+                          size='sm'
+                          style={{ width: 120 }}
+                          onClick={() => {
+                            onPrint({
+                              type: CONSTANTS.PATIENT_LABEL,
+                              undefined,
+                              undefined,
+                              undefined,
+                              copies: patientLabelCopies,
+                            })
+                          }}
+                          disabled={sendingJob}
+                        >
+                          Patient Label
+                        </Button>
+                        <InputNumber
+                          size='small'
+                          min={1}
+                          max={10}
+                          value={patientLabelCopies}
+                          onChange={v => {
+                            setPatientLabelCopies(v || 1)
+                            console.log(v)
+                          }}
+                          className={classes.inputStyle}
+                        />
+                        <span className={classes.qtyFont}>&nbsp;Copies</span>
+                      </MenuItem>
+                      <MenuItem>
+                        <Button
+                          color='primary'
+                          size='sm'
+                          style={{ width: 120 }}
+                          onClick={() => {
+                            onPrint({
+                              type: CONSTANTS.LAB_LABEL,
+                              undefined,
+                              undefined,
+                              undefined,
+                              copies: labLabelCopies,
+                            })
+                          }}
+                          disabled={sendingJob}
+                        >
+                          Lab Label
+                        </Button>
+                        <InputNumber
+                          size='small'
+                          min={1}
+                          max={10}
+                          value={labLabelCopies}
+                          onChange={v => {
+                            setLabLabelCopies(v || 1)
+                            console.log(v)
+                          }}
+                          className={classes.inputStyle}
+                        />
+                        <span className={classes.qtyFont}>&nbsp;Copies</span>
+                      </MenuItem>
+                      <MenuItem>
+                        <Button
+                          color='primary'
+                          size='sm'
+                          onClick={printDrugLabel}
+                          disabled={sendingJob}
+                          style={{ width: 120 }}
+                        >
+                          Drug Label
+                        </Button>
+                      </MenuItem>
+                    </MenuList>
+                  </ClickAwayListener>
+                }
+              >
+                <Button
+                  color='primary'
+                  onClick={openPopper}
+                  size='sm'
+                  style={{
+                    height: 25,
+                    marginTop:
+                      orderCreateTime && invoice.finalizedDateTime ? -20 : 2,
+                  }}
+                >
+                  <Print /> Label
+                </Button>
+              </Popper>
             </span>
-          )}
+            <span style={{ display: 'inline-block' }}>
+              {orderCreateTime && (
+                <span style={{ color: '#999999' }}>
+                  Visit Doctor:
+                  <span
+                    style={{ fontWeight: 500 }}
+                  >{` ${orderCreateBy}. `}</span>
+                  <span style={{ color: '#999999' }}>
+                    Order created at:
+                    <span style={{ fontWeight: 500 }}>
+                      {` ${orderCreateTime.format('DD MMM yyyy HH:mm')}`}.
+                    </span>
+                  </span>{' '}
+                </span>
+              )}
+              {servingPersons.length > 0 && (
+                <span>
+                  Served by{' '}
+                  <span style={{ fontWeight: 500 }}>{`${servingPersons
+                    .map(x => x.servingBy)
+                    .join(', ')}.`}</span>
+                </span>
+              )}
+              {invoice.finalizedDateTime && (
+                <div style={{ color: '#999999' }}>
+                  Last Finalized by:
+                  <span style={{ fontWeight: 500 }}>
+                    {` ${invoice.finalizedBy} `}
+                  </span>
+                  <span style={{ color: '#999999' }}>
+                    at:
+                    <span style={{ fontWeight: 500 }}>
+                      {` ${invoice.finalizedDateTime.format(
+                        'DD MMM yyyy HH:mm',
+                      )}`}
+                      .
+                    </span>
+                  </span>{' '}
+                </div>
+              )}
+            </span>
+          </div>
         </GridItem>
         {!viewOnly && (
           <GridItem className={classes.rightActionButtons} md={5}>
