@@ -55,6 +55,7 @@ const ReportingDetails = props => {
     user,
     onClose = () => {},
     clinicSettings,
+    visitRegistration,
   } = props
   const reportingStatus = medicalCheckupReportingDetails.entity?.statusFK
   const { primaryPrintoutLanguage = 'EN' } = clinicSettings.settings
@@ -62,22 +63,30 @@ const ReportingDetails = props => {
   const banner = document.getElementById('patientBanner')
   const contentHeight = (height || 0) - (banner?.offsetHeight || 0) - 92
   const [selectedLanguage, setSelectedLanguage] = useState(undefined)
+  const [reportLanguage, setReportLanguage] = useState(undefined)
   const [showReportHistory, setShowReportHistory] = useState(false)
   const [showResultDetails, setShowResultDetails] = useState(false)
   const [placement, setPlacement] = useState('right')
   useEffect(() => {
-    if (!selectedLanguage && medicalCheckupReportingDetails.entity) {
+    if (visitRegistration.entity?.visit) {
+      const medicalCheckupWorkitems =
+        visitRegistration.entity?.visit?.medicalCheckupWorkitem || []
       if (
-        (medicalCheckupReportingDetails.entity.reportLanguage || '').indexOf(
-          'JP',
-        ) >= 0
+        medicalCheckupWorkitems.length > 0 &&
+        medicalCheckupWorkitems[0].reportLanguage !== reportLanguage
       ) {
-        setSelectedLanguage('JP')
-      } else {
-        setSelectedLanguage('EN')
+        setReportLanguage(medicalCheckupWorkitems[0].reportLanguage)
+
+        if (
+          (medicalCheckupWorkitems[0].reportLanguage || '').indexOf('JP') >= 0
+        ) {
+          setSelectedLanguage('JP')
+        } else {
+          setSelectedLanguage('EN')
+        }
       }
     }
-  }, [medicalCheckupReportingDetails.entity])
+  }, [visitRegistration])
   const generateReport = (reportType, message) => {
     dispatch({
       type: 'medicalCheckupReportingDetails/generateReport',
@@ -611,6 +620,7 @@ export default compose(
       user,
       labTrackingDetails,
       clinicSettings,
+      visitRegistration,
     }) => ({
       patient: patient.entity || {},
       loading,
@@ -618,6 +628,7 @@ export default compose(
       labTrackingDetails,
       user,
       clinicSettings,
+      visitRegistration,
     }),
   ),
 )(ReportingDetails)
