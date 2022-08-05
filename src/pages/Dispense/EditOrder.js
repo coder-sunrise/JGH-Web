@@ -307,6 +307,7 @@ class EditOrder extends Component {
           isPrescriptionSheetUpdated: isPharmacyOrderUpdated(orders, true),
           visitConcurrencyToken: visit.visit?.concurrencyToken,
           visitOrderTemplateFK: visit.visit?.visitOrderTemplateFK,
+          isUpdateVisitOrderTemplate: visit.visit?.isUpdateVisitOrderTemplate,
         },
       })
       if (signResult) {
