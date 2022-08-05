@@ -600,8 +600,6 @@ class Layout extends PureComponent {
       },
     }
 
-    console.log('IsHEre')
-
     const { clinicTypeFK = CLINIC_TYPE.GP } = clinicInfo
     return (
       <div>
