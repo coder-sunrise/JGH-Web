@@ -32,7 +32,6 @@ const styles = theme => ({})
       .of(Yup.date())
       .min(2)
       .required(),
-    isActive: true,
   }),
   handleSubmit: (values, { props, resetForm }) => {
     const { isActive, dates, effectiveDates, ...restValues } = values
