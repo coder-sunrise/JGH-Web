@@ -726,30 +726,12 @@ export default createFormViewModel({
         return response
       },
       *refresh({ payload }, { call, put, select }) {
-        const response = yield call(service.refresh, payload)
-        if (response) {
-          const clinicSettings = yield select(st => st.clinicSettings)
-          const orderItems = getDispenseItems(
-            clinicSettings.settings || {},
-            response,
-          )
-          const defaultExpandedGroups = _.uniqBy(
-            orderItems,
-            'dispenseGroupId',
-          ).map(o => o.dispenseGroupId)
-          yield put({
-            type: 'updateState',
-            payload: {
-              entity: {
-                ...response,
-                dispenseItems: orderItems,
-                defaultExpandedGroups,
-              },
-              //version: Date.now(),
-            },
-          })
-        }
-        return response
+        yield put({
+          type: 'query',
+          payload: {
+            id: payload,
+          },
+        })
       },
 
       *save({ payload }, { call }) {
