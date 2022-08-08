@@ -61,28 +61,25 @@ const receivingDetailsSchema = Yup.object().shape({
     const { purchaseOrderItem } = purchaseOrderDetails
     const getPurchaseOrderItemFK = v => {
       if (!v.id || v.id <= 0) {
-        let itemFKName = ''
+        let purchaseItemName = ''
         switch (v.type) {
           case INVENTORY_TYPE.MEDICATION: {
-            itemFKName = 'inventoryMedicationFK'
+            purchaseItemName = 'purchaseOrderMedicationItem'
             break
           }
           case INVENTORY_TYPE.CONSUMABLE: {
-            itemFKName = 'inventoryConsumableFK'
+            purchaseItemName = 'purchaseOrderConsumableItem'
             break
           }
           case INVENTORY_TYPE.VACCINATION: {
-            itemFKName = 'inventoryVaccinationFK'
+            purchaseItemName = 'purchaseOrderVaccinationItem'
             break
           }
           default: {
             break
           }
         }
-        const { id } = purchaseOrderItem.find(
-          o => o[itemFKName] === v[itemFKName],
-        )
-        return id
+        return v[purchaseItemName].purchaseOrderItemFK
       }
 
       if (values.id) {
@@ -551,14 +548,14 @@ class DODetails extends PureComponent {
           type: 'number',
           format: '0.0',
           width: 150,
-          isDisabled: row => row.id >= 0,
+          isDisabled: row => row.id >= 0 || row.orderQuantity - row.quantityReceived <= 0,
         },
         {
           columnName: 'currentReceivingBonusQty',
           type: 'number',
           format: '0.0',
           width: 200,
-          isDisabled: row => row.id >= 0,
+          isDisabled: row => row.id >= 0 || row.bonusQuantity - row.totalBonusReceived <= 0,
         },
         {
           columnName: 'batchNo',

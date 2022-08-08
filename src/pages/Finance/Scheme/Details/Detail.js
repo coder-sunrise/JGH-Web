@@ -191,11 +191,49 @@ const Detail = ({ height, ...props }) => {
                   localFilter={item => item.coPayerTypeFK === copayerTypeFK}
                   labelField='displayValueWithCode'
                   max={50}
+                  showOptionTitle={false}
+                  dropdownMatchSelectWidth={false}
+                  dropdownClassName='ant-select-dropdown-bottom-bordered'
+                  dropdownStyle={{ width: '810px' }}
                   renderDropdown={option => {
+                    const {
+                      code = '',
+                      creditFacility = '',
+                      copayerAddress = '',
+                      labelField = 'displayValue',
+                    } = option
                     return (
-                      <CopayerDropdownOption
-                        option={option}
-                      ></CopayerDropdownOption>
+                      <div
+                        style={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                        title={`${code ? `${code} - ` : ''}${
+                          option[labelField]
+                        }\nCr. Facility: ${
+                          creditFacility == '' ? ' - ' : creditFacility
+                        } \nAddr.: ${copayerAddress || ' - '} `}
+                      >
+                        <span>
+                          {option.code ? `${option.code} - ` : ''}
+                          <span
+                            style={{
+                              fontWeight: option.code ? 'bold' : 'normal',
+                            }}
+                          >
+                            {`${option[labelField]}`}
+                          </span>
+                        </span>
+                        <span
+                          style={{ display: 'block', lineHeight: '15px' }}
+                        >{`Cr. Facility: ${
+                          creditFacility == '' ? ' - ' : creditFacility
+                        }`}</span>
+                        <span
+                          style={{ display: 'block' }}
+                        >{`Addr.: ${copayerAddress || ' - '}`}</span>
+                      </div>
                     )
                   }}
                   {...args}

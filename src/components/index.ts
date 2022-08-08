@@ -108,7 +108,7 @@ export Tree from './Tree'
 export HTMLRender from './HTMLRender'
 
 // new Component after migrate to JGH
-export Icon from './icon'
+export Icon from './Icon'
 export PageContainer from './PageContainer'
 
 export AutoSuggestion from './AutoSuggestion'

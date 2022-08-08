@@ -16,7 +16,7 @@ const purchaseOrderDetailsSchema = Yup.object().shape({
   code: Yup.number().required(),
   name: Yup.number().required(),
   orderQuantity: Yup.number()
-    .min(1, 'Order Quantity must be greater than or equal to 1')
+    //.min(1, 'Order Quantity must be greater than or equal to 1')
     .required(),
 })
 
@@ -337,7 +337,7 @@ class Grid extends PureComponent {
         { name: 'name', title: 'Name' },
         { name: 'uom', title: 'UOM' },
         { name: 'orderQuantity', title: 'Order Qty' },
-        { name: 'bonusReceived', title: 'Bonus Qty' },
+        { name: 'bonusQuantity', title: 'Bonus Qty' },
         { name: 'quantityReceived', title: 'Received Qty' }, // Disabled, auto calc
         { name: 'totalReceived', title: 'Total Received Qty' },
         { name: 'unitPrice', title: 'Unit Price' },
@@ -409,7 +409,7 @@ class Grid extends PureComponent {
           onChange: this.calculateTotalPriceAndTotalQuantity,
         },
         {
-          columnName: 'bonusReceived',
+          columnName: 'bonusQuantity',
           type: 'number',
           format: '0.0',
           disabled: true,

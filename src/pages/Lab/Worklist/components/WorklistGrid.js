@@ -68,6 +68,7 @@ const WorklistGrid = ({ global, labWorklist, clinicSettings }) => {
   const [collapsedKeys, setCollapsedKeys] = useState([])
   const [filteredStatuses, setFilteredStatuses] = useState(allSpecimenStatuses)
   const [filteredWorklist, setFilteredWorklist] = useState([])
+  const [isCollapsed, setIsCollapsed] = useState(false)
   const cttestpanel = useCodeTable('cttestpanel')
   const cttestcategory = useCodeTable('cttestcategory')
   const ctspecimentype = useCodeTable('ctspecimentype')
@@ -519,10 +520,14 @@ const WorklistGrid = ({ global, labWorklist, clinicSettings }) => {
     <Card style={{ overflow: 'scroll' }}>
       <div style={{ display: 'flex', alignItems: 'start' }}>
         <ExapandCollapseAllButton
-          onExpandAllClick={() => setCollapsedKeys([])}
-          onCollapseAllClick={() =>
-            setCollapsedKeys(visits.map(v => v.visitFK))
-          }
+          onExpandAllClick={() => {
+            setIsCollapsed(false)
+            return setCollapsedKeys([])
+          }}
+          onCollapseAllClick={() => {
+            setIsCollapsed(true)
+            return setCollapsedKeys(visits.map(v => v.visitFK))
+          }}
         />
         <StatusFilter
           defaultSelection={allSpecimenStatuses}
@@ -545,7 +550,7 @@ const WorklistGrid = ({ global, labWorklist, clinicSettings }) => {
       </div>
       <Table
         scroll={{ y: tableheight }} // It's important for using VT!!! DO NOT FORGET!!!
-        components={vt}
+        components={isCollapsed ? {} : vt}
         className={styles.table}
         size='small'
         columns={columns}

@@ -284,6 +284,12 @@ const Detail = props => {
         }}
         title='Co-Payer Document'
         keepMounted={false}
+        showFooter={true}
+        footProps={{
+          confirmProps: {
+            hidden: true,
+          },
+        }}
       >
         <div>
           <div style={{ marginLeft: 8, marginTop: '-10px' }}>

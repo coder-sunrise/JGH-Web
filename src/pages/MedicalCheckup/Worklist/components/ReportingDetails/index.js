@@ -61,12 +61,23 @@ const ReportingDetails = props => {
   const height = window.innerHeight
   const banner = document.getElementById('patientBanner')
   const contentHeight = (height || 0) - (banner?.offsetHeight || 0) - 92
-  const [selectedLanguage, setSelectedLanguage] = useState(
-    primaryPrintoutLanguage,
-  )
+  const [selectedLanguage, setSelectedLanguage] = useState(undefined)
   const [showReportHistory, setShowReportHistory] = useState(false)
   const [showResultDetails, setShowResultDetails] = useState(false)
   const [placement, setPlacement] = useState('right')
+  useEffect(() => {
+    if (!selectedLanguage && medicalCheckupReportingDetails.entity) {
+      if (
+        (medicalCheckupReportingDetails.entity.reportLanguage || '').indexOf(
+          'JP',
+        ) >= 0
+      ) {
+        setSelectedLanguage('JP')
+      } else {
+        setSelectedLanguage('EN')
+      }
+    }
+  }, [medicalCheckupReportingDetails.entity])
   const generateReport = (reportType, message) => {
     dispatch({
       type: 'medicalCheckupReportingDetails/generateReport',

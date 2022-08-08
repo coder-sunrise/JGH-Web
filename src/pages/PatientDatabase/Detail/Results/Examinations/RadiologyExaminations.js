@@ -103,7 +103,7 @@ const RadiologyExaminations = props => {
     window.g_app._store.dispatch({
       type: 'scriblenotes/updateState',
       payload: {
-        showViewScribbleModal: isShowScribbleNote,
+        showViewScribbleModal: false,
         isReadonly: false,
       },
     })

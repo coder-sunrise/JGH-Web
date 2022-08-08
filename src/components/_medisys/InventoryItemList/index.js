@@ -501,7 +501,7 @@ class InventoryItemList extends React.Component {
   getColumns = () => {
     const commonColumns = [
       { name: 'type', title: 'Type' },
-      { name: 'itemFK', title: 'Item' },
+      { name: 'name', title: 'Item' },
       { name: 'unitPrice', title: 'Unit Price' },
       { name: 'action', title: 'Actions' },
     ]
@@ -600,8 +600,9 @@ class InventoryItemList extends React.Component {
         },
       },
       {
-        columnName: 'itemFK',
-        sortingEnabled: false,
+        columnName: 'name',
+        sortingEnabled: true,
+        compare: (a, b) => a.toUpperCase().localeCompare(b.toUpperCase()),
         render: row => {
           const inventory = InventoryTypes.filter(x => x.value === row.type)[0]
           const { ctName, itemFKName } = inventory

@@ -23,6 +23,13 @@ export const changeUserPassword = payload =>
     body: payload,
   })
 
+export const resetToDefaultPassword = payload =>
+  request(`${userProfileURL}/ResetToDefaultPassworByUserName`, {
+    method: 'POST',
+    data: stringify(payload),
+    contentType: 'application/x-www-form-urlencoded',
+  })
+
 export const getOTP = async payload =>
   request(
     `${userProfileURL}/generateResetPasswordCode`,

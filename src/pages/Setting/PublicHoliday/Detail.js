@@ -16,7 +16,7 @@ import {
   withFormikExtend,
 } from '@/components'
 
-const styles = (theme) => ({})
+const styles = theme => ({})
 
 @withFormikExtend({
   mapPropsToValues: ({ settingPublicHoliday }) =>
@@ -24,9 +24,14 @@ const styles = (theme) => ({})
   validationSchema: Yup.object().shape({
     code: Yup.string().required(),
     displayValue: Yup.string().required(),
-    dates: Yup.array().of(Yup.date()).min(2).required(),
-    effectiveDates: Yup.array().of(Yup.date()).min(2).required(),
-    isActive:true,
+    dates: Yup.array()
+      .of(Yup.date())
+      .min(2)
+      .required(),
+    effectiveDates: Yup.array()
+      .of(Yup.date())
+      .min(2)
+      .required(),
   }),
   handleSubmit: (values, { props, resetForm }) => {
     const { isActive, dates, effectiveDates, ...restValues } = values
@@ -46,7 +51,7 @@ const styles = (theme) => ({})
 
         endDate: moment(dates[1]),
       },
-    }).then((r) => {
+    }).then(r => {
       if (r) {
         resetForm()
         if (onConfirm) onConfirm()
@@ -78,7 +83,7 @@ class Detail extends PureComponent {
   //   setFieldValue('items', rows)
   // }
 
-  render () {
+  render() {
     const { props } = this
     const { classes, theme, footer, values, settingPublicHoliday } = props
 
@@ -90,7 +95,7 @@ class Detail extends PureComponent {
             <GridItem md={6}>
               <FastField
                 name='code'
-                render={(args) => (
+                render={args => (
                   <TextField
                     label='Code'
                     autoFocus
@@ -103,13 +108,13 @@ class Detail extends PureComponent {
             <GridItem md={6}>
               <FastField
                 name='displayValue'
-                render={(args) => <TextField label='Display Value' {...args} />}
+                render={args => <TextField label='Display Value' {...args} />}
               />
             </GridItem>
             <GridItem md={6}>
               <FastField
                 name='dates'
-                render={(args) => {
+                render={args => {
                   return (
                     <DateRangePicker
                       label='Start Date'
@@ -123,34 +128,34 @@ class Detail extends PureComponent {
             <GridItem md={6}>
               <FastField
                 name='effectiveDates'
-                render={(args) => {
+                render={args => {
                   return (
                     <DateRangePicker
                       label='Effective Start Date'
-                      label2='Effective End Date'
+                      label2='End Date'
                       {...args}
                     />
                   )
                 }}
               />
             </GridItem>
-            <GridItem md={12}>
+            {/* <GridItem md={12}>
               {settingPublicHoliday.entity ? (
                 <FastField
                   name='isActive'
-                  render={(args) => {
+                  render={args => {
                     return <Select label='Status' {...args} options={status} />
                   }}
                 />
               ) : (
                 []
               )}
-            </GridItem>
+            </GridItem> */}
 
             <GridItem md={12}>
               <FastField
                 name='description'
-                render={(args) => {
+                render={args => {
                   return (
                     <TextField
                       label='Description'
