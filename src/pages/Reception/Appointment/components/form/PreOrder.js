@@ -39,9 +39,7 @@ const PreOrder = ({ values, deletePreOrderItem, disabled }) => {
             return {
               ...appt,
               disabled,
-              orderDateDisplay: moment(appt.orderDate).format(
-                'DD MMM YYYY HH:mm',
-              ),
+              orderDateDisplay: appt.orderDate,
               displayQty,
               hasPaid: appt.hasPaid ? 'Yes' : 'No',
             }
@@ -98,7 +96,16 @@ const PreOrder = ({ values, deletePreOrderItem, disabled }) => {
             },
           },
           { columnName: 'orderByUser', sortingEnabled: false },
-          { columnName: 'orderDateDisplay', sortingEnabled: false, width: 140 },
+          {
+            columnName: 'orderDateDisplay',
+            sortingEnabled: false,
+            width: 140,
+            render: row => {
+              return (
+                <>{moment(row.orderDateDisplay).format('DD MMM YYYY HH:mm')}</>
+              )
+            },
+          },
           { columnName: 'remarks', sortingEnabled: false },
           {
             columnName: 'amount',
