@@ -177,7 +177,7 @@ class AppNotificationContent extends Component {
                   }}
                 >{`To: ${toUser}`}</div>
               )}
-              {(isReceiver || isOtherPRO) && (
+              {/* {(isReceiver || isOtherPRO) &&*/ (
                 <div
                   style={{
                     position: 'absolute',
