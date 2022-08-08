@@ -204,10 +204,6 @@ class NewLogin extends React.Component {
     handleSubmit()
   }
 
-  onForgotPasswordClick = () => {
-    history.push('/user/forgotpassword')
-  }
-
   render() {
     const { classes, login = { isInvalidLogin: false } } = this.props
     const { isInvalidLogin } = login
@@ -299,20 +295,6 @@ class NewLogin extends React.Component {
                         color='login'
                         onClick={this.onEnterPressed}
                       />
-                    </GridItem>
-                    <GridItem
-                      md={12}
-                      style={{
-                        marginTop: 12,
-                        textAlign: 'right',
-                      }}
-                    >
-                      <a
-                        onClick={this.onForgotPasswordClick}
-                        className={classes.forgotPasswordAnchor}
-                      >
-                        Forgot Password
-                      </a>
                     </GridItem>
                   </GridContainer>
                 </CardFooter>

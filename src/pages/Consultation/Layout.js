@@ -88,7 +88,6 @@ class Layout extends PureComponent {
     }
 
     let defaultLayout
-
     if (userDefaultLayout && userDefaultLayout.consultationTemplate) {
       defaultLayout = JSON.parse(userDefaultLayout.consultationTemplate)
       defaultLayout = {
@@ -97,11 +96,10 @@ class Layout extends PureComponent {
       }
     } else {
       // disable local setting(!localStorage.getItem('consultationLayout')) {
-      defaultLayout = this.getDefaultLayout()
+      defaultLayout =
+        JSON.parse(localStorage.getItem('consultationLayout')) ||
+        this.getDefaultLayout()
     }
-    //  else {
-    //   defaultLayout = JSON.parse(localStorage.getItem('consultationLayout'))
-    // }
     if (!defaultLayout.widgets) {
       defaultLayout = this.getDefaultLayout()
     }
