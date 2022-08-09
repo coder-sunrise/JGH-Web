@@ -35,7 +35,6 @@ import styles from './styles'
   name: 'invoicePayment',
   enableReinitialize: true,
   mapPropsToValues: ({ invoicePayment, invoiceDetail }) => {
-    console.log(invoicePayment, invoiceDetail)
     return invoicePayment.entity || {}
   },
 })
