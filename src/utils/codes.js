@@ -1115,7 +1115,7 @@ export const getInventoryItem = (
   }
 }
 
-export const getInventoryItemV2 = (
+export const getOutstandingInventoryItem = (
   list,
   value,
   itemFKName,
@@ -1123,18 +1123,9 @@ export const getInventoryItemV2 = (
   outstandingItem = undefined,
   existingData = false,
 ) => {
-  const groupByFKFunc = array => {
-    return _(array)
-      .groupBy(x => x[itemFKName])
-      .map((v, key) => ({
-        [itemFKName]: parseInt(key, 10),
-        totalCurrentReceivingQty: _.sumBy(v, 'currentReceivingQty'),
-      }))
-      .value()
-  }
 
   let newRows = rows.filter(x => x.type === value && x.isDeleted === false)
-
+  //get current received qty group by poitemfk
   const rowsGroupByFK = groupByFKFunc(newRows)
 
   const newOutstandingItem = outstandingItem.map(o => {
@@ -1142,89 +1133,77 @@ export const getInventoryItemV2 = (
       quantityReceived,
       orderQuantity,
       quantityReceivedFromOtherDOs = 0,
+      bonusQuantity,
+      bonusReceived
     } = o
 
-    const activeItem = rowsGroupByFK.find(i => i[itemFKName] === o[itemFKName])
-    const remainingQuantityShouldReceive =
-      orderQuantity - quantityReceivedFromOtherDOs
+    const activeItem = rowsGroupByFK.find(i => i.purchaseOrderItemFK === o.purchaseOrderItemFK)
+    const remainingQuantityShouldReceive = orderQuantity + bonusQuantity - quantityReceivedFromOtherDOs
     let remainingQuantity = orderQuantity - quantityReceived
+    let remainingBonusQuantity = bonusQuantity - bonusReceived
 
     if (activeItem) {
       if (existingData) {
-        remainingQuantity =
-          orderQuantity -
-          activeItem.totalCurrentReceivingQty -
-          quantityReceivedFromOtherDOs
+        remainingQuantity = orderQuantity > 0 ? orderQuantity - activeItem.totalCurrentReceivingQty - quantityReceivedFromOtherDOs : 0
+        remainingBonusQuantity = bonusQuantity > 0 ? bonusQuantity - activeItem.totalCurrentReceivingBonusQty - quantityReceivedFromOtherDOs : 0
       } else {
-        remainingQuantity -= activeItem.totalCurrentReceivingQty
-      }
-
-      if (remainingQuantity === 0) {
-        return {
-          ...o,
-          remainingQuantity,
-        }
+        remainingQuantity -= activeItem.totalCurrentReceivingQty 
+        remainingBonusQuantity -= activeItem.totalCurrentReceivingBonusQty
       }
     } else if (existingData && !activeItem) {
-      remainingQuantity = remainingQuantityShouldReceive
+      remainingQuantity = orderQuantity > 0 ? remainingQuantityShouldReceive : 0
+      remainingBonusQuantity = bonusQuantity > 0 ? remainingQuantityShouldReceive : 0
     }
 
     return {
       ...o,
       remainingQuantity,
+      remainingBonusQuantity
     }
   })
 
-  let fullyReceivedArray = []
-
-  fullyReceivedArray = rowsGroupByFK.filter(o => {
-    const item = newOutstandingItem.find(i => i[itemFKName] === o[itemFKName])
-    if (item && item.remainingQuantity <= 0) {
-      return {
-        ...o,
-      }
-    }
-    return null
-  })
+  // let fullyReceivedArray = rowsGroupByFK.filter(o => {
+  //   const item = newOutstandingItem.find(i => i.purchaseOrderItemFK === o.purchaseOrderItemFK)
+  //   return (item && item.remainingQuantity <= 0 && item.remainingBonusQuantity <= 0)
+  // })
 
   // get the fully received item
-  newRows = newRows.filter(o =>
-    fullyReceivedArray.find(i => i[itemFKName] === o[itemFKName]),
-  )
+  // newRows = newRows.filter(o =>
+  //   fullyReceivedArray.find(i => i.purchaseOrderItemFK === o.purchaseOrderItemFK),
+  // )
 
   // get all the not fully received item based on the inventory item and current rows
-  let inventoryItemList = _.differenceBy(list, newRows, itemFKName)
+  // let inventoryItemList = _.differenceBy(list, newRows, itemFKName)//same itemfkname have diff remain qty : 0 or > 0
 
   // get current inventory item outstanding item
-  const filterOutstandingItem = newOutstandingItem.filter(x => x.type === value)
+  const filterOutstandingItem = newOutstandingItem.filter(x => x.type === value && (x.remainingQuantity > 0 || x.remainingBonusQuantity > 0))
 
   // get the all the not fully received item based on outstanding item
-  inventoryItemList = _.intersectionBy(
-    inventoryItemList,
-    filterOutstandingItem,
-    itemFKName,
-  )
 
-  inventoryItemList = inventoryItemList.map(o => {
-    const findSpecificOutstandingItem = newOutstandingItem.find(
+let inventoryItemList = filterOutstandingItem.map(o => {
+    const ivtItem = list.find(
       i => i[itemFKName] === o[itemFKName],
     )
 
-    let remainingQty
-    if (findSpecificOutstandingItem) {
-      const { remainingQuantity } = findSpecificOutstandingItem
-
+    let remainingQty,remainingBonusQty
+    if (ivtItem) {
+      const { remainingQuantity, remainingBonusQuantity } = o
       remainingQty = remainingQuantity
+      remainingBonusQty = remainingBonusQuantity
     }
-
+    else 
+      return null
     return {
-      ...o,
-      remainingQty,
+      ...ivtItem,
+      value: o.id,
+      orderQuantity: o.orderQuantity,
+      remainingQty: remainingQty,
+      bonusQuantity: o.bonusQuantity,
+      remainingBonusQty: remainingBonusQty,
+      purchaseOrderItemFK: o.id,
     }
-  })
-  return {
-    inventoryItemList,
-  }
+  }).filter(x => x)
+  return inventoryItemList
 }
 
 export const inventoryItemListing = (
@@ -1311,10 +1290,11 @@ export const roundToPrecision = (x, precision) => {
 
 export const groupByFKFunc = array => {
   return _(array)
-    .groupBy(x => x.itemFK)
+    .groupBy(x => x.purchaseOrderItemFK)
     .map((v, key) => ({
-      itemFK: parseInt(key, 10),
+      purchaseOrderItemFK: parseInt(key, 10),
       totalCurrentReceivingQty: _.sumBy(v, 'currentReceivingQty'),
+      totalCurrentReceivingBonusQty: _.sumBy(v, 'currentReceivingBonusQty'),
     }))
     .value()
 }
