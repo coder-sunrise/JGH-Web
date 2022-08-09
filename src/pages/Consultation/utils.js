@@ -367,7 +367,9 @@ const isPharmacyOrderUpdated = (orders, isPrescriptionSheetUpdated) => {
       isExclusive: item.isExclusive,
       isNurseActualizeRequired: item.isNurseActualizeRequired,
       isPreOrder: item.isPreOrder,
-      isExternalPrescription: isPrescriptionSheetUpdated ? item.isExternalPrescription : undefined,
+      isExternalPrescription: isPrescriptionSheetUpdated
+        ? item.isExternalPrescription
+        : undefined,
       performingUserFK: item.performingUserFK,
       quantity: item.quantity,
       remarks: item.remarks,
@@ -505,9 +507,42 @@ const isPharmacyOrderUpdated = (orders, isPrescriptionSheetUpdated) => {
 
   if (!isUpdatedPharmacy) {
     isUpdatedPharmacy =
-      rows.filter(r => !r.id && !r.isPreOrder && (!isPrescriptionSheetUpdated || !r.isExternalPrescription) && isPushToPharmacy(r)).length > 0
+      rows.filter(
+        r =>
+          !r.id &&
+          !r.isDeleted &&
+          !r.isPreOrder &&
+          (!isPrescriptionSheetUpdated || !r.isExternalPrescription) &&
+          isPushToPharmacy(r),
+      ).length > 0
   }
   return isUpdatedPharmacy
+}
+
+const isOrderUpdated = (orders, consultationDocument = {}) => {
+  const {
+    rows,
+    finalAdjustments = [],
+    isGSTInclusive,
+    gstValue,
+    _originalIsGSTInclusive,
+    _originalGstValue,
+  } = orders
+
+  const { rows: documents = [] } = consultationDocument
+  return (
+    rows.filter(
+      x => (!x.id && !x.isDeleted) || (x.id && (x.isUpdated || x.isDeleted)),
+    ).length > 0 ||
+    documents.filter(
+      x => (!x.id && !x.isDeleted) || (x.id && (x.isUpdated || x.isDeleted)),
+    ).length > 0 ||
+    finalAdjustments.filter(
+      x => (!x.id && !x.isDeleted) || (x.id && (x.isUpdated || x.isDeleted)),
+    ).length > 0 ||
+    isGSTInclusive != _originalIsGSTInclusive ||
+    gstValue != _originalGstValue
+  )
 }
 
 const getOrdersData = val => {
@@ -956,4 +991,5 @@ export {
   cleanFields,
   isPharmacyOrderUpdated,
   getOrdersData,
+  isOrderUpdated,
 }

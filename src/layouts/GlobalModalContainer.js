@@ -190,6 +190,7 @@ class GlobalModalContainer extends PureComponent {
           headerStyle={{
             textAlign: 'center',
           }}
+          overrideLoading
           onClose={() => {
             dispatch({
               type:

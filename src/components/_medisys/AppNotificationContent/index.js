@@ -167,7 +167,7 @@ class AppNotificationContent extends Component {
                     <Done style={{ color: '#389e0d' }} />
                   </div>
                 ) : null)}
-              {(isSender || isOtherPRO) && (
+              {/* {(isSender || isOtherPRO) &&*/ ( 
                 <div
                   style={{
                     position: 'absolute',
@@ -177,7 +177,7 @@ class AppNotificationContent extends Component {
                   }}
                 >{`To: ${toUser}`}</div>
               )}
-              {(isReceiver || isOtherPRO) && (
+              {/* {(isReceiver || isOtherPRO) &&*/ (
                 <div
                   style={{
                     position: 'absolute',

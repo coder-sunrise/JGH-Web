@@ -404,6 +404,7 @@ export default createListViewModel({
                 ? {
                     ...row,
                     ...payload,
+                    isUpdated: true,
                     corVaccinationCert: getCertificate(row.uid),
                   }
                 : row
@@ -460,6 +461,7 @@ export default createListViewModel({
                 ? {
                     ...row,
                     ...payload,
+                    isUpdated: true,
                   }
                 : row
             return n
@@ -488,6 +490,7 @@ export default createListViewModel({
                 ? {
                     ...row,
                     ...payload,
+                    isUpdated: true,
                   }
                 : row
             return n
