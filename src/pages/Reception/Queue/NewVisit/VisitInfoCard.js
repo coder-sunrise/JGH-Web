@@ -216,13 +216,19 @@ const VisitInfoCard = ({
   const handleVisitTypeChange = (v, op) => {
     const { values, dispatch, getVisitOrderTemplateDetails } = restProps
     setFieldValue(FormField['visit.visitType'], v)
-    if (v !== 1) {
+
+    if (v !== VISIT_TYPE.CON) {
       setFieldValue(FormField['visit.consReady'], false)
     }
     updateMedicalCheckup(v, values.isForInvoiceReplacement)
     setFieldValue('visitBasicExaminations[0].visitPurposeFK', v)
-    if (currentVisitTemplate) {
-      handleVisitOrderTemplateChange(v, currentVisitTemplate)
+    if (v === VISIT_TYPE.OTC) {
+      setFieldValue(FormField['visit.visitOrderTemplateFK'], undefined)
+      handleVisitOrderTemplateChange(v, undefined)
+    } else {
+      if (currentVisitTemplate) {
+        handleVisitOrderTemplateChange(v, currentVisitTemplate)
+      }
     }
   }
 
@@ -555,7 +561,9 @@ const VisitInfoCard = ({
                   disabled={
                     fromMedicalCheckupReporting
                       ? true
-                      : notWaiting || isReadOnly
+                      : values.visitPurposeFK === VISIT_TYPE.OTC ||
+                        notWaiting ||
+                        isReadOnly
                   }
                   onChange={(e, opts) =>
                     handleVisitOrderTemplateChange(visitType, opts)

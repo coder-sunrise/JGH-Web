@@ -204,10 +204,6 @@ export default ({
     const inventoryMedicationFK =
       currentVisitOrderTemplate.visitOrderTemplateMedicationItemDto
         .inventoryMedicationFK
-    const { entity } = visitRegistration
-    const { visit } = entity
-    const { visitOrderTemplate = {} } = visit
-    const { visitOrderTemplateItemDtos } = visitOrderTemplate
 
     const settings = JSON.parse(localStorage.getItem('clinicSettings'))
     const { corVitalSign = [] } = orders
@@ -482,11 +478,6 @@ export default ({
     const inventoryVaccinationFK =
       currentVisitOrderTemplate.visitOrderTemplateVaccinationItemDto
         .inventoryVaccinationFK
-    const { entity } = visitRegistration
-    const { visit } = entity
-    const { visitOrderTemplate = {} } = visit
-    const { visitOrderTemplateItemDtos } = visitOrderTemplate
-    const { entity: visitEntity } = visitRegistration
     const { name, patientAccountNo, genderFK, dob } = patient.entity
     const ctgender = codetables[3]
     const inventoryvaccination = codetables[0]
@@ -585,7 +576,7 @@ export default ({
         newCORVaccinationCert = [
           {
             type: '3',
-            certificateDate: moment().date(),
+            certificateDate: moment(),
             issuedByUserFK: user.data.clinicianProfile.userProfile.id,
             subject: `Vaccination Certificate - ${name}, ${patientAccountNo}, ${gender.code ||
               ''}, ${Math.floor(
@@ -1257,14 +1248,15 @@ export default ({
     const { entity } = visitRegistration || {}
     if (!entity) return ''
     const { visit } = entity
-    const { visitOrderTemplate = {} } = visit
-    const { visitOrderTemplateItemDtos = [] } = visitOrderTemplate
+    const { visitOrderTemplate = {}, visit_OrderTemplateItem = [] } = visit
     const remainedTemplateItemIds = rows
       .filter(t => !t.isDeleted && t.visitOrderTemplateItemFK)
       .map(t => t.visitOrderTemplateItemFK)
     let visitPurpose = visitOrderTemplate.displayValue
-    let removedItems = visitOrderTemplateItemDtos
-      .filter(t => remainedTemplateItemIds.indexOf(t.id) < 0)
+    let removedItems = visit_OrderTemplateItem
+      .filter(
+        t => remainedTemplateItemIds.indexOf(t.visitOrderTemplateItemFK) < 0,
+      )
       .map(t => t.inventoryItemName)
     let addedItems = rows
       .filter(t => !t.isDeleted && !t.visitOrderTemplateItemFK)
@@ -1282,25 +1274,51 @@ export default ({
     if (!isEnableEditOrder) return
     const { entity } = visitRegistration
     const { visit } = entity
-    const { visitOrderTemplate = {} } = visit
+    const { visitOrderTemplate = {}, visit_OrderTemplateItem = [] } = visit
     const { visitOrderTemplateItemDtos } = visitOrderTemplate
-
-    let removedTemplateItems = visitOrderTemplateItemDtos
+    const visitOrderTemplateItems = visitOrderTemplateItemDtos.filter(item =>
+      visit_OrderTemplateItem.find(x => x.visitOrderTemplateItemFK === item.id),
+    )
+    let removedTemplateItems = visitOrderTemplateItems
       .filter(
         t =>
           t.inventoryItemTypeFK === 3 ||
           t.inventoryItemTypeFK === 4 ||
           ((t.inventoryItemTypeFK === 2 || t.inventoryItemTypeFK === 1) &&
-            t.orderable),
+            t.orderable &&
+            (t.visitOrderTemplateMedicationItemDto?.isActive ||
+              t.visitOrderTemplateVaccinationItemDto?.isActive ||
+              t.visitOrderTemplateConsumableItemDto?.isActive ||
+              t.visitOrderTemplateServiceItemDto?.isActive)),
       )
       .filter(t => {
         if (
-          rows.filter(
-            x => x.isDeleted === false && x.visitOrderTemplateItemFK === t.id,
-          ).length > 0
+          rows.filter(x => !x.isDeleted && x.visitOrderTemplateItemFK === t.id)
+            .length > 0
         ) {
           return undefined
         } else return t
+      })
+      .map(t => {
+        const item = visit_OrderTemplateItem.find(
+          x => x.visitOrderTemplateItemFK === t.id,
+        )
+        if (item) {
+          return {
+            ...t,
+            inventoryItemCode: item.inventoryItemCode,
+            inventoryItemName: item.inventoryItemName,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            total: item.total,
+            sortOrder: item.sortOrder,
+            adjType: item.adjType,
+            adjAmt: item.adjAmt,
+            adjValue: item.adjValue,
+            totalAftAdj: item.totalAftAdj,
+          }
+        }
+        return t
       })
     if (visit.visitPurposeFK === VISIT_TYPE.OTC) {
       removedTemplateItems = removedTemplateItems.filter(t => {
@@ -1523,8 +1541,11 @@ export default ({
     }
     const { entity } = visitRegistration
     const { visit } = entity
-    const { visitOrderTemplate = {} } = visit
+    const { visitOrderTemplate = {}, visit_OrderTemplateItem = [] } = visit
     const { visitOrderTemplateItemDtos = [] } = visitOrderTemplate
+    const visitOrderTemplateItems = visitOrderTemplateItemDtos.filter(item =>
+      visit_OrderTemplateItem.find(x => x.visitOrderTemplateItemFK === item.id),
+    )
     let newItems = [...rows.filter(t => !t.isDeleted)]
 
     const checkUpdateOrderItem = (orderItem, orderTemplateItems) => {
@@ -1628,10 +1649,7 @@ export default ({
     let newOrderItems = []
     //add or replace item
     newVisitOrderTemplateItemDtos.forEach(newOrderItem => {
-      const result = checkUpdateOrderItem(
-        newOrderItem,
-        visitOrderTemplateItemDtos,
-      )
+      const result = checkUpdateOrderItem(newOrderItem, visitOrderTemplateItems)
       if (result) {
         const { templateItem, selectRow } = result
         if (!templateItem && !selectRow) {
@@ -1642,27 +1660,29 @@ export default ({
           selectRow.visitOrderTemplateItemFK = newOrderItem.id
           selectRow.quantity = newOrderItem.quantity || 0
           selectRow.unitPrice = newOrderItem.unitPrice
-          if (
-            selectRow.type === ORDER_TYPES.SERVICE ||
-            selectRow.type === ORDER_TYPES.RADIOLOGY ||
-            selectRow.type === ORDER_TYPES.LAB
-          ) {
-            selectRow.total = newOrderItem.total || 0
-          } else {
-            selectRow.totalPrice = newOrderItem.total || 0
+          if (!selectRow.isExternalPrescription) {
+            if (
+              selectRow.type === ORDER_TYPES.SERVICE ||
+              selectRow.type === ORDER_TYPES.RADIOLOGY ||
+              selectRow.type === ORDER_TYPES.LAB
+            ) {
+              selectRow.total = newOrderItem.total || 0
+            } else {
+              selectRow.totalPrice = newOrderItem.total || 0
+            }
+            selectRow.adjAmount = newOrderItem.adjAmt
+            selectRow.adjType = newOrderItem.adjType
+            selectRow.adjValue = newOrderItem.adjValue
+            selectRow.isMinus = !!(
+              newOrderItem.adjValue && newOrderItem.adjValue < 0
+            )
+            selectRow.isExactAmount = !!(
+              newOrderItem.adjType && newOrderItem.adjType === 'ExactAmount'
+            )
+            selectRow.isOrderedByDoctor =
+              user.data.clinicianProfile.userProfile.role.clinicRoleFK === 1
+            selectRow.totalAfterItemAdjustment = newOrderItem.totalAftAdj || 0
           }
-          selectRow.adjAmount = newOrderItem.adjAmt
-          selectRow.adjType = newOrderItem.adjType
-          selectRow.adjValue = newOrderItem.adjValue
-          selectRow.isMinus = !!(
-            newOrderItem.adjValue && newOrderItem.adjValue < 0
-          )
-          selectRow.isExactAmount = !!(
-            newOrderItem.adjType && newOrderItem.adjType === 'ExactAmount'
-          )
-          selectRow.isOrderedByDoctor =
-            user.data.clinicianProfile.userProfile.role.clinicRoleFK === 1
-          selectRow.totalAfterItemAdjustment = newOrderItem.totalAftAdj || 0
         }
       }
     })
@@ -1707,6 +1727,7 @@ export default ({
               ...visitRegistration.entity.visit,
               visitOrderTemplate: undefined,
               visitOrderTemplateFK: undefined,
+              visit_OrderTemplateItem: [],
               isUpdateVisitOrderTemplate: true,
             },
           },
@@ -1734,6 +1755,25 @@ export default ({
                 ...visitRegistration.entity.visit,
                 visitOrderTemplate: { ...response },
                 visitOrderTemplateFK: newVisitPurposeFK,
+                visit_OrderTemplateItem: [
+                  ...response.visitOrderTemplateItemDtos.map(item => {
+                    return {
+                      visitFK: visitRegistration.entity.visit.id,
+                      visitOrderTemplateItemFK: item.id,
+                      inventoryItemTypeFK: item.inventoryItemTypeFK,
+                      inventoryItemCode: item.inventoryItemCode,
+                      inventoryItemName: item.inventoryItemName,
+                      quantity: item.quantity,
+                      unitPrice: item.unitPrice,
+                      total: item.total,
+                      sortOrder: item.sortOrder,
+                      adjType: item.adjType,
+                      adjAmt: item.adjAmt,
+                      adjValue: item.adjValue,
+                      totalAftAdj: item.totalAftAdj,
+                    }
+                  }),
+                ],
                 isUpdateVisitOrderTemplate: true,
               },
             },
@@ -1746,10 +1786,9 @@ export default ({
   }
 
   const getVisitPurposeName = () => {
-    const { entity } = visitRegistration
-    const { visit } = entity
-    const { visitOrderTemplate = {} } = visit
-    return visitOrderTemplate.displayValue || ''
+    return (
+      visitRegistration?.entity?.visit?.visitOrderTemplate?.displayValue || ''
+    )
   }
   return (
     <Fragment>
@@ -1850,7 +1889,9 @@ export default ({
                 const { visit } = entity || {}
                 const { children, ...restProps } = p
                 let newChildren = []
-                let visitOrderTemplateDetails = visit?.visitOrderTemplateFK
+                let visitOrderTemplateDetails = visit.isClinicSessionClosed
+                  ? visit.visitOrderTemplateDetails || {}
+                  : visit?.visitOrderTemplateFK
                   ? getVisitOrderTemplateDetails(rows)
                   : {}
                 if (isExistPackage) {
@@ -1870,7 +1911,7 @@ export default ({
                             ></VisitOrderTemplateIndicateString>
                           </div>
                           <div>
-                            {isEnableEditOrder && (
+                            {!visit.isClinicSessionClosed && isEnableEditOrder && (
                               <Link
                                 style={{ textDecoration: 'underline' }}
                                 onClick={e => {
@@ -1879,6 +1920,17 @@ export default ({
                                 }}
                               >
                                 Click to Revert Visit Purpose Item
+                              </Link>
+                            )}
+                            {from === 'EditOrder' && (
+                              <Link
+                                style={{ textDecoration: 'underline' }}
+                                onClick={e => {
+                                  e.preventDefault()
+                                  setShowEditVisitPurpose(true)
+                                }}
+                              >
+                                Edit Visit Purpose
                               </Link>
                             )}
                           </div>
@@ -1911,7 +1963,7 @@ export default ({
                           </div>
                         )}
                         <div>
-                          {isEnableEditOrder && (
+                          {!visit.isClinicSessionClosed && isEnableEditOrder && (
                             <div>
                               {visit && visit.visitOrderTemplateFK && (
                                 <Link
