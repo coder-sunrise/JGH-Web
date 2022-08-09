@@ -25,25 +25,17 @@ import DeleteConfirmation from '../../components/modal/DeleteConfirmation'
 // styles
 import styles from './styles'
 
-@connect(
-  ({
-    invoiceDetail,
-    invoicePayment,
-    patient,
-    clinicSettings,
-    codetable: { copaymentscheme = [] },
-  }) => ({
-    invoiceDetail,
-    invoicePayment,
-    patient,
-    clinicSettings,
-    copaymentscheme,
-  }),
-)
+@connect(({ invoiceDetail, invoicePayment, patient, clinicSettings }) => ({
+  invoiceDetail,
+  invoicePayment,
+  patient,
+  clinicSettings,
+}))
 @withFormik({
   name: 'invoicePayment',
   enableReinitialize: true,
   mapPropsToValues: ({ invoicePayment, invoiceDetail }) => {
+    console.log(invoicePayment, invoiceDetail)
     return invoicePayment.entity || {}
   },
 })
@@ -444,7 +436,6 @@ class PaymentDetails extends Component {
       patientIsActive,
       clinicSettings,
       invoiceDetail = {},
-      copaymentscheme,
     } = this.props
     const { entity } = invoiceDetail
     const { hasActiveSession } = this.state
@@ -497,12 +488,6 @@ class PaymentDetails extends Component {
           ? values
               .sort((a, b) => a.payerTypeFK - b.payerTypeFK)
               .map(payment => {
-                payment.coPaymentSchemeName =
-                  payment.coPaymentSchemeFK &&
-                  copaymentscheme.find(
-                    copaymentschemeItem =>
-                      payment.coPaymentSchemeFK === copaymentschemeItem.id,
-                  )?.name
                 return (
                   <PaymentCard
                     coPaymentSchemeFK={payment.coPaymentSchemeFK}
