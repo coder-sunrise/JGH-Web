@@ -333,9 +333,9 @@ class Grid extends PureComponent {
     const tableParas = {
       columns: [
         { name: 'type', title: 'Type' },
-        { name: 'code', title: 'Code' },
-        { name: 'name', title: 'Name' },
-        { name: 'uom', title: 'UOM' },
+        { name: 'codeString', title: 'Code' },
+        { name: 'nameString', title: 'Name' },
+        { name: 'uomString', title: 'UOM' },
         { name: 'orderQuantity', title: 'Order Qty' },
         { name: 'bonusQuantity', title: 'Bonus Qty' },
         { name: 'quantityReceived', title: 'Received Qty' }, // Disabled, auto calc
@@ -356,51 +356,20 @@ class Grid extends PureComponent {
           },
         },
         {
-          columnName: 'code',
-          type: 'select',
-          labelField: 'code',
+          columnName: 'codeString',
+          type: 'text',
           sortingEnabled: false,
-          options: (row) => {
-            return this.rowOptions(row)
-          },
-          onChange: (e) => {
-            if (e.option) {
-              this.handleItemOnChange(e, 'code')
-            }
-          },
         },
         {
-          columnName: 'name',
-          type: 'select',
-          labelField: 'name',
+          columnName: 'nameString',
+          type: 'text',
           sortingEnabled: false,
-          options: (row) => {
-            return this.rowOptions(row)
-          },
-          onChange: (e) => {
-            if (e.option) {
-              this.handleItemOnChange(e, 'name')
-            }
-          },
         },
         {
-          columnName: 'uom',
-          type: 'select',
-          labelField: 'uom',
+          columnName: 'uomString',
+          type: 'text',
           disabled: true,
           sortingEnabled: false,
-          options: (row) => {
-            if (row.type === 1) {
-              return this.state.MedicationItemList
-            }
-            if (row.type === 2) {
-              return this.state.ConsumableItemList
-            }
-            if (row.type === 3) {
-              return this.state.VaccinationItemList
-            }
-            return []
-          },
         },
         {
           columnName: 'orderQuantity',

@@ -12,7 +12,7 @@ import {
   EditableTableGrid,
   Field,
 } from '@/components'
-import { podoOrderType, getInventoryItemV2 } from '@/utils/codes'
+import { podoOrderType, getOutstandingInventoryItem, groupByFKFunc } from '@/utils/codes'
 import { INVENTORY_TYPE } from '@/utils/constants'
 import AuthorizedContext from '@/components/Context/Authorized'
 import CommonTableGrid from '@/components/CommonTableGrid'
@@ -31,8 +31,14 @@ const receivingDetailsSchema = Yup.object().shape({
       return `Current Receiving Quantity must be less than or equal to ${
         e.max ? e.max.toFixed(1) : e.max
       }`
-    })
-    .required(),
+    }).required(),
+  currentReceivingBonusQty: Yup.number()
+    .min(0, 'Current Receiving Bonus Quantity must be greater than or equal to 0')
+    .max(Yup.ref('maxCurrentReceivingBonusQty'), e => {
+      return `Current Receiving Bonus Quantity must be less than or equal to ${
+        e.max ? e.max.toFixed(1) : e.max
+      }`
+    }).required(),
 })
 
 @withFormikExtend({
@@ -104,7 +110,7 @@ const receivingDetailsSchema = Yup.object().shape({
         return {
           ...restX,
           // inventoryTransactionItemFK: 39, // Temporary hard code, will remove once Soe fix the API
-          purchaseOrderItemFK: getPurchaseOrderItemFK(x),
+          purchaseOrderItemFK: x.purchaseOrderItemFK,
           recevingQuantity: x.currentReceivingQty,
           bonusQuantity: x.currentReceivingBonusQty,
           isDeleted: x.isDeleted,
@@ -166,10 +172,11 @@ class DODetails extends PureComponent {
   }
 
   componentDidMount = async () => {
-    const { mode, dispatch, deliveryOrderDetails } = this.props
+    const { mode, dispatch, deliveryOrderDetails, values } = this.props
     const {
       purchaseOrderDetails: { purchaseOrderOutstandingItem },
     } = deliveryOrderDetails
+    const { rows } = values
 
     const osItemType = podoOrderType.filter(type =>
       purchaseOrderOutstandingItem.some(osItem =>
@@ -180,9 +187,12 @@ class DODetails extends PureComponent {
     this.setState({ itemType: osItemType })
 
     podoOrderType.forEach(x => {
-      this.setState({
-        [x.stateName]: deliveryOrderDetails[x.stateName],
-      })
+      if(mode === 'Add') {
+        const inventoryItemList = getOutstandingInventoryItem(deliveryOrderDetails[x.stateName],x.value,x.itemFKName,rows,purchaseOrderOutstandingItem,values.id)
+        this.setState({[x.stateName]: inventoryItemList})
+      }else {
+        this.setState({[x.stateName]: deliveryOrderDetails[x.stateName]})
+      }
     })
     // await this.props.refreshDeliveryOrder()
     if (mode === 'Add') {
@@ -230,18 +240,8 @@ class DODetails extends PureComponent {
     const { value, itemFKName, stateName } = option
     const originItemList = this.state[stateName]
 
-    const { inventoryItemList } = getInventoryItemV2(
-      originItemList,
-      value,
-      itemFKName,
-      rows,
-      purchaseOrderItem,
-      values.id,
-    )
-
-    this.setState({
-      [`filter${stateName}`]: inventoryItemList,
-    })
+    const inventoryItemList = getOutstandingInventoryItem(originItemList,value,itemFKName,rows,purchaseOrderItem,values.id)
+    this.setState({[`filter${stateName}`]: inventoryItemList})
 
     row.code = ''
     row.name = ''
@@ -258,24 +258,27 @@ class DODetails extends PureComponent {
 
   handleItemOnChange = (e, type) => {
     const { option, row } = e
-    const { value, remainingQty } = option
+
+    const { itemFK, value, remainingQty, remainingBonusQty, purchaseOrderItemFK } = option
     if (type === 'code') {
-      row.name = value
+      row.name = purchaseOrderItemFK
     } else {
-      row.code = value
+      row.code = purchaseOrderItemFK
     }
 
-    row.uom = value
+    row.uom = purchaseOrderItemFK
     row.currentReceivingQty = remainingQty
-    row.itemFK = value
+    row.currentReceivingBonusQty = remainingBonusQty
+    row.itemFK = itemFK
     row.maxCurrentReceivingQty = remainingQty
-    row.maxCurrentReceivingBonusQty = remainingQty
+    row.maxCurrentReceivingBonusQty = remainingBonusQty
+    row.purchaseOrderItemFK = purchaseOrderItemFK
 
     const { deliveryOrderDetails } = this.props
     const { purchaseOrderDetails } = deliveryOrderDetails
     const { purchaseOrderItem } = purchaseOrderDetails
     const osItem = purchaseOrderItem.find(
-      x => x.code === value && x.inventoryItemTypeFK === row.type,
+      x => x.purchaseOrderItemFK === row.purchaseOrderItemFK,
     )
 
     if (osItem) {
@@ -343,11 +346,31 @@ class DODetails extends PureComponent {
   }
 
   getItemOptions = (row, filteredStateName, stateName) => {
-    const { code, name, isNew } = row
+    const { mode } = this.props
+    const { uid, code, name, isNew, purchaseOrderItemFK, itemFK } = row
     if (code && name) {
-      return this.state[stateName].filter(o => o.value === code)
+      return this.state[stateName].filter(o => {
+        if(mode === 'add')
+          return o.purchaseOrderItemFK === purchaseOrderItemFK
+        else
+          return o.itemFK === itemFK
+      })
     }
-    return isNew ? this.state[filteredStateName] : this.state[stateName]
+    if(isNew) {
+      return this.state[filteredStateName]
+    }
+    const { rows } = this.props.values
+    const newRows = rows.filter(x => x.uid != uid && !x.isDeleted && x.code && x.name)
+    const updatedRemainReceiveItems = this.state[stateName].map(x=>{
+      const rowsGroupByFK = groupByFKFunc(newRows)
+      const item = rowsGroupByFK.find(i => i.purchaseOrderItemFK === x.purchaseOrderItemFK)
+      return {
+        ...x,
+        remainingQty: x.remainingQty - (item?.totalCurrentReceivingQty || 0),
+        remainingBonusQty: x.remainingBonusQty - (item?.totalCurrentReceivingBonusQty || 0),
+      }
+    }).filter(x => x.remainingQty > 0 || x.remainingBonusQty > 0)
+    return updatedRemainReceiveItems
   }
 
   rowOptions = row => {
@@ -378,7 +401,7 @@ class DODetails extends PureComponent {
   getOptions = (stateItemList, storeItemList, row) => {
     const stateArray = stateItemList
     const selectedArray = stateArray.length <= 0 ? storeItemList : stateArray
-    return selectedArray.find(o => o.itemFK === row.code).stock
+    return selectedArray.find(o => o.itemFK === row.itemFK).stock
   }
 
   getBatchStock = row => {
@@ -468,6 +491,7 @@ class DODetails extends PureComponent {
           columnName: 'code',
           type: 'select',
           labelField: 'code',
+          dropdownMatchSelectWidth: false,
           options: row => {
             return this.rowOptions(row)
           },
@@ -476,12 +500,17 @@ class DODetails extends PureComponent {
               this.handleItemOnChange(e, 'code')
             }
           },
+          renderDropdown: (o) => {
+            const extendInfo = o.orderQuantity > 0 ? `Order: ${o.orderQuantity}` : `Bonus: ${o.bonusQuantity}`
+            return `${o.code} - ${extendInfo}`
+          },
           isDisabled: row => row.id >= 0,
         },
         {
           columnName: 'name',
           type: 'select',
           labelField: 'name',
+          dropdownMatchSelectWidth: false,
           options: row => {
             return this.rowOptions(row)
           },
@@ -489,6 +518,10 @@ class DODetails extends PureComponent {
             if (e.option) {
               this.handleItemOnChange(e, 'name')
             }
+          },
+          renderDropdown: (o) => {
+            const extendInfo = o.orderQuantity > 0 ? `Order: ${o.orderQuantity}` : `Bonus: ${o.bonusQuantity}`
+            return `${o.name} - ${extendInfo}`
           },
           isDisabled: row => row.id >= 0,
         },

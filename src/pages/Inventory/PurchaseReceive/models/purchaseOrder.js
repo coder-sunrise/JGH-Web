@@ -213,11 +213,15 @@ export default createFormViewModel({
             uid: getUniqueId(),
             type: x.inventoryItemTypeFK,
             [itemType.itemFKName]: x[itemType.prop][itemType.itemFKName],
-            code: x[itemType.prop][itemType.itemFKName],
-            name: x[itemType.prop][itemType.itemFKName],
-            uom: x[itemType.prop][itemType.itemFKName],
+            code: x.id,
+            codeString: x[itemType.prop][itemType.itemCode],
+            name: x.id,
+            nameString: x[itemType.prop][itemType.itemName],
+            uom: x.id,
+            uomString: x.unitOfMeasurement,
             totalReceived: x.bonusReceived + x.quantityReceived,
             itemFK: x[itemType.prop][itemType.itemFKName],
+            purchaseOrderItemFK: x.id,
           }
         })
 
