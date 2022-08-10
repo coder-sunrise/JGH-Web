@@ -579,38 +579,36 @@ class Consumable extends PureComponent {
           </GridContainer>
 
           <GridContainer>
-            {false && (
-              <GridItem xs={4} className={classes.editor}>
-                <Field
-                  name='batchNo'
-                  render={args => {
-                    return (
-                      <CodeSelect
-                        mode='tags'
-                        maxSelected={1}
-                        disableAll
-                        label='Batch No.'
-                        labelField='batchNo'
-                        valueField='batchNo'
-                        options={this.state.selectedConsumable.consumableStock}
-                        onChange={(e, op = {}) => {
-                          if (op && op.length > 0) {
-                            const { expiryDate } = op[0]
-                            setFieldValue(`expiryDate`, expiryDate)
-                          } else {
-                            setFieldValue(`expiryDate`, undefined)
-                          }
-                          this.onExpiryDateChange()
-                        }}
-                        disabled={disableEdit || isStartedConsumable}
-                        {...args}
-                      />
-                    )
-                  }}
-                />
-              </GridItem>
-            )}
-            <GridItem xs={8} className={classes.editor}>
+            <GridItem xs={4} className={classes.editor}>
+              <Field
+                name='batchNo'
+                render={args => {
+                  return (
+                    <CodeSelect
+                      mode='tags'
+                      maxSelected={1}
+                      disableAll
+                      label='Batch No.'
+                      labelField='batchNo'
+                      valueField='batchNo'
+                      options={this.state.selectedConsumable.consumableStock}
+                      onChange={(e, op = {}) => {
+                        if (op && op.length > 0) {
+                          const { expiryDate } = op[0]
+                          setFieldValue(`expiryDate`, expiryDate)
+                        } else {
+                          setFieldValue(`expiryDate`, undefined)
+                        }
+                        this.onExpiryDateChange()
+                      }}
+                      disabled={disableEdit || isStartedConsumable}
+                      {...args}
+                    />
+                  )
+                }}
+              />
+            </GridItem>
+            <GridItem xs={4} className={classes.editor}>
               <FastField
                 name='expiryDate'
                 render={args => {
