@@ -44,7 +44,6 @@ const PaymentCard = ({
   payerID = 'N/A',
   payerName = 'N/A',
   coPaymentSchemeFK = undefined,
-  coPaymentSchemeName = '',
   companyFK = undefined,
   companyName = '',
   patientName = 'N/A',
@@ -75,14 +74,9 @@ const PaymentCard = ({
     //   </p>
     // )
     _payerName = (
-      <p
-        className={classes.title}
-        title={`Copayer: ${companyName}\n${coPaymentSchemeName &&
-          'Scheme: ' + coPaymentSchemeName}`}
-      >
+      <p className={classes.title}>
         <span>
           {payerTypeToString[payerTypeFK]} ({companyName})
-          {coPaymentSchemeName && ` - ${coPaymentSchemeName}`}
         </span>
       </p>
     )
@@ -96,13 +90,8 @@ const PaymentCard = ({
   }
   if (payerTypeFK === INVOICE_PAYER_TYPE.COMPANY) {
     _payerName = (
-      <p
-        className={classes.title}
-        title={`Copayer: ${companyName}\n${coPaymentSchemeName &&
-          'Scheme: ' + coPaymentSchemeName}`}
-      >
+      <p className={classes.title}>
         {payerTypeToString[payerTypeFK]} ({companyName})
-        {coPaymentSchemeName && ` - ${coPaymentSchemeName}`}
       </p>
     )
   }
