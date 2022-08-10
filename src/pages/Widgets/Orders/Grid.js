@@ -420,7 +420,7 @@ export default ({
       isExternalPrescription: false,
       visitPurposeFK: currentVisitOrderTemplate.visitOrderTemplateFK,
       isDrugMixture: false,
-      isClaimable: false,
+      isClaimable: true,
       caution: itemDrugCaution,
       performingUserFK: user.data.clinicianProfile.userProfile.id,
       packageGlobalId: '',
