@@ -56,12 +56,9 @@ class CorporateBillingGrid extends PureComponent {
         width: 130,
         sortingEnabled: false,
         render: row => {
-          const contactPerson = row.contactPersons
-            ? (JSON.parse(row.contactPersons) || []).find(x => x.isDefault)
-            : undefined
           return (
-            <Tooltip title={contactPerson?.name}>
-              <span>{contactPerson?.name || '-'}</span>
+            <Tooltip title={row?.personName}>
+              <span>{row?.personName || '-'}</span>
             </Tooltip>
           )
         },
@@ -79,12 +76,9 @@ class CorporateBillingGrid extends PureComponent {
         sortingEnabled: false,
         width: 130,
         render: row => {
-          const contactPerson = row.contactPersons
-            ? (JSON.parse(row.contactPersons) || []).find(x => x.isDefault)
-            : undefined
           return (
-            <Tooltip title={contactPerson?.workNumber}>
-              <span>{contactPerson?.workNumber || '-'}</span>
+            <Tooltip title={row?.workNumber}>
+              <span>{row?.workNumber || '-'}</span>
             </Tooltip>
           )
         },
@@ -94,12 +88,9 @@ class CorporateBillingGrid extends PureComponent {
         sortingEnabled: false,
         width: 130,
         render: row => {
-          const contactPerson = row.contactPersons
-            ? (JSON.parse(row.contactPersons) || []).find(x => x.isDefault)
-            : undefined
           return (
-            <Tooltip title={contactPerson?.faxNumber}>
-              <span>{contactPerson?.faxNumber || '-'}</span>
+            <Tooltip title={row?.faxNumber}>
+              <span>{row?.faxNumber || '-'}</span>
             </Tooltip>
           )
         },
@@ -109,12 +100,9 @@ class CorporateBillingGrid extends PureComponent {
         sortingEnabled: false,
         width: 130,
         render: row => {
-          const contactPerson = row.contactPersons
-            ? (JSON.parse(row.contactPersons) || []).find(x => x.isDefault)
-            : undefined
           return (
-            <Tooltip title={contactPerson?.emailAddress}>
-              <span>{contactPerson?.emailAddress || '-'}</span>
+            <Tooltip title={row?.emailAddress}>
+              <span>{row?.emailAddress || '-'}</span>
             </Tooltip>
           )
         },
