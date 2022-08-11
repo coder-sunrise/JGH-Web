@@ -78,6 +78,7 @@ const FilterBar = ({ classes, dispatch, history, values }) => {
                   code='ctCopayer'
                   labelField='displayValue'
                   additionalSearchField='code'
+                  showOptionTitle={false}
                   renderDropdown={option => {
                     return (
                       <CopayerDropdownOption

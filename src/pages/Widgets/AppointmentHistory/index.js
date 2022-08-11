@@ -11,7 +11,10 @@ import {
   Checkbox,
 } from '@/components'
 import { Table } from '@devexpress/dx-react-grid-material-ui'
-import { APPOINTMENT_STATUSOPTIONS, INVALID_APPOINTMENT_STATUS } from '@/utils/constants'
+import {
+  APPOINTMENT_STATUSOPTIONS,
+  INVALID_APPOINTMENT_STATUS,
+} from '@/utils/constants'
 import { queryList as queryAppointments } from '@/services/calendar'
 import Authorized from '@/utils/Authorized'
 import { previousApptTableParams } from './variables'
@@ -60,7 +63,7 @@ class AppointmentHistory extends PureComponent {
   }
 
   async getAppts(patientId, showRecheduledByClinic) {
-    const { user, dispatch } = this.props
+    const { user, dispatch, ctcalendarresource = [] } = this.props
     const commonParams = {
       combineCondition: 'and',
       sorting: [{ columnName: 'appointmentDate', direction: 'desc' }],
@@ -126,25 +129,25 @@ class AppointmentHistory extends PureComponent {
       await this.getAppts(patient.id)
     }
   }
-  
+
   reBuildApptDatas = data => {
     let formattedList = []
     for (let i = 0; i < data.length; i++) {
       const { appointment_Resources, ...restValues } = data[i]
       const currentPatientAppts = appointment_Resources.map((appt, idx) => {
-        const {
-          startTime,
-          appointmentTypeFK,
-          calendarResourceFK,
-        } = appt
+        const { startTime, appointmentTypeFK, calendarResourceFK } = appt
         const apptStatusId = parseInt(restValues.appointmentStatusFk, 10)
-        const apptStatus = APPOINTMENT_STATUSOPTIONS.find(m => m.id === apptStatusId)
+        const apptStatus = APPOINTMENT_STATUSOPTIONS.find(
+          m => m.id === apptStatusId,
+        )
         const commonValues = {
           ...restValues,
           uid: getUniqueId(),
           apptResourceFK: appt.id,
           appointmentTypeFK,
-          appointmentDate: `${moment(restValues.appointmentDate).format('YYYY-MM-DD')}`,
+          appointmentDate: `${moment(restValues.appointmentDate).format(
+            'YYYY-MM-DD',
+          )}`,
           startTime: moment(startTime, 'HH:mm:ss').format('hh:mm A'),
           calendarResourceFK,
           appointmentStatus: apptStatus ? apptStatus.name || '' : '',
@@ -165,7 +168,7 @@ class AppointmentHistory extends PureComponent {
           rowspan: 0,
         }
       })
-  
+
       formattedList = [...formattedList, ...currentPatientAppts]
     }
     return formattedList
@@ -281,7 +284,7 @@ class AppointmentHistory extends PureComponent {
                 height,
               }}
               rows={previousAppt}
-              getRowId={(r)=>`${r.id}_${r.apptResourceFK}`}
+              getRowId={r => `${r.id}_${r.apptResourceFK}`}
               {...previousApptTableParams(this.props.appointmentTypes)}
             />
           </GridItem>

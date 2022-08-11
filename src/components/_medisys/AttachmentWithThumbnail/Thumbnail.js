@@ -167,14 +167,17 @@ const Thumbnail = ({
       useImageViewer &&
       imageFileExtensions.includes(attachment.fileExtension.toLowerCase())
     ) {
-      showImagePreview(attachment)
       // show image preview
-      // dispatch({
-      //   type: 'imageViewer/updateState',
-      //   payload: {
-      //     attachment,
-      //   },
-      // })
+      if (showImagePreview) {
+        showImagePreview(attachment)
+      } else {
+        dispatch({
+          type: 'imageViewer/updateState',
+          payload: {
+            attachment,
+          },
+        })
+      }
       return
     }
 

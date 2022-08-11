@@ -25,7 +25,7 @@ import {
 } from '@/components'
 import Authorized from '@/utils/Authorized'
 import Yup from '@/utils/yup'
-import { calculateAdjustAmount } from '@/utils/utils'
+import { calculateAdjustAmount, roundTo } from '@/utils/utils'
 import { NURSE_WORKITEM_STATUS } from '@/utils/constants'
 import { currencySymbol } from '@/utils/config'
 import {
@@ -83,7 +83,7 @@ let i = 0
     }
 
     return {
-      minQuantity: 1,
+      minQuantity: 0.1,
       ...newOrders,
       type,
       isEditVaccination: !_.isEmpty(orders.entity),
@@ -416,11 +416,12 @@ class Vaccination extends PureComponent {
   calculateQuantity = vaccination => {
     const { codetable, setFieldValue, values } = this.props
     if (values.isPackage) return
-    const { minQuantity = 0 } = values
+    const { uomfk } = values
     let currentVaccination =
       vaccination && Object.values(vaccination).length ? vaccination : undefined
     if (!currentVaccination) currentVaccination = this.state.selectedVaccination
     let newTotalQuantity = 0
+    let calculated = false
     if (
       vaccination &&
       currentVaccination &&
@@ -439,16 +440,24 @@ class Vaccination extends PureComponent {
               : undefined)),
       )
       if (dosage) {
-        newTotalQuantity = Math.ceil(dosage.multiplier)
+        newTotalQuantity = roundTo(dosage.multiplier, 1)
+        calculated = true
       }
-      const { prescriptionToDispenseConversion } = currentVaccination
-      if (prescriptionToDispenseConversion)
-        newTotalQuantity = Math.ceil(
-          newTotalQuantity / prescriptionToDispenseConversion,
-        )
+      if (currentVaccination?.prescribingUOM?.id === uomfk) {
+        const { prescriptionToDispenseConversion } = currentVaccination
+        if (prescriptionToDispenseConversion)
+          newTotalQuantity = roundTo(
+            newTotalQuantity / prescriptionToDispenseConversion,
+            1,
+          )
+      }
+    }
+    let minDispenseQty = 1
+    if (calculated) {
+      minDispenseQty = 0.1
     }
     newTotalQuantity =
-      newTotalQuantity < minQuantity ? minQuantity : newTotalQuantity
+      newTotalQuantity < minDispenseQty ? minDispenseQty : newTotalQuantity
 
     setFieldValue(`quantity`, newTotalQuantity)
 
@@ -889,7 +898,6 @@ class Vaccination extends PureComponent {
                 render={args => {
                   return (
                     <CodeSelect
-                      disabled
                       label='UOM'
                       allowClear={false}
                       code='ctvaccinationunitofmeasurement'
@@ -899,6 +907,7 @@ class Vaccination extends PureComponent {
                           'uomDisplayValue',
                           op ? op.name : undefined,
                         )
+                        setTimeout(this.calculateQuantity, 1)
                       }}
                       {...args}
                       disabled={

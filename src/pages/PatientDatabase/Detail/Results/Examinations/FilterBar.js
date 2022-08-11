@@ -232,7 +232,7 @@ const FilterBar = props => {
               return (
                 <CodeSelect
                   {...args}
-                  style={{ width: 180, marginRight: 10 }}
+                  style={{ width: 170, marginRight: 10 }}
                   label='Status'
                   options={labStatus}
                   mode='multiple'
@@ -253,7 +253,7 @@ const FilterBar = props => {
               return (
                 <CodeSelect
                   {...args}
-                  style={{ width: 180, marginRight: 10 }}
+                  style={{ width: 170, marginRight: 10 }}
                   label='Status'
                   options={radiologyStatus}
                   maxTagCount={0}

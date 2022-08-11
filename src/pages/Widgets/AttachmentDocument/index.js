@@ -196,7 +196,7 @@ class AttachmentDocument extends Component {
         <GridItem md={3}>
           <CardContainer
             hideHeader
-            style={{ height: window.innerHeight - 100, overflow: 'scroll' }}
+            style={{ height: window.innerHeight - 150, overflow: 'scroll' }}
           >
             <FolderList
               readOnly={readOnly}
@@ -213,7 +213,7 @@ class AttachmentDocument extends Component {
         <GridItem md={9}>
           <CardContainer
             hideHeader
-            style={{ height: window.innerHeight - 100, overflow: 'scroll' }}
+            style={{ height: window.innerHeight - 150, overflow: 'scroll' }}
           >
             <GridContainer style={{ height: 'auto' }}>
               <GridItem

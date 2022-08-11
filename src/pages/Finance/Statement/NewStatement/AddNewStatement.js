@@ -378,6 +378,7 @@ class AddNewStatement extends PureComponent {
                         label='Co-Payer'
                         code='ctcopayer'
                         labelField='displayValue'
+                        showOptionTitle={false}
                         renderDropdown={option => {
                           return (
                             <CopayerDropdownOption

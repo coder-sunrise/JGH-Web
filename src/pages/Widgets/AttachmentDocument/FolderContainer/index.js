@@ -115,7 +115,7 @@ const FolderContainer = ({ viewMode, attachmentList, ...restProps }) => {
   }
   return (
     <React.Fragment>
-      <div style={{ height: window.innerHeight - 180, overflow: 'scroll' }}>
+      <div style={{ height: window.innerHeight - 230, overflow: 'scroll' }}>
         {viewMode === 'card' ? (
           <CardView key='cardview' {...restProps} {...cfg} />
         ) : (

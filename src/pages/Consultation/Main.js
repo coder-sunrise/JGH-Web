@@ -33,6 +33,7 @@ import {
   convertToConsultation,
   convertConsultationDocument,
   isPharmacyOrderUpdated,
+  isOrderUpdated,
   getOrdersData,
 } from '@/pages/Consultation/utils'
 // import model from '@/pages/Widgets/Orders/models'
@@ -187,7 +188,7 @@ const generatePrintData = async (
             !f.isPreOrder &&
             !f.isExternalPrescription &&
             f.isDispensedByPharmacy &&
-            ['1', '2'].some(x => x === f.type),
+            ['1', '2', '4'].some(x => x === f.type),
         )
         if (anyPharmacyItem)
           printData = printData.concat([
@@ -353,6 +354,7 @@ const saveConsultation = ({
     user,
     clinicSettings,
     visitRegistration,
+    consultation,
   } = props
   const { entity: vistEntity = {} } = visitRegistration
   const { visit = {} } = vistEntity
@@ -363,9 +365,13 @@ const saveConsultation = ({
 
   const { isEnablePharmacyModule } = clinicSettings
   if (isEnablePharmacyModule) {
-    values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders,true)
+    values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders, true)
     values.isPharmacyOrderUpdated = isPharmacyOrderUpdated(orders)
   }
+  values.isOrderUpdated =
+    consultation?.entity?.versionNumber >= 2
+      ? isOrderUpdated(orders, consultationDocument)
+      : true
 
   const onConfirmSave = () => {
     const newValues = convertToConsultation(
@@ -531,9 +537,13 @@ const pauseConsultation = async ({
   let settings = JSON.parse(localStorage.getItem('clinicSettings'))
   const { diagnosisDataSource, isEnablePharmacyModule } = settings
   if (isEnablePharmacyModule) {
-    values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders,true)
+    values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders, true)
     values.isPharmacyOrderUpdated = isPharmacyOrderUpdated(orders)
   }
+  values.isOrderUpdated =
+    consultation?.entity?.versionNumber >= 2
+      ? isOrderUpdated(orders, consultationDocument)
+      : true
   const newValues = convertToConsultation(
     {
       ...values,
@@ -712,13 +722,24 @@ const saveDraftDoctorNote = ({ values, visitRegistration }) => {
   notDirtyDuration: 0, // this page should alwasy show warning message when leave
   onDirtyDiscard: discardConsultation,
   handleSubmit: async (values, { props }) => {
-    const { dispatch, handlePrint, orders = {}, clinicSettings } = props
+    const {
+      dispatch,
+      handlePrint,
+      orders = {},
+      clinicSettings,
+      consultationDocument = {},
+      consultation,
+    } = props
     const { summary } = orders
     const { isEnablePharmacyModule } = clinicSettings
     if (isEnablePharmacyModule) {
-    values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders,true)
-    values.isPharmacyOrderUpdated = isPharmacyOrderUpdated(orders)
+      values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders, true)
+      values.isPharmacyOrderUpdated = isPharmacyOrderUpdated(orders)
     }
+    values.isOrderUpdated =
+      consultation?.entity?.versionNumber >= 2
+        ? isOrderUpdated(orders, consultationDocument)
+        : true
     if (!(await autoPrintSelection('sign', { values, ...props }))) {
       saveConsultation({
         props: {

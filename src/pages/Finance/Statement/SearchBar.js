@@ -264,6 +264,7 @@ class SearchBar extends PureComponent {
                       code='ctCopayer'
                       labelField='displayValue'
                       additionalSearchField='code'
+                      showOptionTitle={false}
                       renderDropdown={option => {
                         return (
                           <CopayerDropdownOption

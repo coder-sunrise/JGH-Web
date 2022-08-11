@@ -66,6 +66,7 @@ class Filter extends PureComponent {
                   code='ctcopayer'
                   labelField='displayValue'
                   additionalSearchField='code'
+                  showOptionTitle={false}
                   renderDropdown={option => {
                     return (
                       <CopayerDropdownOption

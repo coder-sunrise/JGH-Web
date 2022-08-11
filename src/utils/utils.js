@@ -1589,6 +1589,21 @@ const showCurrency = (value = 0) => {
     </div>
   )
 }
+
+const menuViewableByAuthoritys = (authoritys = []) => {
+  if (authoritys.length === 0) return true
+  if (
+    authoritys.find(authority => {
+      const accessRight = Authorized.check(authority) || {
+        rights: 'hidden',
+      }
+      return accessRight.rights !== 'hidden'
+    })
+  ) {
+    return true
+  }
+  return false
+}
 export {
   sleep,
   sumReducer,
@@ -1623,6 +1638,7 @@ export {
   ableToViewByAuthority,
   getNameWithTitle,
   showCurrency,
+  menuViewableByAuthoritys,
   // toUTC,
   // toLocal,
 }

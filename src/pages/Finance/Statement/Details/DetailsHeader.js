@@ -85,6 +85,7 @@ class DetailsHeader extends PureComponent {
               render={args => (
                 <CodeSelect
                   code='ctcopayer'
+                  showOptionTitle={false}
                   renderDropdown={option => {
                     return (
                       <CopayerDropdownOption

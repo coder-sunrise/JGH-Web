@@ -64,7 +64,9 @@ const SummaryComment = props => {
   ])
 
   useEffect(() => {
-    setData(medicalCheckupReportingDetails.summaryCommentList)
+    if (selectedLanguage) {
+      setData(medicalCheckupReportingDetails.summaryCommentList)
+    }
   }, [
     selectedLanguage,
     medicalCheckupReportingDetails.summaryCommentList,

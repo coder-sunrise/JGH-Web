@@ -25,6 +25,7 @@ import Yup from '@/utils/yup'
 import {
   convertToConsultation,
   isPharmacyOrderUpdated,
+  isOrderUpdated,
 } from '@/pages/Consultation/utils'
 // utils
 import { getAppendUrl } from '@/utils/utils'
@@ -234,6 +235,7 @@ class EditOrder extends Component {
       user,
       from = 'Dispense',
       closeEditOrder,
+      consultation,
     } = this.props
     const { isEnablePharmacyModule } = clinicSettings
     const isFormValid = await validateForm()
@@ -306,6 +308,10 @@ class EditOrder extends Component {
           isPharmacyOrderUpdated: isPharmacyOrderUpdate,
           isPrescriptionSheetUpdated: isPharmacyOrderUpdated(orders, true),
           visitConcurrencyToken: visit.visit?.concurrencyToken,
+          isOrderUpdated:
+            consultation?.entity?.versionNumber >= 2
+              ? isOrderUpdated(orders, consultationDocument)
+              : true,
           visitOrderTemplateFK: visit.visit?.visitOrderTemplateFK,
           isUpdateVisitOrderTemplate: visit.visit?.isUpdateVisitOrderTemplate,
         },

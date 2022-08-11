@@ -292,6 +292,13 @@ class SchemesGrid extends PureComponent {
       this.setState({ copayerCoverPageCopies: value || 1 })
     }
   }
+  matchSearch = (option, input) => {
+    const lowerCaseInput = input.toLowerCase()
+    return (
+      option.code.toLowerCase().indexOf(lowerCaseInput) >= 0 ||
+      option.name.toLowerCase().indexOf(lowerCaseInput) >= 0
+    )
+  }
 
   render() {
     const labelTypes = ['Co-Payer Label', 'Co-Payer Cover Page']
@@ -403,22 +410,62 @@ class SchemesGrid extends PureComponent {
       {
         columnName: 'coPaymentSchemeFK',
         sortingEnabled: false,
-        type: 'codeSelect',
+        type: 'localSearchSelect',
         additionalSearchField: 'code',
+        showOptionTitle: false,
+        dropdownMatchSelectWidth: false,
+        dropdownStyle: { width: '1250px' },
+        dropdownClassName: 'ant-select-dropdown-bottom-bordered',
         renderDropdown: option => {
+          let { copayerName, creditFacility, copayerAddress } = option
           return (
-            <div
-              style={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
+            <Tooltip
+              placement='left'
+              title={
+                <div>
+                  <span>
+                    {option.code ? `${option.code} - ` : ''}
+                    {option.name}
+                  </span>
+                  <br />
+                  <span>{`Copayer: ${copayerName}`}</span>
+                  <br />
+                  <span>
+                    {`Credit Facility: ${
+                      creditFacility ? creditFacility : ' - '
+                    }`}
+                  </span>
+                  <br />
+                  <span>{`Addr.: ${copayerAddress || ' - '}`}</span>
+                </div>
+              }
             >
-              {option.code ? `${option.code} - ` : ''}
-              <span style={{ fontWeight: option.code ? 'bold' : 'normal' }}>
-                {`${option.name}`}
-              </span>
-            </div>
+              <div
+                style={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <div style={{ display: 'block', lineHeight: '20px' }}>
+                  {option.code ? `${option.code} - ` : ''}
+                  <span style={{ fontWeight: option.code ? 'bold' : 'normal' }}>
+                    {`${option.name}`}
+                  </span>
+                </div>
+                <span
+                  style={{ display: 'block', lineHeight: '20px' }}
+                >{`Copayer: ${copayerName}`}</span>
+                <span style={{ display: 'block', lineHeight: '20px' }}>
+                  {`Credit Facility: ${
+                    creditFacility ? creditFacility : ' - '
+                  }`}
+                </span>
+                <span style={{ display: 'block', lineHeight: '20px' }}>
+                  {`Addr.: ${copayerAddress || ' - '}`}
+                </span>
+              </div>
+            </Tooltip>
           )
         },
         options: row => {
@@ -433,7 +480,11 @@ class SchemesGrid extends PureComponent {
             filterOptions = copaymentscheme.filter(
               cps => cps.schemeTypeName === 'Insurance',
             )
-          return filterOptions
+          return _.orderBy(
+            filterOptions,
+            [data => data.name.toLowerCase()],
+            ['asc'],
+          )
         },
         isDisabled: row => !this.isCorporate(row),
         render: row => {
@@ -461,6 +512,7 @@ class SchemesGrid extends PureComponent {
             <span>{patCoPaymentScheme ? patCoPaymentScheme.name : ''}</span>
           )
         },
+        matchSearch: this.matchSearch,
         onChange: ({ val, option, row, onValueChange }) => {
           let { rows } = this.props
           if (!row.id) {
@@ -493,7 +545,7 @@ class SchemesGrid extends PureComponent {
             item => item.id === row.coPaymentSchemeFK,
           )
           row.copayerFK = option?.copayerFK
-          if (!patCoPaymentScheme.isActive) {
+          if (patCoPaymentScheme && !patCoPaymentScheme.isActive) {
             row.coPaymentSchemeFK = undefined
             notification.error({
               message: 'Selected scheme is an inactive schemes',

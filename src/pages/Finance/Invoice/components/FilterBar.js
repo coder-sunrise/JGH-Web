@@ -161,6 +161,7 @@ const FilterBar = ({ classes, dispatch, values, handleSubmit }) => {
                     maxTagCount={0}
                     maxTagPlaceholder='Co-Payer'
                     label='Co-Payer'
+                    showOptionTitle={false}
                     renderDropdown={option => {
                       return (
                         <CopayerDropdownOption

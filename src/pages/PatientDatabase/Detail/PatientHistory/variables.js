@@ -3,14 +3,14 @@ import PatientHistory from '@/pages/Widgets/PatientHistory'
 import AppointmentHistory from '@/pages/Widgets/AppointmentHistory'
 import DispenseHistory from '@/pages/Widgets/DispenseHistory'
 import { PATIENT_HISTORY_TABS } from '@/utils/constants'
-import InvoiceHistory from '@/pages/Widgets/InvoiceHistory'
 import PatientNurseNotes from '@/pages/PatientDatabase/Detail/PatientNurseNotes'
 import ViewPatientNurseNotes from '@/pages/Widgets/PatientNurseNotes'
-import PatientDeposit from '@/pages/Finance/Deposit/PatientDeposit'
 import PatientReferral from '@/pages/Widgets/ReferralHistory'
 
 const addContent = (type, props) => {
-  const { patient: { entity } } = props
+  const {
+    patient: { entity },
+  } = props
   const patientIsActive = entity && entity.isActive
 
   switch (type) {
@@ -26,12 +26,8 @@ const addContent = (type, props) => {
       return <DispenseHistory mode='integrated' {...props} />
     case PATIENT_HISTORY_TABS.APPOINTMENT:
       return <AppointmentHistory {...props} />
-    case PATIENT_HISTORY_TABS.INVOICE:
-      return <InvoiceHistory mode='integrated' {...props} />
     case PATIENT_HISTORY_TABS.NURSENOTES:
       return <PatientNurseNotes {...props} />
-    case PATIENT_HISTORY_TABS.DEPOSIT:
-      return <PatientDeposit {...props} />
     case PATIENT_HISTORY_TABS.REFERRAL:
       return <PatientReferral mode='integrated' {...props} />
     default:
@@ -39,7 +35,7 @@ const addContent = (type, props) => {
   }
 }
 
-const checkAccessRight = (accessRightNames) => {
+const checkAccessRight = accessRightNames => {
   if (!accessRightNames || accessRightNames.length === 0) return true
 
   for (let i = 0; i < accessRightNames.length; i++) {
@@ -52,7 +48,7 @@ const checkAccessRight = (accessRightNames) => {
   return false
 }
 
-export const PatientHistoryTabOption = (props) => {
+export const PatientHistoryTabOption = props => {
   const Tabs = [
     {
       id: PATIENT_HISTORY_TABS.VISIT,
@@ -70,11 +66,6 @@ export const PatientHistoryTabOption = (props) => {
       content: addContent(PATIENT_HISTORY_TABS.APPOINTMENT, props),
     },
     {
-      id: PATIENT_HISTORY_TABS.INVOICE,
-      name: 'Invoice',
-      content: addContent(PATIENT_HISTORY_TABS.INVOICE, props),
-    },
-    {
       id: PATIENT_HISTORY_TABS.NURSENOTES,
       name: 'Notes',
       content: addContent(PATIENT_HISTORY_TABS.NURSENOTES, props),
@@ -83,21 +74,13 @@ export const PatientHistoryTabOption = (props) => {
       ],
     },
     {
-      id: PATIENT_HISTORY_TABS.DEPOSIT,
-      name: 'Deposit',
-      authority: [
-        'patientdatabase.patientprofiledetails.patienthistory.deposit',
-      ],
-      content: addContent(PATIENT_HISTORY_TABS.DEPOSIT, props),
-    },
-    {
       id: PATIENT_HISTORY_TABS.REFERRAL,
-      name:'Referral',
+      name: 'Referral',
       authority: [
         'patientdatabase.patientprofiledetails.patienthistory.referralhistory',
       ],
-      content: addContent(PATIENT_HISTORY_TABS.REFERRAL,props),
+      content: addContent(PATIENT_HISTORY_TABS.REFERRAL, props),
     },
   ]
-  return Tabs.filter((f) => checkAccessRight(f.authority))
+  return Tabs.filter(f => checkAccessRight(f.authority))
 }
