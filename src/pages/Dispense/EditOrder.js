@@ -235,6 +235,7 @@ class EditOrder extends Component {
       user,
       from = 'Dispense',
       closeEditOrder,
+      consultation,
     } = this.props
     const { isEnablePharmacyModule } = clinicSettings
     const isFormValid = await validateForm()
@@ -299,7 +300,10 @@ class EditOrder extends Component {
           ...payload,
           isPharmacyOrderUpdated: isPharmacyOrderUpdate,
           isPrescriptionSheetUpdated: isPharmacyOrderUpdated(orders, true),
-          isOrderUpdated: isOrderUpdated(orders, consultationDocument),
+          isOrderUpdated:
+            consultation?.entity?.versionNumber >= 2
+              ? isOrderUpdated(orders, consultationDocument)
+              : true,
         },
       })
       if (signResult) {
