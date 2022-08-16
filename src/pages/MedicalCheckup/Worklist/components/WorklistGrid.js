@@ -29,11 +29,13 @@ import {
   Tooltip,
   notification,
 } from '@/components'
+import { DoctorProfileSelect } from '@/components/_medisys'
 import { ProTable } from '@medisys/component'
 import { GridContextMenuButton as GridButton } from 'medisys-components'
 import MoreVert from '@material-ui/icons/MoreVert'
 import Description from '@material-ui/icons/Description'
 import FindInPage from '@material-ui/icons/FindInPage'
+import Edit from '@material-ui/icons/Edit'
 import VisitForms from '@/pages/Reception/Queue/VisitForms'
 import FormatListBulletedOutlinedIcon from '@material-ui/icons/FormatListBulletedOutlined'
 import ListAltOutlinedIcon from '@material-ui/icons/ListAltOutlined'
@@ -93,7 +95,11 @@ const WorklistGrid = ({
   const [filteredStatuses, setFilteredStatuses] = useState(selectedStatus)
   const [workitems, setWorkitems] = useState([])
   const [showForms, setShowForms] = useState(false)
-  const { setIsAnyWorklistModelOpened } = useContext(WorklistContext)
+  const [showEditVisit, setShowEditVisit] = useState(false)
+  const [editMedicalCheckupDetails, setEditMedicalCheckupDetails] = useState({})
+  const { setIsAnyWorklistModelOpened, searchWorklist } = useContext(
+    WorklistContext,
+  )
   const [vt] = useVT(() => ({ scroll: { y: height - 50 - 95 } }), [])
   useEffect(() => {
     if (originalWorklist) {
@@ -184,6 +190,15 @@ const WorklistGrid = ({
     })
   }
 
+  const editVisit = async row => {
+    setIsAnyWorklistModelOpened(true)
+    setEditMedicalCheckupDetails({
+      id: row.id,
+      doctorProfileFK: row.doctorProfileFK,
+    })
+    setShowEditVisit(true)
+  }
+
   const handleMenuItemClick = (row, id) => {
     switch (id) {
       case '1':
@@ -223,6 +238,9 @@ const WorklistGrid = ({
       case '4':
         viewReport(row)
         break
+      case '5':
+        editVisit(row)
+        break
     }
   }
   const menus = [
@@ -246,6 +264,12 @@ const WorklistGrid = ({
       id: 4,
       label: 'View Reports',
       Icon: FindInPage,
+    },
+    {
+      id: 5,
+      label: 'Edit Visit',
+      Icon: Edit,
+      authority: 'queue.visitregistrationdetails',
     },
   ]
 
@@ -596,6 +620,25 @@ const WorklistGrid = ({
   }
   const columns = defaultColumns()
   const tableHeight = height - 50
+  const updateVisitDoctor = async () => {
+    if (!editMedicalCheckupDetails.newPrimaryDoctorFK) {
+      notification.warning({
+        message: 'Please select primary doctor.',
+      })
+      return
+    }
+    await dispatch({
+      type: 'medicalCheckupWorklist/editVisit',
+      payload: {
+        id: editMedicalCheckupDetails.id,
+        newPrimaryDoctorFK: editMedicalCheckupDetails.newPrimaryDoctorFK,
+      },
+    })
+    searchWorklist(medicalCheckupWorklist.filterBar || {})
+    setShowEditVisit(false)
+    setEditMedicalCheckupDetails({})
+    setIsAnyWorklistModelOpened(false)
+  }
   return (
     <div style={{ backgroundColor: 'white', paddingTop: 12, marginTop: 2 }}>
       <div style={{ textAlign: 'right' }}>
@@ -735,6 +778,51 @@ const WorklistGrid = ({
         overrideLoading
       >
         <VisitForms formCategory={FORM_CATEGORY.CORFORM} />
+      </CommonModal>
+      <CommonModal
+        open={showEditVisit}
+        title='Edit Visit'
+        cancelText='Cancel'
+        maxWidth='sm'
+        onClose={() => {
+          setShowEditVisit(false)
+          setEditMedicalCheckupDetails({})
+          setIsAnyWorklistModelOpened(false)
+        }}
+        onConfirm={updateVisitDoctor}
+        showFooter
+      >
+        <div style={{ margin: '0px 16px 8px 16px' }}>
+          <div style={{ position: 'relative', paddingLeft: 150 }}>
+            <div
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: 11,
+                width: 145,
+                textAlign: 'right',
+                fontWeight: 400,
+              }}
+            >
+              New Primary Doctor:
+            </div>
+            <DoctorProfileSelect
+              authority='none'
+              popupContainer='body'
+              onChange={(v, op = {}) => {
+                setEditMedicalCheckupDetails({
+                  ...editMedicalCheckupDetails,
+                  newPrimaryDoctorFK: v,
+                })
+              }}
+              label=''
+              localFilter={opt =>
+                opt.id !== editMedicalCheckupDetails.doctorProfileFK
+              }
+              value={editMedicalCheckupDetails.newPrimaryDoctorFK}
+            />
+          </div>
+        </div>
       </CommonModal>
     </div>
   )

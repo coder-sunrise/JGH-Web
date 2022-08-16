@@ -24,8 +24,9 @@ import WorklistContext from '../WorklistContext'
 
 export const WorklistFilter = ({ medicalCheckupWorklist }) => {
   const [form] = Form.useForm()
-  const { isAnyWorklistModelOpened } = useContext(WorklistContext)
-  const [refreshDate, setRefreshDate] = useState(moment())
+  const { isAnyWorklistModelOpened, refreshDate, searchWorklist } = useContext(
+    WorklistContext,
+  )
   const dispatch = useDispatch()
 
   const { settings } = useSelector(s => s.clinicSettings)
@@ -92,30 +93,7 @@ export const WorklistFilter = ({ medicalCheckupWorklist }) => {
         list: [],
       },
     })
-    dispatch({
-      type: 'medicalCheckupWorklist/query',
-      payload: {
-        apiCriteria: {
-          searchValue: searchValue,
-          isOnlyUrgent,
-          isMyPatient,
-          visitDoctor:
-            visitDoctor && !visitDoctor.includes(-99)
-              ? visitDoctor.join(',')
-              : undefined,
-          filterFrom: dateFrom,
-          filterTo: dateTo
-            ? moment(dateTo)
-                .endOf('day')
-                .formatUTC(false)
-            : undefined,
-        },
-      },
-    }).then(response => {
-      if (response) {
-        setRefreshDate(moment())
-      }
-    })
+    searchWorklist(form.getFieldsValue(true))
   }
 
   const clinicRoleFK = clinicianProfile.userProfile?.role?.clinicRoleFK

@@ -94,6 +94,11 @@ export default createListViewModel({
         const response = yield call(service.generateAutoComment, payload)
         return response
       },
+
+      *editVisit({ payload }, { call, put }) {
+        const response = yield call(service.editVisit, payload)
+        return response
+      },
     },
     reducers: {},
   },

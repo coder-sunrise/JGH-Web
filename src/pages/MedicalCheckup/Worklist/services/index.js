@@ -44,5 +44,6 @@ const fns = {
     service.upsert(`${url}/SummaryComment`, params),
   upsertIndividualComment: params =>
     service.upsert(`${url}/IndividualComment`, params),
+  editVisit: params => service.upsert(`${url}/EditVisit`, params),
 }
 export default fns
