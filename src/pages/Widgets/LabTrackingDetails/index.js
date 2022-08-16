@@ -13,6 +13,7 @@ import FilterBar from './FilterBar'
 import OverallGrid from './OverallGrid'
 import PatientGrid from './PatientGrid'
 import clinicSettings from '@/models/clinicSettings'
+import './fixTitleButton.css'
 // import model from './models'
 
 // window.g_app.replaceModel(model)
@@ -56,7 +57,7 @@ class LabTrackingDetails extends PureComponent {
       },
     })
   }
-
+  
   toggleModal = () => {
     const { labTrackingDetails } = this.props
     this.props.dispatch({
@@ -158,17 +159,19 @@ class LabTrackingDetails extends PureComponent {
             />
           )}
         </div>
-        <CommonModal
-          open={labTrackingDetails.showModal}
-          title='Edit External Tracking / Results'
-          observe='LabResultsDetail'
-          maxWidth='md'
-          bodyNoPadding
-          onClose={this.toggleModal}
-          onConfirm={this.toggleModal}
-        >
-          <Detail {...cfg} {...this.props} mode='integrated' />
-        </CommonModal>
+        <div className='fixTitleButton'>
+          <CommonModal
+            open={labTrackingDetails.showModal}
+            title='Edit External Tracking / Results'
+            observe='LabResultsDetail'
+            maxWidth='md'
+            bodyNoPadding
+            onClose={this.toggleModal}
+            onConfirm={this.toggleModal}
+          >
+            <Detail {...cfg} {...this.props}  mode='integrated' ref={this.ref} />
+          </CommonModal>
+        </div>
       </div>
     )
   }

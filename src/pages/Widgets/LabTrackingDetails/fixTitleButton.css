@@ -1,0 +1,8 @@
+
+/* [class^='LoadingWrapper-container']{
+    overflow-y: auto !important;
+} */
+
+.MuiDialogTitle-root + div{
+    overflow-y: auto !important;
+}
