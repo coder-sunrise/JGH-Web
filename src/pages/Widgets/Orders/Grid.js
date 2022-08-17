@@ -1526,7 +1526,7 @@ export default ({
       )
     ) {
       dispatch({
-        type: 'updateState',
+        type: 'orders/updateState',
         payload: {
           rows: [
             ...rows.map(x => ({
@@ -1539,6 +1539,7 @@ export default ({
       })
       return
     }
+    console.log('1111111', rows)
     const { entity } = visitRegistration
     const { visit } = entity
     const { visitOrderTemplate = {}, visit_OrderTemplateItem = [] } = visit
@@ -1889,7 +1890,7 @@ export default ({
                 const { visit } = entity || {}
                 const { children, ...restProps } = p
                 let newChildren = []
-                let visitOrderTemplateDetails = visit.isClinicSessionClosed
+                let visitOrderTemplateDetails = visit?.isClinicSessionClosed
                   ? visit.visitOrderTemplateDetails || {}
                   : visit?.visitOrderTemplateFK
                   ? getVisitOrderTemplateDetails(rows)
@@ -1911,17 +1912,18 @@ export default ({
                             ></VisitOrderTemplateIndicateString>
                           </div>
                           <div>
-                            {!visit.isClinicSessionClosed && isEnableEditOrder && (
-                              <Link
-                                style={{ textDecoration: 'underline' }}
-                                onClick={e => {
-                                  e.preventDefault()
-                                  revertVisitPurpose()
-                                }}
-                              >
-                                Click to Revert Visit Purpose Item
-                              </Link>
-                            )}
+                            {!visit?.isClinicSessionClosed &&
+                              isEnableEditOrder && (
+                                <Link
+                                  style={{ textDecoration: 'underline' }}
+                                  onClick={e => {
+                                    e.preventDefault()
+                                    revertVisitPurpose()
+                                  }}
+                                >
+                                  Click to Revert Visit Purpose Item
+                                </Link>
+                              )}
                             {from === 'EditOrder' && (
                               <Link
                                 style={{ textDecoration: 'underline' }}
@@ -1963,7 +1965,7 @@ export default ({
                           </div>
                         )}
                         <div>
-                          {!visit.isClinicSessionClosed && isEnableEditOrder && (
+                          {!visit?.isClinicSessionClosed && isEnableEditOrder && (
                             <div>
                               {visit && visit.visitOrderTemplateFK && (
                                 <Link
