@@ -1539,7 +1539,6 @@ export default ({
       })
       return
     }
-    console.log('1111111', rows)
     const { entity } = visitRegistration
     const { visit } = entity
     const { visitOrderTemplate = {}, visit_OrderTemplateItem = [] } = visit
