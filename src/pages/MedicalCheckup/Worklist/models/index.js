@@ -2,13 +2,21 @@ import { notification } from '@/components'
 import { createListViewModel } from 'medisys-model'
 import service from '../services'
 import { getUserPreference, saveUserPreference } from '@/services/user'
+import { MEDICALCHECKUP_WORKITEM_STATUS } from '@/utils/constants'
 
 export default createListViewModel({
   namespace: 'medicalCheckupWorklist',
   config: { queryOnLoad: false },
   param: {
     service,
-    state: {},
+    state: {
+      filterBar: {
+        visitDoctor: [-99],
+        isOnlyUrgent: false,
+        isMyPatient: true,
+      },
+      selectedStatus: Object.values(MEDICALCHECKUP_WORKITEM_STATUS),
+    },
     setting: {},
     subscriptions: ({ dispatch, history }) => {
       history.listen(async loct => {

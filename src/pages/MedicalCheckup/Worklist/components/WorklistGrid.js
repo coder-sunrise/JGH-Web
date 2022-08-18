@@ -49,6 +49,7 @@ import {
   getVisitOrderTemplateContent,
 } from './Util'
 import VisitOrderTemplateIndicateString from '@/pages/Widgets/Orders/VisitOrderTemplateIndicateString'
+import { useVT } from 'virtualizedtableforantd4'
 
 const allMedicalCheckupReportStatuses = Object.values(
   MEDICALCHECKUP_WORKITEM_STATUS,
@@ -85,14 +86,15 @@ const WorklistGrid = ({
     list: originalWorklist = [],
     medicalCheckupWorklistColumnSetting = [],
     showReportingForm,
+    selectedStatus = [],
+    daysSortOrder,
   } = medicalCheckupWorklist
   const dispatch = useDispatch()
-  const [filteredStatuses, setFilteredStatuses] = useState(
-    allMedicalCheckupReportStatuses,
-  )
+  const [filteredStatuses, setFilteredStatuses] = useState(selectedStatus)
   const [workitems, setWorkitems] = useState([])
   const [showForms, setShowForms] = useState(false)
   const { setIsAnyWorklistModelOpened } = useContext(WorklistContext)
+  const [vt] = useVT(() => ({ scroll: { y: height - 50 - 95 } }), [])
   useEffect(() => {
     if (originalWorklist) {
       const currentFilteredWorklist = originalWorklist.filter(item =>
@@ -545,6 +547,7 @@ const WorklistGrid = ({
         title: 'Days',
         dataIndex: 'days',
         sorter: (a, b) => a.days - b.days,
+        defaultSortOrder: daysSortOrder,
         search: false,
         width: 60,
       },
@@ -597,7 +600,7 @@ const WorklistGrid = ({
     <div style={{ backgroundColor: 'white', paddingTop: 12, marginTop: 2 }}>
       <div style={{ textAlign: 'right' }}>
         <StatusFilter
-          defaultSelection={allMedicalCheckupReportStatuses}
+          selectedStatus={selectedStatus}
           counts={(originalWorklist || []).map(items => {
             return {
               status: items.statusFK,
@@ -609,12 +612,21 @@ const WorklistGrid = ({
             justifyContent: 'end',
             marginBottom: 4,
           }}
-          onFilterChange={selected => setFilteredStatuses(selected)}
+          onFilterChange={selected => {
+            dispatch({
+              type: 'medicalCheckupWorklist/updateState',
+              payload: {
+                selectedStatus: selected,
+              },
+            })
+            setFilteredStatuses(selected)
+          }}
         />
       </div>
       <div style={{ height: tableHeight }}>
         <ProTable
           rowSelection={false}
+          components={vt}
           columns={columns}
           tableClassName='custom_pro'
           search={false}
@@ -629,6 +641,16 @@ const WorklistGrid = ({
               onDoubleClick: () => {
                 onRowDoubleClick(row)
               },
+            }
+          }}
+          onChange={(pagination, filters, sorter) => {
+            if (sorter) {
+              dispatch({
+                type: 'medicalCheckupWorklist/updateState',
+                payload: {
+                  daysSortOrder: sorter.order,
+                },
+              })
             }
           }}
           scroll={{ x: 1100, y: tableHeight - 95 }}

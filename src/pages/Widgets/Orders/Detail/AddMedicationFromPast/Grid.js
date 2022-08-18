@@ -272,9 +272,16 @@ class Grid extends PureComponent {
               }
 
               let paddingRight = 0
-              if (item.isPreOrder && item.isExclusive) {
+              if (
+                (item.isActualizedPreOrder || item.isPreOrder) &&
+                item.isExclusive
+              ) {
                 paddingRight = 62
-              } else if (item.isPreOrder || item.isExclusive) {
+              } else if (
+                item.isActualizedPreOrder ||
+                item.isPreOrder ||
+                item.isExclusive
+              ) {
                 paddingRight = 34
               }
               if (item.isDrugMixture) {
@@ -320,13 +327,21 @@ class Grid extends PureComponent {
                           {item.isDrugMixture &&
                             this.drugMixtureIndicator(item)}
                         </div>
-                        {item.isPreOrder && (
-                          <Tooltip title='New Pre-Order'>
+                        {(item.isActualizedPreOrder || item.isPreOrder) && (
+                          <Tooltip
+                            title={
+                              item.isPreOrder
+                                ? 'New Pre-Order'
+                                : 'Actualized Pre-Order'
+                            }
+                          >
                             <div
                               className={classes.rightIcon}
                               style={{
                                 borderRadius: 4,
-                                backgroundColor: '#4255bd',
+                                backgroundColor: item.isPreOrder
+                                  ? '#4255bd'
+                                  : 'green',
                                 display: 'inline-block',
                               }}
                             >

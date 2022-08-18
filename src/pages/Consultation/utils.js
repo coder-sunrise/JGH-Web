@@ -722,10 +722,14 @@ const getOrdersData = val => {
         subject: medicationStock[0].displayValue,
         totalAfterGST: po.amount,
         totalAfterItemAdjustment:
-          preOrderMedicationItem?.totalAfterItemAdjustment || po.amount,
+          preOrderMedicationItem?.totalAfterItemAdjustment ||
+          po?.quantity * medicationStock[0].sellingPrice,
         totalAfterOverallAdjustment:
-          preOrderMedicationItem?.totalAfterOverallAdjustment || po.amount,
-        totalPrice: preOrderMedicationItem?.totalPrice || po.amount,
+          preOrderMedicationItem?.totalAfterOverallAdjustment ||
+          po?.quantity * medicationStock[0].sellingPrice,
+        totalPrice:
+          preOrderMedicationItem?.totalPrice ||
+          po?.quantity * medicationStock[0].sellingPrice,
         type: '1',
         unitPrice: medicationStock[0].sellingPrice || 0,
         instruction: po?.instruction || instruction,

@@ -2055,6 +2055,8 @@ class Medication extends PureComponent {
                               }
                               this.props.setFieldValue('isClaimable', true)
 
+                              this.props.setFieldValue('isClaimable', true)
+
                               setDisable(false)
 
                               this.props.dispatch({

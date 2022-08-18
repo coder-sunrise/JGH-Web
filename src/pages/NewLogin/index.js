@@ -286,7 +286,7 @@ class NewLogin extends React.Component {
                   className={classnames(classes.justifyContentCenter)}
                 >
                   <GridContainer>
-                    <GridItem md={12}>
+                    <GridItem md={12} style={{ marginBottom: 20 }}>
                       <ProgressButton
                         submitKey={submitKey}
                         text='Enter'

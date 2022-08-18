@@ -87,7 +87,7 @@ class SelectEditor extends PureComponent {
       if (type === 'localSearchSelect') {
         return (
           <div ref={this.myRef}>
-            <LocalSearchSelect {...commonCfg} isFromTable={true} />
+            <LocalSearchSelect {...commonCfg} code={code} />
           </div>
         )
       }
