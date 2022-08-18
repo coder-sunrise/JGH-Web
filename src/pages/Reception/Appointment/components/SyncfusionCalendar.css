@@ -86,3 +86,10 @@ hr {
 .e-bigger.e-small .e-calendar .e-header .e-title {
   font-size: 15px;
 }
+
+[class^='ApptEvent-baseContainer']{
+  width: 200px;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
