@@ -1836,6 +1836,7 @@ export const ServiceColumns1 = (
           <Tooltip title='Print'>
             <Button
               color='primary'
+              style={{ display: 'none' }}
               justIcon
               onClick={() => {
                 onPrint({ type: CONSTANTS.DOCUMENTS, row: r })
