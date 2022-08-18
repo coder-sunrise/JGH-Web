@@ -129,12 +129,6 @@ let i = 0
       ctmedicationdosage = [],
       ctvaccinationunitofmeasurement = [],
     } = codetable
-    let { batchNo } = values
-    if (batchNo instanceof Array) {
-      if (batchNo && batchNo.length > 0) {
-        batchNo = batchNo[0]
-      }
-    }
 
     // create certificate when create vaccination that auto generate certificate checked
     const { isGenerateCertificate, corVaccinationCert = [] } = values
@@ -234,7 +228,6 @@ let i = 0
       ...values,
       subject: currentType.getSubject(values),
       isDeleted: false,
-      batchNo,
       adjValue:
         values.adjAmount < 0
           ? -Math.abs(values.adjValue)
@@ -1038,16 +1031,13 @@ class Vaccination extends PureComponent {
                 render={args => {
                   return (
                     <CodeSelect
-                      mode='tags'
-                      maxSelected={1}
-                      disableAll
                       label='Batch No.'
                       labelField='batchNo'
                       valueField='batchNo'
                       options={this.state.selectedVaccination.vaccinationStock}
                       onChange={(e, op = {}) => {
-                        if (op && op.length > 0) {
-                          const { expiryDate } = op[0]
+                        if (op) {
+                          const { expiryDate } = op
                           setFieldValue(`expiryDate`, expiryDate)
                         } else {
                           setFieldValue(`expiryDate`, undefined)

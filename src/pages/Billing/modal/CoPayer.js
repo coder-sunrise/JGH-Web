@@ -18,6 +18,7 @@ import {
   NumberInput,
   Switch,
   withFormikExtend,
+  LocalSearchSelect,
 } from '@/components'
 // data table variable
 import { INVOICE_PAYER_TYPE, COPAYER_TYPE } from '@/utils/constants'
@@ -209,9 +210,9 @@ class CoPayer extends Component {
     const returnValue = {
       invoicePayerItem,
       payerDistributedAmtBeforeGST: totalClaimAmountBeforeGST,
-      payerDistributedAmt: totalClaimAmountBeforeGST + totalGst,
+      payerDistributedAmt: roundTo(totalClaimAmountBeforeGST + totalGst),
       gstAmount: totalGst,
-      payerOutstanding: totalClaimAmountBeforeGST + totalGst,
+      payerOutstanding: roundTo(totalClaimAmountBeforeGST + totalGst),
       payerTypeFK: INVOICE_PAYER_TYPE.COMPANY,
       name: copayerItem.displayValue,
       companyFK: copayerItem.id,
@@ -321,7 +322,7 @@ class CoPayer extends Component {
               name='coPayer'
               render={args => {
                 return (
-                  <CodeSelect
+                  <LocalSearchSelect
                     label='Co-Payer'
                     code='ctcopayer'
                     labelField='displayValue'

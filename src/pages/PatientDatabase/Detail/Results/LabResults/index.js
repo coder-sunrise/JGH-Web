@@ -176,18 +176,21 @@ const LabResults = ({
     ...actionColumn(),
   ])
   useEffect(() => {
-    dispatch({
-      type: 'workitem/getTestPanelItemWithRefRange',
-      payload: { patientProfileFK },
-    }).then(data => {
-      if (data) {
-        const original = constructTestPanelItem(data)
-        // load first page data
-        loadData(true, original)
-      }
-    })
+    if (patientProfileFK && visitType && visitType.length > 0) {
+      dispatch({
+        type: 'workitem/getTestPanelItemWithRefRange',
+        payload: { patientProfileFK },
+      }).then(data => {
+        if (data) {
+          const original = constructTestPanelItem(data)
+          // load first page data
+          loadData(true, original)
+        }
+      })
+    }
   }, [visitType])
   useEffect(() => {
+    if (!patientProfileFK) return
     const { visitTypeSetting } = clinicSettings.settings
     dispatch({
       type: 'codetable/fetchCodes',

@@ -22,7 +22,7 @@ import {
 } from '@/components'
 import WorklistContext from '../WorklistContext'
 
-export const WorklistFilter = () => {
+export const WorklistFilter = ({ medicalCheckupWorklist }) => {
   const [form] = Form.useForm()
   const { isAnyWorklistModelOpened } = useContext(WorklistContext)
   const [refreshDate, setRefreshDate] = useState(moment())
@@ -86,6 +86,9 @@ export const WorklistFilter = () => {
     dispatch({
       type: 'medicalCheckupWorklist/updateState',
       payload: {
+        filterBar: {
+          ...form.getFieldsValue(true),
+        },
         list: [],
       },
     })
@@ -95,7 +98,7 @@ export const WorklistFilter = () => {
         apiCriteria: {
           searchValue: searchValue,
           isOnlyUrgent,
-          isMyPatient,
+          isMyPatient: clinicRoleFK === 1 ? isMyPatient : false,
           visitDoctor:
             visitDoctor && !visitDoctor.includes(-99)
               ? visitDoctor.join(',')
@@ -127,14 +130,20 @@ export const WorklistFilter = () => {
               flexWrap: 'wrap',
             }}
           >
-            <Form form={form} layout='inline' initialValues={{}}>
+            <Form
+              form={form}
+              layout='inline'
+              initialValues={{
+                ...(medicalCheckupWorklist?.filterBar || {}),
+              }}
+            >
               <Form.Item name='searchValue'>
                 <TextField
                   label='Patient Name, Acc. No., Patient Ref. No.'
                   style={{ width: 350 }}
                 />
               </Form.Item>
-              <Form.Item name='visitDoctor' initialValue={[-99]}>
+              <Form.Item name='visitDoctor'>
                 <Tooltip
                   placement='right'
                   title='Select "All" will retrieve active and inactive doctors'
@@ -164,17 +173,26 @@ export const WorklistFilter = () => {
                 />
               </Form.Item>
 
-              <Form.Item name='isOnlyUrgent' initialValue={false}>
-                <Checkbox simple label='Urgent' style={{ marginTop: 25 }} />
+              <Form.Item name='isOnlyUrgent'>
+                <Checkbox
+                  simple
+                  label='Urgent'
+                  style={{ marginTop: 25 }}
+                  defaultChecked={
+                    medicalCheckupWorklist?.filterBar?.isOnlyUrgent
+                  }
+                />
               </Form.Item>
 
               {clinicRoleFK === 1 && (
-                <Form.Item name='isMyPatient' initialValue={true}>
+                <Form.Item name='isMyPatient'>
                   <Checkbox
                     simple
                     label='My Patient'
                     style={{ marginTop: 25 }}
-                    defaultChecked={true}
+                    defaultChecked={
+                      medicalCheckupWorklist?.filterBar?.isMyPatient
+                    }
                   />
                 </Form.Item>
               )}
