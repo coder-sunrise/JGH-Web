@@ -2,6 +2,7 @@ import moment from 'moment'
 import React from 'react'
 import _ from 'lodash'
 import { camelizeKeys, pascalizeKeys } from 'humps'
+import $ from 'jquery'
 
 import nzh from 'nzh/cn'
 import { formatMessage, setLocale, getLocale, history } from 'umi'
@@ -1604,6 +1605,57 @@ const menuViewableByAuthoritys = (authoritys = []) => {
   }
   return false
 }
+const getFixedWidthBreakLineChars = (
+  comment,
+  style = {
+    height: 0,
+    display: 'inline-block',
+    fontFamily: 'MS PGothic',
+    fontSize: '14.6px',
+  },
+  maxLineWidth = 700,
+  minLineLength = 40,
+) => {
+  if (!comment || !comment.trim().length) return ''
+  $('#div_text_width').css(style)
+  let newComment = ''
+  const comments = comment.split('\n')
+  comments.forEach(item => {
+    $('#div_text_width').html(item)
+    //if less than one line, return comment
+    if ($('#div_text_width').width() <= maxLineWidth) {
+      newComment = item
+    } else {
+      let startIndex = 0
+      let subLength = minLineLength
+      while (startIndex + subLength <= item.length) {
+        $('#div_text_width').html(item.substr(startIndex, subLength))
+        if ($('#div_text_width').width() <= maxLineWidth) {
+          subLength += 1
+        } else {
+          if (newComment === '') {
+            newComment = item.substr(startIndex, subLength - 1)
+          } else {
+            newComment += '\n' + item.substr(startIndex, subLength - 1)
+          }
+          startIndex += subLength - 1
+          subLength = minLineLength
+          $('#div_text_width').html(
+            item.substr(startIndex, item.length - startIndex),
+          )
+          //if remain line less than one line, return comment
+          if ($('#div_text_width').width() <= maxLineWidth) {
+            newComment +=
+              '\n' + item.substr(startIndex, item.length - startIndex)
+            break
+          }
+        }
+      }
+    }
+  })
+  $('#div_text_width').html('')
+  return newComment
+}
 export {
   sleep,
   sumReducer,
@@ -1639,6 +1691,7 @@ export {
   getNameWithTitle,
   showCurrency,
   menuViewableByAuthoritys,
+  getFixedWidthBreakLineChars,
   // toUTC,
   // toLocal,
 }

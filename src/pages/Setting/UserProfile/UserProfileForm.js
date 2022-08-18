@@ -242,7 +242,7 @@ class UserProfileForm extends React.PureComponent {
   }
 
   handleResetPassword = async () => {
-    const { values } = this.props
+    const { values,dispatch } = this.props
     const { userProfile } = values
     const payload = {
       userName: userProfile.userName,
@@ -254,6 +254,10 @@ class UserProfileForm extends React.PureComponent {
       if (data.succeeded) {
         notification.success({
           message: 'Password reset to default password successfully.',
+        })
+        dispatch({
+          type:'settingUserProfile/fetchUserProfileByID',
+          payload:{id:values.id} 
         })
       } else {
         notification.error({

@@ -835,7 +835,7 @@ class Billing extends Component {
             totalClaim = totalClaim + selectInfo.claimAmount
           }
         })
-        if (item.totalAfterGst - totalClaim - item.paidAmount < 0) {
+        if (roundTo(item.totalAfterGst - totalClaim - item.paidAmount) < 0) {
           return true
         }
         return false

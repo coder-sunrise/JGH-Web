@@ -8,9 +8,11 @@ import {
   GridContainer,
   GridItem,
   TextField,
+  Field,
   DateRangePicker,
   Switch,
 } from '@/components'
+import CodeSelect from '@/components/Select/CodeSelect'
 
 const styles = theme => ({})
 
@@ -89,6 +91,14 @@ class Detail extends PureComponent {
                     />
                   )
                 }}
+              />
+            </GridItem>
+            <GridItem md={6}>
+              <Field
+                name='specialtyFK'
+                render={args => (
+                  <CodeSelect {...args} label='Specialty' code='ctspecialty' />
+                )}
               />
             </GridItem>
             <GridItem md={12}>

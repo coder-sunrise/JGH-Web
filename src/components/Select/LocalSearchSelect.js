@@ -1,31 +1,90 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Tooltip } from '@/components'
+import { connect } from 'dva'
 import Select from '../Antd/AntdSelect'
-
+@connect(({ codetable }) => ({ codetable }))
 class LocalSearchSelect extends React.PureComponent {
   constructor(props) {
     super(props)
-    let defaultOptions = []
-    const { isFromTable, value, valueField = 'id' } = props
-    if (isFromTable && value) {
-      defaultOptions = props.options.filter(x => x[valueField] === props.value)
+    this.state = {
+      options: [],
+      filterOptions: [],
     }
-    this.state = { filterOptions: defaultOptions }
+  }
+
+  componentDidMount = async () => {
+    const {
+      code,
+      dispatch,
+      options = [],
+      localFilter = () => true,
+    } = this.props
+    if (this.state.options.length) {
+      this.setSelectValue(this.props)
+    } else {
+      let currentOptions = [...options]
+      if (code && code.trim().length) {
+        const result = await dispatch({
+          type: 'codetable/fetchCodes',
+          payload: {
+            code,
+          },
+        })
+        if (result) {
+          currentOptions = result
+        }
+      }
+
+      this.setState(
+        { options: currentOptions.filter(x => localFilter(x)) },
+        () => {
+          this.setSelectValue(this.props)
+        },
+      )
+    }
+  }
+
+  setSelectValue = props => {
+    const { value, valueField = 'id' } = props
+    let defaultOptions = []
+    const { options = [] } = this.state
+    if (props.field) {
+      defaultOptions = options.filter(x => x[valueField] === props.field.value)
+    } else {
+      defaultOptions = options.filter(x => x[valueField] === props.value)
+    }
+    this.setState({ filterOptions: defaultOptions })
   }
 
   onSearch = v => {
-    const { setFieldValue, matchSearch = () => true } = this.props
+    const {
+      setFieldValue,
+      matchSearch = (option, input) => {
+        const lowerCaseInput = input.toLowerCase()
+        return (
+          (option.code || '').toLowerCase().indexOf(lowerCaseInput) >= 0 ||
+          (option.name || '').toLowerCase().indexOf(lowerCaseInput) >= 0 ||
+          (option.displayValue || '').toLowerCase().indexOf(lowerCaseInput) >= 0
+        )
+      },
+    } = this.props
     if (v === undefined || v === null || !v.trim().length) {
-      this.setState({ filterOptions: [] })
+      this.setSelectValue(this.props)
       return
     }
-    const { options = [] } = this.props
+    const { options = [] } = this.state
 
-    const currentOptions = _.take(
-      options.filter(m => matchSearch(m, v)),
-      20,
-    )
+    let currentOptions = []
+    for (let index = 0; index < options.length; index++) {
+      if (matchSearch(options[index], v)) {
+        currentOptions.push(options[index])
+        if (currentOptions.length === 20) {
+          break
+        }
+      }
+    }
+
     this.setState({ filterOptions: currentOptions })
   }
 
@@ -40,16 +99,14 @@ class LocalSearchSelect extends React.PureComponent {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    const { isFromTable = false, options = [], valueField = 'id' } = nextProps
-    if (!isFromTable) {
-      if (nextProps.field?.value) {
-        this.setState({
-          filterOptions: options.filter(
-            x => x[valueField] === nextProps.field.value,
-          ),
-        })
+    const { code, options = [], localFilter = () => true } = nextProps
+    if (!code || !code.trim().length) {
+      if (this.state.options.length) {
+        this.setSelectValue(nextProps)
       } else {
-        this.setState({ filterOptions: [] })
+        this.setState({ options: options.filter(x => localFilter(x)) }, () => {
+          this.setSelectValue(nextProps)
+        })
       }
     }
   }

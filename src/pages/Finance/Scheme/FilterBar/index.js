@@ -14,6 +14,7 @@ import {
   CodeSelect,
   Select,
   ProgressButton,
+  LocalSearchSelect,
 } from '@/components'
 import { status } from '@/utils/codes'
 import Authorized from '@/utils/Authorized'
@@ -71,7 +72,7 @@ const FilterBar = ({ classes, dispatch, history, values }) => {
             name='coPayerFK'
             render={args => {
               return (
-                <CodeSelect
+                <LocalSearchSelect
                   label={formatMessage({
                     id: 'finance.scheme.search.cpname',
                   })}

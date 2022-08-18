@@ -78,9 +78,13 @@ const baseColumns = (classes, isFullScreen) => {
       width: 105,
       render: (text, row) => {
         let paddingRight = 0
-        if (row.isPreOrder && row.isExclusive) {
+        if ((row.isActualizedPreOrder || row.isPreOrder) && row.isExclusive) {
           paddingRight = 54
-        } else if (row.isPreOrder || row.isExclusive) {
+        } else if (
+          row.isActualizedPreOrder ||
+          row.isPreOrder ||
+          row.isExclusive
+        ) {
           paddingRight = 24
         }
         if (row.isDrugMixture) {
@@ -116,13 +120,17 @@ const baseColumns = (classes, isFullScreen) => {
                 >
                   {drugMixtureIndicator(row)}
                 </div>
-                {row.isPreOrder && (
-                  <Tooltip title='New Pre-Order'>
+                {(row.isPreOrder || row.isActualizedPreOrder) && (
+                  <Tooltip
+                    title={
+                      row.isPreOrder ? 'New Pre-Order' : 'Actualized Pre-Order'
+                    }
+                  >
                     <div
                       className={classes.rightIcon}
                       style={{
                         borderRadius: 4,
-                        backgroundColor: '#4255bd',
+                        backgroundColor: row.isPreOrder ? '#4255bd' : 'green',
                         display: 'inline-block',
                       }}
                     >

@@ -490,6 +490,7 @@ class PaymentDetails extends Component {
                 return (
                   <PaymentCard
                     coPaymentSchemeFK={payment.coPaymentSchemeFK}
+                    coPaymentSchemeName={payment.coPaymentSchemeName}
                     companyFK={payment.companyFK}
                     companyName={payment.companyName}
                     patientName={payment.patientName}
