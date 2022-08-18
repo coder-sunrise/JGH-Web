@@ -128,18 +128,21 @@ export default createFormViewModel({
             return {
               ...o,
               id: undefined, 
+              purchaseOrderItemFK: o.purchaseOrderMedicationItem.purchaseOrderItemFK,
             }
           }
           if (ConsumableItemList.length > 0 && o.type === 2) { 
             return {
               ...o,
               id: undefined,
+              purchaseOrderItemFK: o.purchaseOrderConsumableItem.purchaseOrderItemFK,
             }
           }
           if (VaccinationItemList.length > 0 && o.type === 3) {  
             return {
               ...o,
               id: undefined, 
+              purchaseOrderItemFK: o.purchaseOrderVaccinationIItem.purchaseOrderItemFK,
             }
           }
           return o
@@ -190,17 +193,17 @@ export default createFormViewModel({
             // expiryDate: null,
           }
         })
-
+        //received items already
         const itemRowsGroupByItemFK = groupByFKFunc(itemRows)
 
         const newPurchaseOrderItem = purchaseOrderItem.map(o => {
           const currentItem = itemRowsGroupByItemFK.find(
-            i => i.itemFK === o.itemFK,
+            i => i.purchaseOrderItemFK === o.id,
           )
           let quantityReceivedFromOtherDOs = 0
           if (currentItem) {
             quantityReceivedFromOtherDOs =
-              o.quantityReceived - currentItem.totalCurrentReceivingQty
+              (o.quantityReceived + o.bonusQuantity) - (currentItem.totalCurrentReceivingQty + currentItem.totalCurrentReceivingBonusQty)
           }
           return {
             ...o,

@@ -2049,15 +2049,11 @@ class Medication extends PureComponent {
                                   'drugCode',
                                   'DrugMixture',
                                 )
-                                this.props.setFieldValue('isClaimable', true)
                               } else {
                                 this.props.setFieldValue('drugCode', undefined)
                                 this.props.setFieldValue('drugName', undefined)
-                                this.props.setFieldValue(
-                                  'isClaimable',
-                                  undefined,
-                                )
                               }
+                              this.props.setFieldValue('isClaimable', true)
 
                               setDisable(false)
 

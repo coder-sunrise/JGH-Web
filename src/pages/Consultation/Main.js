@@ -354,6 +354,7 @@ const saveConsultation = ({
     user,
     clinicSettings,
     visitRegistration,
+    consultation,
   } = props
   const { entity: vistEntity = {} } = visitRegistration
   const { visit = {} } = vistEntity
@@ -367,7 +368,10 @@ const saveConsultation = ({
     values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders, true)
     values.isPharmacyOrderUpdated = isPharmacyOrderUpdated(orders)
   }
-  values.isOrderUpdated = isOrderUpdated(orders, consultationDocument)
+  values.isOrderUpdated =
+    consultation?.entity?.versionNumber >= 2
+      ? isOrderUpdated(orders, consultationDocument)
+      : true
 
   const onConfirmSave = () => {
     const newValues = convertToConsultation(
@@ -536,7 +540,10 @@ const pauseConsultation = async ({
     values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders, true)
     values.isPharmacyOrderUpdated = isPharmacyOrderUpdated(orders)
   }
-  values.isOrderUpdated = isOrderUpdated(orders, consultationDocument)
+  values.isOrderUpdated =
+    consultation?.entity?.versionNumber >= 2
+      ? isOrderUpdated(orders, consultationDocument)
+      : true
   const newValues = convertToConsultation(
     {
       ...values,
@@ -721,6 +728,7 @@ const saveDraftDoctorNote = ({ values, visitRegistration }) => {
       orders = {},
       clinicSettings,
       consultationDocument = {},
+      consultation,
     } = props
     const { summary } = orders
     const { isEnablePharmacyModule } = clinicSettings
@@ -728,7 +736,10 @@ const saveDraftDoctorNote = ({ values, visitRegistration }) => {
       values.isPrescriptionSheetUpdated = isPharmacyOrderUpdated(orders, true)
       values.isPharmacyOrderUpdated = isPharmacyOrderUpdated(orders)
     }
-    values.isOrderUpdated = isOrderUpdated(orders, consultationDocument)
+    values.isOrderUpdated =
+      consultation?.entity?.versionNumber >= 2
+        ? isOrderUpdated(orders, consultationDocument)
+        : true
     if (!(await autoPrintSelection('sign', { values, ...props }))) {
       saveConsultation({
         props: {
