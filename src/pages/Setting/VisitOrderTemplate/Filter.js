@@ -13,6 +13,7 @@ import {
   Select,
   CodeSelect,
   ProgressButton,
+  LocalSearchSelect,
 } from '@/components'
 import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
 
@@ -61,7 +62,7 @@ class Filter extends PureComponent {
             <FastField
               name='copayerFK'
               render={args => (
-                <CodeSelect
+                <LocalSearchSelect
                   {...args}
                   code='ctcopayer'
                   labelField='displayValue'

@@ -16,7 +16,7 @@ import {
   PdfSection,
   SizeF,
 } from '@syncfusion/ej2-pdf-export'
-import { ImageElementBox } from '@syncfusion/ej2-react-documenteditor'
+import { ImageElementBox, EditRangeStartElementBox, EditRangeEndElementBox, Point } from '@syncfusion/ej2-react-documenteditor'
 
 const base64Prefix = 'data:image/jpeg;base64,'
 
@@ -89,11 +89,14 @@ class CommonForm extends PureComponent {
 
   switchMode = () => {
     let isSigningMode = !this.state.isSigningMode
-    this.DEContainer.documentEditor.editor.enforceProtection(
-      '',
-      isSigningMode ? 'ReadOnly' : 'FormFieldsOnly',
-    )
-    this.setState({ isSigningMode })
+    const { selection, editor } = this.DEContainer.documentEditor
+
+    const isSelectionInEditRegion = selection.isSelectionInEditRegion()
+    const isImageSelected = selection.isImageSelected
+    const isSignatured = true
+
+    editor.enforceProtection('', isSigningMode ? 'ReadOnly' : 'FormFieldsOnly')
+    this.setState({ isSigningMode, isSelectionInEditRegion, isImageSelected, isSignatured })
   }
 
   addSignature = () => {
@@ -106,28 +109,57 @@ class CommonForm extends PureComponent {
   )
 
   selectionChange = e => {
-    const isImageSelected = e.source.documentEditor.selection.isImageSelected
-    const isSelectionInEditRegion = e.source.documentEditor.selection.isSelectionInEditRegion()
-    let isSignatured = false
-    if (isSelectionInEditRegion) {
-      const { start, end, documentHelper } = e.source.documentEditor.selection
-      documentHelper.editableDiv.contentEditable = false
-      documentHelper.editableDiv.contenteditable = false
+    const isDisabledEdit = this.props.values.statusFK == 2
+    if(isDisabledEdit) return
 
-      if (start.currentWidget.children.some(x => x instanceof ImageElementBox))
-        isSignatured = true
+    const { isSigningMode, signatureCounter } =  this.state
+    if(!isSigningMode) return
+
+    const { selection } = e.source.documentEditor
+    const { start, documentHelper } = selection
+    const { currentWidget: { children }} = start    
+
+    const isFormField = selection.isFormField()
+    const isSelectionInEditRegion = selection.isSelectionInEditRegion()
+    const isImageSelected = selection.isImageSelected
+    let isSignatured = true
+
+
+    if(_.isEqual(this.mouseDownPoint,this.mouseUpPoint)) {
+      documentHelper.editableDiv.contentEditable = false
+      if (signatureCounter > 0 && isFormField)
+        this.notificationWarning({message: 'Please remove signatures to update form content.'})
+      else if(!isFormField) {
+        const editRangeElementList = children.filter(i => i instanceof EditRangeStartElementBox)
+        if(editRangeElementList.length > 0) {
+          const editRangePositionList = editRangeElementList.map(i => {
+            const position = selection.getPosition(i)
+            return {element: i, position , abs: Math.abs(position.endPosition.location.x - documentHelper.mouseDownOffset.x)}
+          })
+          //Find the closest editable range
+          const { element, position:{ endPosition :{ currentWidget, location } } } = _.minBy(editRangePositionList, 'abs')
+
+          //Check if signature exists in scope 
+          for (
+            var currentElement = element.nextElement;
+            currentElement && currentElement != element.editRangeEnd;
+            currentElement = currentElement.nextElement
+          ) {
+            isSignatured = currentElement instanceof ImageElementBox
+            if (isSignatured || currentElement instanceof EditRangeEndElementBox)
+              break
+          }
+
+          if (!isSignatured && !_.isEqual(documentHelper.mouseDownOffset, location)) {
+            documentHelper.mouseDownOffset = location
+            selection.updateTextPosition(currentWidget, location)
+            return
+          }
+        }
     }
-    if (
-      this.mouseClicked &&
-      this.props.values.statusFK !== 2 &&
-      !isSelectionInEditRegion &&
-      this.state.signatureCounter > 0
-    )
-      this.notificationWarning({
-        message: 'Please remove signatures to update form content.',
-      })
+  }
+
     this.setState({ isSelectionInEditRegion, isImageSelected, isSignatured })
-    this.mouseClicked = false
   }
 
   deleteSignature = () => {
@@ -225,8 +257,12 @@ class CommonForm extends PureComponent {
     }
   }
 
-  documentClick = e => {
-    this.mouseClicked = true
+  documentMouseDown = e => {
+    this.mouseDownPoint = new Point(e.offsetX, e.offsetY);
+  }
+
+  documentMouseUp = e => {
+    this.mouseUpPoint = new Point(e.offsetX, e.offsetY);
   }
 
   documentChange = () => {
@@ -236,16 +272,14 @@ class CommonForm extends PureComponent {
       formData: { content, signatureCounter = 0 },
     } = this.props.values
     const isSigningMode = statusFK === 2 || signatureCounter > 0
-    this.DEContainer.documentEditor.editor.enforceProtection(
-      '',
-      isSigningMode ? 'ReadOnly' : 'FormFieldsOnly',
-    )
-    // if (!content) return
+    this.DEContainer.documentEditor.editor.enforceProtection('',isSigningMode ? 'ReadOnly' : 'FormFieldsOnly')
+
     this.fillFormFields()
     this.DEContainer.documentEditor.showRestrictEditingPane(false)
     this.DEContainer.showHidePropertiesPane(false)
     const deElement = this.DEContainer.documentEditor.getDocumentEditorElement()
-    deElement.addEventListener('click', this.documentClick.bind(this))
+    deElement.addEventListener('mousedown', this.documentMouseDown.bind(this))
+    deElement.addEventListener('mouseup', this.documentMouseUp.bind(this))
     this.setState({ isSigningMode, signatureCounter })
   }
 

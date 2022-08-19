@@ -495,27 +495,16 @@ const getDispenseItems = (clinicSettings, entity = {}) => {
         })
       })
     } else {
-      const inventoryItemStock = _.orderBy(
-        (item.vaccination?.vaccinationStock || []).filter(
-          s => s.isDefault || s.stock >= item.quantity,
-        ),
-        ['isDefault', 'expiryDate'],
-        ['asc'],
+      const selectBatch = (item.vaccination?.vaccinationStock || []).find(
+        x => x.batchNo === item.batchNo,
       )
-      let remainQty = item.quantity
-      if (remainQty > 0 && item.vaccination && inventoryItemStock.length) {
-        const {
-          id,
-          batchNo,
-          expiryDate,
-          stock,
-          isDefault,
-        } = inventoryItemStock[0]
+      if (selectBatch) {
+        const { id, stock, isDefault } = selectBatch
         orderItems.push({
           ...defaultItem(item, groupName),
           dispenseQuantity: item.quantity,
-          batchNo,
-          expiryDate,
+          batchNo: item.batchNo,
+          expiryDate: item.expiryDate,
           stock,
           stockFK: id,
           uomDisplayValue: item.dispenseUOM,
@@ -525,8 +514,41 @@ const getDispenseItems = (clinicSettings, entity = {}) => {
           vaccinationStock: item.vaccination?.vaccinationStock,
         })
       } else {
-        const { batchNo, expiryDate, ...restItem } = item
-        orderItems.push(defaultItem(restItem, groupName))
+        const inventoryItemStock = _.orderBy(
+          (item.vaccination?.vaccinationStock || [])
+            .filter(s => s.isDefault || s.stock >= item.quantity)
+            .map(t =>
+              t.batchNo === item.batchNo ? { ...t, isChecked: true } : t,
+            ),
+          ['isChecked', 'isDefault', 'expiryDate'],
+          ['asc'],
+        )
+        let remainQty = item.quantity
+        if (remainQty > 0 && item.vaccination && inventoryItemStock.length) {
+          const {
+            id,
+            batchNo,
+            expiryDate,
+            stock,
+            isDefault,
+          } = inventoryItemStock[0]
+          orderItems.push({
+            ...defaultItem(item, groupName),
+            dispenseQuantity: item.quantity,
+            batchNo,
+            expiryDate,
+            stock,
+            stockFK: id,
+            uomDisplayValue: item.dispenseUOM,
+            isDefault,
+            stockBalance: 0,
+            allowToDispense: true,
+            vaccinationStock: item.vaccination?.vaccinationStock,
+          })
+        } else {
+          const { batchNo, expiryDate, ...restItem } = item
+          orderItems.push(defaultItem(restItem, groupName))
+        }
       }
     }
     const groupItems = orderItems.filter(

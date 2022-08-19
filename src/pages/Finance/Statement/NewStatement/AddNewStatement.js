@@ -23,6 +23,7 @@ import {
   CodeSelect,
   withFormikExtend,
   ProgressButton,
+  LocalSearchSelect,
 } from '@/components'
 import { COPAYER_TYPE } from '@/utils/constants'
 import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
@@ -374,7 +375,7 @@ class AddNewStatement extends PureComponent {
                   name='copayerFK'
                   render={args => {
                     return (
-                      <CodeSelect
+                      <LocalSearchSelect
                         label='Co-Payer'
                         code='ctcopayer'
                         labelField='displayValue'

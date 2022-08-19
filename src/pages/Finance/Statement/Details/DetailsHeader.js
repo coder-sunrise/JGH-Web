@@ -15,6 +15,7 @@ import {
   withFormikExtend,
   Field,
   FastField,
+  LocalSearchSelect,
 } from '@/components'
 import { COPAYER_TYPE } from '@/utils/constants'
 import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
@@ -83,7 +84,7 @@ class DetailsHeader extends PureComponent {
             <Field
               name='copayerFK'
               render={args => (
-                <CodeSelect
+                <LocalSearchSelect
                   code='ctcopayer'
                   showOptionTitle={false}
                   renderDropdown={option => {

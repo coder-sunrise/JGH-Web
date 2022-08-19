@@ -122,7 +122,7 @@ class ExtractAsSingle extends PureComponent {
       },
       {
         columnName: 'copayerFK',
-        type: 'codeSelect',
+        type: 'localSearchSelect',
         code: 'ctcopayer',
         valueField: 'id',
         labelField: 'displayValue',

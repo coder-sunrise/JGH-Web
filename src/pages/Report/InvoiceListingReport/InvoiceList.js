@@ -91,7 +91,10 @@ class InvoiceList extends PureComponent {
       { columnName: 'gstAmt', type: 'sum' },
       { columnName: 'adj', type: 'sum' },
       { columnName: 'patientPayable', type: 'sum' },
-      { columnName: 'copayerPayable', type: 'sum' },
+      {
+        columnName: 'copayerPayable',
+        type: 'copayerPayable',
+      },
     ]
     let FuncProps = {
       pager: false,
@@ -107,11 +110,17 @@ class InvoiceList extends PureComponent {
             groupItems: sumItems,
           },
           integrated: {
-            calculator: IntegratedSummary.defaultCalculator,
+            calculator: (type, rows, getValue) => {
+              if (type == 'copayerPayable') {
+                return rows.reduce((acc, row) => acc + (row[type] || 0), 0)
+              }
+              return IntegratedSummary.defaultCalculator(type, rows, getValue)
+            },
           },
           row: {
             messages: {
               sum: 'Total',
+              copayerPayable: 'Total',
             },
           },
         },
@@ -139,11 +148,17 @@ class InvoiceList extends PureComponent {
             groupItems: sumItems,
           },
           integrated: {
-            calculator: IntegratedSummary.defaultCalculator,
+            calculator: (type, rows, getValue) => {
+              if (type == 'copayerPayable') {
+                return rows.reduce((acc, row) => acc + (row[type] || 0), 0)
+              }
+              return IntegratedSummary.defaultCalculator(type, rows, getValue)
+            },
           },
           row: {
             messages: {
               sum: 'Total',
+              copayerPayable: 'Total',
             },
           },
         },
@@ -171,11 +186,17 @@ class InvoiceList extends PureComponent {
             totalItems: sumItems,
           },
           integrated: {
-            calculator: IntegratedSummary.defaultCalculator,
+            calculator: (type, rows, getValue) => {
+              if (type == 'copayerPayable') {
+                return rows.reduce((acc, row) => acc + (row[type] || 0), 0)
+              }
+              return IntegratedSummary.defaultCalculator(type, rows, getValue)
+            },
           },
           row: {
             messages: {
               sum: 'Total',
+              copayerPayable: 'Total',
             },
           },
         },

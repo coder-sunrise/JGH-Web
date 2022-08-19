@@ -34,7 +34,7 @@ export const DataGridColExtensions = [
     width: 300,
     render: row => {
       let paddingRight = 0
-      if (row.isPreOrder) {
+      if (row.isActualizedPreOrder || row.isPreOrder) {
         paddingRight = 24
       }
       if (row.isDrugMixture) {
@@ -59,13 +59,17 @@ export const DataGridColExtensions = [
               >
                 {drugMixtureIndicator(row)}
               </div>
-              {row.isPreOrder && (
-                <Tooltip title='New Pre-Order'>
+              {(row.isActualizedPreOrder || row.isPreOrder) && (
+                <Tooltip
+                  title={
+                    row.isPreOrder ? 'New Pre-Order' : 'Actualized Pre-Order'
+                  }
+                >
                   <div
                     style={{
                       position: 'relative',
                       borderRadius: 4,
-                      backgroundColor: '#4255bd',
+                      backgroundColor: row.isPreOrder ? '#4255bd' : 'green',
                       fontWeight: 500,
                       color: 'white',
                       fontSize: '0.7rem',

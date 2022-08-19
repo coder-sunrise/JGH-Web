@@ -18,6 +18,7 @@ import {
 } from '@/components'
 import { Alert } from 'antd'
 import { ThreeSixtySharp } from '@material-ui/icons'
+import { getFixedWidthBreakLineChars } from '@/utils/utils'
 
 @connect(({ clinicSettings, patient }) => ({
   clinicSettings: clinicSettings.settings || clinicSettings.default,
@@ -154,6 +155,28 @@ class DrugLeafletSelection extends PureComponent {
     data.DrugDetailsList.forEach(t => {
       if (t.ingredient) {
         t.ingredient = `(${t.ingredient})`
+      }
+      if (
+        lan === 'JP' &&
+        t.precautionsAndSideEffect &&
+        t.precautionsAndSideEffect != '\n'
+      ) {
+        t.precautionsAndSideEffect = _.join(
+          t.precautionsAndSideEffect.split('\n').map(precaution => {
+            return getFixedWidthBreakLineChars(
+              precaution,
+              {
+                height: 0,
+                display: 'inline-block',
+                fontFamily: 'MS PGothic',
+                fontSize: '13px',
+              },
+              234,
+              16,
+            )
+          }),
+          '\n',
+        )
       }
     })
     const payload = [

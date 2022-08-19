@@ -686,148 +686,149 @@ export const computeInvoiceItemPrevClaimedAmount = (invoiceItems, item) => {
 }
 
 export const updateInvoicePayerPayableBalance = (
-  originalInvoiceItems,
-  list,
-  updatedIndex,
-  autoApply = false,
-  gstValue,
-  invoice,
-) => {
-  const result = list.reduce((_payers, payer, index) => {
-    // dp nothing when payer isCancelled
-    if (payer.isCancelled) return [..._payers, payer]
-    let { isModified } = payer
-    // first payer use totalBeforeGst as payable balance
-    if (index === 0) {
-      const newInvoicePayerItem = payer.invoicePayerItem.map(item => {
-        const original = originalInvoiceItems.find(
-          oriInvoiceItem => oriInvoiceItem.id === item.invoiceItemFK,
-        )
-        const newPayableBalance = original
-          ? original.totalBeforeGst
-          : item.payableBalance
-        if (item.payableBalance !== newPayableBalance) {
-          isModified = true
-        }
+         originalInvoiceItems,
+         list,
+         updatedIndex,
+         autoApply = false,
+         gstValue,
+         invoice,
+       ) => {
+         const result = list.reduce((_payers, payer, index) => {
+           // dp nothing when payer isCancelled
+           if (payer.isCancelled) return [..._payers, payer]
+           let { isModified } = payer
+           // first payer use totalBeforeGst as payable balance
+           if (index === 0) {
+             const newInvoicePayerItem = payer.invoicePayerItem.map(item => {
+               const original = originalInvoiceItems.find(
+                 oriInvoiceItem => oriInvoiceItem.id === item.invoiceItemFK,
+               )
+               const newPayableBalance = original
+                 ? original.totalBeforeGst
+                 : item.payableBalance
+               if (item.payableBalance !== newPayableBalance) {
+                 isModified = true
+               }
 
-        return {
-          ...item,
-          payableBalance: newPayableBalance,
-        }
-      })
-      let autoApplyMessage = {}
-      const total = roundTo(
-        payer.invoicePayerItem.reduce(
-          (total, item) => total + item.claimAmountBeforeGST,
-          0,
-        ),
-      )
-      if (autoApply) {
-        autoApplyMessage = {
-          payerDistributedAmtBeforeGST: total,
-          isModified: true,
-          _isConfirmed: true,
-          _isEditing: false,
-          _isDeleted: false,
-        }
-      }
-      return [
-        ..._payers,
-        {
-          ...payer,
-          invoicePayerItem: newInvoicePayerItem,
-          isModified,
-          ...autoApplyMessage,
-        },
-      ]
-    }
+               return {
+                 ...item,
+                 payableBalance: newPayableBalance,
+               }
+             })
+             let autoApplyMessage = {}
+             const total = roundTo(
+               payer.invoicePayerItem.reduce(
+                 (total, item) => total + item.claimAmountBeforeGST,
+                 0,
+               ),
+             )
+             if (autoApply) {
+               autoApplyMessage = {
+                 payerDistributedAmtBeforeGST: total,
+                 isModified: true,
+                 _isConfirmed: true,
+                 _isEditing: false,
+                 _isDeleted: false,
+               }
+             }
+             return [
+               ..._payers,
+               {
+                 ...payer,
+                 invoicePayerItem: newInvoicePayerItem,
+                 isModified,
+                 ...autoApplyMessage,
+               },
+             ]
+           }
 
-    // compute previous claimed amount up to current modify payer
-    const prevIndexInvoiceItemsWithSubtotal = _payers
-      .filter(p => !p.isCancelled)
-      .reduce(flattenInvoicePayersInvoiceItemList, [])
-      .reduce(computeInvoiceItemPrevClaimedAmount, [])
-    // update payable balance according to the claimed amount
-    const newInvoicePayerItem = payer.invoicePayerItem.map(item => {
-      const _existed = prevIndexInvoiceItemsWithSubtotal.find(
-        itemWithSubtotal =>
-          itemWithSubtotal.invoiceItemFK === item.invoiceItemFK,
-      )
+           // compute previous claimed amount up to current modify payer
+           const prevIndexInvoiceItemsWithSubtotal = _payers
+             .filter(p => !p.isCancelled)
+             .reduce(flattenInvoicePayersInvoiceItemList, [])
+             .reduce(computeInvoiceItemPrevClaimedAmount, [])
+           // update payable balance according to the claimed amount
+           const newInvoicePayerItem = payer.invoicePayerItem.map(item => {
+             const _existed = prevIndexInvoiceItemsWithSubtotal.find(
+               itemWithSubtotal =>
+                 itemWithSubtotal.invoiceItemFK === item.invoiceItemFK,
+             )
 
-      let newPayableBalance
-      if (!_existed) {
-        const original = originalInvoiceItems.find(
-          oriInvoiceItem => oriInvoiceItem.id === item.invoiceItemFK,
-        )
-        newPayableBalance = original
-          ? original.totalBeforeGst
-          : item.payableBalance
-      } else {
-        newPayableBalance = _existed.error
-          ? item.payableBalance
-          : _existed.payableBalance - _existed._prevClaimedAmount
-      }
-      if (item.payableBalance !== newPayableBalance) {
-        isModified = true
-      }
-      return {
-        ...item,
-        payableBalance: newPayableBalance,
-      }
-    })
-    // if is initialising put as confirmed
-    if (!payer._isEditing)
-      return [
-        ..._payers,
-        {
-          ...payer,
-          invoicePayerItem: newInvoicePayerItem,
-          isModified,
-          _isConfirmed: true,
-          _isEditing: false,
-        },
-      ]
-    return [
-      ..._payers,
-      {
-        ...payer,
-        isModified,
-        invoicePayerItem: newInvoicePayerItem,
-      },
-    ]
-  }, [])
+             let newPayableBalance
+             if (!_existed) {
+               const original = originalInvoiceItems.find(
+                 oriInvoiceItem => oriInvoiceItem.id === item.invoiceItemFK,
+               )
+               newPayableBalance = original
+                 ? original.totalBeforeGst
+                 : item.payableBalance
+             } else {
+               newPayableBalance = _existed.error
+                 ? item.payableBalance
+                 : _existed.payableBalance - _existed._prevClaimedAmount
+             }
+             if (item.payableBalance !== newPayableBalance) {
+               isModified = true
+             }
+             return {
+               ...item,
+               payableBalance: newPayableBalance,
+             }
+           })
+           // if is initialising put as confirmed
+           if (!payer._isEditing)
+             return [
+               ..._payers,
+               {
+                 ...payer,
+                 invoicePayerItem: newInvoicePayerItem,
+                 isModified,
+                 _isConfirmed: true,
+                 _isEditing: false,
+               },
+             ]
+           return [
+             ..._payers,
+             {
+               ...payer,
+               isModified,
+               invoicePayerItem: newInvoicePayerItem,
+             },
+           ]
+         }, [])
 
-  // recalculate GST
-  result.forEach(payer => {
-    payer.gstAmount = roundTo(
-      (payer.payerDistributedAmtBeforeGST * gstValue) / 100,
-    )
-  })
-  const isFullyClaimed =
-    _.sumBy(
-      result.filter(t => !t.isCancelled),
-      'payerDistributedAmtBeforeGST',
-    ) === invoice.totalAftAdj
-  if (isFullyClaimed) {
-    const lastGstAmount = _.last(result.filter(x => !x.isCancelled)).gstAmount
-    _.last(result.filter(x => !x.isCancelled)).gstAmount =
-      invoice.gstAmount -
-      (_.sumBy(
-        result.filter(x => !x.isCancelled),
-        'gstAmount',
-      ) -
-        lastGstAmount)
-  }
-  result.forEach(payer => {
-    if (!payer.isCancelled) {
-      payer.payerOutstanding =
-        payer.payerDistributedAmtBeforeGST + payer.gstAmount
-      payer.payerDistributedAmt =
-        payer.payerDistributedAmtBeforeGST + payer.gstAmount
-    }
-  })
-  return result
-}
+         // recalculate GST
+         result.forEach(payer => {
+           payer.gstAmount = roundTo(
+             (payer.payerDistributedAmtBeforeGST * gstValue) / 100,
+           )
+         })
+         const isFullyClaimed =
+           _.sumBy(
+             result.filter(t => !t.isCancelled),
+             'payerDistributedAmtBeforeGST',
+           ) === invoice.totalAftAdj
+         if (isFullyClaimed) {
+           const lastGstAmount = _.last(result.filter(x => !x.isCancelled))
+             .gstAmount
+           _.last(result.filter(x => !x.isCancelled)).gstAmount =
+             invoice.gstAmount -
+             (_.sumBy(
+               result.filter(x => !x.isCancelled),
+               'gstAmount',
+             ) -
+               lastGstAmount)
+         }
+         result.forEach(payer => {
+           if (!payer.isCancelled) {
+             payer.payerOutstanding =
+               payer.payerDistributedAmtBeforeGST + payer.gstAmount
+             payer.payerDistributedAmt =
+               payer.payerDistributedAmtBeforeGST + payer.gstAmount
+           }
+         })
+         return result
+       }
 
 export const sortItemByID = (itemA, itemB) => {
   if (itemA.id > itemB.id) return 1
