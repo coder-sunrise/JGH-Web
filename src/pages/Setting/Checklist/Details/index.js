@@ -57,8 +57,12 @@ import { LTChecklistCategory } from '../variables'
   }),
   handleSubmit: (values, { props, resetForm }) => {
     const { effectiveDates, ...restValues } = values
-    const { dispatch, onConfirm } = props
-
+    const { dispatch, onConfirm, SubjectSortOrderArray } = props
+    restValues.checklistSubject.map(subjectItem =>
+      SubjectSortOrderArray.forEach((element, index) =>
+        element == subjectItem.key ? (subjectItem.sortOrder = index + 1) : null,
+      ),
+    )
     dispatch({
       type: 'settingChecklist/upsert',
       payload: {

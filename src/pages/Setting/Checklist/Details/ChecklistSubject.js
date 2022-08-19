@@ -2,9 +2,9 @@ import React, { PureComponent } from 'react'
 import { FastField } from 'formik'
 import { Tabs } from 'antd'
 import _ from 'lodash'
-import { GridContainer, GridItem, TextField } from '@/components'
+import { GridContainer, GridItem, TextField, Tooltip } from '@/components'
 import ChecklistObservation from './ChecklistObservation'
-
+import DraggableTabs from './DraggableTabs'
 const { TabPane } = Tabs
 
 class ChecklistSubject extends PureComponent {
@@ -17,7 +17,11 @@ class ChecklistSubject extends PureComponent {
 
     let activeKey
     if (checklistSubject.length > 0) {
-      activeKey = checklistSubject[0].key
+      activeKey =
+        (
+          checklistSubject.find(subjectItem => subjectItem.sortOrder == 0) ??
+          checklistSubject.find(subjectItem => subjectItem.sortOrder == 1)
+        ).key ?? checklistSubject[0].key
     }
 
     this.state = {
@@ -203,26 +207,28 @@ class ChecklistSubject extends PureComponent {
 
     return (
       <>
-        {index >= 0 && activeKey !== item.key ? (
-          <span
-            style={
-              item.displayValue
-                ? {}
-                : {
-                    color: 'red',
-                  }
-            }
-          >
-            {item.displayValue || '*   '}
-          </span>
-        ) : (
-          <FastField
-            name={`checklistSubject[${index}].displayValue`}
-            render={args => (
-              <TextField style={{ width: '150px', margin: '0' }} {...args} />
-            )}
-          />
-        )}
+        <Tooltip title="Drag">
+          {index >= 0 && activeKey !== item.key ? (
+            <span
+              style={
+                item.displayValue
+                  ? {}
+                  : {
+                      color: 'red',
+                    }
+              }
+            >
+              {item.displayValue || '*   '}
+            </span>
+          ) : (
+            <FastField
+              name={`checklistSubject[${index}].displayValue`}
+              render={args => (
+                <TextField style={{ width: '150px', margin: '0' }} {...args} />
+              )}
+            />
+          )}
+        </Tooltip>
       </>
     )
   }
@@ -253,12 +259,13 @@ class ChecklistSubject extends PureComponent {
     return (
       <GridContainer>
         <GridItem md={12}>
-          <Tabs
+          <DraggableTabs
             type='editable-card'
             style={{ minHeight: '360px' }}
             onChange={this.onChange}
             activeKey={activeKey}
             onEdit={this.onEdit}
+            {...this.props}
           >
             {displayChecklistSubject.map(itemSubject => {
               return (
@@ -275,7 +282,7 @@ class ChecklistSubject extends PureComponent {
                 </TabPane>
               )
             })}
-          </Tabs>
+          </DraggableTabs>
         </GridItem>
       </GridContainer>
     )
