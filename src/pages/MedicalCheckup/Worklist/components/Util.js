@@ -4,58 +4,6 @@ import { dateFormatLong } from '@/components'
 import { hasValue } from '@/pages/Widgets/PatientHistory/config'
 import $ from 'jquery'
 
-const setComment = (
-  comment,
-  style = {
-    height: 0,
-    display: 'inline-block',
-    fontFamily: 'MS PGothic',
-    fontSize: '14.6px',
-  },
-  maxLineWidth = 700,
-  minLineLength = 40,
-) => {
-  if (!comment || !comment.trim().length) return ''
-  $('#div_text_width').css(style)
-  let newComment = ''
-  const comments = comment.split('\n')
-  comments.forEach(item => {
-    $('#div_text_width').html(item)
-    //if less than one line, return comment
-    if ($('#div_text_width').width() <= maxLineWidth) {
-      newComment = item
-    } else {
-      let startIndex = 0
-      let subLength = minLineLength
-      while (startIndex + subLength <= item.length) {
-        $('#div_text_width').html(item.substr(startIndex, subLength))
-        if ($('#div_text_width').width() <= maxLineWidth) {
-          subLength += 1
-        } else {
-          if (newComment === '') {
-            newComment = item.substr(startIndex, subLength - 1)
-          } else {
-            newComment += '\n' + item.substr(startIndex, subLength - 1)
-          }
-          startIndex += subLength - 1
-          subLength = minLineLength
-          $('#div_text_width').html(
-            item.substr(startIndex, item.length - startIndex),
-          )
-          //if remain line less than one line, return comment
-          if ($('#div_text_width').width() <= maxLineWidth) {
-            newComment +=
-              '\n' + item.substr(startIndex, item.length - startIndex)
-            break
-          }
-        }
-      }
-    }
-  })
-  $('#div_text_width').html('')
-  return newComment
-}
-
 export const getMedicalCheckupReportPayload = data => {
   const {
     patientInfo = [],
@@ -146,20 +94,7 @@ export const getMedicalCheckupReportPayload = data => {
     IntraocularPressure: intraocularPressure,
     Audiometry: audiometry,
     IndividualComment: newIndividualComment,
-    SummaryComment: summaryComment.map(item => ({
-      ...item,
-      japaneseComment: setComment(
-        item.japaneseComment,
-        {
-          height: 0,
-          display: 'inline-block',
-          fontFamily: 'MS PGothic',
-          fontSize: '14.6px',
-        },
-        665,
-        40,
-      ),
-    })),
+    SummaryComment: summaryComment,
     LabTestPanel: labTestPanel.map(item => ({
       ...item,
       japaneseName: item.japaneseName || '',
