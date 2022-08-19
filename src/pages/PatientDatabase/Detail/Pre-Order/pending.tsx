@@ -379,7 +379,6 @@ const PendingPreOrder: React.FC = (props: any) => {
         dropdownMatchSelectWidth: false,
         dropdownStyle: { width: '770px' },
         renderDropdown: option => {
-          console.log(option)
           return (
             <Tooltip
               title={
