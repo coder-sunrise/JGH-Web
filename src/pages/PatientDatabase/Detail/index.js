@@ -562,7 +562,7 @@ class PatientDetail extends PureComponent {
     }
     return [
       familyMembers.filter(x => x.isAddressDiff || x.isSchemeDiff),
-      anyAddressDiff,
+      anyAddressDiff=false,
       anySchemeDiff,
     ]
   }
