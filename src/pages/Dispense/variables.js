@@ -37,6 +37,19 @@ export const tableConfig = {
 
 const ServiceTypes = ['Service', 'Consumable', 'Treatment', 'Radiology', 'Lab']
 
+const iconStyle = {
+  position: 'relative',
+  borderRadius: 4,
+  fontWeight: 500,
+  color: 'white',
+  fontSize: '0.7rem',
+  padding: '2px 3px',
+  height: 20,
+  display: 'inline-block',
+  margin: '0px 1px',
+  lineHeight: '16px',
+}
+
 const showMoney = (v = 0) => {
   if (v < 0)
     return (
@@ -460,9 +473,13 @@ export const DispenseItemsColumns1 = (
         }
 
         let paddingRight = 0
-        if (row.isPreOrder && row.isExclusive) {
+        if ((row.isActualizedPreOrder || row.isPreOrder) && row.isExclusive) {
           paddingRight = 52
-        } else if (row.isPreOrder || row.isExclusive) {
+        } else if (
+          row.isActualizedPreOrder ||
+          row.isPreOrder ||
+          row.isExclusive
+        ) {
           paddingRight = 24
         }
         const itemType = orderItemTypes.find(
@@ -481,21 +498,16 @@ export const DispenseItemsColumns1 = (
               <span>{itemType?.displayValue}</span>
             </Tooltip>
             <div style={{ position: 'absolute', top: '-1px', right: '-6px' }}>
-              {row.isPreOrder && (
-                <Tooltip title='New Pre-Order'>
+              {(row.isPreOrder || row.isActualizedPreOrder) && (
+                <Tooltip
+                  title={
+                    row.isPreOrder ? 'New Pre-Order' : 'Actualized Pre-Order'
+                  }
+                >
                   <div
                     style={{
-                      position: 'relative',
-                      borderRadius: 4,
-                      backgroundColor: '#4255bd',
-                      fontWeight: 500,
-                      color: 'white',
-                      fontSize: '0.7rem',
-                      padding: '2px 3px',
-                      height: 20,
-                      display: 'inline-block',
-                      margin: '0px 1px',
-                      lineHeight: '16px',
+                      ...iconStyle,
+                      backgroundColor: row.isPreOrder ? '#4255bd' : 'green',
                     }}
                   >
                     Pre
@@ -1638,7 +1650,7 @@ export const ServiceColumns1 = (
           }
         }
 
-        let paddingRight = row.isPreOrder ? 24 : 0
+        let paddingRight = row.isActualizedPreOrder || row.isPreOrder ? 24 : 0
         let urgentRight = 0
 
         if (radiologyWorkitemStatusFK) {
@@ -1672,18 +1684,12 @@ export const ServiceColumns1 = (
                 alignItems: 'start',
               }}
             >
-              {row.isPreOrder && (
-                <Tooltip title='New Pre-Order'>
+              {(row.isPreOrder || row.isActualizedPreOrder) && (
+                <Tooltip title={row.isPreOrder ? 'Actualized Pre-Order' : ''}>
                   <div
                     style={{
-                      borderRadius: 4,
-                      backgroundColor: '#4255bd',
-                      fontWeight: 500,
-                      color: 'white',
-                      fontSize: '0.7rem',
-                      padding: '2px 3px',
-                      height: 20,
-                      lineHeight: '16px',
+                      ...iconStyle,
+                      backgroundColor: row.isPreOrder ? '#4255bd' : 'green',
                     }}
                   >
                     Pre

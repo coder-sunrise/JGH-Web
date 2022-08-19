@@ -451,7 +451,7 @@ class AddCrNote extends Component {
               sortingEnabled: false,
               render: row => {
                 let paddingRight = 0
-                if (row.isPreOrder) {
+                if (row.isActualizedPreOrder || row.isPreOrder) {
                   paddingRight = 24
                 }
                 if (row.isDrugMixture) {
@@ -488,13 +488,21 @@ class AddCrNote extends Component {
                         >
                           {this.drugMixtureIndicator(row)}
                         </div>
-                        {row.isPreOrder && (
-                          <Tooltip title='New Pre-Order'>
+                        {(row.isActualizedPreOrder || row.isPreOrder) && (
+                          <Tooltip
+                            title={
+                              row.isPreOrder
+                                ? 'New Pre-Order'
+                                : 'Actualized Pre-Order'
+                            }
+                          >
                             <div
                               className={classes.rightIcon}
                               style={{
                                 borderRadius: 4,
-                                backgroundColor: '#4255bd',
+                                backgroundColor: row.isPreOrder
+                                  ? '#4255bd'
+                                  : 'green',
                                 display: 'inline-block',
                               }}
                             >

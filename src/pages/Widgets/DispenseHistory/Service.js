@@ -39,7 +39,10 @@ export default ({ classes, current, fieldName = '', isFullScreen = true }) => {
           <div style={{ position: 'relative' }}>
             <div
               className={classes.wrapCellTextStyle}
-              style={{ paddingRight: row.isPreOrder ? 24 : 0 }}
+              style={{
+                paddingRight:
+                  row.isPreOrder || row.isActualizedPreOrder ? 24 : 0,
+              }}
             >
               <Tooltip
                 title={
@@ -53,13 +56,17 @@ export default ({ classes, current, fieldName = '', isFullScreen = true }) => {
                 <div>{row.description}</div>
               </Tooltip>
               <div style={{ position: 'absolute', top: '-1px', right: '-4px' }}>
-                {row.isPreOrder && (
-                  <Tooltip title='New Pre-Order'>
+                {(row.isPreOrder || row.isActualizedPreOrder) && (
+                  <Tooltip
+                    title={
+                      row.isPreOrder ? 'New Pre-Order' : 'Actualized Pre-Order'
+                    }
+                  >
                     <div
                       className={classes.rightIcon}
                       style={{
                         borderRadius: 4,
-                        backgroundColor: '#4255bd',
+                        backgroundColor: row.isPreOrder ? '#4255bd' : 'green',
                         display: 'inline-block',
                       }}
                     >

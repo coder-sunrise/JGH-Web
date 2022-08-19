@@ -485,7 +485,6 @@ class Consumable extends PureComponent {
                         onChange={this.changeConsumable}
                         options={this.getConsumableOptions()}
                         {...args}
-                        style={{ paddingRight: 20 }}
                         disabled={
                           values.isPackage ||
                           isDisabledNoPaidPreOrder ||
@@ -579,47 +578,66 @@ class Consumable extends PureComponent {
           </GridContainer>
 
           <GridContainer>
-            <GridItem xs={4} className={classes.editor}>
-              <Field
-                name='batchNo'
-                render={args => {
-                  return (
-                    <CodeSelect
-                      mode='tags'
-                      maxSelected={1}
-                      disableAll
-                      label='Batch No.'
-                      labelField='batchNo'
-                      valueField='batchNo'
-                      options={this.state.selectedConsumable.consumableStock}
-                      onChange={(e, op = {}) => {
-                        if (op && op.length > 0) {
-                          const { expiryDate } = op[0]
-                          setFieldValue(`expiryDate`, expiryDate)
-                        } else {
-                          setFieldValue(`expiryDate`, undefined)
-                        }
-                        this.onExpiryDateChange()
-                      }}
-                      disabled={disableEdit || isStartedConsumable}
-                      {...args}
-                    />
-                  )
-                }}
-              />
-            </GridItem>
-            <GridItem xs={4} className={classes.editor}>
+            {false && (
+              <GridItem xs={4} className={classes.editor}>
+                <Field
+                  name='batchNo'
+                  render={args => {
+                    return (
+                      <CodeSelect
+                        mode='tags'
+                        maxSelected={1}
+                        disableAll
+                        label='Batch No.'
+                        labelField='batchNo'
+                        valueField='batchNo'
+                        options={this.state.selectedConsumable.consumableStock}
+                        onChange={(e, op = {}) => {
+                          if (op && op.length > 0) {
+                            const { expiryDate } = op[0]
+                            setFieldValue(`expiryDate`, expiryDate)
+                          } else {
+                            setFieldValue(`expiryDate`, undefined)
+                          }
+                          this.onExpiryDateChange()
+                        }}
+                        disabled={disableEdit || isStartedConsumable}
+                        {...args}
+                      />
+                    )
+                  }}
+                />
+              </GridItem>
+            )}
+            {false && (
+              <GridItem xs={4} className={classes.editor}>
+                <FastField
+                  name='expiryDate'
+                  render={args => {
+                    return (
+                      <DatePicker
+                        label='Expiry Date'
+                        onChange={() => {
+                          this.onExpiryDateChange()
+                        }}
+                        disabled={disableEdit || isStartedConsumable}
+                        {...args}
+                      />
+                    )
+                  }}
+                />
+              </GridItem>
+            )}
+            <GridItem xs={8} className={classes.editor}>
               <FastField
-                name='expiryDate'
+                name='remark'
                 render={args => {
                   return (
-                    <DatePicker
-                      label='Expiry Date'
-                      onChange={() => {
-                        this.onExpiryDateChange()
-                      }}
-                      disabled={disableEdit || isStartedConsumable}
+                    <TextField
+                      rowsMax='5'
+                      label='Remarks'
                       {...args}
+                      disabled={isStartedConsumable}
                     />
                   )
                 }}
@@ -655,19 +673,76 @@ class Consumable extends PureComponent {
           </GridContainer>
           <GridContainer>
             <GridItem xs={8} className={classes.editor}>
-              <FastField
-                name='remark'
-                render={args => {
-                  return (
-                    <TextField
-                      rowsMax='5'
-                      label='Remarks'
+              {values.isPackage ? (
+                <Field
+                  name='performingUserFK'
+                  render={args => (
+                    <DoctorProfileSelect
+                      label='Performed By'
                       {...args}
-                      disabled={isStartedConsumable}
+                      valueField='clinicianProfile.userProfileFK'
                     />
-                  )
-                }}
-              />
+                  )}
+                />
+              ) : (
+                values.visitPurposeFK !== VISIT_TYPE.OTC && (
+                  <div>
+                    <div style={{ display: 'inline-block', marginTop: '15px' }}>
+                      <Field
+                        name='isPreOrder'
+                        render={args => {
+                          return (
+                            <Checkbox
+                              label='Pre-Order'
+                              {...args}
+                              disabled={
+                                isDisabledNoPaidPreOrder || isStartedConsumable
+                              }
+                              onChange={e => {
+                                if (!e.target.value) {
+                                  setFieldValue('isChargeToday', false)
+                                }
+                                this.checkIsPreOrderItemExistsInListing(
+                                  e.target.value,
+                                )
+                              }}
+                            />
+                          )
+                        }}
+                      />
+                    </div>
+                    {values.isPreOrder && (
+                      <div style={{ display: 'inline-block' }}>
+                        <FastField
+                          name='isChargeToday'
+                          render={args => {
+                            return <Checkbox label='Charge Today' {...args} />
+                          }}
+                        />
+                      </div>
+                    )}
+                    {isPreOrderItemExists && (
+                      <Alert
+                        message={
+                          "Item exists in Pre-Order. Plesae check patient's Pre-Order."
+                        }
+                        type='warning'
+                        style={{
+                          position: 'absolute',
+                          top: 30,
+                          left: 10,
+                          whiteSpace: 'nowrap',
+                          textOverflow: 'ellipsis',
+                          display: 'inline-block',
+                          overflow: 'hidden',
+                          lineHeight: '25px',
+                          fontSize: '0.85rem',
+                        }}
+                      />
+                    )}
+                  </div>
+                )
+              )}
             </GridItem>
             <GridItem xs={3} className={classes.editor}>
               <div style={{ position: 'relative' }}>
@@ -783,78 +858,7 @@ class Consumable extends PureComponent {
             </GridItem>
           </GridContainer>
           <GridContainer>
-            <GridItem xs={8} className={classes.editor}>
-              {values.isPackage ? (
-                <Field
-                  name='performingUserFK'
-                  render={args => (
-                    <DoctorProfileSelect
-                      label='Performed By'
-                      {...args}
-                      valueField='clinicianProfile.userProfileFK'
-                    />
-                  )}
-                />
-              ) : (
-                values.visitPurposeFK !== VISIT_TYPE.OTC && (
-                  <div>
-                    <div style={{ display: 'inline-block' }}>
-                      <Field
-                        name='isPreOrder'
-                        render={args => {
-                          return (
-                            <Checkbox
-                              label='Pre-Order'
-                              {...args}
-                              disabled={
-                                isDisabledNoPaidPreOrder || isStartedConsumable
-                              }
-                              onChange={e => {
-                                if (!e.target.value) {
-                                  setFieldValue('isChargeToday', false)
-                                }
-                                this.checkIsPreOrderItemExistsInListing(
-                                  e.target.value,
-                                )
-                              }}
-                            />
-                          )
-                        }}
-                      />
-                    </div>
-                    {values.isPreOrder && (
-                      <div style={{ display: 'inline-block' }}>
-                        <FastField
-                          name='isChargeToday'
-                          render={args => {
-                            return <Checkbox label='Charge Today' {...args} />
-                          }}
-                        />
-                      </div>
-                    )}
-                    {isPreOrderItemExists && (
-                      <Alert
-                        message={
-                          "Item exists in Pre-Order. Plesae check patient's Pre-Order."
-                        }
-                        type='warning'
-                        style={{
-                          position: 'absolute',
-                          top: 30,
-                          left: 10,
-                          whiteSpace: 'nowrap',
-                          textOverflow: 'ellipsis',
-                          display: 'inline-block',
-                          overflow: 'hidden',
-                          lineHeight: '25px',
-                          fontSize: '0.85rem',
-                        }}
-                      />
-                    )}
-                  </div>
-                )
-              )}
-            </GridItem>
+            <GridItem xs={8}></GridItem>
             <GridItem xs={3} className={classes.editor}>
               <FastField
                 name='totalAfterItemAdjustment'

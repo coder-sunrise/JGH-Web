@@ -23,12 +23,8 @@ export const StatusFilter = ({
   counts,
   style,
   onFilterChange,
-  defaultSelection = [allMedicalCheckupReportStatuses],
+  selectedStatus = [],
 }) => {
-  const [selectedStatus, setSelectedStatus] = useState([])
-
-  useEffect(() => setSelectedStatus(defaultSelection), [defaultSelection])
-
   const handleTagClick = status => {
     let newSelectedStatus
 
@@ -44,7 +40,6 @@ export const StatusFilter = ({
         ? selectedStatus.filter(item => item !== status)
         : [...selectedStatus, status]
 
-    setSelectedStatus(newSelectedStatus)
     onFilterChange && onFilterChange(newSelectedStatus)
   }
 

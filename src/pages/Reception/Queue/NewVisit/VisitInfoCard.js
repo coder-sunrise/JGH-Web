@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core'
 // antd
 import InfoCircleOutlined from '@ant-design/icons/InfoCircleOutlined'
 // formik
-import { Field } from 'formik'
+import { Field, FastField } from 'formik'
 // umi
 import { formatMessage } from 'umi'
 // custom components
@@ -119,6 +119,7 @@ const VisitInfoCard = ({
   queueLog,
   visitMode,
   ctvisitpurpose,
+  doctorProfiles,
   ...restProps
 }) => {
   const [visitGroupMessage, setVisitGroupMessage] = useState()
@@ -200,6 +201,11 @@ const VisitInfoCard = ({
     if (op.clinicianProfile) {
       const { roomAssignment = {} } = op.clinicianProfile
       setFieldValue(FormField['visit.roomFK'], roomAssignment.roomFK)
+      if (!op.clinicianProfile.specialtyFK) {
+        setFieldValue(FormField['visit.isDoctorInCharge'], true)
+      }
+    } else {
+      setFieldValue(FormField['visit.isDoctorInCharge'], true)
     }
   }
 
@@ -219,6 +225,7 @@ const VisitInfoCard = ({
     if (v !== 1) {
       setFieldValue(FormField['visit.consReady'], false)
     }
+    setFieldValue(FormField['visit.isDoctorInCharge'], true)
     updateMedicalCheckup(v, values.isForInvoiceReplacement)
     setFieldValue('visitBasicExaminations[0].visitPurposeFK', v)
     if (currentVisitTemplate) {
@@ -407,11 +414,21 @@ const VisitInfoCard = ({
     visitMode === 'view'
 
   const hasCOR = values.clinicalObjectRecordFK
+  const activeCORCreatedBy = values.activeCORCreatedBy
   const mcWorkItemInProgress =
     values?.medicalCheckupWorkitem &&
     values?.medicalCheckupWorkitem.length > 0 &&
     (values?.medicalCheckupWorkitem[0].statusFK === 1 ||
       values?.medicalCheckupWorkitem[0].statusFK === 2)
+  const isSpecialtyDoctor = () => {
+    var primaryDoctor = doctorProfiles.find(
+      x => x.id === values?.doctorProfileFK,
+    )
+    if (primaryDoctor?.clinicianProfile?.specialtyFK) {
+      return true
+    }
+    return false
+  }
   return (
     <CommonCard title='Visit Information'>
       <GridContainer alignItems='center'>
@@ -461,30 +478,53 @@ const VisitInfoCard = ({
             />
           </GridItem>
           <GridItem xs md={3}>
-            <Field
-              name={FormField['visit.queueNo']}
-              validate={validateQNo}
-              render={args => (
-                <NumberInput
-                  {...args}
-                  precision={isQueueNoDecimal ? 1 : 0}
-                  disabled={
-                    fromMedicalCheckupReporting
-                      ? true
-                      : notWaiting || isReadOnly
-                  }
-                  label={formatMessage({
-                    id: 'reception.queue.visitRegistration.queueNo',
-                  })}
-                  formatter={value => {
-                    const isNaN = Number.isNaN(parseFloat(value))
-                    return isNaN
-                      ? value
-                      : parseFloat(value).toFixed(isQueueNoDecimal ? 1 : 0)
+            <div
+              style={{
+                position: 'relative',
+                paddingLeft: values?.visitPurposeFK === VISIT_TYPE.MC ? 150 : 0,
+              }}
+            >
+              {values?.visitPurposeFK === VISIT_TYPE.MC && (
+                <Field
+                  name={FormField['visit.isDoctorInCharge']}
+                  render={args => {
+                    return (
+                      <Checkbox
+                        {...args}
+                        disabled={!isSpecialtyDoctor()}
+                        simple
+                        label='Doctor In Charge'
+                        style={{ position: 'absolute', top: 16, left: 0 }}
+                      />
+                    )
                   }}
                 />
               )}
-            />
+              <Field
+                name={FormField['visit.queueNo']}
+                validate={validateQNo}
+                render={args => (
+                  <NumberInput
+                    {...args}
+                    precision={isQueueNoDecimal ? 1 : 0}
+                    disabled={
+                      fromMedicalCheckupReporting
+                        ? true
+                        : notWaiting || isReadOnly
+                    }
+                    label={formatMessage({
+                      id: 'reception.queue.visitRegistration.queueNo',
+                    })}
+                    formatter={value => {
+                      const isNaN = Number.isNaN(parseFloat(value))
+                      return isNaN
+                        ? value
+                        : parseFloat(value).toFixed(isQueueNoDecimal ? 1 : 0)
+                    }}
+                  />
+                )}
+              />
+            </div>
           </GridItem>
           <GridItem xs md={3}>
             {isEnablePackage && (
@@ -506,7 +546,7 @@ const VisitInfoCard = ({
               name='isForInvoiceReplacement'
               render={args => (
                 <Checkbox
-                  style={{ position: 'relative', top: 5 }}
+                  style={{ position: 'relative', top: 16 }}
                   {...args}
                   disabled={
                     fromMedicalCheckupReporting
@@ -1008,6 +1048,15 @@ const VisitInfoCard = ({
             fieldName='visitAttachment'
           />
         </GridItem>
+        {values.visitStatus === VISIT_STATUS.WAITING && hasCOR && (
+          <GridItem xs md={12}>
+            <div style={{ color: 'red', padding: '10px 0' }}>
+              <strong>*Information</strong>:{' '}
+              {`${activeCORCreatedBy} is
+              occupying this visit, Visit Type is not able to change.`}
+            </div>
+          </GridItem>
+        )}
       </GridContainer>
     </CommonCard>
   )

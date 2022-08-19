@@ -192,6 +192,7 @@ export const formikMapPropsToValues = ({
       visit = {
         visitDoctor: [],
         visitBasicExaminations: [{}],
+        isDoctorInCharge: true,
       },
     } = visitInfo
 
@@ -449,6 +450,7 @@ export const formikHandleSubmit = (
     visitRegistration,
     clinicSettings,
     onConfirm,
+    doctorProfiles,
   } = props
 
   const { sessionInfo } = queueLog
@@ -505,10 +507,14 @@ export const formikHandleSubmit = (
       }
     })
 
+  var primaryDoctor = doctorProfiles.find(
+    x => x.id === restValues.doctorProfileFK,
+  )
   if (restValues.visitPrimaryDoctor) {
     newVisitDoctor.push({
       ...restValues.visitPrimaryDoctor,
       doctorProfileFK: restValues.doctorProfileFK,
+      specialtyFK: primaryDoctor?.clinicianProfile?.specialtyFK,
     })
   } else {
     newVisitDoctor.push({
@@ -516,6 +522,7 @@ export const formikHandleSubmit = (
       isPrimaryDoctor: true,
       sequence: -1,
       consultationStatus: VISITDOCTOR_CONSULTATIONSTATUS.WAITING,
+      specialtyFK: primaryDoctor?.clinicianProfile?.specialtyFK,
     })
   }
 
