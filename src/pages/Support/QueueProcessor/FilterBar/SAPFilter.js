@@ -13,6 +13,7 @@ import {
   CodeSelect,
   DateRangePicker,
   ClinicianSelect,
+  TextField,
 } from '@/components'
 
 @withFormikExtend({
@@ -26,7 +27,7 @@ class SAPFilter extends PureComponent {
     return (
       <div className={classes.filterBar}>
         <GridContainer>
-          <GridItem xs={6} md={4}>
+          <GridItem xs={6} md={3}>
             <FastField
               name='type'
               render={args => {
@@ -34,6 +35,22 @@ class SAPFilter extends PureComponent {
                   <Select label='Type' options={sapQueueItemType} {...args} />
                 )
               }}
+            />
+          </GridItem>
+          <GridItem xs={6} md={2}>
+            <FastField
+              name='statusFK'
+              render={args => {
+                return (
+                  <Select label='Status' options={queueItemStatus} {...args} />
+                )
+              }}
+            />
+          </GridItem>
+          <GridItem xs={6} md={3}>
+            <FastField
+              name='sessionNo'
+              render={args => <TextField label='Session No' {...args} />}
             />
           </GridItem>
           <GridItem xs={6} md={4}>
@@ -50,16 +67,6 @@ class SAPFilter extends PureComponent {
               }}
             />
           </GridItem>
-          <GridItem xs={6} md={4}>
-            <FastField
-              name='statusFK'
-              render={args => {
-                return (
-                  <Select label='Status' options={queueItemStatus} {...args} />
-                )
-              }}
-            />
-          </GridItem>
         </GridContainer>
 
         <GridContainer>
@@ -69,12 +76,17 @@ class SAPFilter extends PureComponent {
                 color='primary'
                 icon={<Search />}
                 onClick={() => {
-                  const { statusFK, type, requestDate } = this.props.values
+                  const {
+                    type,
+                    sessionNo,
+                    requestDate,
+                    statusFK,
+                  } = this.props.values
                   this.props.dispatch({
                     type: 'sapQueueProcessor/query',
                     payload: {
                       type,
-                      statusFK,
+                      sessionNo,
                       lgteql_processedDateTime: requestDate?.length
                         ? moment(requestDate[0]).formatUTC()
                         : undefined,
@@ -83,6 +95,7 @@ class SAPFilter extends PureComponent {
                             .endOf('day')
                             .formatUTC(false)
                         : undefined,
+                      statusFK,
                     },
                   })
                 }}
