@@ -2,11 +2,13 @@ import React, { PureComponent } from 'react'
 import $ from 'jquery'
 import moment from 'moment'
 import { connect } from 'dva'
+import { List } from '@material-ui/icons'
 import {
   CommonTableGrid,
   Tooltip,
   dateFormatLong,
   dateFormatLongWithTime12h,
+  Button,
 } from '@/components'
 import { queueItemStatus, sapQueueItemType } from '@/utils/codes'
 
@@ -29,13 +31,16 @@ class SAPGrid extends PureComponent {
       { name: 'response', title: 'Response' },
       { name: 'processedDateTime', title: 'Processed Date' },
       { name: 'createDate', title: 'Create Date' },
+      { name: 'action', title: 'Action' },
     ],
     columnExtensions: [
       {
         columnName: 'type',
         width: 220,
         render: row => {
-          return sapQueueItemType.find(x => x.value === row.type)?.name
+          return sapQueueItemType.find(
+            x => x.value === row.type.replace('Realtime_', ''),
+          )?.name
         },
       },
       {
@@ -108,7 +113,48 @@ class SAPGrid extends PureComponent {
         type: 'date',
         showTime: true,
       },
+      {
+        columnName: 'action',
+        align: 'center',
+        render: row => {
+          return (
+            <div>
+              <Tooltip title='Details'>
+                <Button
+                  size='sm'
+                  color='primary'
+                  justIcon
+                  disabled={false}
+                  onClick={() => this.editRow(row)}
+                >
+                  <List />
+                </Button>
+              </Tooltip>
+            </div>
+          )
+        },
+      },
     ],
+  }
+
+  editRow = async row => {
+    const { toggleModal, dispatch } = this.props
+    const queueItem = await dispatch({
+      type: 'sapQueueProcessor/queryOne',
+      payload: {
+        id: row.id,
+      },
+    })
+
+    if (queueItem) {
+      dispatch({
+        type: 'sapQueueProcessor/updateState',
+        payload: {
+          entity: queueItem,
+        },
+      })
+      toggleModal()
+    }
   }
 
   render() {
@@ -120,6 +166,7 @@ class SAPGrid extends PureComponent {
         forceRender
         style={{ margin: 0 }}
         type='sapQueueProcessor'
+        onRowDoubleClick={row => this.editRow(row)}
         {...this.configs}
         TableProps={{
           height,
