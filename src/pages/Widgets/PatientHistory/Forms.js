@@ -9,7 +9,7 @@ import tablestyles from './PatientHistoryStyle.less'
 const printRow = row => {
   DocumentEditor.print({
     documentName: row.formName,
-    document: row.formData,
+    document: JSON.parse(row.formData).content,
   })
 }
 
