@@ -251,9 +251,7 @@ export default compose(
       excessThreshold: Yup.number()
         .min(0, 'Excess Threshold must between 0 and 999,999.9')
         .max(999999.9, 'Excess Threshold must between 0 and 999,999.9'),
-      dispensingQuantity: Yup.number()
-        .integer('Must be an integer')
-        .min(1, 'Min. value is 1'),
+      dispensingQuantity: Yup.number().min(0.1, 'Min. value is 0.1'),
     }),
     handleSubmit: (values, { props, resetForm }) => {
       const { dispatch, history } = props

@@ -88,7 +88,7 @@ const PendingPreOrder: React.FC = (props: any) => {
         combinDisplayValue: `${displayValue} - ${code} (${currencySymbol}${pricing.toFixed(
           2,
         )} / ${uomName})`,
-        pricing,
+        pricing: pricing.toFixed(2),
       }
       return [...p, opt]
     }
