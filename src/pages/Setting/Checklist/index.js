@@ -20,7 +20,9 @@ const styles = theme => ({
 }))
 @withSettingBase({ modelName: 'settingChecklist' })
 class Checklist extends PureComponent {
-  state = {}
+  state = {
+    SubjectSortOrderArray: [],
+  }
 
   componentDidMount() {
     this.props.dispatch({
@@ -39,6 +41,8 @@ class Checklist extends PureComponent {
       },
     })
   }
+  getSubjectSortOrderArray = arr =>
+    this.setState({ SubjectSortOrderArray: arr })
 
   render() {
     const { settingChecklist, mainDivHeight = 700 } = this.props
@@ -63,7 +67,12 @@ class Checklist extends PureComponent {
           onClose={this.toggleModal}
           onConfirm={this.toggleModal}
         >
-          <Detail {...cfg} {...this.props} />
+          <Detail
+            {...cfg}
+            {...this.props}
+            getSubjectSortOrderArray={this.getSubjectSortOrderArray}
+            SubjectSortOrderArray={this.state.SubjectSortOrderArray}
+          />
         </CommonModal>
       </CardContainer>
     )
