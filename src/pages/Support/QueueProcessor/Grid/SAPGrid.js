@@ -7,7 +7,7 @@ import {
   CommonTableGrid,
   Tooltip,
   dateFormatLong,
-  dateFormatLongWithTime12h,
+  dateFormatLongWithTime,
   Button,
 } from '@/components'
 import { queueItemStatus, sapQueueItemType } from '@/utils/codes'
@@ -29,8 +29,8 @@ class SAPGrid extends PureComponent {
       // { name: 'parameter', title: 'Parameter' },
       { name: 'data', title: 'Request Data' },
       { name: 'response', title: 'Response' },
-      { name: 'processedDateTime', title: 'Processed Date' },
       { name: 'createDate', title: 'Create Date' },
+      { name: 'processedDateTime', title: 'Processed Date' },
       { name: 'action', title: 'Action' },
     ],
     columnExtensions: [
@@ -51,7 +51,8 @@ class SAPGrid extends PureComponent {
         columnName: 'statusFK',
         width: 110,
         render: row => {
-          return queueItemStatus.find(x => x.value === row.statusFK)?.name
+          const status = queueItemStatus.find(x => x.value === row.statusFK)
+          return <span style={{ color: status.color }}>{status.name}</span>
         },
       },
       {
@@ -102,21 +103,24 @@ class SAPGrid extends PureComponent {
         sortingEnabled: false,
       },
       {
-        columnName: 'processedDateTime',
-        width: 190,
-        type: 'date',
-        showTime: true,
-      },
-      {
         columnName: 'createDate',
         width: 190,
         type: 'date',
         showTime: true,
+        format: dateFormatLongWithTime,
+      },
+      {
+        columnName: 'processedDateTime',
+        width: 190,
+        type: 'date',
+        showTime: true,
+        format: dateFormatLongWithTime,
       },
       {
         columnName: 'action',
         align: 'center',
         render: row => {
+          const { retrigger } = this.props
           return (
             <div>
               <Tooltip title='Details'>
@@ -128,6 +132,19 @@ class SAPGrid extends PureComponent {
                   onClick={() => this.editRow(row)}
                 >
                   <List />
+                </Button>
+              </Tooltip>
+              <Tooltip title='Retrigger'>
+                <Button
+                  size='sm'
+                  color='primary'
+                  justIcon
+                  disabled={
+                    row.statusFK != 4 || row.retryCount != row.maxRetryCount
+                  }
+                  onClick={() => retrigger(row)}
+                >
+                  RE
                 </Button>
               </Tooltip>
             </div>
@@ -151,6 +168,7 @@ class SAPGrid extends PureComponent {
         type: 'sapQueueProcessor/updateState',
         payload: {
           entity: queueItem,
+          currentRow: row,
         },
       })
       toggleModal()

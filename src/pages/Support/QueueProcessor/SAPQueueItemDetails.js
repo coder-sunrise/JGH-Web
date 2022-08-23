@@ -3,6 +3,8 @@ import * as Yup from 'yup'
 import { connect } from 'dva'
 import { withStyles } from '@material-ui/core'
 import basicStyle from 'mui-pro-jss/material-dashboard-pro-react/layouts/basicLayout'
+import { Descriptions } from 'antd'
+import moment from 'moment'
 import {
   CardContainer,
   Tabs,
@@ -13,12 +15,33 @@ import {
   Field,
   Select,
   NumberInput,
-  dateFormatLongWithTimeNoSec,
+  dateFormatLongWithTime,
   DatePicker,
   withFormikExtend,
   CommonTableGrid,
+  Button,
 } from '@/components'
 import { sapQueueItemType, queueItemStatus } from '@/utils/codes'
+import ReactJson from 'react-json-view'
+
+const jsonViewConfig = {
+  name: false,
+  collapsed: 4,
+  displayObjectSize: false,
+  displayDataTypes: false,
+  quotesOnKeys: false,
+}
+
+const jsonViwer = jsonStr => {
+  if (!jsonStr) return null
+  let jsonObj
+  try {
+    jsonObj = JSON.parse(jsonStr)
+  } catch {
+    return null
+  }
+  return <ReactJson {...jsonViewConfig} src={jsonObj} />
+}
 
 const styles = theme => ({
   ...basicStyle(theme),
@@ -60,129 +83,70 @@ const styles = theme => ({
 })
 class SAPQueueItemDetails extends PureComponent {
   render() {
-    const { values } = this.props
+    const {
+      footer,
+      toggleModal,
+      retrigger,
+      sapQueueProcessor: { currentRow },
+      values,
+    } = this.props
+    const status = queueItemStatus.find(x => x.value == values.statusFK)
     return (
-      <GridContainer
-        style={{
-          height: 700,
-          alignItems: 'start',
-          overflowY: 'scroll',
-        }}
-      >
-        <GridItem xs={4}>
-          <Field
-            name='type'
-            render={args => (
-              <Select
-                label='Type'
-                options={sapQueueItemType}
-                allowClear={false}
-                {...args}
-                disabled
-              />
-            )}
-          />
-        </GridItem>
-        <GridItem xs={4}>
-          <Field
-            name='sessionNo'
-            render={args => <TextField label='Session No' {...args} disabled />}
-          />
-        </GridItem>
-        <GridItem xs={4}>
-          <Field
-            name='createDate'
-            render={args => (
-              <DatePicker
-                disabled
-                label='Generate Date Time'
-                format={dateFormatLongWithTimeNoSec}
-                showTime
-                {...args}
-              />
-            )}
-          />
-        </GridItem>
-        <GridItem xs={4}>
-          <Field
-            name='processedDateTime'
-            render={args => (
-              <DatePicker
-                disabled
-                label='Processed Date Time'
-                format={dateFormatLongWithTimeNoSec}
-                showTime
-                {...args}
-              />
-            )}
-          />
-        </GridItem>
-        <GridItem xs={4}>
-          <Field
-            name='statusFK'
-            render={args => (
-              <Select
-                label='Status'
-                options={queueItemStatus}
-                allowClear={false}
-                {...args}
-                disabled={false}
-              />
-            )}
-          />
-        </GridItem>
-        <GridItem xs={2}>
-          <Field
-            name='retryCount'
-            render={args => (
-              <NumberInput
-                label='Retry Count'
-                precision={0}
-                max={values.maxRetryCount}
-                min={0}
-                {...args}
-              />
-            )}
-          />
-        </GridItem>
-        <GridItem xs={2}>
-          <Field
-            name='maxRetryCount'
-            render={args => (
-              <NumberInput
-                label='Max Retry Count'
-                precision={0}
-                disabled
-                {...args}
-              />
-            )}
-          />
-        </GridItem>
-        <GridItem xs={12}>
-          <Field
-            name='parameter'
-            render={args => (
-              <TextField label='Parameter' multiline disabled {...args} />
-            )}
-          />
-        </GridItem>
-        <GridItem xs={12}>
-          <Field
-            name='data'
-            render={args => (
-              <TextField label='Request' multiline disabled {...args} />
-            )}
-          />
-        </GridItem>
-        <GridItem xs={12}>
-          <Field
-            name='response'
-            render={args => (
-              <TextField label='Response' multiline disabled {...args} />
-            )}
-          />
-        </GridItem>
-      </GridContainer>
+      <div>
+        <Descriptions
+          bordered
+          size='small'
+          style={{
+            height: 700,
+            alignItems: 'start',
+            overflowY: 'scroll',
+            marginBottom: 20,
+          }}
+        >
+          <Descriptions.Item label='Type'>
+            {sapQueueItemType.find(x => x.value == values.type).name}
+          </Descriptions.Item>
+          <Descriptions.Item label='Session No'>
+            {values.sessionNo}
+          </Descriptions.Item>
+          <Descriptions.Item label='Generate Date Time'>
+            {moment(values.createDate).format(dateFormatLongWithTime)}
+          </Descriptions.Item>
+          <Descriptions.Item label='Status'>
+            <span style={{ color: status.color }}>{status.name}</span>
+          </Descriptions.Item>
+          <Descriptions.Item label='Retry'>
+            {values.retryCount}/{values.maxRetryCount}
+          </Descriptions.Item>
+          <Descriptions.Item label='Processed Date Time'>
+            {moment(values.processedDateTime).format(dateFormatLongWithTime)}
+          </Descriptions.Item>
+          <Descriptions.Item label='Parameter' span={3}>
+            {jsonViwer(values.parameter)}
+          </Descriptions.Item>
+          <Descriptions.Item label='Request' span={3}>
+            {jsonViwer(values.data)}
+          </Descriptions.Item>
+          <Descriptions.Item label='Response' span={3}>
+            {jsonViwer(values.response)}
+          </Descriptions.Item>
+        </Descriptions>
+        {footer &&
+          footer({
+            cancelProps: {},
+            confirmProps: {
+              disabled:
+                currentRow.statusFK != 4 ||
+                currentRow.retryCount != currentRow.maxRetryCount,
+            },
+            onConfirm: () => {
+              retrigger(currentRow).then(r => {
+                toggleModal()
+              })
+            },
+            confirmBtnText: 'Retrigger',
+          })}
+      </div>
     )
   }
 }
