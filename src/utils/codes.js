@@ -1899,18 +1899,22 @@ const queueItemStatus = [
   {
     value: 1,
     name: 'Pending',
+    color: 'black',
   },
   {
     value: 2,
     name: 'Processing',
+    color: 'blue',
   },
   {
     value: 3,
     name: 'Successful',
+    color: 'green',
   },
   {
     value: 4,
     name: 'Failed',
+    color: 'red',
   },
 ]
 

@@ -6,13 +6,19 @@ export default createListViewModel({
   namespace: 'sapQueueProcessor',
   param: {
     service,
-    state: {
-      default: {
-        isUserMaintainable: true,
-        description: '',
+    state: {},
+    effects: {
+      *retrigger({ payload }, { call, put }) {
+        const result = yield call(service.retrigger, payload)
+        console.log('result', result)
+        if (result === 204) {
+          notification.success({
+            message:
+              'Queue item has been retrigger, waiting processor execute.',
+          })
+        }
       },
     },
-    effects: {},
     reducers: {
       queryDone(queuelisting, { payload }) {
         const { data } = payload

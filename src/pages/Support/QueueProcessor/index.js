@@ -30,6 +30,25 @@ class QueueProcessor extends PureComponent {
       }
     })
   }
+  sapQueueItemRetrigger = async row => {
+    const { dispatch } = this.props
+    await dispatch({
+      type: 'sapQueueProcessor/retrigger',
+      payload: {
+        ...row,
+        retryCount: 0,
+        statusFK: 1,
+      },
+    }).then(r => {
+      dispatch({
+        type: 'sapQueueProcessor/query',
+      })
+    })
+  }
+  cfg = {
+    toggleModal: this.sapToggleModal,
+    retrigger: this.sapQueueItemRetrigger,
+  }
   render() {
     const { showSAPQueueItemDetails } = this.state
     return (
@@ -56,7 +75,7 @@ class QueueProcessor extends PureComponent {
                   <div className='filterSAPQueueProcessorBar'>
                     <SAPFilter {...this.props} />
                   </div>
-                  <SAPGrid {...this.props} toggleModal={this.sapToggleModal} />
+                  <SAPGrid {...this.props} {...this.cfg} />
                   <CommonModal
                     open={showSAPQueueItemDetails}
                     title='Details'
@@ -65,10 +84,7 @@ class QueueProcessor extends PureComponent {
                     maxWidth='lg'
                   >
                     {showSAPQueueItemDetails ? (
-                      <SAPQueueItemDetails
-                        {...this.props}
-                        toggleModal={this.sapToggleModal}
-                      />
+                      <SAPQueueItemDetails {...this.props} {...this.cfg} />
                     ) : null}
                   </CommonModal>
                 </React.Fragment>

@@ -59,8 +59,8 @@ class SAPFilter extends PureComponent {
               render={args => {
                 return (
                   <DateRangePicker
-                    label='Date From'
-                    label2='Date To'
+                    label='Processed Date From'
+                    label2='Processed Date To'
                     {...args}
                   />
                 )
