@@ -338,7 +338,11 @@ const VisitInfoCard = ({
         }
       }),
   ]
-
+   setFieldValue(
+     FormField['visit.visitRemarks'],
+     restProps?.visitRegistration?.appointment?.appointments[0]
+       ?.appointmentRemarks,
+   )
   useEffect(() => {
     const noVisitGroup = !values.visitGroup
     if (noVisitGroup && familyMembers) {
