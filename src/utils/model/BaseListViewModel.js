@@ -17,7 +17,6 @@ export default class BaseListViewModel extends BaseCRUDViewModel {
         { payload = { keepFilter: true, defaultQuery: false }, history },
         { call, put, select },
       ) {
-        // console.log(payload);
         const response = yield call(service.query, payload)
         const { data, status, message } = response
         if (status === '200' || data) {
