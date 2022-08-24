@@ -20,11 +20,9 @@ import { DoctorLabel } from '@/components/_medisys'
 @connect(({ codetable }) => ({ codetable }))
 @withFormikExtend({
   mapPropsToValues: ({ settingVisitOrderTemplate, codetable }) => {
-    console.log(settingVisitOrderTemplate)
     return {
       ...(settingVisitOrderTemplate.entity ||
         settingVisitOrderTemplate.default),
-      displayValue: settingVisitOrderTemplate.entity.displayValue,
       selectedResources: _.concat(
         (
           settingVisitOrderTemplate.entity?.visitOrderTemplate_Resources || []
@@ -120,9 +118,6 @@ class Detail extends PureComponent {
       type: 'settingVisitOrderTemplate/reset',
     })
   }
-  componentDidMount() {
-    console.log(this.props)
-  }
 
   handleCopayerChanges = copayers => {
     copayers = copayers.filter(v => v !== -99)
@@ -183,14 +178,7 @@ class Detail extends PureComponent {
   }
 
   render() {
-    const {
-      theme,
-      footer,
-      values,
-      handleSubmit,
-      settingVisitOrderTemplate,
-    } = this.props
-    console.log(settingVisitOrderTemplate)
+    const { theme, footer, values, handleSubmit } = this.props
     return (
       <Fragment>
         <div

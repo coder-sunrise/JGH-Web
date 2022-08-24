@@ -14,27 +14,8 @@ import {
   CodeSelect,
   ProgressButton,
   LocalSearchSelect,
-  Popper,
-  CommonModal,
 } from '@/components'
 import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
-import {
-  withStyles,
-  MenuList,
-  ClickAwayListener,
-  MenuItem,
-} from '@material-ui/core'
-import VisitPurposeForm from './VisitPurposeForm'
-
-const styles = theme => ({
-  verticalSpacing: {
-    // marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    '& > h4': {
-      fontWeight: 500,
-    },
-  },
-})
 
 @withFormikExtend({
   mapPropsToValues: ({ settingVisitOrderTemplate }) => ({
@@ -64,32 +45,6 @@ const styles = theme => ({
   },
 })
 class Filter extends PureComponent {
-  state = {
-    openPopper: false,
-    showFromExistModal: false,
-  }
-  toggleModal = () => {
-    const { showFromExistModal } = this.state
-    this.setState({ showFromExistModal: !showFromExistModal })
-  }
-  handleClickPopper = i => {
-    switch (i) {
-      case 1:
-        this.props.dispatch({
-          type: 'settingVisitOrderTemplate/updateState',
-          payload: {
-            entity: undefined,
-          },
-        })
-        this.props.toggleModal()
-        this.setState({ openPopper: false })
-        break
-      case 2:
-        this.setState({ openPopper: false, showFromExistModal: true })
-        break
-    }
-  }
-
   render() {
     const { classes, handleSubmit } = this.props
     return (
@@ -146,76 +101,28 @@ class Filter extends PureComponent {
               >
                 <FormattedMessage id='form.search' />
               </ProgressButton>
-              <Popper
-                open={this.state.openPopper}
-                transition
-                // className={classNames({
-                //   [classes.pooperResponsive]: true,
-                //   [classes.pooperNav]: true,
-                // })}
-                overlay={
-                  <ClickAwayListener
-                    onClickAway={() => {
-                      this.setState({ openPopper: false })
-                    }}
-                  >
-                    <MenuList role='menu'>
-                      <MenuItem onClick={() => this.handleClickPopper(1)}>
-                        Add New
-                      </MenuItem>
-                      <MenuItem onClick={() => this.handleClickPopper(2)}>
-                        Add From Existing
-                      </MenuItem>
-                    </MenuList>
-                  </ClickAwayListener>
-                }
+
+              <Button
+                color='primary'
+                onClick={() => {
+                  this.props.dispatch({
+                    type: 'settingVisitOrderTemplate/updateState',
+                    payload: {
+                      entity: undefined,
+                    },
+                  })
+                  this.props.toggleModal()
+                }}
               >
-                <Button
-                  color='primary'
-                  onClick={() => {
-                    this.setState({ openPopper: true })
-                  }}
-                >
-                  <Add />
-                  Add New
-                </Button>
-              </Popper>
+                <Add />
+                Add New
+              </Button>
             </div>
           </GridItem>
         </GridContainer>
-        <CommonModal
-          open={this.state.showFromExistModal}
-          observe='RoomDetail'
-          title='Add From Existing'
-          maxWidth='md'
-          bodyNoPadding
-          onClose={this.toggleModal}
-          onConfirm={this.toggleModal}
-          styles={{ height: '200px' }}
-        >
-          {/* <div className={classes.verticalSpacing}>
-            <GridContainer>
-              <GridItem md={4} className={classes.verticalSpacing}>
-                <FastField
-                  name='role'
-                  render={args => (
-                    <CodeSelect
-                      {...args}
-                      label='Existing User Group'
-                      code='role'
-                      orderBy={[['name'], ['asc']]}
-                      onChange={this.onSelect}
-                    />
-                  )}
-                />
-              </GridItem>
-            </GridContainer>
-          </div> */}
-          <VisitPurposeForm {...this.props} />
-        </CommonModal>
       </div>
     )
   }
 }
 
-export default withStyles(styles)(Filter)
+export default Filter

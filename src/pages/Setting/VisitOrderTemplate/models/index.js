@@ -22,35 +22,8 @@ export default createListViewModel({
         description: '',
         rows: [],
       },
-      selectedExistEntity: {
-        // isUserMaintainable: true,
-        // effectiveDates: [
-        //   moment().formatUTC(),
-        //   moment('2099-12-31T23:59:59').formatUTC(false),
-        // ],
-        // description: '',
-        rows: [],
-      },
-      allVisitPurpose: [],
     },
-    effects: {
-      *queryAll({ payload }, { call, put }) {
-        let allVisitPurpose = yield call(service.query, {})
-        console.log(allVisitPurpose)
-        return allVisitPurpose
-      },
-      *generateExistingFormEntity({ payload }, { select, call, put }) {
-        let data = yield call(service.query, { id: payload.id })
-        yield put({
-          type: 'getDone',
-          payload: {
-            data: data.data,
-            isExist: true,
-          },
-        })
-        // console.log(data)
-      },
-    },
+    effects: {},
     reducers: {
       reset(st) {
         return {
@@ -61,7 +34,7 @@ export default createListViewModel({
           },
         }
       },
-      queryOneDone(st, { payload, payload: { isExist } }) {
+      queryOneDone(st, { payload }) {
         const {
           effectiveStartDate,
           effectiveEndDate,
@@ -115,17 +88,6 @@ export default createListViewModel({
               effectiveDates: [o.effectiveStartDate, o.effectiveEndDate],
             }
           }),
-        }
-      },
-      getDone(st, { payload }) {
-        console.log(payload)
-        return {
-          ...st,
-          // entity: {},
-          entity: {
-            ... payload.data,
-            rows:[]
-          },
         }
       },
     },
