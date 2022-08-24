@@ -139,7 +139,7 @@ class Grid extends PureComponent {
                   { name: 'contactPerson', title: 'Contact Person' },
                   { name: 'contactNo', title: 'Contact No.' },
                   { name: 'officeNum', title: 'Office Number' },
-                  { name: 'faxNo', title: 'Fax Number999' },
+                  { name: 'faxNo', title: 'Fax Number' },
                   { name: 'isActive', title: 'Status' },
                   { name: 'action', title: 'Action' },
                 ]
