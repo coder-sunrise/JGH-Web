@@ -77,7 +77,8 @@ const searchResult = (values, props) => {
     lsteql_visitDate: isAllDateChecked ? undefined : visitEndDate || undefined,
     labTrackingStatusFK: labTrackingStatusFK || undefined,
     apiCriteria: {
-      searchValue: searchValue ? searchValue : undefined,
+      searchValue:
+        searchValue && searchValue.trim().length ? searchValue : undefined,
       serviceCenterIDs:
         serviceCenterIDs && serviceCenterIDs.length > 0
           ? serviceCenterIDs.join(',')
@@ -86,8 +87,9 @@ const searchResult = (values, props) => {
         visitTypeIDs && visitTypeIDs.length > 0
           ? visitTypeIDs.join(',')
           : undefined,
+      serviceName:
+        serviceName && serviceName.trim().length ? serviceName : undefined,
     },
-    serviceName: serviceName || undefined,
   }
   dispatch({
     type: 'labTrackingDetails/query',

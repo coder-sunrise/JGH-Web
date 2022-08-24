@@ -7,11 +7,14 @@ import {
   notification,
   dateFormatLongWithTimeNoSec,
   CommonModal,
+  Popconfirm,
+  Button,
 } from '@/components'
+import { Delete } from '@material-ui/icons'
 import { PATIENT_LAB } from '@/utils/constants'
 import moment from 'moment'
 import Authorized from '@/utils/Authorized'
-import { Table, Button } from 'antd'
+import { Table } from 'antd'
 import { useDispatch } from 'dva'
 import { Link } from 'umi'
 import { getFileByFileID } from '@/services/file'
@@ -94,7 +97,6 @@ const ExternalService = props => {
           onRow={r => {
             return {
               onDoubleClick: () => {
-                console.log(r.id)
                 dispatch({
                   type: 'labTrackingDetails/queryOne',
                   payload: {
@@ -166,6 +168,55 @@ const ExternalService = props => {
               title: <div style={{ padding: 4 }}>Status</div>,
               width: 80,
               render: (text, row) => <div style={{ padding: 4 }}>{text}</div>,
+            },
+            {
+              dataIndex: 'action',
+              title: <div style={{ padding: 4 }}>Action</div>,
+              width: 60,
+              align: 'center',
+              render: (text, row) => (
+                <Authorized authority='reception.viewexternaltracking.delete'>
+                  {row.labTrackingResults &&
+                  row.labTrackingResults.length > 0 ? (
+                    <Button
+                      justIcon
+                      size='sm'
+                      color='danger'
+                      style={{ marginLeft: 8 }}
+                      onClick={() => {
+                        notification.error({
+                          message: 'Record with attachment cannot be deleted.',
+                        })
+                      }}
+                    >
+                      <Delete />
+                    </Button>
+                  ) : (
+                    <Popconfirm
+                      title='Confirm to delete?'
+                      onConfirm={() => {
+                        dispatch({
+                          type: 'labTrackingDetails/delete',
+                          payload: {
+                            id: row.id,
+                          },
+                        }).then(r => {
+                          queryExternalService()
+                        })
+                      }}
+                    >
+                      <Button
+                        justIcon
+                        size='sm'
+                        color='danger'
+                        style={{ marginLeft: 8 }}
+                      >
+                        <Delete />
+                      </Button>
+                    </Popconfirm>
+                  )}
+                </Authorized>
+              ),
             },
           ]}
           scroll={{ y: height - 80 }}

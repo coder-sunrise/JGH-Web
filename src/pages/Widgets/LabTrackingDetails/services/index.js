@@ -13,6 +13,7 @@ const fns = {
       body: { visitId: params.visitId },
     })
   },
+  remove: params => service.remove(url, params),
 }
 
 export default fns

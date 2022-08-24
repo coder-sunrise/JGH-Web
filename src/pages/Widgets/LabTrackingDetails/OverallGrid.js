@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
-import { Edit } from '@material-ui/icons'
+import { Edit, Delete } from '@material-ui/icons'
 import CommonTableGrid from '@/components/CommonTableGrid'
-import { Button, Tooltip } from '@/components'
+import { Button, Tooltip, Popconfirm, notification } from '@/components'
 import PatientResultButton from './PatientResultPrintBtn'
 import Authorized from '@/utils/Authorized'
 
@@ -17,7 +17,7 @@ class OverallGrid extends PureComponent {
         name: 'doctorProfileFKNavigation.ClinicianProfile.Name',
         title: 'Doctor',
       },
-      { name: 'serviceName', title: 'Service Name' },
+      { name: 'filterServiceName', title: 'Service Name' },
       { name: 'serviceCenterName', title: 'Service Center Name' },
       { name: 'supplierName', title: 'Supplier' },
       { name: 'orderedDate', title: 'Ordered Date' },
@@ -56,7 +56,7 @@ class OverallGrid extends PureComponent {
       { columnName: 'estimateReceiveDate', type: 'date', width: 130 },
       { columnName: 'orderedDate', type: 'date', width: 100 },
       { columnName: 'receivedDate', type: 'date', width: 105 },
-      { columnName: 'serviceName', width: 200 },
+      { columnName: 'filterServiceName', width: 200 },
       {
         columnName: 'serviceCenterName',
         width: 200,
@@ -96,7 +96,7 @@ class OverallGrid extends PureComponent {
         columnName: 'action',
         sortingEnabled: false,
         align: 'center',
-        width: 100,
+        width: 110,
         render: row => {
           const { clinicSettings, handlePrintClick } = this.props
           const accessRight = Authorized.check('reception/labtracking') || {
@@ -125,6 +125,49 @@ class OverallGrid extends PureComponent {
                   <Edit />
                 </Button>
               </Tooltip>
+              <Authorized authority='reception.viewexternaltracking.delete'>
+                {row.labTrackingResults && row.labTrackingResults.length > 0 ? (
+                  <Button
+                    justIcon
+                    size='sm'
+                    color='danger'
+                    style={{ marginLeft: 8 }}
+                    onClick={() => {
+                      notification.error({
+                        message: 'Record with attachment cannot be deleted.',
+                      })
+                    }}
+                  >
+                    <Delete />
+                  </Button>
+                ) : (
+                  <Popconfirm
+                    title='Confirm to delete?'
+                    onConfirm={() => {
+                      const { dispatch } = this.props
+                      dispatch({
+                        type: 'labTrackingDetails/delete',
+                        payload: {
+                          id: row.id,
+                        },
+                      }).then(r => {
+                        dispatch({
+                          type: 'labTrackingDetails/query',
+                        })
+                      })
+                    }}
+                  >
+                    <Button
+                      justIcon
+                      size='sm'
+                      color='danger'
+                      style={{ marginLeft: 8 }}
+                    >
+                      <Delete />
+                    </Button>
+                  </Popconfirm>
+                )}
+              </Authorized>
             </React.Fragment>
           )
         },
