@@ -139,7 +139,7 @@ class Grid extends PureComponent {
                   { name: 'contactPerson', title: 'Contact Person' },
                   { name: 'contactNo', title: 'Contact No.' },
                   { name: 'officeNum', title: 'Office Number' },
-                  { name: 'faxNo', title: 'Fax Number' },
+                  { name: 'faxNo', title: 'Fax Number999' },
                   { name: 'isActive', title: 'Status' },
                   { name: 'action', title: 'Action' },
                 ]
@@ -194,16 +194,16 @@ class Grid extends PureComponent {
             {
               columnName: 'code',
               sortBy: 'code',
-              width: 120,
+              width: 200,
             },
             {
               columnName: 'displayValue',
-              width: 300,
+              width: 555,
             },
             {
               columnName: 'officeNum',
               sortingEnabled: false,
-              width: 120,
+              width: 170,
               render: row => (
                 <span>
                   {row.contact &&
@@ -216,7 +216,7 @@ class Grid extends PureComponent {
             },
             {
               columnName: 'contactPerson',
-              width: 150,
+              width: 170,
               render: row => (
                 <span>{row.contactPerson ? row.contactPerson : '-'}</span>
               ),
@@ -277,7 +277,7 @@ class Grid extends PureComponent {
             {
               columnName: 'faxNo',
               sortingEnabled: false,
-              width: 120,
+              width: 160,
               render: row => (
                 <span>
                   {row.contact &&
@@ -295,7 +295,7 @@ class Grid extends PureComponent {
             {
               columnName: 'contactNo',
               sortingEnabled: false,
-              width: 120,
+              width: 160,
               render: function(row) {
                 //copayer
                 if (row.defaultContactPerson) {
@@ -328,19 +328,19 @@ class Grid extends PureComponent {
               type: 'select',
               options: status,
               align: 'center',
-              width: 80,
+              width: 130,
             },
             {
               columnName: 'isGSTEnabled',
               type: 'select',
               options: gstEnabled,
-              width: 120,
+              width: 130,
               sortBy: 'isGSTEnabled',
             },
             {
               columnName: 'action',
               align: 'center',
-              width: 100,
+              width: 130,
               render: row => {
                 if (name === 'copayer') {
                   const editDetailAccessRight = Authorized.check(
