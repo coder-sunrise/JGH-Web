@@ -137,7 +137,6 @@ const VisitInfoCard = ({
         setFieldValue(FormField['visit.VisitOrderTemplateTotal'], undefined)
     }
   }, [currentVisitTemplate, visitType])
-  // console.log(fromMedicalCheckupReporting)
   const disableConsReady = Authorized.check('queue.modifyconsultationready')
 
   const validateQNo = value => {
@@ -222,14 +221,20 @@ const VisitInfoCard = ({
   const handleVisitTypeChange = (v, op) => {
     const { values, dispatch, getVisitOrderTemplateDetails } = restProps
     setFieldValue(FormField['visit.visitType'], v)
-    if (v !== 1) {
+
+    if (v !== VISIT_TYPE.CON) {
       setFieldValue(FormField['visit.consReady'], false)
     }
     setFieldValue(FormField['visit.isDoctorInCharge'], true)
     updateMedicalCheckup(v, values.isForInvoiceReplacement)
     setFieldValue('visitBasicExaminations[0].visitPurposeFK', v)
-    if (currentVisitTemplate) {
-      handleVisitOrderTemplateChange(v, currentVisitTemplate)
+    if (v === VISIT_TYPE.OTC) {
+      setFieldValue(FormField['visit.visitOrderTemplateFK'], undefined)
+      handleVisitOrderTemplateChange(v, undefined)
+    } else {
+      if (currentVisitTemplate) {
+        handleVisitOrderTemplateChange(v, currentVisitTemplate)
+      }
     }
   }
 
@@ -257,6 +262,7 @@ const VisitInfoCard = ({
 
   const handleIsForInvoiceReplacementChange = v => {
     const { values } = restProps
+    setFieldValue(FormField['visit.isDoctorInCharge'], true)
     updateMedicalCheckup(values.visitPurposeFK, v.target.value)
   }
 
@@ -434,21 +440,49 @@ const VisitInfoCard = ({
       <GridContainer alignItems='center'>
         <GridContainer>
           <GridItem xs md={3}>
-            <Field
-              name={FormField['visit.visitType']}
-              render={args => (
-                <CodeSelect
-                  disabled={notWaiting || isReadOnly || hasCOR}
-                  label={formatMessage({
-                    id: 'reception.queue.visitRegistration.visitType',
-                  })}
-                  onChange={(v, op = {}) => handleVisitTypeChange(v, op)}
-                  options={visitPurpose || []}
-                  allowClear={false}
-                  {...args}
-                />
+            <div
+              style={{
+                position: 'relative',
+                paddingRight:
+                  values.visitStatus === VISIT_STATUS.WAITING && hasCOR
+                    ? 25
+                    : 0,
+              }}
+            >
+              <Field
+                name={FormField['visit.visitType']}
+                render={args => (
+                  <CodeSelect
+                    disabled={notWaiting || isReadOnly || hasCOR}
+                    label={formatMessage({
+                      id: 'reception.queue.visitRegistration.visitType',
+                    })}
+                    onChange={(v, op = {}) => handleVisitTypeChange(v, op)}
+                    options={visitPurpose || []}
+                    allowClear={false}
+                    {...args}
+                  />
+                )}
+              />
+              {values.visitStatus === VISIT_STATUS.WAITING && hasCOR && (
+                <Tooltip
+                  title={`${activeCORCreatedBy} is
+          occupying this visit, Visit Type is not able to change.`}
+                >
+                  <IconButton
+                    size='small'
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      top: 16,
+                      color: 'red',
+                    }}
+                  >
+                    <InfoCircleOutlined />
+                  </IconButton>
+                </Tooltip>
               )}
-            />
+            </div>
           </GridItem>
           <GridItem xs md={3}>
             <Field
@@ -481,25 +515,30 @@ const VisitInfoCard = ({
             <div
               style={{
                 position: 'relative',
-                paddingLeft: values?.visitPurposeFK === VISIT_TYPE.MC ? 150 : 0,
+                paddingLeft:
+                  values?.visitPurposeFK === VISIT_TYPE.MC &&
+                  !values?.isForInvoiceReplacement
+                    ? 150
+                    : 0,
               }}
             >
-              {values?.visitPurposeFK === VISIT_TYPE.MC && (
-                <Field
-                  name={FormField['visit.isDoctorInCharge']}
-                  render={args => {
-                    return (
-                      <Checkbox
-                        {...args}
-                        disabled={!isSpecialtyDoctor()}
-                        simple
-                        label='Doctor In Charge'
-                        style={{ position: 'absolute', top: 16, left: 0 }}
-                      />
-                    )
-                  }}
-                />
-              )}
+              {values?.visitPurposeFK === VISIT_TYPE.MC &&
+                !values?.isForInvoiceReplacement && (
+                  <Field
+                    name={FormField['visit.isDoctorInCharge']}
+                    render={args => {
+                      return (
+                        <Checkbox
+                          {...args}
+                          disabled={!isSpecialtyDoctor()}
+                          simple
+                          label='Doctor In Charge'
+                          style={{ position: 'absolute', top: 16, left: 0 }}
+                        />
+                      )
+                    }}
+                  />
+                )}
               <Field
                 name={FormField['visit.queueNo']}
                 validate={validateQNo}
@@ -561,120 +600,132 @@ const VisitInfoCard = ({
             />
           </GridItem>
         </GridContainer>
-
         <GridItem xs md={3}>
-          <Field
-            name={FormField['visit.roomFK']}
-            render={args => (
-              <CodeSelect
-                disabled={
-                  fromMedicalCheckupReporting ? true : notWaiting || isReadOnly
-                }
-                label={formatMessage({
-                  id: 'reception.queue.visitRegistration.room',
-                })}
-                code='ctRoom'
-                {...args}
-              />
-            )}
-          />
-        </GridItem>
-        <GridItem xs md={3}>
-          <Field
-            name={FormField['visit.visitOrderTemplateFK']}
-            render={args => {
-              return (
-                <Select
-                  options={getAvailableOrderTemplate()}
-                  label={formatMessage({
-                    id: 'reception.queue.visitRegistration.visitOrderTemplate',
-                  })}
-                  {...args}
-                  dropdownStyle={{ width: 500 }}
-                  dropdownMatchSelectWidth={false}
-                  authority='none'
-                  disabled={
-                    fromMedicalCheckupReporting
-                      ? true
-                      : notWaiting || isReadOnly
-                  }
-                  onChange={(e, opts) =>
-                    handleVisitOrderTemplateChange(visitType, opts)
-                  }
-                  renderDropdown={option => {
-                    const copayers = _.orderBy(
-                      option.visitOrderTemplate_Copayers.map(
-                        x => x.copayerName,
-                      ),
-                      data => data.toLowerCase(),
-                      'asc',
-                    ).join(', ')
-                    const tooltip = (
-                      <div>
-                        <div>{option.name}</div>
-                        {(option.visitOrderTemplate_Copayers || []).length >
-                          0 && <div>Co-Payer(s): {copayers}</div>}
-                        {(option.visitOrderTemplate_Copayers || []).length ===
-                          0 && (
-                          <div>
-                            <i>General</i>
-                          </div>
-                        )}
-                      </div>
-                    )
-                    return (
-                      <Tooltip placement='right' title={tooltip}>
+          <div
+            style={{
+              position: 'relative',
+              paddingRight:
+                values.visitStatus === VISIT_STATUS.WAITING && hasCOR ? 25 : 0,
+            }}
+          >
+            <Field
+              name={FormField['visit.visitOrderTemplateFK']}
+              render={args => {
+                return (
+                  <Select
+                    options={getAvailableOrderTemplate()}
+                    label={formatMessage({
+                      id:
+                        'reception.queue.visitRegistration.visitOrderTemplate',
+                    })}
+                    {...args}
+                    dropdownStyle={{ width: 500 }}
+                    dropdownMatchSelectWidth={false}
+                    authority='none'
+                    disabled={
+                      fromMedicalCheckupReporting
+                        ? true
+                        : values.visitPurposeFK === VISIT_TYPE.OTC ||
+                          notWaiting ||
+                          isReadOnly ||
+                          hasCOR
+                    }
+                    onChange={(e, opts) =>
+                      handleVisitOrderTemplateChange(visitType, opts)
+                    }
+                    renderDropdown={option => {
+                      const copayers = _.orderBy(
+                        option.visitOrderTemplate_Copayers.map(
+                          x => x.copayerName,
+                        ),
+                        data => data.toLowerCase(),
+                        'asc',
+                      ).join(', ')
+                      const tooltip = (
                         <div>
-                          <div
-                            style={{
-                              fontWeight: '550',
-                              width: '100%',
-                              textOverflow: 'ellipsis',
-                              overflow: 'hidden',
-                              whiteSpace: 'nowrap',
-                            }}
-                          >
-                            {option.name}
-                          </div>
+                          <div>{option.name}</div>
                           {(option.visitOrderTemplate_Copayers || []).length >
-                            0 && (
-                            <div
-                              style={{
-                                width: '100%',
-                                textOverflow: 'ellipsis',
-                                overflow: 'hidden',
-                                whiteSpace: 'nowrap',
-                              }}
-                            >
-                              <span>Co-Payer(s): </span>
-                              <span style={{ color: '#4255bd' }}>
-                                {copayers}
-                              </span>
-                            </div>
-                          )}
+                            0 && <div>Co-Payer(s): {copayers}</div>}
                           {(option.visitOrderTemplate_Copayers || []).length ===
                             0 && (
-                            <div
-                              style={{
-                                width: '100%',
-                                textOverflow: 'ellipsis',
-                                overflow: 'hidden',
-                                whiteSpace: 'nowrap',
-                              }}
-                            >
-                              <span style={{ color: 'green' }}>
-                                <i>General</i>
-                              </span>
+                            <div>
+                              <i>General</i>
                             </div>
                           )}
                         </div>
-                      </Tooltip>
-                    )
+                      )
+                      return (
+                        <Tooltip placement='right' title={tooltip}>
+                          <div>
+                            <div
+                              style={{
+                                fontWeight: '550',
+                                width: '100%',
+                                textOverflow: 'ellipsis',
+                                overflow: 'hidden',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {option.name}
+                            </div>
+                            {(option.visitOrderTemplate_Copayers || []).length >
+                              0 && (
+                              <div
+                                style={{
+                                  width: '100%',
+                                  textOverflow: 'ellipsis',
+                                  overflow: 'hidden',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                <span>Co-Payer(s): </span>
+                                <span style={{ color: '#4255bd' }}>
+                                  {copayers}
+                                </span>
+                              </div>
+                            )}
+                            {(option.visitOrderTemplate_Copayers || [])
+                              .length === 0 && (
+                              <div
+                                style={{
+                                  width: '100%',
+                                  textOverflow: 'ellipsis',
+                                  overflow: 'hidden',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                <span style={{ color: 'green' }}>
+                                  <i>General</i>
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </Tooltip>
+                      )
+                    }}
+                  />
+                )
+              }}
+            />
+            {values.visitStatus === VISIT_STATUS.WAITING && hasCOR && (
+              <Tooltip
+                title={`${activeCORCreatedBy} is
+            occupying this visit, Visit Purpose is not able to change.`}
+              >
+                <IconButton
+                  size='small'
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: 16,
+                    color: 'red',
                   }}
-                />
-              )
-            }}
-          />
+                >
+                  <InfoCircleOutlined />
+                </IconButton>
+              </Tooltip>
+            )}
+          </div>
         </GridItem>
         <GridItem xs md={3}>
           <Field
@@ -692,7 +743,7 @@ const VisitInfoCard = ({
                   disabled={
                     fromMedicalCheckupReporting
                       ? true
-                      : readOnly || notWaiting || isReadOnly
+                      : readOnly || notWaiting || isReadOnly || hasCOR
                   }
                   label={formatMessage({
                     id:
@@ -701,6 +752,23 @@ const VisitInfoCard = ({
                 />
               )
             }}
+          />
+        </GridItem>
+        <GridItem xs md={3}>
+          <Field
+            name={FormField['visit.roomFK']}
+            render={args => (
+              <CodeSelect
+                disabled={
+                  fromMedicalCheckupReporting ? true : notWaiting || isReadOnly
+                }
+                label={formatMessage({
+                  id: 'reception.queue.visitRegistration.room',
+                })}
+                code='ctRoom'
+                {...args}
+              />
+            )}
           />
         </GridItem>
         <GridItem xs md={3}>
@@ -1048,15 +1116,6 @@ const VisitInfoCard = ({
             fieldName='visitAttachment'
           />
         </GridItem>
-        {values.visitStatus === VISIT_STATUS.WAITING && hasCOR && (
-          <GridItem xs md={12}>
-            <div style={{ color: 'red', padding: '10px 0' }}>
-              <strong>*Information</strong>:{' '}
-              {`${activeCORCreatedBy} is
-              occupying this visit, Visit Type is not able to change.`}
-            </div>
-          </GridItem>
-        )}
       </GridContainer>
     </CommonCard>
   )

@@ -98,21 +98,27 @@ export default createFormViewModel({
     effects: {
       *closeModal(_, { put }) {
         history.push(
-          getRemovedUrl([
-            'md',
-            'cmt',
-            'pid',
-            'vis',
-            'acc',
-            'refno',
-            'new',
-            'type',
-            'apptid',
-            'pdid',
-            'pdroomid',
-            'visitMode',
-            'visitOrderTemplateFK',
-          ]),
+          getRemovedUrl(
+            [
+              'md',
+              'cmt',
+              'pid',
+              'vis',
+              'acc',
+              'refno',
+              'new',
+              'type',
+              'apptid',
+              'pdid',
+              'pdroomid',
+              'visitMode',
+              'visitOrderTemplateFK',
+            ].filter(
+              x =>
+                history.location.pathname !==
+                  '/medicalcheckup/worklist/reportingdetails' || x !== 'pid',
+            ),
+          ),
         )
         yield put({
           type: 'updateState',

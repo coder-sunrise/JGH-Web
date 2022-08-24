@@ -614,6 +614,7 @@ class AntdSelect extends React.PureComponent {
       maxTagPlaceholder,
       value,
       isLoading,
+      popupContainer,
       ...restProps
     } = this.props
     // console.log(options, valueField, labelField)
@@ -739,6 +740,9 @@ class AntdSelect extends React.PureComponent {
             )
           }
           getPopupContainer={node => {
+            if (popupContainer && popupContainer === 'body') {
+              return document.body
+            }
             //Issue: The dropdown position will be fixed on scroll if not stick to the wrapper component.
 
             //Get the MUI CustomInput container of the wrapper custom component.
