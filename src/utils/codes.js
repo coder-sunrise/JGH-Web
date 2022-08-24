@@ -1923,17 +1923,29 @@ const sapQueueItemType = [
   { value: 'CoPayerMaster', name: 'CoPayer Master' },
   { value: 'MaterialMaster', name: 'Material Master' },
   { value: 'ServiceMaster', name: 'Service Master' },
-  { value: 'PurchaseOrderQuery', name: 'Purchase Order Query' },
-  { value: 'PurchaseOrderRead', name: 'Purchase Order Read' },
-  { value: 'SalesOrder', name: 'Sales Order' },
-  { value: 'Depoist', name: 'Depoist' },
-  { value: 'CashRefund', name: 'Cash Refund' },
-  { value: 'CreditNote', name: 'Credit Note' },
-  { value: 'PaymentReceipt', name: 'Payment Receipt' },
   { value: 'PatientInfo', name: 'Patient Info' },
   { value: 'PurchaseRequest', name: 'Purchase Request' },
   { value: 'DeliveryOrder', name: 'Delivery Order' },
+  { value: 'PurchaseOrderQuery', name: 'Purchase Order Query' },
+  { value: 'PurchaseOrderRead', name: 'Purchase Order Read' },
+  { value: 'SalesOrder', name: 'Sales Order' },
+  // { value: 'Depoist', name: 'Depoist' },
+  // { value: 'CashRefund', name: 'Cash Refund' },
   { value: 'StockAdjustment', name: 'Stock Adjustment' },
+  { value: 'CreditNote', name: 'Credit Note' },
+  { value: 'PaymentReceipt', name: 'Payment Receipt' },
+
+  { value: 'Realtime_PatientInfo', name: 'Realtime Patient Info' },
+  { value: 'Realtime_PurchaseRequest', name: 'Realtime Purchase Request' },
+  { value: 'Realtime_DeliveryOrder', name: 'Realtime Delivery Order' },
+]
+
+const sapQueueBatchType = [
+  { value: 'SalesOrder', name: 'Sales Order' },
+  // { value: 'Depoist', name: 'Depoist' },
+  // { value: 'CashRefund', name: 'Cash Refund' },
+  { value: 'CreditNote', name: 'Credit Note' },
+  { value: 'PaymentReceipt', name: 'Payment Receipt' },
 ]
 
 const preOrderItemCategory = [
@@ -2122,6 +2134,7 @@ export {
   year,
   queueProcessorType,
   sapQueueItemType,
+  sapQueueBatchType,
   queueItemStatus,
   preOrderItemCategory,
   tagCategory,

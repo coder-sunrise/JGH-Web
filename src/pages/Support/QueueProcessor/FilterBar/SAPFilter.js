@@ -85,7 +85,7 @@ class SAPFilter extends PureComponent {
                   this.props.dispatch({
                     type: 'sapQueueProcessor/query',
                     payload: {
-                      type,
+                      eql_type: type,
                       sessionNo,
                       lgteql_processedDateTime: requestDate?.length
                         ? moment(requestDate[0]).formatUTC()
@@ -96,6 +96,10 @@ class SAPFilter extends PureComponent {
                             .formatUTC(false)
                         : undefined,
                       statusFK,
+                      apiCriteria: {
+                        type: type,
+                      },
+                      // keepFilter: false,
                     },
                   })
                 }}

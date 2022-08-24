@@ -10,7 +10,11 @@ import {
   dateFormatLongWithTime,
   Button,
 } from '@/components'
-import { queueItemStatus, sapQueueItemType } from '@/utils/codes'
+import {
+  queueItemStatus,
+  sapQueueBatchType,
+  sapQueueItemType,
+} from '@/utils/codes'
 
 @connect(({ sapQueueProcessor }) => ({ sapQueueProcessor }))
 class SAPGrid extends PureComponent {
@@ -27,8 +31,9 @@ class SAPGrid extends PureComponent {
       { name: 'statusFK', title: 'Status' },
       { name: 'retry', title: 'Retry' },
       // { name: 'parameter', title: 'Parameter' },
-      { name: 'data', title: 'Request Data' },
+      // { name: 'data', title: 'Request Data' },
       { name: 'response', title: 'Response' },
+      { name: 'exception', title: 'Exception' },
       { name: 'createDate', title: 'Create Date' },
       { name: 'processedDateTime', title: 'Processed Date' },
       { name: 'action', title: 'Action' },
@@ -38,14 +43,16 @@ class SAPGrid extends PureComponent {
         columnName: 'type',
         width: 220,
         render: row => {
-          return sapQueueItemType.find(
-            x => x.value === row.type.replace('Realtime_', ''),
-          )?.name
+          const {
+            sapQueueProcessor: { filter: { apiCriteria: { type } = {} } = {} },
+          } = this.props
+          return sapQueueItemType.find(x => x.value === (row.type ?? type)).name
         },
       },
       {
         columnName: 'sessionNo',
         width: 160,
+        render: row => (row.sessionNo === undefined ? '-' : row.sessionNo),
       },
       {
         columnName: 'statusFK',
@@ -58,7 +65,10 @@ class SAPGrid extends PureComponent {
       {
         columnName: 'retry',
         width: 70,
-        render: row => `${row.retryCount}/${row.maxRetryCount}`,
+        render: row =>
+          row.retryCount === undefined
+            ? '0/0'
+            : `${row.retryCount}/${row.maxRetryCount}`,
         sortBy: 'retryCount',
       },
       {
@@ -85,6 +95,27 @@ class SAPGrid extends PureComponent {
         columnName: 'response',
         render: row => {
           let result = row.response
+          let tooltip = result
+          return (
+            <Tooltip title={tooltip} placement='top'>
+              <div
+                style={{
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                }}
+              >
+                {result}
+              </div>
+            </Tooltip>
+          )
+        },
+        sortingEnabled: false,
+      },
+      {
+        columnName: 'exception',
+        render: row => {
+          let result = row.exception
           let tooltip = result
           return (
             <Tooltip title={tooltip} placement='top'>
@@ -140,7 +171,9 @@ class SAPGrid extends PureComponent {
                   color='primary'
                   justIcon
                   disabled={
-                    row.statusFK != 4 || row.retryCount != row.maxRetryCount
+                    row.statusFK != 4 ||
+                    row.retryCount != row.maxRetryCount ||
+                    (row.maxRetryCount ?? 0) <= 0
                   }
                   onClick={() => retrigger(row)}
                 >
@@ -155,11 +188,20 @@ class SAPGrid extends PureComponent {
   }
 
   editRow = async row => {
-    const { toggleModal, dispatch } = this.props
+    const {
+      toggleModal,
+      dispatch,
+      sapQueueProcessor: {
+        filter: {
+          apiCriteria: { type },
+        },
+      },
+    } = this.props
     const queueItem = await dispatch({
-      type: 'sapQueueProcessor/queryOne',
+      type: 'sapQueueProcessor/getDetails',
       payload: {
         id: row.id,
+        type: row.type ?? type,
       },
     })
 

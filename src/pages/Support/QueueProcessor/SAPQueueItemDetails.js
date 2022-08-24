@@ -20,8 +20,13 @@ import {
   withFormikExtend,
   CommonTableGrid,
   Button,
+  Tooltip,
 } from '@/components'
-import { sapQueueItemType, queueItemStatus } from '@/utils/codes'
+import {
+  sapQueueItemType,
+  sapQueueBatchType,
+  queueItemStatus,
+} from '@/utils/codes'
 import ReactJson from 'react-json-view'
 
 const jsonViewConfig = {
@@ -30,6 +35,7 @@ const jsonViewConfig = {
   displayObjectSize: false,
   displayDataTypes: false,
   quotesOnKeys: false,
+  enableClipboard: false,
 }
 
 const jsonViwer = jsonStr => {
@@ -38,7 +44,7 @@ const jsonViwer = jsonStr => {
   try {
     jsonObj = JSON.parse(jsonStr)
   } catch {
-    return null
+    return jsonStr
   }
   return <ReactJson {...jsonViewConfig} src={jsonObj} />
 }
@@ -52,33 +58,6 @@ const styles = theme => ({
 }))
 @withFormikExtend({
   mapPropsToValues: ({ sapQueueProcessor }) => sapQueueProcessor.entity || {},
-  validationSchema: Yup.object().shape({
-    retryCount: Yup.number()
-      .min(0, "Can't be less than zero")
-      .max(Yup.ref('maxRetryCount'), e => {
-        return `Retry count must be less than or equal to ${
-          e.max ? e.max.toFixed(1) : e.max
-        }`
-      })
-      .required(),
-    statusFK: Yup.number().required(),
-  }),
-  handleSubmit: (values, { props }) => {
-    const { dispatch, onConfirm } = props
-    const { ...restValues } = values
-    const selectedOptions = {}
-    dispatch({
-      type: 'settingClinicService/upsert',
-      payload: {
-        ...values,
-      },
-    }).then(r => {
-      if (r) {
-        if (onConfirm) onConfirm()
-        dispatch({ type: 'sapQueueProcessor/query' })
-      }
-    })
-  },
   displayName: 'SAPQueueItemDetails',
 })
 class SAPQueueItemDetails extends PureComponent {
@@ -87,10 +66,14 @@ class SAPQueueItemDetails extends PureComponent {
       footer,
       toggleModal,
       retrigger,
-      sapQueueProcessor: { currentRow },
+      sapQueueProcessor: {
+        currentRow,
+        filter: { apiCriteria: { type } = {} } = {},
+      },
       values,
     } = this.props
-    const status = queueItemStatus.find(x => x.value == values.statusFK)
+    const status = queueItemStatus.find(x => x.value === values.statusFK)
+    const itemType = sapQueueItemType.find(x => x.value === values.type)
     return (
       <div>
         <Descriptions
@@ -104,10 +87,10 @@ class SAPQueueItemDetails extends PureComponent {
           }}
         >
           <Descriptions.Item label='Type'>
-            {sapQueueItemType.find(x => x.value == values.type).name}
+            {itemType?.name ?? type}
           </Descriptions.Item>
           <Descriptions.Item label='Session No'>
-            {values.sessionNo}
+            {values.sessionNo || '-'}
           </Descriptions.Item>
           <Descriptions.Item label='Generate Date Time'>
             {moment(values.createDate).format(dateFormatLongWithTime)}
@@ -130,6 +113,15 @@ class SAPQueueItemDetails extends PureComponent {
           <Descriptions.Item label='Response' span={3}>
             {jsonViwer(values.response)}
           </Descriptions.Item>
+          <Descriptions.Item label='Exception' span={3}>
+            {jsonViwer(values.exception)}
+          </Descriptions.Item>
+          {values.batches &&
+            sapQueueBatchType.some(x => x.value === values.type) && (
+              <Descriptions.Item label='Failed Batches' span={3}>
+                {jsonViwer(values.batches)}
+              </Descriptions.Item>
+            )}
         </Descriptions>
         {footer &&
           footer({
@@ -137,7 +129,8 @@ class SAPQueueItemDetails extends PureComponent {
             confirmProps: {
               disabled:
                 currentRow.statusFK != 4 ||
-                currentRow.retryCount != currentRow.maxRetryCount,
+                currentRow.retryCount != currentRow.maxRetryCount ||
+                (currentRow.maxRetryCount ?? 0) <= 0,
             },
             onConfirm: () => {
               retrigger(currentRow).then(r => {
