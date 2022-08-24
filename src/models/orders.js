@@ -369,6 +369,103 @@ export default createListViewModel({
           },
         })
       },
+
+      *updateRows({ payload }, { put, select }) {
+        const { newRows } = payload
+        const {
+          rows,
+          finalAdjustments,
+          isGSTInclusive,
+          gstValue,
+        } = yield select(st => st.orders)
+        const { rows: documents } = yield select(st => st.consultationDocument)
+        let tempRows = [...rows]
+        let tempDocuments = [...documents]
+        tempRows
+          .filter(item => item.isDeleted)
+          .forEach(item => (item.visitOrderTemplateItemFK = undefined))
+        newRows.forEach(item => {
+          let oldRow = tempRows.find(oldItem => oldItem.uid === item.uid)
+          if (item.isDeleted) {
+            if (item.type === '2') {
+              const activeCertificate = oldRow.corVaccinationCert.find(
+                vc => !vc.isDeleted,
+              )
+              if (activeCertificate) {
+                let deleteVacc = tempDocuments.find(
+                  d => d.uid === activeCertificate.uid,
+                )
+                if (deleteVacc) {
+                  if (deleteVacc.id) {
+                    deleteVacc.isDeleted = true
+                    activeCertificate.isDeleted = true
+                  } else {
+                    tempDocuments = tempDocuments.filter(
+                      d => d.uid !== activeCertificate.uid,
+                    )
+                  }
+                }
+              }
+            }
+            if (oldRow.id) {
+              oldRow.isDeleted = true
+            } else {
+              tempRows = tempRows.filter(x => x.uid !== item.id)
+            }
+          } else {
+            if (item.uid) {
+              tempRows = tempRows.map(oldItem =>
+                oldItem.uid === item.uid
+                  ? { ...item, isUpdated: true }
+                  : oldItem,
+              )
+            } else {
+              const uid = getUniqueId()
+              if (item.corVaccinationCert && item.corVaccinationCert.length) {
+                const newCORVaccinationCert = item.corVaccinationCert.map(
+                  vc => ({
+                    ...vc,
+                    vaccinationUFK: uid,
+                    uid: getUniqueId(),
+                  }),
+                )
+                tempDocuments.push({ ...newCORVaccinationCert[0] })
+                tempRows.push({
+                  ...item,
+                  uid,
+                  corVaccinationCert: newCORVaccinationCert,
+                })
+              } else {
+                tempRows.push({
+                  ...item,
+                  uid,
+                })
+              }
+            }
+          }
+        })
+
+        yield put({
+          type: 'consultationDocument/updateState',
+          payload: {
+            rows: tempDocuments,
+          },
+        })
+        const amount = calculateAmount(tempRows, finalAdjustments, {
+          isGSTInclusive,
+          gstValue,
+        })
+
+        yield put({
+          type: 'updateState',
+          payload: {
+            ...amount,
+            rows: tempRows,
+            finalAdjustments,
+            entity: undefined,
+          },
+        })
+      },
     },
 
     reducers: {
