@@ -21,6 +21,10 @@ const WebSocketMessageType = {
   Preview: 5,
   AutoUpdate: 99,
 }
+const WebSocketMessageStatus = {
+  Success: 'Success',
+  Error: 'Error',
+}
 
 const withWebSocket = () => Component => {
   class WebSocketBase extends React.Component {
@@ -196,6 +200,13 @@ const withWebSocket = () => Component => {
               message: Data,
             })
           }
+        } else if (
+          MessageType === WebSocketMessageType.Preview &&
+          Status === WebSocketMessageStatus.Error
+        ) {
+          notification.error({
+            message: Data,
+          })
         }
       }
     }
