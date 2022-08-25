@@ -94,7 +94,13 @@ class Grid extends PureComponent {
   render() {
     const { route, height } = this.props
     const { name } = route
-
+    const displayValueColumn =
+      name === 'copayer'
+        ? {
+            columnName: 'displayValue',
+            width: 300,
+          }
+        : {}
     return (
       <Fragment>
         <CommonTableGrid
@@ -197,13 +203,12 @@ class Grid extends PureComponent {
               width: 200,
             },
             {
-              columnName: 'displayValue',
-              width: 555,
+              ...displayValueColumn,
             },
             {
               columnName: 'officeNum',
               sortingEnabled: false,
-              width: 170,
+              width: 120,
               render: row => (
                 <span>
                   {row.contact &&
@@ -216,7 +221,7 @@ class Grid extends PureComponent {
             },
             {
               columnName: 'contactPerson',
-              width: 170,
+              width: 150,
               render: row => (
                 <span>{row.contactPerson ? row.contactPerson : '-'}</span>
               ),
@@ -277,7 +282,7 @@ class Grid extends PureComponent {
             {
               columnName: 'faxNo',
               sortingEnabled: false,
-              width: 160,
+              width: 120,
               render: row => (
                 <span>
                   {row.contact &&
@@ -295,7 +300,7 @@ class Grid extends PureComponent {
             {
               columnName: 'contactNo',
               sortingEnabled: false,
-              width: 160,
+              width: 120,
               render: function(row) {
                 //copayer
                 if (row.defaultContactPerson) {
@@ -328,19 +333,19 @@ class Grid extends PureComponent {
               type: 'select',
               options: status,
               align: 'center',
-              width: 130,
+              width: 80,
             },
             {
               columnName: 'isGSTEnabled',
               type: 'select',
               options: gstEnabled,
-              width: 130,
+              width: 120,
               sortBy: 'isGSTEnabled',
             },
             {
               columnName: 'action',
               align: 'center',
-              width: 130,
+              width: 100,
               render: row => {
                 if (name === 'copayer') {
                   const editDetailAccessRight = Authorized.check(
