@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react'
 import { Edit, Delete } from '@material-ui/icons'
 import CommonTableGrid from '@/components/CommonTableGrid'
-import { Button, Tooltip, Popconfirm, notification } from '@/components'
+import { Button, Tooltip, Popconfirm } from '@/components'
 import PatientResultButton from './PatientResultPrintBtn'
 import Authorized from '@/utils/Authorized'
+import { ableToViewByAuthority } from '@/utils/utils'
 
 class OverallGrid extends PureComponent {
   configs = {
@@ -125,38 +126,27 @@ class OverallGrid extends PureComponent {
                   <Edit />
                 </Button>
               </Tooltip>
-              <Authorized authority='reception.viewexternaltracking.delete'>
-                {row.labTrackingResults && row.labTrackingResults.length > 0 ? (
-                  <Button
-                    justIcon
-                    size='sm'
-                    color='danger'
-                    style={{ marginLeft: 8 }}
-                    onClick={() => {
-                      notification.error({
-                        message: 'Record with attachment cannot be deleted.',
-                      })
-                    }}
-                  >
-                    <Delete />
-                  </Button>
-                ) : (
-                  <Popconfirm
-                    title='Confirm to delete?'
-                    onConfirm={() => {
-                      const { dispatch } = this.props
+              {ableToViewByAuthority(
+                'reception.viewexternaltracking.delete',
+              ) && (
+                <Popconfirm
+                  title='Confirm to delete?'
+                  onConfirm={() => {
+                    const { dispatch } = this.props
+                    dispatch({
+                      type: 'labTrackingDetails/delete',
+                      payload: {
+                        id: row.id,
+                        cfg: { message: 'External tracking deleted.' },
+                      },
+                    }).then(r => {
                       dispatch({
-                        type: 'labTrackingDetails/delete',
-                        payload: {
-                          id: row.id,
-                        },
-                      }).then(r => {
-                        dispatch({
-                          type: 'labTrackingDetails/query',
-                        })
+                        type: 'labTrackingDetails/query',
                       })
-                    }}
-                  >
+                    })
+                  }}
+                >
+                  <Tooltip title='Delete external tracking' placement='bottom'>
                     <Button
                       justIcon
                       size='sm'
@@ -165,9 +155,9 @@ class OverallGrid extends PureComponent {
                     >
                       <Delete />
                     </Button>
-                  </Popconfirm>
-                )}
-              </Authorized>
+                  </Tooltip>
+                </Popconfirm>
+              )}
             </React.Fragment>
           )
         },

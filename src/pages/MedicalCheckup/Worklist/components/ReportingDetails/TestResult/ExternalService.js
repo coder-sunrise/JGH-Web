@@ -12,8 +12,8 @@ import {
 } from '@/components'
 import { Delete } from '@material-ui/icons'
 import { PATIENT_LAB } from '@/utils/constants'
+import { ableToViewByAuthority } from '@/utils/utils'
 import moment from 'moment'
-import Authorized from '@/utils/Authorized'
 import { Table } from 'antd'
 import { useDispatch } from 'dva'
 import { Link } from 'umi'
@@ -175,23 +175,10 @@ const ExternalService = props => {
               width: 60,
               align: 'center',
               render: (text, row) => (
-                <Authorized authority='reception.viewexternaltracking.delete'>
-                  {row.labTrackingResults &&
-                  row.labTrackingResults.length > 0 ? (
-                    <Button
-                      justIcon
-                      size='sm'
-                      color='danger'
-                      style={{ marginLeft: 8 }}
-                      onClick={() => {
-                        notification.error({
-                          message: 'Record with attachment cannot be deleted.',
-                        })
-                      }}
-                    >
-                      <Delete />
-                    </Button>
-                  ) : (
+                <React.Fragment>
+                  {ableToViewByAuthority(
+                    'reception.viewexternaltracking.delete',
+                  ) && (
                     <Popconfirm
                       title='Confirm to delete?'
                       onConfirm={() => {
@@ -199,23 +186,29 @@ const ExternalService = props => {
                           type: 'labTrackingDetails/delete',
                           payload: {
                             id: row.id,
+                            cfg: { message: 'External tracking deleted.' },
                           },
                         }).then(r => {
                           queryExternalService()
                         })
                       }}
                     >
-                      <Button
-                        justIcon
-                        size='sm'
-                        color='danger'
-                        style={{ marginLeft: 8 }}
+                      <Tooltip
+                        title='Delete external tracking'
+                        placement='bottom'
                       >
-                        <Delete />
-                      </Button>
+                        <Button
+                          justIcon
+                          size='sm'
+                          color='danger'
+                          style={{ marginLeft: 8 }}
+                        >
+                          <Delete />
+                        </Button>
+                      </Tooltip>
                     </Popconfirm>
                   )}
-                </Authorized>
+                </React.Fragment>
               ),
             },
           ]}
