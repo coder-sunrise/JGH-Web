@@ -1123,7 +1123,6 @@ export const getOutstandingInventoryItem = (
   outstandingItem = undefined,
   existingData = false,
 ) => {
-
   let newRows = rows.filter(x => x.type === value && x.isDeleted === false)
   //get current received qty group by poitemfk
   const rowsGroupByFK = groupByFKFunc(newRows)
@@ -1134,31 +1133,45 @@ export const getOutstandingInventoryItem = (
       orderQuantity,
       quantityReceivedFromOtherDOs = 0,
       bonusQuantity,
-      bonusReceived
+      bonusReceived,
     } = o
 
-    const activeItem = rowsGroupByFK.find(i => i.purchaseOrderItemFK === o.purchaseOrderItemFK)
-    const remainingQuantityShouldReceive = orderQuantity + bonusQuantity - quantityReceivedFromOtherDOs
+    const activeItem = rowsGroupByFK.find(
+      i => i.purchaseOrderItemFK === o.purchaseOrderItemFK,
+    )
+    const remainingQuantityShouldReceive =
+      orderQuantity + bonusQuantity - quantityReceivedFromOtherDOs
     let remainingQuantity = orderQuantity - quantityReceived
     let remainingBonusQuantity = bonusQuantity - bonusReceived
 
     if (activeItem) {
       if (existingData) {
-        remainingQuantity = orderQuantity > 0 ? orderQuantity - activeItem.totalCurrentReceivingQty - quantityReceivedFromOtherDOs : 0
-        remainingBonusQuantity = bonusQuantity > 0 ? bonusQuantity - activeItem.totalCurrentReceivingBonusQty - quantityReceivedFromOtherDOs : 0
+        remainingQuantity =
+          orderQuantity > 0
+            ? orderQuantity -
+              activeItem.totalCurrentReceivingQty -
+              quantityReceivedFromOtherDOs
+            : 0
+        remainingBonusQuantity =
+          bonusQuantity > 0
+            ? bonusQuantity -
+              activeItem.totalCurrentReceivingBonusQty -
+              quantityReceivedFromOtherDOs
+            : 0
       } else {
-        remainingQuantity -= activeItem.totalCurrentReceivingQty 
+        remainingQuantity -= activeItem.totalCurrentReceivingQty
         remainingBonusQuantity -= activeItem.totalCurrentReceivingBonusQty
       }
     } else if (existingData && !activeItem) {
       remainingQuantity = orderQuantity > 0 ? remainingQuantityShouldReceive : 0
-      remainingBonusQuantity = bonusQuantity > 0 ? remainingQuantityShouldReceive : 0
+      remainingBonusQuantity =
+        bonusQuantity > 0 ? remainingQuantityShouldReceive : 0
     }
 
     return {
       ...o,
       remainingQuantity,
-      remainingBonusQuantity
+      remainingBonusQuantity,
     }
   })
 
@@ -1176,33 +1189,35 @@ export const getOutstandingInventoryItem = (
   // let inventoryItemList = _.differenceBy(list, newRows, itemFKName)//same itemfkname have diff remain qty : 0 or > 0
 
   // get current inventory item outstanding item
-  const filterOutstandingItem = newOutstandingItem.filter(x => x.type === value && (x.remainingQuantity > 0 || x.remainingBonusQuantity > 0))
+  const filterOutstandingItem = newOutstandingItem.filter(
+    x =>
+      x.type === value &&
+      (x.remainingQuantity > 0 || x.remainingBonusQuantity > 0),
+  )
 
   // get the all the not fully received item based on outstanding item
 
-let inventoryItemList = filterOutstandingItem.map(o => {
-    const ivtItem = list.find(
-      i => i[itemFKName] === o[itemFKName],
-    )
+  let inventoryItemList = filterOutstandingItem
+    .map(o => {
+      const ivtItem = list.find(i => i[itemFKName] === o[itemFKName])
 
-    let remainingQty,remainingBonusQty
-    if (ivtItem) {
-      const { remainingQuantity, remainingBonusQuantity } = o
-      remainingQty = remainingQuantity
-      remainingBonusQty = remainingBonusQuantity
-    }
-    else 
-      return null
-    return {
-      ...ivtItem,
-      value: o.id,
-      orderQuantity: o.orderQuantity,
-      remainingQty: remainingQty,
-      bonusQuantity: o.bonusQuantity,
-      remainingBonusQty: remainingBonusQty,
-      purchaseOrderItemFK: o.id,
-    }
-  }).filter(x => x)
+      let remainingQty, remainingBonusQty
+      if (ivtItem) {
+        const { remainingQuantity, remainingBonusQuantity } = o
+        remainingQty = remainingQuantity
+        remainingBonusQty = remainingBonusQuantity
+      } else return null
+      return {
+        ...ivtItem,
+        value: o.id,
+        orderQuantity: o.orderQuantity,
+        remainingQty: remainingQty,
+        bonusQuantity: o.bonusQuantity,
+        remainingBonusQty: remainingBonusQty,
+        purchaseOrderItemFK: o.id,
+      }
+    })
+    .filter(x => x)
   return inventoryItemList
 }
 
@@ -1870,10 +1885,10 @@ const queueProcessorType = [
     value: 1,
     name: 'XRay Interface',
   },
-  {
-    value: 2,
-    name: 'SAP Interface',
-  },
+  // {
+  //   value: 2,
+  //   name: 'SAP Interface',
+  // },
   {
     value: 3,
     name: 'Lab Interface',
@@ -1884,19 +1899,53 @@ const queueItemStatus = [
   {
     value: 1,
     name: 'Pending',
+    color: 'black',
   },
   {
     value: 2,
     name: 'Processing',
+    color: 'blue',
   },
   {
     value: 3,
     name: 'Successful',
+    color: 'green',
   },
   {
     value: 4,
     name: 'Failed',
+    color: 'red',
   },
+]
+
+const sapQueueItemType = [
+  { value: 'SupplierMaster', name: 'Supplier Master' },
+  { value: 'CoPayerMaster', name: 'CoPayer Master' },
+  { value: 'MaterialMaster', name: 'Material Master' },
+  { value: 'ServiceMaster', name: 'Service Master' },
+  { value: 'PatientInfo', name: 'Patient Info' },
+  { value: 'PurchaseRequest', name: 'Purchase Request' },
+  { value: 'DeliveryOrder', name: 'Delivery Order' },
+  { value: 'PurchaseOrderQuery', name: 'Purchase Order Query' },
+  { value: 'PurchaseOrderRead', name: 'Purchase Order Read' },
+  { value: 'SalesOrder', name: 'Sales Order' },
+  // { value: 'Depoist', name: 'Depoist' },
+  // { value: 'CashRefund', name: 'Cash Refund' },
+  { value: 'StockAdjustment', name: 'Stock Adjustment' },
+  { value: 'CreditNote', name: 'Credit Note' },
+  { value: 'PaymentReceipt', name: 'Payment Receipt' },
+
+  { value: 'Realtime_PatientInfo', name: 'Realtime Patient Info' },
+  { value: 'Realtime_PurchaseRequest', name: 'Realtime Purchase Request' },
+  { value: 'Realtime_DeliveryOrder', name: 'Realtime Delivery Order' },
+]
+
+const sapQueueBatchType = [
+  { value: 'SalesOrder', name: 'Sales Order' },
+  // { value: 'Depoist', name: 'Depoist' },
+  // { value: 'CashRefund', name: 'Cash Refund' },
+  { value: 'CreditNote', name: 'Credit Note' },
+  { value: 'PaymentReceipt', name: 'Payment Receipt' },
 ]
 
 const preOrderItemCategory = [
@@ -2084,6 +2133,8 @@ export {
   month,
   year,
   queueProcessorType,
+  sapQueueItemType,
+  sapQueueBatchType,
   queueItemStatus,
   preOrderItemCategory,
   tagCategory,

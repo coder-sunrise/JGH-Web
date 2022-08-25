@@ -90,7 +90,10 @@ const ReportingDoctorTag = ({
       rights: 'hidden',
     }
     if (revertCommentAccessRight.rights !== 'enable') return false
-    return medicalCheckupDoctor.status === 'Comment Verifying'
+    return (
+      medicalCheckupDoctor.status &&
+      medicalCheckupDoctor.status !== REPORTINGDOCTOR_STATUS.NEW
+    )
   }
 
   const isVerifyCommentEnable = () => {
