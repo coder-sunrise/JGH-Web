@@ -102,7 +102,6 @@ class DailyResourceManagement extends PureComponent {
   itemRow = p => {
     const { classes } = this.props
     const { row, children, tableRow } = p
-    console.log(children)
     let newchildren = []
     const batchColumns = children.slice(1, 7)
 
