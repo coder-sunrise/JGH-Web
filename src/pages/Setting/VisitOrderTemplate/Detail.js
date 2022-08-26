@@ -19,13 +19,20 @@ import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
 import { DoctorLabel } from '@/components/_medisys'
 @connect(({ codetable }) => ({ codetable }))
 @withFormikExtend({
-  mapPropsToValues: ({ settingVisitOrderTemplate, codetable }) => {
+  mapPropsToValues: ({
+    settingVisitOrderTemplate,
+    settingVisitOrderTemplate: { selectedExistEntity, isExist },
+    codetable,
+  }) => {
     return {
       ...(settingVisitOrderTemplate.entity ||
+        (isExist && selectedExistEntity) ||
         settingVisitOrderTemplate.default),
       selectedResources: _.concat(
         (
-          settingVisitOrderTemplate.entity?.visitOrderTemplate_Resources || []
+          (isExist && selectedExistEntity.visitOrderTemplate_Resources) ||
+          settingVisitOrderTemplate.entity?.visitOrderTemplate_Resources ||
+          []
         ).map(x => x.resourceFK),
         settingVisitOrderTemplate.entity?.visitOrderTemplate_Resources
           ?.length === codetable?.ctresource?.length
@@ -34,7 +41,9 @@ import { DoctorLabel } from '@/components/_medisys'
       ),
       selectedCopayers: _.concat(
         (
-          settingVisitOrderTemplate.entity?.visitOrderTemplate_Copayers || []
+          (isExist && selectedExistEntity.visitOrderTemplate_Copayers) ||
+          settingVisitOrderTemplate.entity?.visitOrderTemplate_Copayers ||
+          []
         ).map(x => x.copayerFK),
         settingVisitOrderTemplate.entity?.visitOrderTemplate_Copayers
           ?.length === codetable?.ctcopayer?.length

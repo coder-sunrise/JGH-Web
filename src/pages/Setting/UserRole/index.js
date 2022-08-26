@@ -285,7 +285,7 @@ class UserRole extends React.Component {
             open={showUserProfileForm}
             observe='RoomDetail'
             title='Add From Existing'
-            maxWidth='md'
+            maxWidth='sm'
             bodyNoPadding
             onClose={this.toggleModal}
             onConfirm={this.toggleModal}

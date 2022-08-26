@@ -22,8 +22,26 @@ export default createListViewModel({
         description: '',
         rows: [],
       },
+      selectedExistEntity: {
+        rows: [],
+      },
     },
-    effects: {},
+    effects: {
+      *queryAll({ payload }, { call, put }) {
+        let allVisitPurpose = yield call(service.querySimple, {})
+        return allVisitPurpose
+      },
+      *generateExistingFormEntity({ payload }, { select, call, put }) {
+        let data = yield call(service.query, { id: payload.id })
+        yield put({
+          type: 'queryOneDone',
+          payload: {
+            data: data.data,
+            isExist: true,
+          },
+        })
+      },
+    },
     reducers: {
       reset(st) {
         return {
@@ -34,11 +52,13 @@ export default createListViewModel({
           },
         }
       },
-      queryOneDone(st, { payload }) {
+      queryOneDone(st, { payload, payload: { isExist = false } }) {
         const {
           effectiveStartDate,
           effectiveEndDate,
           visitOrderTemplateItemDtos,
+          visitOrderTemplate_Resources,
+          visitOrderTemplate_Copayers,
           ...restValues
         } = payload.data
 
@@ -50,6 +70,22 @@ export default createListViewModel({
           itemTypesRows = [
             ...itemTypesRows,
             ...currentTypeItems.map(item => {
+              if (isExist) {
+                delete item.id
+                delete item.visitOrderTemplateFK
+                delete item.visitOrderTemplateMedicationItemDto?.id
+                delete item.visitOrderTemplateMedicationItemDto
+                  ?.visitOrderTemplateItemFK
+                delete item.visitOrderTemplateConsumableItemDto?.id
+                delete item.visitOrderTemplateConsumableItemDto
+                  ?.visitOrderTemplateItemFK
+                delete item.visitOrderTemplateServiceItemDto?.id
+                delete item.visitOrderTemplateServiceItemDto
+                  ?.visitOrderTemplateItemFK
+                delete item.visitOrderTemplateVaccinationItemDto?.id
+                delete item.visitOrderTemplateVaccinationItemDto
+                  ?.visitOrderTemplateItemFK
+              }
               return {
                 uid: getUniqueId(),
                 type: item.inventoryItemTypeFK,
@@ -70,11 +106,38 @@ export default createListViewModel({
 
         return {
           ...st,
-          entity: {
-            ...restValues,
+          entity:
+            isExist === false
+              ? {
+                  ...restValues,
+                  visitOrderTemplate_Resources,
+                  visitOrderTemplate_Copayers,
+                  rows: _.sortBy(itemTypesRows, 'sortOrder'),
+                  effectiveDates: [effectiveStartDate, effectiveEndDate],
+                }
+              : undefined,
+          selectedExistEntity: isExist && {
+            effectiveDates: [
+              moment().formatUTC(),
+              moment('2099-12-31T23:59:59').formatUTC(false),
+            ],
             rows: _.sortBy(itemTypesRows, 'sortOrder'),
-            effectiveDates: [effectiveStartDate, effectiveEndDate],
+            visitOrderTemplate_Resources: visitOrderTemplate_Resources.map(
+              item => {
+                delete item.id
+                delete item.visitOrderTemplateFK
+                return item
+              },
+            ),
+            visitOrderTemplate_Copayers: visitOrderTemplate_Copayers.map(
+              item => {
+                delete item.id
+                delete item.visitOrderTemplateFK
+                return item
+              },
+            ),
           },
+          isExist,
         }
       },
       queryDone(st, { payload }) {

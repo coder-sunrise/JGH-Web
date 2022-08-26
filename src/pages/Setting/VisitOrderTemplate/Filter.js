@@ -14,8 +14,17 @@ import {
   CodeSelect,
   ProgressButton,
   LocalSearchSelect,
+  Popper,
+  CommonModal,
 } from '@/components'
 import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
+import {
+  withStyles,
+  MenuList,
+  ClickAwayListener,
+  MenuItem,
+} from '@material-ui/core'
+import VisitPurposeForm from './VisitPurposeForm'
 
 @withFormikExtend({
   mapPropsToValues: ({ settingVisitOrderTemplate }) => ({
@@ -45,6 +54,32 @@ import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
   },
 })
 class Filter extends PureComponent {
+  state = {
+    openPopper: false,
+    showFromExistModal: false,
+  }
+  toggleModal = () => {
+    const { showFromExistModal } = this.state
+    this.setState({ showFromExistModal: !showFromExistModal })
+  }
+  handleClickPopper = i => {
+    switch (i) {
+      case 1:
+        this.props.dispatch({
+          type: 'settingVisitOrderTemplate/updateState',
+          payload: {
+            entity: undefined,
+            isExist: false,
+          },
+        })
+        this.props.toggleModal()
+        this.setState({ openPopper: false })
+        break
+      case 2:
+        this.setState({ openPopper: false, showFromExistModal: true })
+        break
+    }
+  }
   render() {
     const { classes, handleSubmit } = this.props
     return (
@@ -101,25 +136,53 @@ class Filter extends PureComponent {
               >
                 <FormattedMessage id='form.search' />
               </ProgressButton>
-
-              <Button
-                color='primary'
-                onClick={() => {
-                  this.props.dispatch({
-                    type: 'settingVisitOrderTemplate/updateState',
-                    payload: {
-                      entity: undefined,
-                    },
-                  })
-                  this.props.toggleModal()
-                }}
+              <Popper
+                open={this.state.openPopper}
+                transition
+                overlay={
+                  <ClickAwayListener
+                    onClickAway={() => {
+                      this.setState({ openPopper: false })
+                    }}
+                  >
+                    <MenuList role='menu'>
+                      <MenuItem onClick={() => this.handleClickPopper(1)}>
+                        Add New
+                      </MenuItem>
+                      <MenuItem onClick={() => this.handleClickPopper(2)}>
+                        Add From Existing
+                      </MenuItem>
+                    </MenuList>
+                  </ClickAwayListener>
+                }
               >
-                <Add />
-                Add New
-              </Button>
+                <Button
+                  color='primary'
+                  onClick={() => {
+                    this.setState({ openPopper: true })
+                  }}
+                >
+                  <Add />
+                  Add New
+                </Button>
+              </Popper>
             </div>
           </GridItem>
         </GridContainer>
+
+        <CommonModal
+          open={this.state.showFromExistModal}
+          title='Add From Existing'
+          maxWidth='sm'
+          bodyNoPadding
+          onClose={this.toggleModal}
+          onConfirm={this.toggleModal}
+        >
+          <VisitPurposeForm
+            showFromExistModalFun={this.toggleModal}
+            {...this.props}
+          />
+        </CommonModal>
       </div>
     )
   }
