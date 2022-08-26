@@ -94,7 +94,13 @@ class Grid extends PureComponent {
   render() {
     const { route, height } = this.props
     const { name } = route
-
+    const displayValueColumn =
+      name === 'copayer'
+        ? {
+            columnName: 'displayValue',
+            width: 300,
+          }
+        : {}
     return (
       <Fragment>
         <CommonTableGrid
@@ -194,11 +200,10 @@ class Grid extends PureComponent {
             {
               columnName: 'code',
               sortBy: 'code',
-              width: 120,
+              width: 200,
             },
             {
-              columnName: 'displayValue',
-              width: 300,
+              ...displayValueColumn,
             },
             {
               columnName: 'officeNum',

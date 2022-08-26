@@ -345,119 +345,123 @@ class Detail extends PureComponent {
       doctorNameLabel = `${name} (${doctorMCRNo})`
     }
     return (
-      <CardContainer hideHeader size='sm'>
-        <div>
-          <GridContainer>
-            <GridItem md={4}>
-              <FastField
-                name='patientName'
-                render={args => (
-                  <TextField label='Patient Name' {...args} disabled />
-                )}
-              />
-            </GridItem>
-            <GridItem md={4}>
-              <FastField
-                name='patientAccountNo'
-                render={args => (
-                  <TextField label='Patient Acc No.' {...args} disabled />
-                )}
-              />
-            </GridItem>
-            <GridItem md={4}>
-              <FastField
-                name='referreceNo'
-                render={args => (
-                  <TextField label='Patient Ref No.' {...args} disabled />
-                )}
-              />
-            </GridItem>
+      <div>
+        <CardContainer hideHeader size='sm' >
+          <div className='scroll' style={{ maxHeight: '70vh', overflowY: 'auto', width: '953px',padding:'8px' }}>
+            <div>
+              <GridContainer>
+                <GridItem md={4}>
+                  <FastField
+                    name='patientName'
+                    render={args => (
+                      <TextField label='Patient Name' {...args} disabled />
+                    )}
+                  />
+                </GridItem>
+                <GridItem md={4}>
+                  <FastField
+                    name='patientAccountNo'
+                    render={args => (
+                      <TextField label='Patient Acc No.' {...args} disabled />
+                    )}
+                  />
+                </GridItem>
+                <GridItem md={4}>
+                  <FastField
+                    name='referreceNo'
+                    render={args => (
+                      <TextField label='Patient Ref No.' {...args} disabled />
+                    )}
+                  />
+                </GridItem>
 
-            <GridItem md={4}>
-              <FastField
-                name='visitDate'
-                render={args => {
-                  return (
-                    <DatePicker
-                      label='Visit Date'
-                      {...args}
-                      disabled
-                      format={dateFormatLongWithTimeNoSec12h}
-                      showTime
-                    />
-                  )
-                }}
-              />
-            </GridItem>
-            <GridItem md={4}>
-              <TextField disabled label='Doctor' value={doctorNameLabel} />
-            </GridItem>
-            <GridItem md={4}>
-              <FastField
-                name='labTrackingStatusFK'
-                render={args => (
-                  <CodeSelect
-                    label='Status'
-                    {...args}
-                    code='ltlabtrackingstatus'
-                    onChange={(v, option) => {
-                      this.toggleAccordion(v)
-                      setFieldValue(
-                        'labTrackingStatusCode',
-                        option ? option.code : undefined,
-                      )
-                      setFieldValue(
-                        'labTrackingStatusDisplayValue',
-                        option ? option.name : undefined,
+                <GridItem md={4}>
+                  <FastField
+                    name='visitDate'
+                    render={args => {
+                      return (
+                        <DatePicker
+                          label='Visit Date'
+                          {...args}
+                          disabled
+                          format={dateFormatLongWithTimeNoSec12h}
+                          showTime
+                        />
                       )
                     }}
                   />
-                )}
-              />
-            </GridItem>
-            <GridItem md={8}>
-              <FastField
-                name='serviceName'
-                render={args => (
-                  <TextField label='Service Name' {...args} disabled />
-                )}
-              />
-            </GridItem>
-          </GridContainer>
-        </div>
-        <div>
-          <div>
-            <Accordion
-              defaultActive={[0, 1]}
-              ref={this.myRef}
-              onChange={this.changeToggle}
-              mode='multiple'
-              collapses={this.widgets.map(o => {
-                return {
-                  title: this.getTitle(o),
-                  hideExpendIcon: false,
-                  content: this.getContent(o),
-                }
-              })}
-            />
+                </GridItem>
+                <GridItem md={4}>
+                  <TextField disabled label='Doctor' value={doctorNameLabel} />
+                </GridItem>
+                <GridItem md={4}>
+                  <FastField
+                    name='labTrackingStatusFK'
+                    render={args => (
+                      <CodeSelect
+                        label='Status'
+                        {...args}
+                        code='ltlabtrackingstatus'
+                        onChange={(v, option) => {
+                          this.toggleAccordion(v)
+                          setFieldValue(
+                            'labTrackingStatusCode',
+                            option ? option.code : undefined,
+                          )
+                          setFieldValue(
+                            'labTrackingStatusDisplayValue',
+                            option ? option.name : undefined,
+                          )
+                        }}
+                      />
+                    )}
+                  />
+                </GridItem>
+                <GridItem md={8}>
+                  <FastField
+                    name='serviceName'
+                    render={args => (
+                      <TextField label='Service Name' {...args} disabled />
+                    )}
+                  />
+                </GridItem>
+              </GridContainer>
+            </div>
+            <div>
+              <div>
+                <Accordion
+                  defaultActive={[0, 1]}
+                  ref={this.myRef}
+                  onChange={this.changeToggle}
+                  mode='multiple'
+                  collapses={this.widgets.map(o => {
+                    return {
+                      title: this.getTitle(o),
+                      hideExpendIcon: false,
+                      content: this.getContent(o),
+                    }
+                  })}
+                />
+              </div>
+            </div>
+            {this.state.showMessage && (
+              <div>
+                <span style={{ color: 'red' }}>
+                  Note: Case type or case descprition already get changed.
+                </span>
+              </div>
+            )}
           </div>
-        </div>
-        {this.state.showMessage && (
-          <div>
-            <span style={{ color: 'red' }}>
-              Note: Case type or case descprition already get changed.
-            </span>
-          </div>
-        )}
-        {footer &&
-          footer({
-            onConfirm: props.handleSubmit,
-            confirmBtnText: 'Save',
-            confirmProps: {
-              disabled: this.state.readOnly,
-            },
-          })}
-      </CardContainer>
+          {footer &&
+            footer({
+              onConfirm: props.handleSubmit,
+              confirmBtnText: 'Save',
+              confirmProps: {
+                disabled: this.state.readOnly,
+              },
+            })}
+        </CardContainer>
+      </div>
     )
   }
 }
