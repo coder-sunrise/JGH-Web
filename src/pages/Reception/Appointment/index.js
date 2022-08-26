@@ -839,8 +839,9 @@ class Appointment extends React.PureComponent {
                 type: 'doctorBlock/getClinicOperationhour',
                 payload: {
                   apptDate: moment(
-                    response.find(x => x.id === selectedDoctorEventFK)
-                      ?.startDateTime,
+                    response.doctorBlocks.find(
+                      x => x.id === selectedDoctorEventFK,
+                    )?.startDateTime,
                   )
                     .startOf('day')
                     .formatUTC(),

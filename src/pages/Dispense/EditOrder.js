@@ -242,7 +242,14 @@ class EditOrder extends Component {
     if (!_.isEmpty(isFormValid)) {
       handleSubmit()
     } else {
-      const { consultationDocument, orders, dispatch, dispense } = this.props
+      const {
+        consultationDocument,
+        orders,
+        dispatch,
+        dispense,
+        visitRegistration,
+      } = this.props
+      const { entity: visit = {} } = visitRegistration
       if (orders.summary.totalWithGST < 0) {
         window.g_app._store.dispatch({
           type: 'global/updateAppState',
@@ -300,15 +307,16 @@ class EditOrder extends Component {
           ...payload,
           isPharmacyOrderUpdated: isPharmacyOrderUpdate,
           isPrescriptionSheetUpdated: isPharmacyOrderUpdated(orders, true),
+          visitConcurrencyToken: visit.visit?.concurrencyToken,
           isOrderUpdated:
             consultation?.entity?.versionNumber >= 2
               ? isOrderUpdated(orders, consultationDocument)
               : true,
+          visitOrderTemplateFK: visit.visit?.visitOrderTemplateFK,
+          isUpdateVisitOrderTemplate: visit.visit?.isUpdateVisitOrderTemplate,
         },
       })
       if (signResult) {
-        const { visitRegistration } = this.props
-        const { entity: visit = {} } = visitRegistration
         const { id } = visit
         sendNotification('EditedConsultation', {
           type: NOTIFICATION_TYPE.CONSULTAION,
