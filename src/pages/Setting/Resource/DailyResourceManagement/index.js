@@ -103,7 +103,7 @@ class DailyResourceManagement extends PureComponent {
     const { classes } = this.props
     const { row, children, tableRow } = p
     let newchildren = []
-    const batchColumns = children.slice(1, 7)
+    const batchColumns = children.slice(1, 6)
 
     if (row.countNumber === 1) {
       newchildren.push(
@@ -178,7 +178,6 @@ class DailyResourceManagement extends PureComponent {
             schema={dailyCapacitySchema}
             columns={[
               { name: 'dailyDate', title: 'Date' },
-              { name: 'day', title: 'Day' },
               { name: 'timeSpace', title: 'Time From & Time To' },
               {
                 name: 'maxCapacity',
@@ -191,7 +190,7 @@ class DailyResourceManagement extends PureComponent {
             columnExtensions={[
               {
                 columnName: 'dailyDate',
-                width: 120,
+                width: 105,
                 render: row => {
                   return moment(row.dailyDate).format('DD MMM YYYY')
                 },
@@ -199,17 +198,8 @@ class DailyResourceManagement extends PureComponent {
                 disabled: true,
               },
               {
-                columnName: 'day',
-                width: 120,
-                render: row => {
-                  return moment(row.dailyDate).format('ddd')
-                },
-                sortingEnabled: false,
-                disabled: true,
-              },
-              {
                 columnName: 'timeSpace',
-                width: 200,
+                width: 160,
                 render: row => {
                   const startTime = new Date(
                     `${moment().format('YYYY MM DD')} ${row.startTime}`,
@@ -227,7 +217,7 @@ class DailyResourceManagement extends PureComponent {
               {
                 columnName: 'maxCapacity',
                 type: 'number',
-                width: 120,
+                width: 105,
                 precision: 0,
                 min: 0,
                 max: 9999,
@@ -237,7 +227,7 @@ class DailyResourceManagement extends PureComponent {
                 columnName: 'usedSlot',
                 type: 'number',
                 precision: 0,
-                width: 120,
+                width: 100,
                 disabled: true,
                 sortingEnabled: false,
               },
@@ -245,7 +235,7 @@ class DailyResourceManagement extends PureComponent {
                 columnName: 'balanceSlot',
                 type: 'number',
                 precision: 0,
-                width: 120,
+                width: 100,
                 disabled: true,
                 sortingEnabled: false,
                 render: row => {
@@ -260,7 +250,7 @@ class DailyResourceManagement extends PureComponent {
               {
                 columnName: 'remarks',
                 sortingEnabled: false,
-                width: 420,
+                width: 335,
                 maxLength: 2000,
               },
             ]}

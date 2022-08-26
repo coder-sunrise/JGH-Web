@@ -587,7 +587,7 @@ class Detail extends PureComponent {
           open={this.state.showDailyManagementModal}
           observe='DailyResourceManagement'
           title={'Daily Resource Management'}
-          maxWidth='lg'
+          maxWidth='md'
           bodyNoPadding
           onClose={this.toggleModal}
           onConfirm={this.toggleModal}
