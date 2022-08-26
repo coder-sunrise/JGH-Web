@@ -19,28 +19,38 @@ import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
 import { DoctorLabel } from '@/components/_medisys'
 @connect(({ codetable }) => ({ codetable }))
 @withFormikExtend({
-  mapPropsToValues: ({ settingVisitOrderTemplate, codetable }) => {
+  mapPropsToValues: ({
+    settingVisitOrderTemplate,
+    settingVisitOrderTemplate: { selectedExistEntity, isExist },
+    codetable,
+  }) => {
+    console.log(settingVisitOrderTemplate)
     return {
       ...(settingVisitOrderTemplate.entity ||
+        (isExist && selectedExistEntity) ||
         settingVisitOrderTemplate.default),
-      selectedResources: _.concat(
-        (
-          settingVisitOrderTemplate.entity?.visitOrderTemplate_Resources || []
-        ).map(x => x.resourceFK),
-        settingVisitOrderTemplate.entity?.visitOrderTemplate_Resources
-          ?.length === codetable?.ctresource?.length
-          ? [-99]
-          : [],
-      ),
-      selectedCopayers: _.concat(
-        (
-          settingVisitOrderTemplate.entity?.visitOrderTemplate_Copayers || []
-        ).map(x => x.copayerFK),
-        settingVisitOrderTemplate.entity?.visitOrderTemplate_Copayers
-          ?.length === codetable?.ctcopayer?.length
-          ? [-99]
-          : [],
-      ),
+      selectedResources:
+        (isExist && selectedExistEntity.isExist_visitOrderTemplate_Resources) ||
+        _.concat(
+          (
+            settingVisitOrderTemplate.entity?.visitOrderTemplate_Resources || []
+          ).map(x => x.resourceFK),
+          settingVisitOrderTemplate.entity?.visitOrderTemplate_Resources
+            ?.length === codetable?.ctresource?.length
+            ? [-99]
+            : [],
+        ),
+      selectedCopayers:
+        (isExist && selectedExistEntity.isExist_visitOrderTemplate_Copayers) ||
+        _.concat(
+          (
+            settingVisitOrderTemplate.entity?.visitOrderTemplate_Copayers || []
+          ).map(x => x.copayerFK),
+          settingVisitOrderTemplate.entity?.visitOrderTemplate_Copayers
+            ?.length === codetable?.ctcopayer?.length
+            ? [-99]
+            : [],
+        ),
     }
   },
   validationSchema: Yup.object().shape({
