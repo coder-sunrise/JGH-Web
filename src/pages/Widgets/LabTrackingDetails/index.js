@@ -13,7 +13,6 @@ import FilterBar from './FilterBar'
 import OverallGrid from './OverallGrid'
 import PatientGrid from './PatientGrid'
 import clinicSettings from '@/models/clinicSettings'
-import './fixTitleButton.css'
 // import model from './models'
 
 // window.g_app.replaceModel(model)
@@ -159,7 +158,6 @@ class LabTrackingDetails extends PureComponent {
             />
           )}
         </div>
-        <div className='fixTitleButton'>
           <CommonModal
             open={labTrackingDetails.showModal}
             title='Edit External Tracking / Results'
@@ -171,7 +169,6 @@ class LabTrackingDetails extends PureComponent {
           >
             <Detail {...cfg} {...this.props}  mode='integrated'/>
           </CommonModal>
-        </div>
       </div>
     )
   }
