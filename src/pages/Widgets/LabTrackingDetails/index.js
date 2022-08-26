@@ -167,7 +167,7 @@ class LabTrackingDetails extends PureComponent {
             onClose={this.toggleModal}
             onConfirm={this.toggleModal}
           >
-            <Detail {...cfg} {...this.props}  mode='integrated'/>
+          <Detail {...cfg} {...this.props}  mode='integrated'/>
           </CommonModal>
       </div>
     )
