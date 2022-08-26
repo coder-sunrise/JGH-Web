@@ -8,6 +8,8 @@ import PatientHistory from '@/pages/Widgets/PatientHistory'
 import Examination from './Examination'
 import ExternalService from './ExternalService'
 import LabResults from '@/pages/PatientDatabase/Detail/Results/LabResults'
+import ExternalTracking from '@/pages/PatientDatabase/Detail/Results/ExternalTracking'
+import { PATIENT_LAB } from '@/utils/constants'
 
 const TestResult = props => {
   const ctexaminationcategory = useCodeTable('ctexaminationcategory')
@@ -19,6 +21,7 @@ const TestResult = props => {
     medicalCheckupReportingDetails,
     genderFK,
     clinicSettings,
+    patient,
   } = props
   const options = [
     {
@@ -62,7 +65,19 @@ const TestResult = props => {
     {
       id: 3,
       name: 'External Tracking',
-      content: <ExternalService {...props} height={height} />,
+      content: (
+        <div
+          style={{
+            border: '1px solid #CCCCCC',
+          }}
+        >
+          <ExternalTracking
+            {...props}
+            resultType={PATIENT_LAB.MEDICAL_CHECKUP}
+            patient={{ entity: patient }}
+          />
+        </div>
+      ),
     },
     {
       id: 4,

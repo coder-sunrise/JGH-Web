@@ -173,7 +173,7 @@ class OverallGrid extends PureComponent {
   }
 
   editRow = (row, e) => {
-    const { dispatch, labTrackingDetails } = this.props
+    const { dispatch, labTrackingDetails, resultType } = this.props
     const { list } = labTrackingDetails
 
     dispatch({
@@ -181,6 +181,7 @@ class OverallGrid extends PureComponent {
       payload: {
         showModal: true,
         entity: list.find(o => o.id === row.id),
+        resultType,
       },
     })
   }

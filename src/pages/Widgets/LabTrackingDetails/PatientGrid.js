@@ -25,7 +25,7 @@ class PatientGrid extends PureComponent {
     columnExtensions: [
       { columnName: 'sentBy', width: 100 },
       { columnName: 'labTrackingStatusDisplayValue', width: 110 },
-      { columnName: 'visitDate', type: 'date' },
+      { columnName: 'visitDate', type: 'date', width: 100 },
       {
         columnName: 'doctorProfileFKNavigation.ClinicianProfile.Name',
         render: row => {
@@ -121,7 +121,7 @@ class PatientGrid extends PureComponent {
   }
 
   editRow = (row, e) => {
-    const { dispatch, labTrackingDetails, readOnly } = this.props
+    const { dispatch, labTrackingDetails, readOnly, resultType } = this.props
     const { list } = labTrackingDetails
     if (readOnly) return
 
@@ -130,6 +130,7 @@ class PatientGrid extends PureComponent {
       payload: {
         showModal: true,
         entity: list.find(o => o.id === row.id),
+        resultType,
       },
     })
   }
