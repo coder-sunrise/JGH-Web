@@ -56,7 +56,7 @@ class LabTrackingDetails extends PureComponent {
       },
     })
   }
-
+  
   toggleModal = () => {
     const { labTrackingDetails } = this.props
     this.props.dispatch({
@@ -176,7 +176,7 @@ class LabTrackingDetails extends PureComponent {
           onConfirm={this.toggleModal}
         >
           <Detail {...cfg} {...this.props} mode='integrated' />
-        </CommonModal>
+          </CommonModal>
       </div>
     )
   }
