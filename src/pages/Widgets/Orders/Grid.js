@@ -39,6 +39,7 @@ import {
   notification,
   Switch,
   AuthorizedContext,
+  Select,
 } from '@/components'
 import { Button } from 'antd'
 import { orderTypes } from '@/pages/Consultation/utils'
@@ -76,6 +77,8 @@ export default ({
   const [showRevertVisitPurposeItem, setShowRevertVisitPurposeItem] = useState(
     false,
   )
+  const [showEditVisitPurpose, setShowEditVisitPurpose] = useState(false)
+  const [newVisitPurposeFK, setNewVisitPurposeFK] = useState(undefined)
 
   const [expandedGroups, setExpandedGroups] = useState([])
 
@@ -201,10 +204,6 @@ export default ({
     const inventoryMedicationFK =
       currentVisitOrderTemplate.visitOrderTemplateMedicationItemDto
         .inventoryMedicationFK
-    const { entity } = visitRegistration
-    const { visit } = entity
-    const { visitOrderTemplate } = visit
-    const { visitOrderTemplateItemDtos } = visitOrderTemplate
 
     const settings = JSON.parse(localStorage.getItem('clinicSettings'))
     const { corVitalSign = [] } = orders
@@ -418,7 +417,6 @@ export default ({
       totalPrice: itemTotalPrice,
       totalAfterItemAdjustment: currentVisitOrderTemplate.totalAftAdj,
       isExternalPrescription: false,
-      visitPurposeFK: currentVisitOrderTemplate.visitOrderTemplateFK,
       isDrugMixture: false,
       isClaimable: true,
       caution: itemDrugCaution,
@@ -480,11 +478,6 @@ export default ({
     const inventoryVaccinationFK =
       currentVisitOrderTemplate.visitOrderTemplateVaccinationItemDto
         .inventoryVaccinationFK
-    const { entity } = visitRegistration
-    const { visit } = entity
-    const { visitOrderTemplate } = visit
-    const { visitOrderTemplateItemDtos } = visitOrderTemplate
-    const { entity: visitEntity } = visitRegistration
     const { name, patientAccountNo, genderFK, dob } = patient.entity
     const ctgender = codetables[3]
     const inventoryvaccination = codetables[0]
@@ -573,31 +566,30 @@ export default ({
         dt => dt.isDefaultTemplate === true && dt.documentTemplateTypeFK === 3,
       )
       if (defaultTemplate) {
-        dispatch({
+        var response = await dispatch({
           type: 'settingDocumentTemplate/queryOne',
           payload: { id: defaultTemplate.id },
-        }).then(r => {
-          if (!r) {
-            return
-          }
-          newCORVaccinationCert = [
-            {
-              type: '3',
-              certificateDate: moment().date(),
-              issuedByUserFK: user.data.clinicianProfile.userProfile.id,
-              subject: `Vaccination Certificate - ${name}, ${patientAccountNo}, ${gender.code ||
-                ''}, ${Math.floor(
-                moment.duration(moment().diff(dob)).asYears(),
-              )}`,
-              content: ReplaceCertificateTeplate(
-                r.templateContent,
-                newVaccination,
-              ),
-              sequence: vaccCertSequence,
-            },
-          ]
-          isGenerateVaccCert = true
         })
+        if (!response) {
+          return
+        }
+        newCORVaccinationCert = [
+          {
+            type: '3',
+            certificateDate: moment(),
+            issuedByUserFK: user.data.clinicianProfile.userProfile.id,
+            subject: `Vaccination Certificate - ${name}, ${patientAccountNo}, ${gender.code ||
+              ''}, ${Math.floor(
+              moment.duration(moment().diff(dob)).asYears(),
+            )}`,
+            content: ReplaceCertificateTeplate(
+              response.templateContent,
+              newVaccination,
+            ),
+            sequence: vaccCertSequence,
+          },
+        ]
+        isGenerateVaccCert = true
       }
     }
     const newVaccine = {
@@ -657,7 +649,6 @@ export default ({
       type: type,
       priority: 'Normal',
       unitPrice: currentVisitOrderTemplate.unitPrice,
-      visitPurposeFK: currentVisitOrderTemplate.visitOrderTemplateFK,
       visitOrderTemplateItemFK: currentVisitOrderTemplate.id,
     }
     return newService
@@ -1257,14 +1248,15 @@ export default ({
     const { entity } = visitRegistration || {}
     if (!entity) return ''
     const { visit } = entity
-    const { visitOrderTemplate = {} } = visit
-    const { visitOrderTemplateItemDtos = [] } = visitOrderTemplate
+    const { visitOrderTemplate = {}, visit_OrderTemplateItem = [] } = visit
     const remainedTemplateItemIds = rows
       .filter(t => !t.isDeleted && t.visitOrderTemplateItemFK)
       .map(t => t.visitOrderTemplateItemFK)
     let visitPurpose = visitOrderTemplate.displayValue
-    let removedItems = visitOrderTemplateItemDtos
-      .filter(t => remainedTemplateItemIds.indexOf(t.id) < 0)
+    let removedItems = visit_OrderTemplateItem
+      .filter(
+        t => remainedTemplateItemIds.indexOf(t.visitOrderTemplateItemFK) < 0,
+      )
       .map(t => t.inventoryItemName)
     let addedItems = rows
       .filter(t => !t.isDeleted && !t.visitOrderTemplateItemFK)
@@ -1282,25 +1274,51 @@ export default ({
     if (!isEnableEditOrder) return
     const { entity } = visitRegistration
     const { visit } = entity
-    const { visitOrderTemplate } = visit
+    const { visitOrderTemplate = {}, visit_OrderTemplateItem = [] } = visit
     const { visitOrderTemplateItemDtos } = visitOrderTemplate
-
-    let removedTemplateItems = visitOrderTemplateItemDtos
+    const visitOrderTemplateItems = visitOrderTemplateItemDtos.filter(item =>
+      visit_OrderTemplateItem.find(x => x.visitOrderTemplateItemFK === item.id),
+    )
+    let removedTemplateItems = visitOrderTemplateItems
       .filter(
         t =>
           t.inventoryItemTypeFK === 3 ||
           t.inventoryItemTypeFK === 4 ||
           ((t.inventoryItemTypeFK === 2 || t.inventoryItemTypeFK === 1) &&
-            t.orderable),
+            t.orderable &&
+            (t.visitOrderTemplateMedicationItemDto?.isActive ||
+              t.visitOrderTemplateVaccinationItemDto?.isActive ||
+              t.visitOrderTemplateConsumableItemDto?.isActive ||
+              t.visitOrderTemplateServiceItemDto?.isActive)),
       )
       .filter(t => {
         if (
-          rows.filter(
-            x => x.isDeleted === false && x.visitOrderTemplateItemFK === t.id,
-          ).length > 0
+          rows.filter(x => !x.isDeleted && x.visitOrderTemplateItemFK === t.id)
+            .length > 0
         ) {
           return undefined
         } else return t
+      })
+      .map(t => {
+        const item = visit_OrderTemplateItem.find(
+          x => x.visitOrderTemplateItemFK === t.id,
+        )
+        if (item) {
+          return {
+            ...t,
+            inventoryItemCode: item.inventoryItemCode,
+            inventoryItemName: item.inventoryItemName,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            total: item.total,
+            sortOrder: item.sortOrder,
+            adjType: item.adjType,
+            adjAmt: item.adjAmt,
+            adjValue: item.adjValue,
+            totalAftAdj: item.totalAftAdj,
+          }
+        }
+        return t
       })
     if (visit.visitPurposeFK === VISIT_TYPE.OTC) {
       removedTemplateItems = removedTemplateItems.filter(t => {
@@ -1325,7 +1343,8 @@ export default ({
     setRemovedVisitOrderTemplateItem(removedTemplateItems)
     setShowRevertVisitPurposeItem(true)
   }
-  const confirmRevert = async data => {
+
+  const addOrderItems = async data => {
     let newItems = []
     let currentSequence =
       (_.max(rows.filter(t => !t.isDeleted).map(t => t.sequence)) || 0) + 1
@@ -1394,11 +1413,382 @@ export default ({
       }
       currentSequence = currentSequence + 1
     }
+    return newItems
+  }
+
+  const confirmRevert = async data => {
+    let newItems = await addOrderItems(data)
     dispatch({
       type: 'orders/upsertRows',
       payload: newItems,
     })
     setShowRevertVisitPurposeItem(false)
+  }
+
+  const getAvailableOrderTemplate = () => {
+    const { visitOrderTemplateOptions = [] } = visitRegistration
+    const patientInfo = patient
+    let availableVisitOrderTemplate = []
+    var patientCopayers = patientInfo?.patientScheme
+      ?.filter(x => !x.isExpired && x.isSchemeActive && x.isCopayerActive)
+      ?.map(x => x.copayerFK)
+    if (patientInfo) {
+      visitOrderTemplateOptions
+        .filter(x => x.isActive)
+        .forEach(template => {
+          if ((template.visitOrderTemplate_Copayers || []).length === 0) {
+            availableVisitOrderTemplate.push({
+              ...template,
+              type: 'general',
+              value: template.id,
+              name: template.displayValue,
+            })
+          } else {
+            if (
+              _.intersection(
+                template.visitOrderTemplate_Copayers.map(x => x.copayerFK),
+                patientCopayers,
+              ).length > 0
+            ) {
+              availableVisitOrderTemplate.push({
+                ...template,
+                type: 'copayer',
+                value: template.id,
+                name: template.displayValue,
+              })
+            }
+          }
+        })
+    } else {
+      visitOrderTemplateOptions
+        .fitler(x => x.isActive)
+        .forEach(template => {
+          // if haven't select patient profile, then only show general package
+          if ((template.visitOrderTemplate_Copayers || []).length === 0) {
+            availableVisitOrderTemplate.push({
+              ...template,
+              value: template.id,
+              name: template.displayValue,
+            })
+          }
+        })
+    }
+    availableVisitOrderTemplate = _.orderBy(
+      availableVisitOrderTemplate,
+      [data => data?.type?.toLowerCase(), data => data?.name?.toLowerCase()],
+      ['asc', 'asc'],
+    )
+    return availableVisitOrderTemplate
+  }
+
+  const checkOrderDeleteable = row => {
+    if (row.isAnyPayment || row.isPrepared) return false
+
+    if (!row.isPreOrder) {
+      const { workitem = {} } = row
+      const { radiologyWorkitem = {}, labWorkitems = [] } = workitem
+      if (row.type === ORDER_TYPES.RADIOLOGY) {
+        if (
+          [
+            RADIOLOGY_WORKITEM_STATUS.INPROGRESS,
+            RADIOLOGY_WORKITEM_STATUS.MODALITYCOMPLETED,
+            RADIOLOGY_WORKITEM_STATUS.COMPLETED,
+          ].indexOf(radiologyWorkitem.statusFK) >= 0
+        ) {
+          return false
+        }
+      } else if (row.type === ORDER_TYPES.LAB) {
+        if (
+          labWorkitems.filter(item => item.statusFK !== LAB_WORKITEM_STATUS.NEW)
+            .length > 0
+        ) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  const replaceWithNewVisitPurpose = async (
+    newVisitOrderTemplateFK,
+    newVisitOrderTemplateItemDtos = [],
+  ) => {
+    //if new select null visit purpose, keep items
+    if (
+      !newVisitOrderTemplateFK ||
+      !newVisitOrderTemplateItemDtos.find(
+        item =>
+          item.orderable &&
+          (item.visitOrderTemplateMedicationItemDto?.isActive ||
+            item.visitOrderTemplateVaccinationItemDto?.isActive ||
+            item.visitOrderTemplateConsumableItemDto?.isActive ||
+            item.visitOrderTemplateServiceItemDto?.isActive),
+      )
+    ) {
+      dispatch({
+        type: 'orders/updateState',
+        payload: {
+          rows: [
+            ...rows.map(x => ({
+              ...x,
+              visitOrderTemplateItemFK: undefined,
+              isUpdated: true,
+            })),
+          ],
+        },
+      })
+      return
+    }
+    const { entity } = visitRegistration
+    const { visit } = entity
+    const { visitOrderTemplate = {}, visit_OrderTemplateItem = [] } = visit
+    const { visitOrderTemplateItemDtos = [] } = visitOrderTemplate
+    const visitOrderTemplateItems = visitOrderTemplateItemDtos.filter(item =>
+      visit_OrderTemplateItem.find(x => x.visitOrderTemplateItemFK === item.id),
+    )
+    let newItems = [...rows.filter(t => !t.isDeleted)]
+
+    const checkUpdateOrderItem = (orderItem, orderTemplateItems) => {
+      if (!orderItem.orderable) return null
+      if (orderItem.visitOrderTemplateMedicationItemDto) {
+        if (!orderItem.visitOrderTemplateMedicationItemDto.isActive) return null
+        const templateItem = orderTemplateItems.find(
+          item =>
+            item.visitOrderTemplateMedicationItemDto?.inventoryMedicationFK ===
+            orderItem.visitOrderTemplateMedicationItemDto.inventoryMedicationFK,
+        )
+        let selectRow = newItems.find(
+          item =>
+            item.visitOrderTemplateFK &&
+            item.inventoryMedicationFK ===
+              orderItem.visitOrderTemplateMedicationItemDto
+                .inventoryMedicationFK,
+        )
+        if (!selectRow) {
+          selectRow = newItems.find(
+            item =>
+              item.inventoryMedicationFK ===
+              orderItem.visitOrderTemplateMedicationItemDto
+                .inventoryMedicationFK,
+          )
+        }
+        return { templateItem, selectRow }
+      } else if (orderItem.visitOrderTemplateVaccinationItemDto) {
+        if (!orderItem.visitOrderTemplateVaccinationItemDto.isActive)
+          return null
+        const templateItem = orderTemplateItems.find(
+          item =>
+            item.visitOrderTemplateVaccinationItemDto
+              ?.inventoryVaccinationFK ===
+            orderItem.visitOrderTemplateVaccinationItemDto
+              .inventoryVaccinationFK,
+        )
+        let selectRow = newItems.find(
+          item =>
+            item.visitOrderTemplateFK &&
+            item.inventoryVaccinationFK ===
+              orderItem.visitOrderTemplateVaccinationItemDto
+                .inventoryVaccinationFK,
+        )
+        if (!selectRow) {
+          selectRow = newItems.find(
+            item =>
+              item.inventoryVaccinationFK ===
+              orderItem.visitOrderTemplateVaccinationItemDto
+                .inventoryVaccinationFK,
+          )
+        }
+        return { templateItem, selectRow }
+      } else if (orderItem.visitOrderTemplateConsumableItemDto) {
+        if (!orderItem.visitOrderTemplateConsumableItemDto.isActive) return null
+        const templateItem = orderTemplateItems.find(
+          item =>
+            item.visitOrderTemplateConsumableItemDto?.inventoryConsumableFK ===
+            orderItem.visitOrderTemplateConsumableItemDto.inventoryConsumableFK,
+        )
+        let selectRow = newItems.find(
+          item =>
+            item.visitOrderTemplateFK &&
+            item.inventoryConsumableFK ===
+              orderItem.visitOrderTemplateConsumableItemDto
+                .inventoryConsumableFK,
+        )
+        if (!selectRow) {
+          selectRow = newItems.find(
+            item =>
+              item.inventoryConsumableFK ===
+              orderItem.visitOrderTemplateConsumableItemDto
+                .inventoryConsumableFK,
+          )
+        }
+        return { templateItem, selectRow }
+      } else if (orderItem.visitOrderTemplateServiceItemDto) {
+        if (!orderItem.visitOrderTemplateServiceItemDto.isActive) return null
+        const templateItem = orderTemplateItems.find(
+          item =>
+            item.visitOrderTemplateServiceItemDto?.serviceCenterServiceFK ===
+            orderItem.visitOrderTemplateServiceItemDto.serviceCenterServiceFK,
+        )
+        let selectRow = newItems.find(
+          item =>
+            item.visitOrderTemplateFK &&
+            item.serviceCenterServiceFK ===
+              orderItem.visitOrderTemplateServiceItemDto.serviceCenterServiceFK,
+        )
+        if (!selectRow) {
+          selectRow = newItems.find(
+            item =>
+              item.serviceCenterServiceFK ===
+              orderItem.visitOrderTemplateServiceItemDto.serviceCenterServiceFK,
+          )
+        }
+        return { templateItem, selectRow }
+      }
+    }
+
+    let newOrderItems = []
+    //add or replace item
+    newVisitOrderTemplateItemDtos.forEach(newOrderItem => {
+      const result = checkUpdateOrderItem(newOrderItem, visitOrderTemplateItems)
+      if (result) {
+        const { templateItem, selectRow } = result
+        if (!templateItem && !selectRow) {
+          //if item not in package A and not in orders, add to orders
+          newOrderItems.push({ ...newOrderItem })
+        } else if (selectRow) {
+          //if item in orders, update price and adjustment
+          selectRow.visitOrderTemplateItemFK = newOrderItem.id
+          selectRow.quantity = newOrderItem.quantity || 0
+          selectRow.unitPrice = newOrderItem.unitPrice
+          if (!selectRow.isExternalPrescription) {
+            if (
+              selectRow.type === ORDER_TYPES.SERVICE ||
+              selectRow.type === ORDER_TYPES.RADIOLOGY ||
+              selectRow.type === ORDER_TYPES.LAB
+            ) {
+              selectRow.total = newOrderItem.total || 0
+            } else {
+              selectRow.totalPrice = newOrderItem.total || 0
+            }
+            selectRow.adjAmount = newOrderItem.adjAmt
+            selectRow.adjType = newOrderItem.adjType
+            selectRow.adjValue = newOrderItem.adjValue
+            selectRow.isMinus = !!(
+              newOrderItem.adjValue && newOrderItem.adjValue < 0
+            )
+            selectRow.isExactAmount = !!(
+              newOrderItem.adjType && newOrderItem.adjType === 'ExactAmount'
+            )
+            selectRow.isOrderedByDoctor =
+              user.data.clinicianProfile.userProfile.role.clinicRoleFK === 1
+            selectRow.totalAfterItemAdjustment = newOrderItem.totalAftAdj || 0
+          }
+        }
+      }
+    })
+
+    //remove item that belongs A but not B
+    newItems
+      .filter(
+        item =>
+          !item.isDeleted &&
+          item.visitOrderTemplateItemFK &&
+          !newVisitOrderTemplateItemDtos.find(
+            x => x.id === item.visitOrderTemplateItemFK,
+          ),
+      )
+      .forEach(item => {
+        if (checkOrderDeleteable(item)) {
+          item.isDeleted = true
+        }
+        item.visitOrderTemplateItemFK = undefined
+      })
+
+    //Add New Order Item
+    let newAddItems = await addOrderItems(newOrderItems)
+    newItems = [...newItems, ...newAddItems]
+
+    dispatch({
+      type: 'orders/updateRows',
+      payload: {
+        newRows: newItems,
+      },
+    })
+  }
+
+  const updateVisitPurpose = async () => {
+    if (!newVisitPurposeFK) {
+      await dispatch({
+        type: 'visitRegistration/updateState',
+        payload: {
+          entity: {
+            ...visitRegistration.entity,
+            visit: {
+              ...visitRegistration.entity.visit,
+              visitOrderTemplate: undefined,
+              visitOrderTemplateFK: undefined,
+              visit_OrderTemplateItem: [],
+              isUpdateVisitOrderTemplate: true,
+            },
+          },
+        },
+      })
+      await replaceWithNewVisitPurpose(newVisitPurposeFK)
+    } else {
+      const response = await dispatch({
+        type: 'settingVisitOrderTemplate/queryOne',
+        payload: {
+          id: newVisitPurposeFK,
+        },
+      })
+      if (response) {
+        await replaceWithNewVisitPurpose(
+          newVisitPurposeFK,
+          response.visitOrderTemplateItemDtos,
+        )
+        await dispatch({
+          type: 'visitRegistration/updateState',
+          payload: {
+            entity: {
+              ...visitRegistration.entity,
+              visit: {
+                ...visitRegistration.entity.visit,
+                visitOrderTemplate: { ...response },
+                visitOrderTemplateFK: newVisitPurposeFK,
+                visit_OrderTemplateItem: [
+                  ...response.visitOrderTemplateItemDtos.map(item => {
+                    return {
+                      visitFK: visitRegistration.entity.visit.id,
+                      visitOrderTemplateItemFK: item.id,
+                      inventoryItemTypeFK: item.inventoryItemTypeFK,
+                      inventoryItemCode: item.inventoryItemCode,
+                      inventoryItemName: item.inventoryItemName,
+                      quantity: item.quantity,
+                      unitPrice: item.unitPrice,
+                      total: item.total,
+                      sortOrder: item.sortOrder,
+                      adjType: item.adjType,
+                      adjAmt: item.adjAmt,
+                      adjValue: item.adjValue,
+                      totalAftAdj: item.totalAftAdj,
+                    }
+                  }),
+                ],
+                isUpdateVisitOrderTemplate: true,
+              },
+            },
+          },
+        })
+      }
+    }
+    setNewVisitPurposeFK(undefined)
+    setShowEditVisitPurpose(false)
+  }
+
+  const getVisitPurposeName = () => {
+    return (
+      visitRegistration?.entity?.visit?.visitOrderTemplate?.displayValue || ''
+    )
   }
   return (
     <Fragment>
@@ -1499,7 +1889,9 @@ export default ({
                 const { visit } = entity || {}
                 const { children, ...restProps } = p
                 let newChildren = []
-                let visitOrderTemplateDetails = visit?.visitOrderTemplateFK
+                let visitOrderTemplateDetails = visit?.isClinicSessionClosed
+                  ? visit.visitOrderTemplateDetails || {}
+                  : visit?.visitOrderTemplateFK
                   ? getVisitOrderTemplateDetails(rows)
                   : {}
                 if (isExistPackage) {
@@ -1519,15 +1911,27 @@ export default ({
                             ></VisitOrderTemplateIndicateString>
                           </div>
                           <div>
-                            {isEnableEditOrder && (
+                            {!visit?.isClinicSessionClosed &&
+                              isEnableEditOrder && (
+                                <Link
+                                  style={{ textDecoration: 'underline' }}
+                                  onClick={e => {
+                                    e.preventDefault()
+                                    revertVisitPurpose()
+                                  }}
+                                >
+                                  Click to Revert Visit Purpose Item
+                                </Link>
+                              )}
+                            {from === 'EditOrder' && (
                               <Link
                                 style={{ textDecoration: 'underline' }}
                                 onClick={e => {
                                   e.preventDefault()
-                                  revertVisitPurpose()
+                                  setShowEditVisitPurpose(true)
                                 }}
                               >
-                                Click to Revert Visit Purpose Item
+                                Edit Visit Purpose
                               </Link>
                             )}
                           </div>
@@ -1549,8 +1953,8 @@ export default ({
                         color: 'rgba(0, 0, 0, 1)',
                       }}
                     >
-                      {visit && visit.visitOrderTemplateFK && (
-                        <div>
+                      <div>
+                        {visit && visit.visitOrderTemplateFK && (
                           <div>
                             <VisitOrderTemplateIndicateString
                               visitOrderTemplateDetails={
@@ -1558,21 +1962,39 @@ export default ({
                               }
                             ></VisitOrderTemplateIndicateString>
                           </div>
-                          <div>
-                            {isEnableEditOrder && (
-                              <Link
-                                style={{ textDecoration: 'underline' }}
-                                onClick={e => {
-                                  e.preventDefault()
-                                  revertVisitPurpose()
-                                }}
-                              >
-                                Click to Revert Visit Purpose Item
-                              </Link>
-                            )}
-                          </div>
+                        )}
+                        <div>
+                          {!visit?.isClinicSessionClosed && isEnableEditOrder && (
+                            <div>
+                              {visit && visit.visitOrderTemplateFK && (
+                                <Link
+                                  style={{
+                                    textDecoration: 'underline',
+                                    marginRight: 10,
+                                  }}
+                                  onClick={e => {
+                                    e.preventDefault()
+                                    revertVisitPurpose()
+                                  }}
+                                >
+                                  Revert Visit Purpose Item
+                                </Link>
+                              )}
+                              {from === 'EditOrder' && (
+                                <Link
+                                  style={{ textDecoration: 'underline' }}
+                                  onClick={e => {
+                                    e.preventDefault()
+                                    setShowEditVisitPurpose(true)
+                                  }}
+                                >
+                                  Edit Visit Purpose
+                                </Link>
+                              )}
+                            </div>
+                          )}
                         </div>
-                      )}
+                      </div>
                     </Table.Cell>,
                     React.cloneElement(children[6], {
                       colSpan: 2,
@@ -2144,6 +2566,134 @@ export default ({
           open={showRevertVisitPurposeItem}
           confirmRevert={confirmRevert}
         ></VisitOrderTemplateRevert>
+      </CommonModal>
+      <CommonModal
+        open={showEditVisitPurpose}
+        title='Edit Visit Purpose'
+        cancelText='Cancel'
+        maxWidth='sm'
+        onClose={() => {
+          setShowEditVisitPurpose(false)
+          setNewVisitPurposeFK(undefined)
+        }}
+        onConfirm={() => {
+          updateVisitPurpose()
+        }}
+        showFooter
+      >
+        <div style={{ margin: '0px 16px 8px 16px' }}>
+          <div style={{ position: 'relative', paddingLeft: 150 }}>
+            <div
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: 1,
+                width: 145,
+                textAlign: 'right',
+                fontWeight: 400,
+              }}
+            >
+              Current Visit Purpose:
+            </div>
+            <div style={{ fontWeight: 'bold', minHeight: 20 }}>
+              {getVisitPurposeName()}
+            </div>
+          </div>
+          <div style={{ position: 'relative', paddingLeft: 150 }}>
+            <div
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: 11,
+                width: 145,
+                textAlign: 'right',
+                fontWeight: 400,
+              }}
+            >
+              New Visit Purpose:
+            </div>
+            <Select
+              options={getAvailableOrderTemplate().filter(
+                x =>
+                  x.id !==
+                  visitRegistration.entity?.visit?.visitOrderTemplateFK,
+              )}
+              popupContainer='body'
+              authority='none'
+              onChange={val => {
+                setNewVisitPurposeFK(val)
+              }}
+              value={newVisitPurposeFK}
+              renderDropdown={option => {
+                const copayers = _.orderBy(
+                  option.visitOrderTemplate_Copayers.map(x => x.copayerName),
+                  data => data.toLowerCase(),
+                  'asc',
+                ).join(', ')
+                const tooltip = (
+                  <div>
+                    <div>{option.name}</div>
+                    {(option.visitOrderTemplate_Copayers || []).length > 0 && (
+                      <div>Co-Payer(s): {copayers}</div>
+                    )}
+                    {(option.visitOrderTemplate_Copayers || []).length ===
+                      0 && (
+                      <div>
+                        <i>General</i>
+                      </div>
+                    )}
+                  </div>
+                )
+                return (
+                  <Tooltip placement='right' title={tooltip}>
+                    <div>
+                      <div
+                        style={{
+                          fontWeight: '550',
+                          width: '100%',
+                          textOverflow: 'ellipsis',
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {option.name}
+                      </div>
+                      {(option.visitOrderTemplate_Copayers || []).length >
+                        0 && (
+                        <div
+                          style={{
+                            width: '100%',
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          <span>Co-Payer(s): </span>
+                          <span style={{ color: '#4255bd' }}>{copayers}</span>
+                        </div>
+                      )}
+                      {(option.visitOrderTemplate_Copayers || []).length ===
+                        0 && (
+                        <div
+                          style={{
+                            width: '100%',
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          <span style={{ color: 'green' }}>
+                            <i>General</i>
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </Tooltip>
+                )
+              }}
+            />
+          </div>
+        </div>
       </CommonModal>
     </Fragment>
   )

@@ -95,6 +95,7 @@ const ResultSelect = ({
         value={value}
         onChange={onChange}
         options={options}
+        allowClear
       />
       {shouldFlag && <FlagIndicator />}
     </div>
@@ -184,6 +185,7 @@ export const LabResultTable = ({
               shouldFlag={record.shouldFlag}
               onChange={onSave}
               options={options}
+              allowClear
             />
           )
         }

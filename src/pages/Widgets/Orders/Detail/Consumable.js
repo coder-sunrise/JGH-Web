@@ -80,7 +80,9 @@ const getVisitDoctorUserId = props => {
   validationSchema: Yup.object().shape({
     inventoryConsumableFK: Yup.number().required(),
     totalPrice: Yup.number().required(),
-    quantity: Yup.number().required(),
+    quantity: Yup.number()
+      .min(0.1, 'Min. value is 0.1')
+      .required(),
     totalAfterItemAdjustment: Yup.number().min(
       0.0,
       'The amount should be more than 0.00',

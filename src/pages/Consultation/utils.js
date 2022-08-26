@@ -485,6 +485,10 @@ const isPharmacyOrderUpdated = (orders, isPrescriptionSheetUpdated) => {
         isUpdatedPharmacy = true
         break
       }
+      if (isItemUpdate(pharmacyOrder[index])) {
+        isUpdatedPharmacy = true
+        break
+      }
       const drugMixture = pharmacyOrder[index].corPrescriptionItemDrugMixture
       for (let i = 0; i < drugMixture.length; i++) {
         if (
@@ -722,10 +726,14 @@ const getOrdersData = val => {
         subject: medicationStock[0].displayValue,
         totalAfterGST: po.amount,
         totalAfterItemAdjustment:
-        preOrderMedicationItem?.totalAfterItemAdjustment || po?.quantity * medicationStock[0].sellingPrice,
+          preOrderMedicationItem?.totalAfterItemAdjustment ||
+          po?.quantity * medicationStock[0].sellingPrice,
         totalAfterOverallAdjustment:
-        preOrderMedicationItem?.totalAfterOverallAdjustment || po?.quantity * medicationStock[0].sellingPrice,
-        totalPrice: preOrderMedicationItem?.totalPrice || po?.quantity * medicationStock[0].sellingPrice,
+          preOrderMedicationItem?.totalAfterOverallAdjustment ||
+          po?.quantity * medicationStock[0].sellingPrice,
+        totalPrice:
+          preOrderMedicationItem?.totalPrice ||
+          po?.quantity * medicationStock[0].sellingPrice,
         type: '1',
         unitPrice: medicationStock[0].sellingPrice || 0,
         instruction: po?.instruction || instruction,
