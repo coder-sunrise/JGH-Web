@@ -5,6 +5,8 @@ import { Button, Tooltip, Popconfirm } from '@/components'
 import PatientResultButton from './PatientResultPrintBtn'
 import Authorized from '@/utils/Authorized'
 import { ableToViewByAuthority } from '@/utils/utils'
+import { PATIENT_LAB } from '@/utils/constants'
+import { Attachment } from '@/components/_medisys'
 
 class PatientGrid extends PureComponent {
   configs = {
@@ -18,6 +20,7 @@ class PatientGrid extends PureComponent {
       { name: 'serviceCenterName', title: 'Service Center Name' },
       { name: 'visitPurposeFK', title: 'Visit Type' },
       { name: 'sentBy', title: 'Sent By' },
+      { name: 'result', title: 'Attachment' },
       { name: 'labTrackingStatusDisplayValue', title: 'Status' },
       { name: 'remarks', title: 'Remarks' },
       { name: 'action', title: 'Action' },
@@ -117,6 +120,26 @@ class PatientGrid extends PureComponent {
           )
         },
       },
+      {
+        columnName: 'result',
+        width: 250,
+        render: row => (
+          <div>
+            {row.labTrackingResults && (
+              <Attachment
+                label='Attachment'
+                attachments={row.labTrackingResults}
+                isReadOnly={true}
+                hideRemarks
+                listOnly={true}
+                simple
+                hiddenDelete
+                fieldName='labTrackingResults'
+              />
+            )}
+          </div>
+        ),
+      },
     ],
   }
 
@@ -136,7 +159,7 @@ class PatientGrid extends PureComponent {
   }
 
   render() {
-    const { height } = this.props
+    const { height, resultType } = this.props
     return (
       <CommonTableGrid
         type='labTrackingDetails'
@@ -145,6 +168,13 @@ class PatientGrid extends PureComponent {
           height,
         }}
         {...this.configs}
+        columns={
+          resultType === PATIENT_LAB.MEDICAL_CHECKUP
+            ? this.configs.columns.filter(
+                column => ['sentBy', 'remarks'].indexOf(column.name) < 0,
+              )
+            : this.configs.columns.filter(column => column.name !== 'result')
+        }
       />
     )
   }

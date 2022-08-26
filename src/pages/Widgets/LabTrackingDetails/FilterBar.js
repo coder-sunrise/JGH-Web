@@ -103,7 +103,15 @@ class FilterBar extends PureComponent {
     const { setFieldValue, resultType } = props
 
     setTimeout(() => {
-      setFieldValue('visitDate', [moment().toDate(), moment().toDate()])
+      setFieldValue('visitDate', [
+        resultType === PATIENT_LAB.MEDICAL_CHECKUP
+          ? moment()
+              .add(-1, 'month')
+              .add(1, 'day')
+              .toDate()
+          : moment().toDate(),
+        moment().toDate(),
+      ])
       setFieldValue(
         'visitTypeIDs',
         resultType === PATIENT_LAB.MEDICAL_CHECKUP ? [VISIT_TYPE.MC] : [-99],
