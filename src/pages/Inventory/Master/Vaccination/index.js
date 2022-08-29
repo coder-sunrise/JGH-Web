@@ -21,7 +21,7 @@ const Vaccination = ({
       { name: 'code', title: 'Code' },
       { name: 'displayValue', title: 'Name' },
       { name: 'favouriteSupplier', title: 'Supplier' },
-      { name: 'dispensingUOM', title: 'Disp. UOM' },
+      { name: 'dispensingUOMName', title: 'Disp. UOM' },
       { name: 'stock', title: 'Stock' },
       { name: 'averageCostPrice', title: 'Avg Cost Price' },
       { name: 'sellingPrice', title: 'Selling Price' },
@@ -42,12 +42,7 @@ const Vaccination = ({
       sortBy: 'FavouriteSupplierFkNavigation.displayValue',
     },
     {
-      columnName: 'dispensingUOM',
-      type: 'codeSelect',
-      code: 'ctmedicationunitofmeasurement',
-      labelField: 'displayValue',
-      sortBy: 'dispensingUOMFkNavigation.displayValue',
-      width: 110,
+      columnName: 'dispensingUOMName',
     },
     {
       columnName: 'stock',
