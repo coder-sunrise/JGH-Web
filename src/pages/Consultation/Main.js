@@ -487,24 +487,31 @@ const discardConsultation = ({ dispatch, values, user, visitRegistration }) => {
       type: `consultation/discard`,
       payload: cleanConsultation(values),
     }).then(r => {
-      if (r && values.versionNumber === 1) {
-        const { entity: visit = {} } = visitRegistration
-        const { id } = visit
-        const userProfile = user.data.clinicianProfile
-        const userName = `${
-          userProfile.title && userProfile.title.trim().length
-            ? `${userProfile.title}. ${userProfile.name || ''}`
-            : `${userProfile.name || ''}`
-        }`
-        const message = `${userName} discard prescription at ${moment().format(
-          'HH:mm',
-        )}`
-        sendNotification('PharmacyOrderDiscard', {
-          type: NOTIFICATION_TYPE.CONSULTAION,
-          status: NOTIFICATION_STATUS.OK,
-          message,
-          visitID: id,
-        })
+      const { entity: visit = {} } = visitRegistration
+      if (r) {
+        if (values.versionNumber === 1) {
+          const { id } = visit
+          const userProfile = user.data.clinicianProfile
+          const userName = `${
+            userProfile.title && userProfile.title.trim().length
+              ? `${userProfile.title}. ${userProfile.name || ''}`
+              : `${userProfile.name || ''}`
+          }`
+          const message = `${userName} discard prescription at ${moment().format(
+            'HH:mm',
+          )}`
+          sendNotification('PharmacyOrderDiscard', {
+            type: NOTIFICATION_TYPE.CONSULTAION,
+            status: NOTIFICATION_STATUS.OK,
+            message,
+            visitID: id,
+          })
+        } else {
+          if (visit.visit.visitStatus === VISIT_STATUS.PAUSED)
+            notification.success({
+              message: 'Visit status remain as Paused.',
+            })
+        }
       }
     })
   } else {
@@ -1168,9 +1175,11 @@ class Main extends React.Component {
               {({ rights }) => {
                 //
                 return rights === 'enable' &&
-                  [VISIT_STATUS.IN_CONS, VISIT_STATUS.WAITING].includes(
-                    visit.visitStatus,
-                  ) &&
+                  [
+                    VISIT_STATUS.IN_CONS,
+                    VISIT_STATUS.PAUSED,
+                    VISIT_STATUS.WAITING,
+                  ].includes(visit.visitStatus) &&
                   values.id ? (
                   <GridItem>
                     <h5
@@ -1304,24 +1313,17 @@ class Main extends React.Component {
               )}
               <Authorized authority='patientdashboard.startresumeconsultation'>
                 <React.Fragment>
-                  {[VISIT_STATUS.IN_CONS, VISIT_STATUS.WAITING].includes(
-                    visit.visitStatus,
-                  ) && (
+                  {[
+                    VISIT_STATUS.IN_CONS,
+                    VISIT_STATUS.WAITING,
+                    VISIT_STATUS.PAUSED,
+                  ].includes(visit.visitStatus) && (
                     <ProgressButton
                       onClick={this.pauseConsultation}
                       color='info'
                       icon={null}
                     >
                       Pause
-                    </ProgressButton>
-                  )}
-                  {visit.visitStatus === VISIT_STATUS.PAUSED && (
-                    <ProgressButton
-                      onClick={this.resumeConsultation}
-                      color='info'
-                      icon={null}
-                    >
-                      Resume
                     </ProgressButton>
                   )}
                 </React.Fragment>
@@ -1332,7 +1334,7 @@ class Main extends React.Component {
                 onClick={this.handleSignOffClick}
                 icon={null}
               >
-                Sign Off
+                Complete
               </ProgressButton>
             </GridItem>
           </GridContainer>
@@ -1542,10 +1544,7 @@ class Main extends React.Component {
     // const { summary } = orders
     // const { adjustments, total, gst, totalWithGst } = summary
     const matches = {
-      rights:
-        rights === 'enable' && visit.visitStatus === VISIT_STATUS.PAUSED
-          ? 'disable'
-          : rights,
+      rights: rights,
     }
     const { rows } = orders
     const draftPreOrderItem = patient?.entity?.pendingPreOrderItem?.map(po => {
