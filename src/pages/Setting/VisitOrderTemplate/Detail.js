@@ -21,16 +21,17 @@ import { DoctorLabel } from '@/components/_medisys'
 @withFormikExtend({
   mapPropsToValues: ({
     settingVisitOrderTemplate,
-    settingVisitOrderTemplate: { selectedExistEntity, isExist },
+    settingVisitOrderTemplate: { selectedExistEntity, isFromExisting },
     codetable,
   }) => {
     return {
       ...(settingVisitOrderTemplate.entity ||
-        (isExist && selectedExistEntity) ||
+        (isFromExisting && selectedExistEntity) ||
         settingVisitOrderTemplate.default),
       selectedResources: _.concat(
         (
-          (isExist && selectedExistEntity.visitOrderTemplate_Resources) ||
+          (isFromExisting &&
+            selectedExistEntity.visitOrderTemplate_Resources) ||
           settingVisitOrderTemplate.entity?.visitOrderTemplate_Resources ||
           []
         ).map(x => x.resourceFK),
@@ -41,7 +42,7 @@ import { DoctorLabel } from '@/components/_medisys'
       ),
       selectedCopayers: _.concat(
         (
-          (isExist && selectedExistEntity.visitOrderTemplate_Copayers) ||
+          (isFromExisting && selectedExistEntity.visitOrderTemplate_Copayers) ||
           settingVisitOrderTemplate.entity?.visitOrderTemplate_Copayers ||
           []
         ).map(x => x.copayerFK),

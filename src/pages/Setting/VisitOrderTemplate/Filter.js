@@ -69,7 +69,7 @@ class Filter extends PureComponent {
           type: 'settingVisitOrderTemplate/updateState',
           payload: {
             entity: undefined,
-            isExist: false,
+            isFromExisting: false,
           },
         })
         this.props.toggleModal()

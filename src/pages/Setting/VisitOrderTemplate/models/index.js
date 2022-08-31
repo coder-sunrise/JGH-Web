@@ -37,7 +37,7 @@ export default createListViewModel({
           type: 'queryOneDone',
           payload: {
             data: data.data,
-            isExist: true,
+            isFromExisting: true,
           },
         })
       },
@@ -52,7 +52,7 @@ export default createListViewModel({
           },
         }
       },
-      queryOneDone(st, { payload, payload: { isExist = false } }) {
+      queryOneDone(st, { payload, payload: { isFromExisting = false } }) {
         const {
           effectiveStartDate,
           effectiveEndDate,
@@ -70,7 +70,7 @@ export default createListViewModel({
           itemTypesRows = [
             ...itemTypesRows,
             ...currentTypeItems.map(item => {
-              if (isExist) {
+              if (isFromExisting) {
                 delete item.id
                 delete item.visitOrderTemplateFK
                 delete item.visitOrderTemplateMedicationItemDto?.id
@@ -107,7 +107,7 @@ export default createListViewModel({
         return {
           ...st,
           entity:
-            isExist === false
+            isFromExisting === false
               ? {
                   ...restValues,
                   visitOrderTemplate_Resources,
@@ -116,7 +116,7 @@ export default createListViewModel({
                   effectiveDates: [effectiveStartDate, effectiveEndDate],
                 }
               : undefined,
-          selectedExistEntity: isExist && {
+          selectedExistEntity: isFromExisting && {
             effectiveDates: [
               moment().formatUTC(),
               moment('2099-12-31T23:59:59').formatUTC(false),
@@ -137,7 +137,7 @@ export default createListViewModel({
               },
             ),
           },
-          isExist,
+          isFromExisting,
         }
       },
       queryDone(st, { payload }) {

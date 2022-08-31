@@ -64,7 +64,7 @@ function VisitPurposeForm(props) {
     await dispatch({
       type: 'settingVisitOrderTemplate/generateExistingFormEntity',
       payload: {
-        isExist: true,
+        isFromExisting: true,
         id: selectedOption,
       },
     })
