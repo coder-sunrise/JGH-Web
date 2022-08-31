@@ -23,7 +23,7 @@ const PendingPreOrder: React.FC = (props: any) => {
     height,
     schema,
   } = props
-  console.log(props)
+
   const [medications, setMedications] = useState()
   const [consumables, setConsumables] = useState()
   const [vaccinations, setVaccinations] = useState()
