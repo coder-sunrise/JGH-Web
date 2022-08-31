@@ -1428,7 +1428,7 @@ export default ({
 
   const getAvailableOrderTemplate = () => {
     const { visitOrderTemplateOptions = [] } = visitRegistration
-    const patientInfo = patient
+    const patientInfo = patient?.entity
     let availableVisitOrderTemplate = []
     var patientCopayers = patientInfo?.patientScheme
       ?.filter(x => !x.isExpired && x.isSchemeActive && x.isCopayerActive)
@@ -1718,6 +1718,14 @@ export default ({
   }
 
   const updateVisitPurpose = async () => {
+    if (
+      newVisitPurposeFK ===
+      visitRegistration?.entity?.visit?.visitOrderTemplateFK
+    ) {
+      setNewVisitPurposeFK(undefined)
+      setShowEditVisitPurpose(false)
+      return
+    }
     if (!newVisitPurposeFK) {
       await dispatch({
         type: 'visitRegistration/updateState',
@@ -1747,7 +1755,7 @@ export default ({
           newVisitPurposeFK,
           response.visitOrderTemplateItemDtos,
         )
-        await dispatch({
+        dispatch({
           type: 'visitRegistration/updateState',
           payload: {
             entity: {
@@ -1788,7 +1796,7 @@ export default ({
 
   const getVisitPurposeName = () => {
     return (
-      visitRegistration?.entity?.visit?.visitOrderTemplate?.displayValue || ''
+      visitRegistration?.entity?.visit?.visitOrderTemplate?.displayValue || '-'
     )
   }
   return (
@@ -1929,6 +1937,10 @@ export default ({
                                 style={{ textDecoration: 'underline' }}
                                 onClick={e => {
                                   e.preventDefault()
+                                  setNewVisitPurposeFK(
+                                    visitRegistration?.entity?.visit
+                                      ?.visitOrderTemplateFK,
+                                  )
                                   setShowEditVisitPurpose(true)
                                 }}
                               >
@@ -1986,6 +1998,10 @@ export default ({
                                   style={{ textDecoration: 'underline' }}
                                   onClick={e => {
                                     e.preventDefault()
+                                    setNewVisitPurposeFK(
+                                      visitRegistration?.entity?.visit
+                                        ?.visitOrderTemplateFK,
+                                    )
                                     setShowEditVisitPurpose(true)
                                   }}
                                 >
@@ -2614,11 +2630,7 @@ export default ({
               New Visit Purpose:
             </div>
             <Select
-              options={getAvailableOrderTemplate().filter(
-                x =>
-                  x.id !==
-                  visitRegistration.entity?.visit?.visitOrderTemplateFK,
-              )}
+              options={getAvailableOrderTemplate()}
               popupContainer='body'
               authority='none'
               onChange={val => {
@@ -2629,6 +2641,16 @@ export default ({
                 <VisitPurposeDropdownOption option={option} labelField='name' />
               )}
             />
+          </div>
+          <div style={{ color: 'red', fontStyle: 'italic' }}>
+            <div style={{ fontWeight: 'bold' }}>Warning:</div>
+            <div>
+              - Change visit purpose will remove all possible existing orders
+            </div>
+            <div>
+              - If new visit purpose is empty, system will treat existing orders
+              as normal orders
+            </div>
           </div>
         </div>
       </CommonModal>
