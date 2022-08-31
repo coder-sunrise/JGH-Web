@@ -23,7 +23,7 @@ const styles = theme => ({
 })
 
 function VisitPurposeDropdownOption(props) {
-  let { option, classes, labelField } = props
+  let { option, classes, labelField = 'name' } = props
 
   const copayers = _.orderBy(
     option?.visitOrderTemplate_Copayers,
