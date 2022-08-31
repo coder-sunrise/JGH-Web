@@ -277,7 +277,7 @@ class Vaccination extends PureComponent {
     }
   }
 
-  componentWillMount() {
+  componentWillMount = async () => {
     const { dispatch } = this.props
     const codeTableNameArray = [
       'inventoryvaccination',
@@ -287,6 +287,10 @@ class Vaccination extends PureComponent {
       'ctVaccinationUnitOfMeasurement',
       'documenttemplate',
     ]
+    await dispatch({
+      type: 'codetable/fetchCodes',
+      payload: { code: 'inventoryvaccination', force: true },
+    })
     dispatch({
       type: 'codetable/batchFetch',
       payload: {
@@ -317,7 +321,11 @@ class Vaccination extends PureComponent {
     setFieldValue('isNurseActualizeRequired', op.isNurseActualizable)
     let defaultBatch
     if (op.vaccinationStock) {
-      defaultBatch = op.vaccinationStock.find(o => o.isDefault === true)
+      defaultBatch = _.orderBy(
+        (op.vaccinationStock || []).filter(s => s.isDefault || s.stock > 0),
+        ['isDefault', 'expiryDate'],
+        ['asc'],
+      )[0]
       if (defaultBatch)
         this.setState({
           batchNo: defaultBatch.batchNo,
