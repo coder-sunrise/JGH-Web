@@ -180,6 +180,10 @@ export default createFormViewModel({
         const response = yield call(service.upsertIndividualComment, payload)
         return response
       },
+      *complete({ payload }, { call, put }) {
+        const response = yield call(service.complete, payload)
+        return response
+      },
     },
     reducers: {},
   },

@@ -32,6 +32,7 @@ import {
   Tooltip,
   notification,
 } from '@/components'
+import { ableToViewByAuthority } from '@/utils/utils'
 
 const styles = theme => ({
   commentContainer: {
@@ -212,6 +213,22 @@ const ReportingDetails = props => {
     }).then(r => {
       if (r) {
         refreshMedicalCheckup()
+      }
+    })
+  }
+
+  const onCompleteReport = () => {
+    dispatch({
+      type: 'medicalCheckupReportingDetails/complete',
+      payload: {
+        id: medicalCheckupReportingDetails.entity.id,
+      },
+    }).then(r => {
+      if (r) {
+        notification.success({
+          message: 'Medical Checkup report completed.',
+        })
+        onClose()
       }
     })
   }
@@ -405,6 +422,15 @@ const ReportingDetails = props => {
     if (modifyOthersCommentAccessRight.rights === 'enable') return true
     return false
   }
+
+  const isShowCompleteReport = () => {
+    if (
+      reportingStatus === MEDICALCHECKUP_WORKITEM_STATUS.COMPLETED ||
+      !ableToViewByAuthority('medicalcheckupworklist.completereport')
+    )
+      return false
+    return true
+  }
   return (
     <div>
       <div style={{ marginTop: '-20px' }}>
@@ -517,6 +543,16 @@ const ReportingDetails = props => {
                   onClick={() => checkUnsaveChange(genrateFinalReport)}
                 >
                   Generate Report
+                </Button>
+              )}
+              {isShowCompleteReport() && (
+                <Button
+                  size='small'
+                  type='success'
+                  style={{ margin: '0px 5px' }}
+                  onClick={onCompleteReport}
+                >
+                  Complete
                 </Button>
               )}
               {isShowUnlockReport() && (

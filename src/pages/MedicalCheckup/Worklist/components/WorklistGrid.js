@@ -34,6 +34,7 @@ import { GridContextMenuButton as GridButton } from 'medisys-components'
 import MoreVert from '@material-ui/icons/MoreVert'
 import Description from '@material-ui/icons/Description'
 import FindInPage from '@material-ui/icons/FindInPage'
+import DeleteForeverOutlined from '@material-ui/icons/DeleteForeverOutlined'
 import VisitForms from '@/pages/Reception/Queue/VisitForms'
 import FormatListBulletedOutlinedIcon from '@material-ui/icons/FormatListBulletedOutlined'
 import ListAltOutlinedIcon from '@material-ui/icons/ListAltOutlined'
@@ -223,6 +224,33 @@ const WorklistGrid = ({
       case '4':
         viewReport(row)
         break
+      case '5':
+        dispatch({
+          type: 'global/updateAppState',
+          payload: {
+            openConfirm: true,
+            openConfirmContent: `Confirm to delete medical checkup report?`,
+            onConfirmSave: () => {
+              dispatch({
+                type: `medicalCheckupWorklist/cancel`,
+                payload: {
+                  id: row.id,
+                },
+              }).then(o => {
+                if (o) {
+                  notification.success({
+                    message: 'Medical Checkup report deleted.',
+                  })
+                }
+                dispatch({
+                  type: `medicalCheckupWorklist/query`,
+                })
+              })
+            },
+          },
+        })
+
+        break
     }
   }
   const menus = [
@@ -246,6 +274,11 @@ const WorklistGrid = ({
       id: 4,
       label: 'View Reports',
       Icon: FindInPage,
+    },
+    {
+      id: 5,
+      label: 'Delete Medical Checkup',
+      Icon: DeleteForeverOutlined,
     },
   ]
 

@@ -94,6 +94,11 @@ export default createListViewModel({
         const response = yield call(service.generateAutoComment, payload)
         return response
       },
+
+      *cancel({ payload }, { call, put }) {
+        const response = yield call(service.cancel, payload)
+        return response
+      },
     },
     reducers: {},
   },
