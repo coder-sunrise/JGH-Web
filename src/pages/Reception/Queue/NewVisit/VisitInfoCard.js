@@ -47,6 +47,7 @@ import FormField from './formField'
 import { getMCReportLanguage } from './miscUtils'
 import Authorized from '@/utils/Authorized'
 import CannedTextButton from '@/pages/Widgets/Orders/Detail/CannedTextButton'
+import VisitPurposeDropdownOption from '@/components/Select/optionRender/visitPurpose'
 
 const styles = theme => ({
   verticalSpacing: {
@@ -633,76 +634,12 @@ const VisitInfoCard = ({
                     onChange={(e, opts) =>
                       handleVisitOrderTemplateChange(visitType, opts)
                     }
-                    renderDropdown={option => {
-                      const copayers = _.orderBy(
-                        option.visitOrderTemplate_Copayers.map(
-                          x => x.copayerName,
-                        ),
-                        data => data.toLowerCase(),
-                        'asc',
-                      ).join(', ')
-                      const tooltip = (
-                        <div>
-                          <div>{option.name}</div>
-                          {(option.visitOrderTemplate_Copayers || []).length >
-                            0 && <div>Co-Payer(s): {copayers}</div>}
-                          {(option.visitOrderTemplate_Copayers || []).length ===
-                            0 && (
-                            <div>
-                              <i>General</i>
-                            </div>
-                          )}
-                        </div>
-                      )
-                      return (
-                        <Tooltip placement='right' title={tooltip}>
-                          <div>
-                            <div
-                              style={{
-                                fontWeight: '550',
-                                width: '100%',
-                                textOverflow: 'ellipsis',
-                                overflow: 'hidden',
-                                whiteSpace: 'nowrap',
-                              }}
-                            >
-                              {option.name}
-                            </div>
-                            {(option.visitOrderTemplate_Copayers || []).length >
-                              0 && (
-                              <div
-                                style={{
-                                  width: '100%',
-                                  textOverflow: 'ellipsis',
-                                  overflow: 'hidden',
-                                  whiteSpace: 'nowrap',
-                                }}
-                              >
-                                <span>Co-Payer(s): </span>
-                                <span style={{ color: '#4255bd' }}>
-                                  {copayers}
-                                </span>
-                              </div>
-                            )}
-                            {(option.visitOrderTemplate_Copayers || [])
-                              .length === 0 && (
-                              <div
-                                style={{
-                                  width: '100%',
-                                  textOverflow: 'ellipsis',
-                                  overflow: 'hidden',
-                                  whiteSpace: 'nowrap',
-                                }}
-                              >
-                                <span style={{ color: 'green' }}>
-                                  <i>General</i>
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </Tooltip>
-                      )
-                    }}
+                    renderDropdown={option => (
+                      <VisitPurposeDropdownOption
+                        option={option}
+                        labelField='name'
+                      />
+                    )}
                   />
                 )
               }}

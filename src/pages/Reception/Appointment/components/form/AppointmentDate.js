@@ -12,6 +12,7 @@ import {
 } from '@/components'
 import { APPOINTMENT_STATUSOPTIONS } from '@/utils/constants'
 import _ from 'lodash'
+import VisitPurposeDropdownOption from '@/components/Select/optionRender/visitPurpose'
 
 const AppointmentDate = ({
   values,
@@ -113,75 +114,9 @@ const AppointmentDate = ({
               disabled={disabled}
               dropdownStyle={{ width: 500 }}
               dropdownMatchSelectWidth={false}
-              renderDropdown={option => {
-                const copayers = _.orderBy(
-                  option.visitOrderTemplate_Copayers,
-                  [data => data?.copayerName?.toLowerCase()],
-                  ['asc'],
-                )
-                  .map(x => x.copayerName)
-                  .join(', ')
-                const tooltip = (
-                  <div>
-                    <div>{option.name}</div>
-                    {(option.visitOrderTemplate_Copayers || []).length > 0 && (
-                      <div>Co-Payer(s): {copayers}</div>
-                    )}
-                    {(option.visitOrderTemplate_Copayers || []).length ===
-                      0 && (
-                      <div>
-                        <i>General</i>
-                      </div>
-                    )}
-                  </div>
-                )
-                return (
-                  <Tooltip placement='right' title={tooltip}>
-                    <div>
-                      <div
-                        style={{
-                          fontWeight: '550',
-                          width: '100%',
-                          textOverflow: 'ellipsis',
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {option.name}
-                      </div>
-                      {(option.visitOrderTemplate_Copayers || []).length >
-                        0 && (
-                        <div
-                          style={{
-                            width: '100%',
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          <span>Co-Payer(s): </span>
-                          <span style={{ color: '#4255bd' }}>{copayers}</span>
-                        </div>
-                      )}
-                      {(option.visitOrderTemplate_Copayers || []).length ===
-                        0 && (
-                        <div
-                          style={{
-                            width: '100%',
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          <span style={{ color: 'green' }}>
-                            <i>General</i>
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </Tooltip>
-                )
-              }}
+              renderDropdown={option => (
+                <VisitPurposeDropdownOption option={option} labelField='name' />
+              )}
               onChange={(e, opts) => handleVisitOrderTemplateChange(opts)}
             />
           )}

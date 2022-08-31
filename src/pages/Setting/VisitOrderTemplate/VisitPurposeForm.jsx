@@ -16,6 +16,7 @@ import {
 } from '@/components'
 import { withFormik } from 'formik'
 import { withStyles } from '@material-ui/core'
+import VisitPurposeDropdownOption from '@/components/Select/optionRender/visitPurpose'
 
 const styles = theme => ({
   VisitPurposeSelect: {
@@ -92,73 +93,12 @@ function VisitPurposeForm(props) {
                   'MuiDialog-container MuiDialog-scrollPaper',
                 )[0]
               }
-              renderDropdown={option => {
-                const copayers = _.orderBy(
-                  option.visitOrderTemplate_Copayers.map(x => x.copayerName),
-                  data => data.toLowerCase(),
-                  'asc',
-                ).join(', ')
-                const tooltip = (
-                  <div>
-                    <div>{option.displayValue}</div>
-                    {(option.visitOrderTemplate_Copayers || []).length > 0 && (
-                      <div>Co-Payer(s): {copayers}</div>
-                    )}
-                    {(option.visitOrderTemplate_Copayers || []).length ===
-                      0 && (
-                      <div>
-                        <i>General</i>
-                      </div>
-                    )}
-                  </div>
-                )
-                return (
-                  <Tooltip placement='right' title={tooltip}>
-                    <div>
-                      <div
-                        style={{
-                          fontWeight: '550',
-                          width: '100%',
-                          textOverflow: 'ellipsis',
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {option.displayValue}
-                      </div>
-                      {(option.visitOrderTemplate_Copayers || []).length >
-                        0 && (
-                        <div
-                          style={{
-                            width: '100%',
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          <span>Co-Payer(s): </span>
-                          <span style={{ color: '#4255bd' }}>{copayers}</span>
-                        </div>
-                      )}
-                      {(option.visitOrderTemplate_Copayers || []).length ===
-                        0 && (
-                        <div
-                          style={{
-                            width: '100%',
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          <span style={{ color: 'green' }}>
-                            <i>General</i>
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </Tooltip>
-                )
-              }}
+              renderDropdown={option => (
+                <VisitPurposeDropdownOption
+                  option={option}
+                  labelField='displayValue'
+                />
+              )}
             />
           </GridItem>
           <GridItem md={2} />
