@@ -5,11 +5,18 @@ import { FieldArray } from 'formik'
 import { getUniqueGUID } from 'utils'
 import { withStyles } from '@material-ui/core'
 import Add from '@material-ui/icons/Add'
-import { AuthorizedContext, Button } from '@/components'
+import {
+  AuthorizedContext,
+  Button,
+  Tooltip,
+  ProgressButton,
+  CommonModal,
+} from '@/components'
 import Authorized from '@/utils/Authorized'
 import ICD10DiagnosisItem from './item'
 import { USER_PREFERENCE_TYPE } from '@/utils/constants'
-
+import Grid from './Grid'
+import { ThreeSixtySharp } from '@material-ui/icons'
 const styles = theme => ({
   diagnosisRow: {
     marginBottom: theme.spacing(1),
@@ -23,6 +30,11 @@ const styles = theme => ({
   orders,
 }))
 class ICD10Diagnosis extends PureComponent {
+  state = {
+    showAddFromPastModal: false,
+    confirmPropsSave: true,
+    itemValues: [],
+  }
   componentDidMount() {
     const { dispatch } = this.props
     this.fetchCodeTables()
@@ -49,6 +61,23 @@ class ICD10Diagnosis extends PureComponent {
     }
   }
 
+  onSearchDiagnosisHistory = () => {
+    // console.log('onSearchDiagnosisHistory')
+    // console.log(this.props)
+    this.toggleAddFromPastModal()
+  }
+
+  getGridSelectNum = values => {
+    if (values >= 1) {
+      this.setState({ confirmPropsSave: false })
+    } else {
+      this.setState({ confirmPropsSave: true })
+    }
+  }
+  toggleAddFromPastModal = () => {
+    const { showAddFromPastModal } = this.state
+    this.setState({ showAddFromPastModal: !showAddFromPastModal })
+  }
   fetchCodeTables = async () => {
     const { dispatch } = this.props
     await Promise.all([
@@ -80,7 +109,6 @@ class ICD10Diagnosis extends PureComponent {
       isNew: true,
     })
   }
-
   handleAddDiagnosisClick = () => {
     let index = 0
     if (this.diagnosis.length === 0) {
@@ -188,7 +216,7 @@ class ICD10Diagnosis extends PureComponent {
 
   render() {
     const { rights, diagnosis, dispatch } = this.props
-
+    const { showAddFromPastModal } = this.state
     const favLang = diagnosis.favouriteDiagnosisLanguage || 'EN'
     return (
       <div>
@@ -249,6 +277,38 @@ class ICD10Diagnosis extends PureComponent {
             >
               <Add /> Add Diagnosis
             </Button>
+            <Tooltip title={`Add Diagnosis From diagnosis History`}>
+              <ProgressButton
+                color='primary'
+                icon={<Add />}
+                onClick={this.onSearchDiagnosisHistory}
+              >
+                History
+              </ProgressButton>
+            </Tooltip>
+            <CommonModal
+              open={showAddFromPastModal}
+              title='Diagnosis History'
+              onClose={this.toggleAddFromPastModal}
+              onConfirm={this.toggleAddFromPastModal}
+              maxWidth='md'
+              showFooter={true}
+              overrideLoading
+              cancelText='Cancel'
+              footProps={{
+                confirmProps: {
+                  disabled: this.state.confirmPropsSave,
+                },
+              }}
+            >
+              <>
+                {/* <FilterBar {...this.props}></FilterBar> */}
+                <Grid
+                  getGridSelectNum={this.getGridSelectNum}
+                  {...this.props}
+                ></Grid>
+              </>
+            </CommonModal>
           </div>
         </AuthorizedContext.Provider>
       </div>
