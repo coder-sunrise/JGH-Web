@@ -1,5 +1,4 @@
-trigger:
-  enabled: false
+trigger: none
 variables:
 - name: npm_config_cache
   value: $(Build.SourcesDirectory)/node_modules
