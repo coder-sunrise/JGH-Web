@@ -16,7 +16,7 @@ import {
 import request from '@/utils/request'
 import { convertToQuery } from '@/utils/utils'
 
-const styles = (theme) => ({
+const styles = theme => ({
   verticalSpacing: {
     // marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
@@ -30,7 +30,7 @@ class UserRoleForm extends React.PureComponent {
     selectedValue: undefined,
   }
 
-  onSelect = (value) => {
+  onSelect = value => {
     this.setState({ selectedValue: value })
   }
 
@@ -41,7 +41,7 @@ class UserRoleForm extends React.PureComponent {
     }
   }
 
-  render () {
+  render() {
     const { classes, footer } = this.props
     const { selectedValue } = this.state
     return (
@@ -49,8 +49,8 @@ class UserRoleForm extends React.PureComponent {
         <React.Fragment>
           <div className={classes.verticalSpacing}>
             <GridContainer>
-              <GridItem md={4} />
-              <GridItem md={4} className={classes.verticalSpacing}>
+              <GridItem md={2} />
+              <GridItem md={8} className={classes.verticalSpacing}>
                 <FastField
                   name='role'
                   render={args => (
@@ -60,6 +60,11 @@ class UserRoleForm extends React.PureComponent {
                       code='role'
                       orderBy={[['name'], ['asc']]}
                       onChange={this.onSelect}
+                      getPopupContainer={() =>
+                        document.getElementsByClassName(
+                          'MuiDialog-container MuiDialog-scrollPaper',
+                        )[0]
+                      }
                     />
                   )}
                 />
@@ -67,7 +72,7 @@ class UserRoleForm extends React.PureComponent {
             </GridContainer>
           </div>
 
-          <GridItem md={4} />
+          <GridItem md={2} />
           {footer &&
             footer({
               confirmBtnText: 'Add New',
