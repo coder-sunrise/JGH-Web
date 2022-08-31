@@ -1,4 +1,3 @@
-// material ui icons
 import Edit from '@material-ui/icons/Edit'
 import Money from '@material-ui/icons/AttachMoney'
 import Delete from '@material-ui/icons/Delete'
@@ -82,7 +81,7 @@ export const ContextMenuOptions = [
   },
   {
     id: 1,
-    label: 'Dispense',
+    label: 'Order Details',
     Icon: Money,
     disabled: false,
     authority: 'queue.dispense',

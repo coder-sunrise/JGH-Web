@@ -1075,8 +1075,7 @@ const DispenseDetails = ({
             {(!isFromMedicalCheckup ||
               (medicalCheckupWorkitemStatusFK !== 3 &&
                 medicalCheckupWorkitemStatusFK !== 4)) &&
-              !isRetailVisit &&
-              visitStatus !== VISIT_STATUS.PAUSED && (
+              !isRetailVisit && (
                 <Authorized authority='queue.dispense.editorder'>
                   <ProgressButton
                     color='primary'
