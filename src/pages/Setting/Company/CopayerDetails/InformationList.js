@@ -537,7 +537,7 @@ export const InformationList = props => {
           components={components}
           columns={columns}
           dataSource={filteredData}
-          pagination={{ position: ['none', 'none'] }}
+          pagination={false}
         />
       </Form>
 
