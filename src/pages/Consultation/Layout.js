@@ -618,7 +618,6 @@ class Layout extends PureComponent {
               zIndex: 1000,
               borderRadius: 0,
               marginBottom: 0,
-              // backgroundColor: '#f0f8ff',
             }}
           >
             <GridContainer justify='space-between'>

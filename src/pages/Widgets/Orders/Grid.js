@@ -48,6 +48,7 @@ import DrugMixtureInfo from '@/pages/Widgets/Orders/Detail/DrugMixtureInfo'
 import PackageDrawdownInfo from '@/pages/Widgets/Orders/Detail/PackageDrawdownInfo'
 import VisitOrderTemplateRevert from './VisitOrderTemplateRevert'
 import moment from 'moment'
+import VisitPurposeDropdownOption from '@/components/Select/optionRender/visitPurpose'
 export default ({
   orders,
   dispatch,
@@ -1427,7 +1428,7 @@ export default ({
 
   const getAvailableOrderTemplate = () => {
     const { visitOrderTemplateOptions = [] } = visitRegistration
-    const patientInfo = patient
+    const patientInfo = patient?.entity
     let availableVisitOrderTemplate = []
     var patientCopayers = patientInfo?.patientScheme
       ?.filter(x => !x.isExpired && x.isSchemeActive && x.isCopayerActive)
@@ -1717,6 +1718,14 @@ export default ({
   }
 
   const updateVisitPurpose = async () => {
+    if (
+      newVisitPurposeFK ===
+      visitRegistration?.entity?.visit?.visitOrderTemplateFK
+    ) {
+      setNewVisitPurposeFK(undefined)
+      setShowEditVisitPurpose(false)
+      return
+    }
     if (!newVisitPurposeFK) {
       await dispatch({
         type: 'visitRegistration/updateState',
@@ -1746,7 +1755,7 @@ export default ({
           newVisitPurposeFK,
           response.visitOrderTemplateItemDtos,
         )
-        await dispatch({
+        dispatch({
           type: 'visitRegistration/updateState',
           payload: {
             entity: {
@@ -1787,7 +1796,7 @@ export default ({
 
   const getVisitPurposeName = () => {
     return (
-      visitRegistration?.entity?.visit?.visitOrderTemplate?.displayValue || ''
+      visitRegistration?.entity?.visit?.visitOrderTemplate?.displayValue || '-'
     )
   }
   return (
@@ -1928,6 +1937,10 @@ export default ({
                                 style={{ textDecoration: 'underline' }}
                                 onClick={e => {
                                   e.preventDefault()
+                                  setNewVisitPurposeFK(
+                                    visitRegistration?.entity?.visit
+                                      ?.visitOrderTemplateFK,
+                                  )
                                   setShowEditVisitPurpose(true)
                                 }}
                               >
@@ -1985,6 +1998,10 @@ export default ({
                                   style={{ textDecoration: 'underline' }}
                                   onClick={e => {
                                     e.preventDefault()
+                                    setNewVisitPurposeFK(
+                                      visitRegistration?.entity?.visit
+                                        ?.visitOrderTemplateFK,
+                                    )
                                     setShowEditVisitPurpose(true)
                                   }}
                                 >
@@ -2613,85 +2630,27 @@ export default ({
               New Visit Purpose:
             </div>
             <Select
-              options={getAvailableOrderTemplate().filter(
-                x =>
-                  x.id !==
-                  visitRegistration.entity?.visit?.visitOrderTemplateFK,
-              )}
+              options={getAvailableOrderTemplate()}
               popupContainer='body'
               authority='none'
               onChange={val => {
                 setNewVisitPurposeFK(val)
               }}
               value={newVisitPurposeFK}
-              renderDropdown={option => {
-                const copayers = _.orderBy(
-                  option.visitOrderTemplate_Copayers.map(x => x.copayerName),
-                  data => data.toLowerCase(),
-                  'asc',
-                ).join(', ')
-                const tooltip = (
-                  <div>
-                    <div>{option.name}</div>
-                    {(option.visitOrderTemplate_Copayers || []).length > 0 && (
-                      <div>Co-Payer(s): {copayers}</div>
-                    )}
-                    {(option.visitOrderTemplate_Copayers || []).length ===
-                      0 && (
-                      <div>
-                        <i>General</i>
-                      </div>
-                    )}
-                  </div>
-                )
-                return (
-                  <Tooltip placement='right' title={tooltip}>
-                    <div>
-                      <div
-                        style={{
-                          fontWeight: '550',
-                          width: '100%',
-                          textOverflow: 'ellipsis',
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {option.name}
-                      </div>
-                      {(option.visitOrderTemplate_Copayers || []).length >
-                        0 && (
-                        <div
-                          style={{
-                            width: '100%',
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          <span>Co-Payer(s): </span>
-                          <span style={{ color: '#4255bd' }}>{copayers}</span>
-                        </div>
-                      )}
-                      {(option.visitOrderTemplate_Copayers || []).length ===
-                        0 && (
-                        <div
-                          style={{
-                            width: '100%',
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          <span style={{ color: 'green' }}>
-                            <i>General</i>
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </Tooltip>
-                )
-              }}
+              renderDropdown={option => (
+                <VisitPurposeDropdownOption option={option} labelField='name' />
+              )}
             />
+          </div>
+          <div style={{ color: 'red', fontStyle: 'italic' }}>
+            <div style={{ fontWeight: 'bold' }}>Warning:</div>
+            <div>
+              - Change visit purpose will remove all possible existing orders
+            </div>
+            <div>
+              - If new visit purpose is empty, system will treat existing orders
+              as normal orders
+            </div>
           </div>
         </div>
       </CommonModal>
