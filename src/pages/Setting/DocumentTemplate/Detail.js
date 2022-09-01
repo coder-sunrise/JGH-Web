@@ -89,8 +89,8 @@ class Detail extends PureComponent {
     const formFieldTips_Tooltip =
       "i.\tPatient's Name: PatientName\n" +
       "ii.\tPatient's Gender: PatientGender\n" +
-      "iii.\tBoolean for Female: GenderFemale\n" +
-      "iv.\tBoolean for Male: GenderMale\n" +
+      'iii.\tBoolean for Female: GenderFemale\n' +
+      'iv.\tBoolean for Male: GenderMale\n' +
       "v.\tPatient's DOB: PatientDOB\n" +
       "vi.\tPatient's Age: PatientAge\n" +
       "vii.\tPatient's Reference Number: PatientRefNo\n" +
@@ -105,24 +105,33 @@ class Detail extends PureComponent {
       <span>
         In order to add autofill feature, you must input the exact same instance
         into the Name column. For example: To auto-populate patient's name, you
-        need to key in PatientName into the Name column in Forms Fields -&gt; Text
-        Form -&gt; Field Settings Mouse over the 
+        need to key in PatientName into the Name column in Forms Fields -&gt;
+        Text Form -&gt; Field Settings Mouse over the
         <span>
-          <InfoTwoTone color='primary' style={{verticalAlign:'text-top'}}/>
-        </span> 
+          <InfoTwoTone color='primary' style={{ verticalAlign: 'text-top' }} />
+        </span>
         icon for more autofill instances.
       </span>
     )
 
     return (
-      <div style={{marginLeft:10}}>
+      <div style={{ marginLeft: 10 }}>
         <p>
-        <span style={{fontWeight:'bold',textDecoration:'underline'}}>{formFieldTips_Subject}</span>
-          <Popover icon={null}
-                   placement='topLeft'
-                   trigger='hover'
-                   content={<span style={{whiteSpace:'pre'}}>{formFieldTips_Tooltip}</span>}>
-              <InfoTwoTone color='primary' style={{verticalAlign:'text-top'}}/>
+          <span style={{ fontWeight: 'bold', textDecoration: 'underline' }}>
+            {formFieldTips_Subject}
+          </span>
+          <Popover
+            icon={null}
+            placement='topLeft'
+            trigger='hover'
+            content={
+              <span style={{ whiteSpace: 'pre' }}>{formFieldTips_Tooltip}</span>
+            }
+          >
+            <InfoTwoTone
+              color='primary'
+              style={{ verticalAlign: 'text-top' }}
+            />
           </Popover>
         </p>
         <p>{formFieldTips_Content}</p>
@@ -207,7 +216,10 @@ class Detail extends PureComponent {
                       localFilter={x =>
                         filterTemplateTypes.some(y => x.id === y)
                       }
-                      orderBy={[[x=>filterTemplateTypes.findIndex(y=>y === x.id)],['asc']]}
+                      orderBy={[
+                        [x => filterTemplateTypes.findIndex(y => y === x.id)],
+                        ['asc'],
+                      ]}
                       code='LTDocumentTemplateType'
                       label='Document Type'
                       onChange={v => {
@@ -318,17 +330,34 @@ class Detail extends PureComponent {
                         }}
                         created={this.componentCreated.bind(this)}
                         height={'calc( 100vh - 340px)'}
-                        toolbarClick={(e)=>{
-                          const { item:{properties:{ id }}} = e
-                          if(id === 'signaturePanel'){
+                        toolbarClick={e => {
+                          const {
+                            item: {
+                              properties: { id },
+                            },
+                          } = e
+                          if (id === 'signaturePanel') {
                             const currentUser = 'Everyone'
                             const signaturePlaceholder = ' '
-                            const startOffset = this.edContainer.documentEditor.selection.endOffset
-                            this.edContainer.documentEditor.editor.insertText(signaturePlaceholder)
-                            const endOffset = this.edContainer.documentEditor.selection.endOffset
+                            const startOffset = this.edContainer.documentEditor
+                              .selection.endOffset
+                            this.edContainer.documentEditor.editor.insertText(
+                              signaturePlaceholder,
+                            )
+                            const endOffset = this.edContainer.documentEditor
+                              .selection.endOffset
                             // console.log(startOffset,endOffset)
-                            this.edContainer.documentEditor.selection.select(startOffset,endOffset)
-                            this.edContainer.documentEditor.editor.insertEditingRegion(currentUser)
+                            this.edContainer.documentEditor.selection.select(
+                              startOffset,
+                              endOffset,
+                            )
+                            this.edContainer.documentEditor.editor.insertEditingRegion(
+                              currentUser,
+                            )
+                            this.edContainer.documentEditor.selection.select(
+                              endOffset,
+                              endOffset,
+                            )
                           }
                         }}
                         toolbarItems={[
@@ -352,13 +381,13 @@ class Detail extends PureComponent {
                           //'RestrictEditing',
                           'FormFields',
                           {
-                            id:'signaturePanel',
-                            text:'Signature Panel',
-                            prefixIcon:'e-signature',
-                          }
+                            id: 'signaturePanel',
+                            text: 'Signature Panel',
+                            prefixIcon: 'e-signature',
+                          },
                         ]}
                       />
-                      <this.FormFieldTips/>
+                      <this.FormFieldTips />
                     </div>
                   ) : (
                     <RichEditor

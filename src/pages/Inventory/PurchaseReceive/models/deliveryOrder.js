@@ -71,7 +71,10 @@ export default createFormViewModel({
         const { rows, purchaseOrder } = payload
         let outstandingItem = []
         const tempList = rows.filter(
-          x => (x.orderQuantity - x.quantityReceived > 0 || x.bonusQuantity - x.bonusReceived > 0) && !x.isDeleted,
+          x =>
+            (x.orderQuantity - x.quantityReceived > 0 ||
+              x.bonusQuantity - x.bonusReceived > 0) &&
+            !x.isDeleted,
         )
         if (!_.isEmpty(tempList)) {
           outstandingItem = tempList.map(x => {
@@ -124,25 +127,27 @@ export default createFormViewModel({
 
         const newOSItem = purchaseOrderOutstandingItem.map(o => {
           if (MedicationItemList.length > 0 && o.type === 1) {
-           
-            return {
-              ...o,
-              id: undefined, 
-              purchaseOrderItemFK: o.purchaseOrderMedicationItem.purchaseOrderItemFK,
-            }
-          }
-          if (ConsumableItemList.length > 0 && o.type === 2) { 
             return {
               ...o,
               id: undefined,
-              purchaseOrderItemFK: o.purchaseOrderConsumableItem.purchaseOrderItemFK,
+              purchaseOrderItemFK:
+                o.purchaseOrderMedicationItem.purchaseOrderItemFK,
             }
           }
-          if (VaccinationItemList.length > 0 && o.type === 3) {  
+          if (ConsumableItemList.length > 0 && o.type === 2) {
             return {
               ...o,
-              id: undefined, 
-              purchaseOrderItemFK: o.purchaseOrderVaccinationIItem.purchaseOrderItemFK,
+              id: undefined,
+              purchaseOrderItemFK:
+                o.purchaseOrderConsumableItem.purchaseOrderItemFK,
+            }
+          }
+          if (VaccinationItemList.length > 0 && o.type === 3) {
+            return {
+              ...o,
+              id: undefined,
+              purchaseOrderItemFK:
+                o.purchaseOrderVaccinationItem.purchaseOrderItemFK,
             }
           }
           return o
@@ -203,7 +208,10 @@ export default createFormViewModel({
           let quantityReceivedFromOtherDOs = 0
           if (currentItem) {
             quantityReceivedFromOtherDOs =
-              (o.quantityReceived + o.bonusQuantity) - (currentItem.totalCurrentReceivingQty + currentItem.totalCurrentReceivingBonusQty)
+              o.quantityReceived +
+              o.bonusQuantity -
+              (currentItem.totalCurrentReceivingQty +
+                currentItem.totalCurrentReceivingBonusQty)
           }
           return {
             ...o,

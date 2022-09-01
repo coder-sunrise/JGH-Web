@@ -345,7 +345,6 @@ const VisitInfoCard = ({
         }
       }),
   ]
-
   useEffect(() => {
     const noVisitGroup = !values.visitGroup
     if (noVisitGroup && familyMembers) {
