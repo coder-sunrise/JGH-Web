@@ -14,14 +14,6 @@ import Yup from '@/utils/yup'
 // interface IPendingPreOrderProps {
 // }
 
-const preOrderSchema = Yup.object().shape({
-  preOrderItemType: Yup.string().required(),
-  itemName: Yup.string().required(),
-  quantity: Yup.number()
-    .required()
-    .min(1),
-})
-
 const PendingPreOrder: React.FC = (props: any) => {
   const {
     values,
@@ -29,7 +21,9 @@ const PendingPreOrder: React.FC = (props: any) => {
       data: { clinicianProfile },
     },
     height,
+    schema,
   } = props
+  console.log(props)
   const [medications, setMedications] = useState()
   const [consumables, setConsumables] = useState()
   const [vaccinations, setVaccinations] = useState()
@@ -269,7 +263,7 @@ const PendingPreOrder: React.FC = (props: any) => {
   }
   const handleItemChanged = (e: any) => {
     const { row, option } = e
-    const { dispensingUOM = {}, prescribingUOM = {}, uom = {} } = option
+    const { dispensingUOM = {}, prescribingUOM = {}, uom = {} } = option || {}
     row.itemName = option?.combinDisplayValue
     row.code = option?.code
     if (row.preOrderItemType === preOrderItemCategory[0].value) {
@@ -547,7 +541,7 @@ const PendingPreOrder: React.FC = (props: any) => {
       <div style={{ maxHeight: height - 250, overflowY: 'auto' }}>
         <FastEditableTableGrid
           rows={getFilteredRows(values.pendingPreOrderItem)}
-          schema={preOrderSchema}
+          schema={schema.pendingPreOrderItem._subType}
           FuncProps={{
             pager: false,
             sortConfig: {

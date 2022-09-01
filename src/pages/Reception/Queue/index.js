@@ -637,20 +637,8 @@ class Queue extends React.Component {
         const valid = this.isAssignedDoctor(row)
         if (valid) {
           const version = Date.now()
-
           if (row.visitStatus === VISIT_STATUS.PAUSED) {
-            dispatch({
-              type: `consultation/resume`,
-              payload: {
-                id: row.visitFK,
-                version,
-              },
-            }).then(o => {
-              if (o)
-                history.push(
-                  `/reception/queue/consultation?qid=${row.id}&cid=${o.id}&pid=${row.patientProfileFK}&v=${version}`,
-                )
-            })
+            this.editConsultation(row)
           } else {
             history.push(
               `/reception/queue/consultation?qid=${row.id}&cid=${row.clinicalObjectRecordFK}&pid=${row.patientProfileFK}&v=${version}`,
@@ -662,48 +650,7 @@ class Queue extends React.Component {
       }
       case '7': {
         // edit consultation
-        const version = Date.now()
-        dispatch({
-          type: `consultation/edit`,
-          payload: {
-            id: row.visitFK,
-            version,
-          },
-        }).then(o => {
-          if (o)
-            if (o.updateByUserFK !== this.props.user.id) {
-              const { clinicianprofile = [] } = this.props.codetable
-              const editingUser = clinicianprofile.find(
-                m => m.userProfileFK === o.updateByUserFK,
-              ) || {
-                name: 'Someone',
-              }
-              dispatch({
-                type: 'global/updateAppState',
-                payload: {
-                  openConfirm: true,
-                  openConfirmContent: `${editingUser.name} is currently editing the patient note, do you want to overwrite?`,
-                  onConfirmSave: () => {
-                    dispatch({
-                      type: `consultation/overwrite`,
-                      payload: {
-                        id: row.visitFK,
-                        version,
-                      },
-                    }).then(c => {
-                      history.push(
-                        `/reception/queue/consultation?qid=${row.id}&cid=${c.id}&pid=${row.patientProfileFK}&v=${version}`,
-                      )
-                    })
-                  },
-                },
-              })
-            } else {
-              history.push(
-                `/reception/queue/consultation?qid=${row.id}&cid=${o.id}&pid=${row.patientProfileFK}&v=${version}`,
-              )
-            }
-        })
+        this.editConsultation(row)
         break
       }
       case '8': {
@@ -740,6 +687,51 @@ class Queue extends React.Component {
     }, 3000)
   }
 
+  editConsultation = row => {
+    const version = Date.now()
+    const { dispatch } = this.props
+    dispatch({
+      type: `consultation/edit`,
+      payload: {
+        id: row.visitFK,
+        version,
+      },
+    }).then(o => {
+      if (o)
+        if (o.updateByUserFK !== this.props.user.id) {
+          const { clinicianprofile = [] } = this.props.codetable
+          const editingUser = clinicianprofile.find(
+            m => m.userProfileFK === o.updateByUserFK,
+          ) || {
+            name: 'Someone',
+          }
+          dispatch({
+            type: 'global/updateAppState',
+            payload: {
+              openConfirm: true,
+              openConfirmContent: `${editingUser.name} is currently editing the patient note, do you want to overwrite?`,
+              onConfirmSave: () => {
+                dispatch({
+                  type: `consultation/overwrite`,
+                  payload: {
+                    id: row.visitFK,
+                    version,
+                  },
+                }).then(c => {
+                  history.push(
+                    `/reception/queue/consultation?qid=${row.id}&cid=${c.id}&pid=${row.patientProfileFK}&v=${version}`,
+                  )
+                })
+              },
+            },
+          })
+        } else {
+          history.push(
+            `/reception/queue/consultation?qid=${row.id}&cid=${o.id}&pid=${row.patientProfileFK}&v=${version}`,
+          )
+        }
+    })
+  }
   onQueueListing = row => {
     const { dispatch } = this.props
     const visitId = row.id

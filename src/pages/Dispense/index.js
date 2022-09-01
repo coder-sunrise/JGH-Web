@@ -44,6 +44,7 @@ import { getOrdersData } from '@/pages/Consultation/utils'
 class Dispense extends PureComponent {
   constructor(props) {
     super(props)
+    this.state = { isCodeTableLoaded: false }
     this.getCodeTables()
   }
 
@@ -136,6 +137,7 @@ class Dispense extends PureComponent {
           queryCodeTablesDone: true,
         },
       })
+      this.setState({ isCodeTableLoaded: true })
     })
   }
 
@@ -229,7 +231,10 @@ class Dispense extends PureComponent {
           <SizeContainer size='sm'>
             <React.Fragment>
               {!editingOrder ? (
-                <Main {...this.props} />
+                <Main
+                  {...this.props}
+                  isCodeTableLoaded={this.state.isCodeTableLoaded}
+                />
               ) : (
                 <EditOrder {...this.props} />
               )}

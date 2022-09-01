@@ -574,7 +574,7 @@ class PrescriptionSetList extends PureComponent {
       type: 'prescriptionSet/query',
       payload: {
         prescriptionSetName: searchName,
-        pageSize: 99999,
+        pagesize: 99999,
         group: [
           {
             ownedByUserFK: user.data.id,

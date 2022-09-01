@@ -19,13 +19,21 @@ import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
 import { DoctorLabel } from '@/components/_medisys'
 @connect(({ codetable }) => ({ codetable }))
 @withFormikExtend({
-  mapPropsToValues: ({ settingVisitOrderTemplate, codetable }) => {
+  mapPropsToValues: ({
+    settingVisitOrderTemplate,
+    settingVisitOrderTemplate: { selectedExistEntity, isFromExisting },
+    codetable,
+  }) => {
     return {
       ...(settingVisitOrderTemplate.entity ||
+        (isFromExisting && selectedExistEntity) ||
         settingVisitOrderTemplate.default),
       selectedResources: _.concat(
         (
-          settingVisitOrderTemplate.entity?.visitOrderTemplate_Resources || []
+          (isFromExisting &&
+            selectedExistEntity.visitOrderTemplate_Resources) ||
+          settingVisitOrderTemplate.entity?.visitOrderTemplate_Resources ||
+          []
         ).map(x => x.resourceFK),
         settingVisitOrderTemplate.entity?.visitOrderTemplate_Resources
           ?.length === codetable?.ctresource?.length
@@ -34,7 +42,9 @@ import { DoctorLabel } from '@/components/_medisys'
       ),
       selectedCopayers: _.concat(
         (
-          settingVisitOrderTemplate.entity?.visitOrderTemplate_Copayers || []
+          (isFromExisting && selectedExistEntity.visitOrderTemplate_Copayers) ||
+          settingVisitOrderTemplate.entity?.visitOrderTemplate_Copayers ||
+          []
         ).map(x => x.copayerFK),
         settingVisitOrderTemplate.entity?.visitOrderTemplate_Copayers
           ?.length === codetable?.ctcopayer?.length
@@ -178,12 +188,7 @@ class Detail extends PureComponent {
   }
 
   render() {
-    const {
-      theme,
-      footer,
-      values,
-      handleSubmit,
-    } = this.props
+    const { theme, footer, values, handleSubmit } = this.props
     return (
       <Fragment>
         <div

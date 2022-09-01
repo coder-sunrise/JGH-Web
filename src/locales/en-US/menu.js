@@ -59,7 +59,7 @@ export default {
   'menu.reception': 'Reception',
   'menu.reception.queue': 'Queue',
   'menu.reception.appointment': 'Appointment',
-  'menu.reception.dispense': 'Dispense',
+  'menu.reception.dispense': 'Order Details',
   'menu.reception.labTracking': 'External Tracking',
   'menu.patient': 'Patient Database',
   'menu.patient.search': 'Search Patient',

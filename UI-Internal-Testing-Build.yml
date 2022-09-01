@@ -1,0 +1,60 @@
+trigger: none
+variables:
+- name: npm_config_cache
+  value: $(Build.SourcesDirectory)/node_modules
+- group: ui-internal_testing-variable
+- group: ui-uat-variable
+- group: ui-production-variable
+stages:
+- stage: __default
+  jobs:
+  - job: buildInternalTestingJob
+    pool:
+      name: 'Medicloud'
+      demands:
+      - EnableBuild
+      - EnableBuild -equals True
+    workspace:
+      clean: all
+    steps:
+    - task: CmdLine@2
+      displayName: 'npm install '
+      inputs:
+        script: npm install
+    - task: CmdLine@2
+      displayName: 'Copy template config to config file'
+      inputs:
+        script: dir & copy "config\config.template.js" "config\config.js" /Y
+    - task: PowerShell@2
+      env:
+        environment: $(process.env.client_env)
+        client_secret: $(process.env.client_secret)
+        signalr_url: $(process.env.signalrUrl)
+        environment_url: $(process.env.url)
+        default_cliniccode: $(process.env.default_cliniccode)
+      displayName: Replace placeholders with actual values
+      inputs:
+        targetType: inline
+        script: |
+          ((Get-Content -path config\config.js -Raw) -replace '{environment}',$env:environment) | Set-Content -Path config\config.js
+          ((Get-Content -path config\config.js -Raw) -replace '{client_secret}',$env:client_secret) | Set-Content -Path config\config.js
+          ((Get-Content -path config\config.js -Raw) -replace '{signalr_url}',$env:signalr_url) | Set-Content -Path config\config.js
+          ((Get-Content -path config\config.js -Raw) -replace '{url}',$env:environment_url) | Set-Content -Path config\config.js
+          ((Get-Content -path config\config.js -Raw) -replace '{default_cliniccode}',$env:default_cliniccode) | Set-Content -Path config\config.js
+          (Get-Content -path config\config.js -Raw)
+    - task: CmdLine@2
+      displayName: 'npm build'
+      inputs:
+        script: set NODE_OPTIONS=--max_old_space_size=16384 & npm run build
+    - task: CopyFiles@2
+      displayName: 'Copy Internal Testing artifacts to staging directory'
+      inputs:
+        SourceFolder: '.\dist'
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/Internal_Testing'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Internal Testing artifacts'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/Internal_Testing'
+        ArtifactName: 'drop-internal_testing'
+        publishLocation: 'Container'
