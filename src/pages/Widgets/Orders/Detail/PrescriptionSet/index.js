@@ -16,7 +16,7 @@ import {
 } from '@/pages/Widgets/Orders/utils'
 import Authorized from '@/utils/Authorized'
 import { getUniqueId, getTranslationValue } from '@/utils/utils'
-import FitlerBar from './FilterBar'
+import FilterBar from './FilterBar'
 import Grid from './Grid'
 import Details from './Details'
 import { getClinicianProfile } from '../../../ConsultationDocument/utils'
@@ -711,7 +711,7 @@ class PrescriptionSetList extends PureComponent {
     return (
       <LoadingWrapper loading={show} text='Retrieving prescription set list...'>
         <div>
-          <FitlerBar
+          <FilterBar
             handelNewPrescriptionSet={async () => {
               const {
                 dispatch,

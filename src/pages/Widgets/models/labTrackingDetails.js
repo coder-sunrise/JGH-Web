@@ -1,3 +1,4 @@
+import { notification } from '@/components'
 import { createListViewModel } from 'medisys-model'
 import service from '../LabTrackingDetails/services'
 
@@ -24,6 +25,18 @@ export default createListViewModel({
         const { status, data = [] } = r
         if (status === '200') return data
         return []
+      },
+      *discard({ payload }, { call }) {
+        const { cfg = {} } = payload
+        const r = yield call(service.discard, payload)
+        if (r) {
+          if (cfg.message) {
+            notification.success({
+              message: cfg.message,
+            })
+          }
+        }
+        return r
       },
     },
     reducers: {

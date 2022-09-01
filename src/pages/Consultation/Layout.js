@@ -92,7 +92,7 @@ class Layout extends PureComponent {
       defaultLayout = JSON.parse(userDefaultLayout.consultationTemplate)
       defaultLayout = {
         ...defaultLayout,
-        widgets: defaultLayout.widgets.filter(this.fitlerItemWithAccessRight),
+        widgets: defaultLayout.widgets.filter(this.filterItemWithAccessRight),
       }
     } else {
       // disable local setting(!localStorage.getItem('consultationLayout')) {
@@ -320,7 +320,7 @@ class Layout extends PureComponent {
     )
   }
 
-  fitlerItemWithAccessRight = itemId => {
+  filterItemWithAccessRight = itemId => {
     const w = widgets.find(m => m.id === itemId)
     if (!w) return false
     const widgetAccessRight = Authorized.check(w.accessRight)
@@ -335,7 +335,7 @@ class Layout extends PureComponent {
 
     const r = {
       widgets: defaultWidgets
-        .filter(w => this.fitlerItemWithAccessRight(w.id))
+        .filter(w => this.filterItemWithAccessRight(w.id))
         .map(o => o.id),
     }
     sizes.forEach(s => {

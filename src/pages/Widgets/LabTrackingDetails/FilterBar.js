@@ -44,7 +44,7 @@ const searchResult = (values, props) => {
   const {
     visitDate,
     isAllDateChecked,
-    labTrackingStatusFK,
+    labTrackingStatusIDs,
     serviceName,
     searchValue,
     visitTypeIDs,
@@ -75,7 +75,6 @@ const searchResult = (values, props) => {
       ? undefined
       : visitStartDate || undefined,
     lsteql_visitDate: isAllDateChecked ? undefined : visitEndDate || undefined,
-    labTrackingStatusFK: labTrackingStatusFK || undefined,
     apiCriteria: {
       searchValue:
         searchValue && searchValue.trim().length ? searchValue : undefined,
@@ -89,6 +88,10 @@ const searchResult = (values, props) => {
           : undefined,
       serviceName:
         serviceName && serviceName.trim().length ? serviceName : undefined,
+      labTrackingStatusIDs:
+        labTrackingStatusIDs && labTrackingStatusIDs.length > 0
+          ? labTrackingStatusIDs.join(',')
+          : undefined,
     },
   }
   dispatch({
@@ -100,23 +103,6 @@ const searchResult = (values, props) => {
 class FilterBar extends PureComponent {
   constructor(props) {
     super(props)
-    const { setFieldValue, resultType } = props
-
-    setTimeout(() => {
-      setFieldValue('visitDate', [
-        resultType === PATIENT_LAB.MEDICAL_CHECKUP
-          ? moment()
-              .add(-1, 'month')
-              .add(1, 'day')
-              .toDate()
-          : moment().toDate(),
-        moment().toDate(),
-      ])
-      setFieldValue(
-        'visitTypeIDs',
-        resultType === PATIENT_LAB.MEDICAL_CHECKUP ? [VISIT_TYPE.MC] : [-99],
-      )
-    }, 1)
   }
 
   componentDidMount = () => {
@@ -246,13 +232,23 @@ class FilterBar extends PureComponent {
             }}
           />
           <FastField
-            name='labTrackingStatusFK'
+            name='labTrackingStatusIDs'
             render={args => (
               <CodeSelect
                 label='Status'
                 {...args}
                 code='ltlabtrackingstatus'
                 style={{ width: 110, marginLeft: 0 }}
+                mode='multiple'
+                all={-99}
+                defaultOptions={[
+                  {
+                    isExtra: true,
+                    id: -99,
+                    displayValue: 'All status',
+                  },
+                ]}
+                maxTagPlaceholder='status'
               />
             )}
           />
@@ -280,6 +276,22 @@ export default memo(
   withFormikExtend({
     handleSubmit: (values, { props, resetForm }) => {
       searchResult(values, props)
+    },
+    mapPropsToValues: ({ resultType }) => {
+      return {
+        visitDate: [
+          resultType === PATIENT_LAB.MEDICAL_CHECKUP
+            ? moment()
+                .add(-1, 'month')
+                .add(1, 'day')
+                .toDate()
+            : moment().toDate(),
+          moment().toDate(),
+        ],
+        visitTypeIDs:
+          resultType === PATIENT_LAB.MEDICAL_CHECKUP ? [VISIT_TYPE.MC] : [-99],
+        labTrackingStatusIDs: [1, 2, 3, 4],
+      }
     },
   })(FilterBar),
 )

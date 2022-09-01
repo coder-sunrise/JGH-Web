@@ -27,6 +27,14 @@ const styles = theme => ({
     alignItems: 'stretch',
     height: 'calc(100vh - 80px)',
   },
+  errorContainer: {
+    textAlign: 'left',
+    lineHeight: '1em',
+    paddingBottom: theme.spacing(1),
+    '& span': {
+      fontSize: '.8rem',
+    },
+  },
 })
 
 @connect(({ labTrackingDetails, clinicSettings, global }) => ({
@@ -56,7 +64,7 @@ class LabTrackingDetails extends PureComponent {
       },
     })
   }
-  
+
   toggleModal = () => {
     const { labTrackingDetails } = this.props
     this.props.dispatch({
@@ -176,7 +184,7 @@ class LabTrackingDetails extends PureComponent {
           onConfirm={this.toggleModal}
         >
           <Detail {...cfg} {...this.props} mode='integrated' />
-          </CommonModal>
+        </CommonModal>
       </div>
     )
   }

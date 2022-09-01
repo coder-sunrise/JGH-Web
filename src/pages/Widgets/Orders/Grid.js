@@ -1461,7 +1461,7 @@ export default ({
         })
     } else {
       visitOrderTemplateOptions
-        .fitler(x => x.isActive)
+        .filter(x => x.isActive)
         .forEach(template => {
           // if haven't select patient profile, then only show general package
           if ((template.visitOrderTemplate_Copayers || []).length === 0) {

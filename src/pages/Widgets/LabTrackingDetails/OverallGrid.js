@@ -1,12 +1,15 @@
 import React, { PureComponent } from 'react'
 import { Edit, Delete } from '@material-ui/icons'
 import CommonTableGrid from '@/components/CommonTableGrid'
-import { Button, Tooltip, Popconfirm } from '@/components'
+import { Button, Tooltip, TextField, Danger } from '@/components'
 import PatientResultButton from './PatientResultPrintBtn'
 import Authorized from '@/utils/Authorized'
 import { ableToViewByAuthority } from '@/utils/utils'
+import { DeleteWithPopover } from '@/components/_medisys'
 
 class OverallGrid extends PureComponent {
+  state = { showError: false, errorMessage: '', cancelReason: '' }
+
   configs = {
     columns: [
       { name: 'visitDate', title: 'Visit Date' },
@@ -65,7 +68,22 @@ class OverallGrid extends PureComponent {
           'ServiceCenterServiceFKNavigation.ServiceCenterFKNavigation.DisplayValue',
       },
       { columnName: 'supplierName', width: 150 },
-      { columnName: 'labTrackingStatusDisplayValue', width: 110 },
+      {
+        columnName: 'labTrackingStatusDisplayValue',
+        width: 110,
+        render: row => {
+          let tooltip = ''
+          if (row.labTrackingStatusFK === 5) {
+            tooltip = `Discard Reason: ${row.discardReason}`
+          }
+
+          return (
+            <Tooltip title={tooltip}>
+              <span>{row.labTrackingStatusDisplayValue}</span>
+            </Tooltip>
+          )
+        },
+      },
       { columnName: 'sentBy', width: 100 },
       { columnName: 'remarks', width: 200 },
       {
@@ -99,7 +117,7 @@ class OverallGrid extends PureComponent {
         align: 'center',
         width: 110,
         render: row => {
-          const { clinicSettings, handlePrintClick } = this.props
+          const { clinicSettings, handlePrintClick, classes } = this.props
           const accessRight = Authorized.check('reception/labtracking') || {
             rights: 'hidden',
           }
@@ -126,38 +144,35 @@ class OverallGrid extends PureComponent {
                   <Edit />
                 </Button>
               </Tooltip>
-              {ableToViewByAuthority(
-                'reception.viewexternaltracking.delete',
-              ) && (
-                <Popconfirm
-                  title='Confirm to delete?'
-                  onConfirm={() => {
-                    const { dispatch } = this.props
-                    dispatch({
-                      type: 'labTrackingDetails/delete',
-                      payload: {
-                        id: row.id,
-                        cfg: { message: 'External tracking deleted.' },
-                      },
-                    }).then(r => {
-                      dispatch({
-                        type: 'labTrackingDetails/query',
-                      })
-                    })
-                  }}
-                >
-                  <Tooltip title='Delete external tracking' placement='bottom'>
-                    <Button
-                      justIcon
-                      size='sm'
-                      color='danger'
-                      style={{ marginLeft: 8 }}
-                    >
-                      <Delete />
-                    </Button>
-                  </Tooltip>
-                </Popconfirm>
-              )}
+              {ableToViewByAuthority('reception.viewexternaltracking.delete') &&
+                row.labTrackingStatusFK !== 5 &&
+                (row.labTrackingResults || []).length === 0 && (
+                  <DeleteWithPopover
+                    index={row.id}
+                    title='Discard External Tracking'
+                    tooltipText='Discard this external tracking'
+                    contentText='Confirm to discard this external tracking?'
+                    extraCmd={
+                      <div className={classes.errorContainer}>
+                        <TextField
+                          label='Discard Reason'
+                          autoFocus
+                          value={this.state.cancelReason}
+                          onChange={this.onCancelReasonChange}
+                        />
+                        {this.state.showError && (
+                          <Danger>
+                            <span>{this.state.errorMessage}</span>
+                          </Danger>
+                        )}
+                      </div>
+                    }
+                    onCancelClick={this.handleCancelClick}
+                    onConfirmDelete={this.handleConfirmDelete}
+                    isUseCallBack
+                    buttonProps={{ style: { marginLeft: 8 } }}
+                  />
+                )}
             </React.Fragment>
           )
         },
@@ -184,6 +199,55 @@ class OverallGrid extends PureComponent {
         resultType,
       },
     })
+  }
+
+  handleCancelClick = () => {
+    this.setState({
+      showError: false,
+      errorMessage: '',
+      cancelReason: '',
+    })
+  }
+
+  onCancelReasonChange = event => {
+    if (event.target.value !== '' || event.target.value !== undefined)
+      this.setState({
+        showError: false,
+        cancelReason: event.target.value,
+      })
+  }
+
+  handleConfirmDelete = async (id, toggleVisibleCallback) => {
+    const { dispatch } = this.props
+    if (
+      this.state.cancelReason === '' ||
+      this.state.cancelReason === undefined
+    ) {
+      this.setState({
+        showError: true,
+        errorMessage: 'Discard reason is required',
+      })
+    } else {
+      await dispatch({
+        type: 'labTrackingDetails/discard',
+        payload: {
+          id: id,
+          cancelReason: this.state.cancelReason,
+          cfg: {
+            message: 'External tracking deleted.',
+          },
+        },
+      })
+      await dispatch({
+        type: 'labTrackingDetails/query',
+      })
+      this.setState({
+        showError: false,
+        errorMessage: '',
+        cancelReason: '',
+      })
+      toggleVisibleCallback()
+    }
   }
 
   render() {

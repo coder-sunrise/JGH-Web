@@ -344,11 +344,11 @@ const VisitInfoCard = ({
         }
       }),
   ]
-   setFieldValue(
-     FormField['visit.visitRemarks'],
-     restProps?.visitRegistration?.appointment?.appointments[0]
-       ?.appointmentRemarks,
-   )
+  setFieldValue(
+    FormField['visit.visitRemarks'],
+    restProps?.visitRegistration?.appointment?.appointments[0]
+      ?.appointmentRemarks,
+  )
   useEffect(() => {
     const noVisitGroup = !values.visitGroup
     if (noVisitGroup && familyMembers) {
@@ -399,7 +399,7 @@ const VisitInfoCard = ({
         })
     } else {
       visitOrderTemplateOptions
-        .fitler(x => x.isActive)
+        .filter(x => x.isActive)
         .forEach(template => {
           // if haven't select patient profile, then only show general package
           if ((template.visitOrderTemplate_Copayers || []).length === 0) {
