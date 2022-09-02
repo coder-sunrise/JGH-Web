@@ -28,6 +28,7 @@ import {
   dateFormatLong,
   Tooltip,
   notification,
+  TextField,
 } from '@/components'
 import { ProTable } from '@medisys/component'
 import { GridContextMenuButton as GridButton } from 'medisys-components'
@@ -94,6 +95,9 @@ const WorklistGrid = ({
   const [filteredStatuses, setFilteredStatuses] = useState(selectedStatus)
   const [workitems, setWorkitems] = useState([])
   const [showForms, setShowForms] = useState(false)
+  const [isShowDeleteMC, setShowDeleteMC] = useState(false)
+  const [cancelMCId, setCancelMCId] = useState(undefined)
+  const [cancelReason, setCancelReason] = useState(undefined)
   const { setIsAnyWorklistModelOpened } = useContext(WorklistContext)
   const [vt] = useVT(() => ({ scroll: { y: height - 50 - 95 } }), [])
   useEffect(() => {
@@ -116,6 +120,16 @@ const WorklistGrid = ({
           list: [],
         },
       })
+    }
+  }
+
+  const toggleDeleteMC = () => {
+    const target = !isShowDeleteMC
+    setShowDeleteMC(target)
+    setIsAnyWorklistModelOpened(target)
+    if (!target) {
+      setCancelReason(undefined)
+      setCancelMCId(undefined)
     }
   }
 
@@ -225,34 +239,43 @@ const WorklistGrid = ({
         viewReport(row)
         break
       case '5':
-        dispatch({
-          type: 'global/updateAppState',
-          payload: {
-            openConfirm: true,
-            openConfirmContent: `Confirm to delete medical checkup report?`,
-            onConfirmSave: () => {
-              dispatch({
-                type: `medicalCheckupWorklist/cancel`,
-                payload: {
-                  id: row.id,
-                },
-              }).then(o => {
-                if (o) {
-                  notification.success({
-                    message: 'Medical Checkup report deleted.',
-                  })
-                }
-                dispatch({
-                  type: `medicalCheckupWorklist/query`,
-                })
-              })
-            },
-          },
-        })
-
+        onDeleteMC(row)
         break
     }
   }
+
+  const onDeleteMC = row => {
+    setIsAnyWorklistModelOpened(true)
+    setShowDeleteMC(true)
+    setCancelMCId(row.id)
+  }
+
+  const onConfirmDeleteMC = () => {
+    if (cancelReason === '' || cancelReason === undefined) {
+      notification.warning({
+        message: 'Cancel reason is required.',
+      })
+      return
+    }
+    dispatch({
+      type: `medicalCheckupWorklist/cancel`,
+      payload: {
+        id: cancelMCId,
+        cancelReason: cancelReason,
+      },
+    }).then(o => {
+      if (o) {
+        notification.success({
+          message: 'Medical Checkup report deleted.',
+        })
+      }
+      dispatch({
+        type: `medicalCheckupWorklist/query`,
+      })
+      toggleDeleteMC()
+    })
+  }
+
   const menus = [
     {
       id: 1,
@@ -768,6 +791,28 @@ const WorklistGrid = ({
         overrideLoading
       >
         <VisitForms formCategory={FORM_CATEGORY.CORFORM} />
+      </CommonModal>
+
+      <CommonModal
+        open={isShowDeleteMC}
+        title='Delete Medical Checkup Report'
+        onClose={toggleDeleteMC}
+        onConfirm={onConfirmDeleteMC}
+        maxWidth='sm'
+        showFooter={true}
+      >
+        <div style={{ padding: '0px 16px' }}>
+          <h4>Confirm to delete medical checkup report?</h4>
+          <TextField
+            label='Cancel Reason'
+            autoFocus
+            value={cancelReason}
+            onChange={event => {
+              setCancelReason(event.target.value)
+            }}
+            maxLength={2000}
+          />
+        </div>
       </CommonModal>
     </div>
   )
