@@ -98,7 +98,7 @@ const defaultColumns = [
     title: 'Ref. No.',
     dataIndex: 'patientReferenceNo',
     sorterBy: 'aa.patientReferenceNo',
-    defaultSortOrder: 'ascend',
+    // defaultSortOrder: 'ascend',
     width: 100,
     sorter: true,
     search: false,
@@ -368,6 +368,7 @@ const PatientIndex = ({
   return (
     <div>
       <ProTable
+        manualRequest
         search={{ span: 8 }}
         rowSelection={false}
         columns={defaultColumns}
