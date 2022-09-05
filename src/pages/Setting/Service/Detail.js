@@ -255,6 +255,7 @@ class Detail extends PureComponent {
             })
           }
         },
+        isDisabled: row => row.isUsedByOthers,
       },
       { columnName: 'costPrice', type: 'number', currency: true, width: 110 },
       { columnName: 'unitPrice', type: 'number', currency: true, width: 160 },
@@ -337,6 +338,14 @@ class Detail extends PureComponent {
               message: 'The lab test panel already exist in the list',
             })
           }
+        },
+        isDisabled: row => {
+          if (!row.id || row.id <= 0) return false
+          const { serviceSettings } = this.state
+          const isUsedByOthers =
+            (serviceSettings ?? []).findIndex(s => s.isUsedByOthers) !== -1
+
+          return isUsedByOthers
         },
       },
     ],
@@ -695,7 +704,6 @@ class Detail extends PureComponent {
         }
       })
 
-    console.log([...currentExaminations, ...deletedExaminationItems])
     setFieldValue('ctService_ExaminationItem', [
       ...currentExaminations,
       ...deletedExaminationItems,

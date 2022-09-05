@@ -325,6 +325,7 @@ class Detail extends PureComponent {
         current={values || {}}
         attachment={values.labTrackingResults}
         updateAttachments={this.updateAttachments}
+        editable={values.labTrackingStatusFK !== 5}
       />
     )
   }
@@ -346,8 +347,16 @@ class Detail extends PureComponent {
     }
     return (
       <div>
-        <CardContainer hideHeader size='sm' >
-          <div className='scroll' style={{ maxHeight: '70vh', overflowY: 'auto', width: '953px',padding:'8px' }}>
+        <CardContainer hideHeader size='sm'>
+          <div
+            className='scroll'
+            style={{
+              maxHeight: '70vh',
+              overflowY: 'auto',
+              width: '953px',
+              padding: '8px',
+            }}
+          >
             <div>
               <GridContainer>
                 <GridItem md={4}>
@@ -402,6 +411,9 @@ class Detail extends PureComponent {
                         label='Status'
                         {...args}
                         code='ltlabtrackingstatus'
+                        localFilter={item =>
+                          values.labTrackingStatusFK === 5 || item.id !== 5
+                        }
                         onChange={(v, option) => {
                           this.toggleAccordion(v)
                           setFieldValue(
@@ -413,6 +425,7 @@ class Detail extends PureComponent {
                             option ? option.name : undefined,
                           )
                         }}
+                        disabled={values.labTrackingStatusFK === 5}
                       />
                     )}
                   />
@@ -457,7 +470,8 @@ class Detail extends PureComponent {
               onConfirm: props.handleSubmit,
               confirmBtnText: 'Save',
               confirmProps: {
-                disabled: this.state.readOnly,
+                disabled:
+                  this.state.readOnly || values.labTrackingStatusFK === 5,
               },
             })}
         </CardContainer>

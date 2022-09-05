@@ -12,7 +12,12 @@ import {
 import { AttachmentWithThumbnail } from '@/components/_medisys'
 import Authorized from '@/utils/Authorized'
 
-export default ({ updateAttachments, isReadOnly = false, attachment }) => {
+export default ({
+  updateAttachments,
+  isReadOnly = false,
+  attachment,
+  editable = true,
+}) => {
   const deleteExternalTrackingAttachmentRight = Authorized.check(
     'reception.viewexternaltracking.deleteattachment',
   ) || { rights: 'hidden' }
@@ -32,6 +37,7 @@ export default ({ updateAttachments, isReadOnly = false, attachment }) => {
             rowsMax={3}
             maxLength={1000}
             label='Remarks'
+            disabled={!editable}
           />
         )}
       />
@@ -40,8 +46,14 @@ export default ({ updateAttachments, isReadOnly = false, attachment }) => {
         attachmentType='labTrackingResults'
         handleUpdateAttachments={updateAttachments}
         attachments={attachment}
-        isReadOnly={isReadOnly || labtrackingEditableRight.rights !== 'enable'}
-        hiddenDelete={deleteExternalTrackingAttachmentRight.rights !== 'enable'}
+        isReadOnly={
+          !editable ||
+          isReadOnly ||
+          labtrackingEditableRight.rights !== 'enable'
+        }
+        hiddenDelete={
+          !editable || deleteExternalTrackingAttachmentRight.rights !== 'enable'
+        }
         hideRemarks
         fieldName='labTrackingResults'
       />

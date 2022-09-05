@@ -18,14 +18,15 @@ class ExternalTracking extends PureComponent {
   render() {
     const {
       patient: { entity },
+      resultType = PATIENT_LAB.PATIENT_PROFILE,
     } = this.props
     const isPatientInactive = !entity || !entity.isActive
     return (
       <div>
         <LabTrackingDetails
           isPatientInactive={isPatientInactive}
-          resultType={PATIENT_LAB.PATIENT_PROFILE}
           {...this.props}
+          resultType={resultType}
         />
       </div>
     )

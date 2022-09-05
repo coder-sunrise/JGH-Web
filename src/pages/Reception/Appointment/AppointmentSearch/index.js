@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { connect } from 'dva'
 import $ from 'jquery'
 import Authorized from '@/utils/Authorized'
-import FitlerBar from './FilterBar'
+import FilterBar from './FilterBar'
 import Grid from './Grid'
 
 const AppointmentSearch = ({
@@ -61,7 +61,7 @@ const AppointmentSearch = ({
   return (
     <Fragment>
       <div className='filterAppointmentSearchBar'>
-        <FitlerBar
+        <FilterBar
           dispatch={dispatch}
           handleAddAppointmentClick={handleAddAppointmentClick}
           appointment={appointment}

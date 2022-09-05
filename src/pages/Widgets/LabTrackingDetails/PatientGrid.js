@@ -1,11 +1,22 @@
 import React, { PureComponent } from 'react'
-import { Edit } from '@material-ui/icons'
+import moment from 'moment'
+import { Edit, Delete } from '@material-ui/icons'
 import CommonTableGrid from '@/components/CommonTableGrid'
-import { Button, Tooltip } from '@/components'
+import {
+  Button,
+  Tooltip,
+  TextField,
+  Danger,
+  dateFormatLongWithTimeNoSec,
+} from '@/components'
 import PatientResultButton from './PatientResultPrintBtn'
 import Authorized from '@/utils/Authorized'
+import { ableToViewByAuthority } from '@/utils/utils'
+import { PATIENT_LAB } from '@/utils/constants'
+import { Attachment, DeleteWithPopover } from '@/components/_medisys'
 
 class PatientGrid extends PureComponent {
+  state = { showError: false, errorMessage: '', cancelReason: '' }
   configs = {
     columns: [
       { name: 'visitDate', title: 'Visit Date' },
@@ -13,18 +24,43 @@ class PatientGrid extends PureComponent {
         name: 'doctorProfileFKNavigation.ClinicianProfile.Name',
         title: 'Doctor',
       },
-      { name: 'serviceName', title: 'Service Name' },
+      { name: 'filterServiceName', title: 'Service Name' },
       { name: 'serviceCenterName', title: 'Service Center Name' },
       { name: 'visitPurposeFK', title: 'Visit Type' },
       { name: 'sentBy', title: 'Sent By' },
+      { name: 'result', title: 'Attachment' },
       { name: 'labTrackingStatusDisplayValue', title: 'Status' },
       { name: 'remarks', title: 'Remarks' },
       { name: 'action', title: 'Action' },
     ],
     columnExtensions: [
       { columnName: 'sentBy', width: 100 },
-      { columnName: 'labTrackingStatusDisplayValue', width: 110 },
-      { columnName: 'visitDate', type: 'date' },
+      {
+        columnName: 'labTrackingStatusDisplayValue',
+        width: 110,
+        render: row => {
+          let tooltip = ''
+          if (row.labTrackingStatusFK === 5) {
+            tooltip = (
+              <div>
+                <div>
+                  {`Discarded by ${row.discardByUser || ''} at ${moment(
+                    row.discardDate,
+                  ).format(dateFormatLongWithTimeNoSec)}`}
+                </div>
+                <div>{`Reason: ${row.discardReason}`}</div>
+              </div>
+            )
+          }
+
+          return (
+            <Tooltip title={tooltip}>
+              <span>{row.labTrackingStatusDisplayValue}</span>
+            </Tooltip>
+          )
+        },
+      },
+      { columnName: 'visitDate', type: 'date', width: 100 },
       {
         columnName: 'doctorProfileFKNavigation.ClinicianProfile.Name',
         render: row => {
@@ -52,9 +88,9 @@ class PatientGrid extends PureComponent {
         columnName: 'action',
         sortingEnabled: false,
         align: 'center',
-        width: 100,
+        width: 110,
         render: row => {
-          const { clinicSettings, handlePrintClick } = this.props
+          const { clinicSettings, handlePrintClick, classes } = this.props
           const accessRight = Authorized.check('reception/labtracking') || {
             rights: 'hidden',
           }
@@ -80,15 +116,66 @@ class PatientGrid extends PureComponent {
                   <Edit />
                 </Button>
               </Tooltip>
+              {ableToViewByAuthority(
+                'reception.viewexternaltracking.discard',
+              ) &&
+                row.labTrackingStatusFK !== 5 &&
+                (row.labTrackingResults || []).length === 0 && (
+                  <DeleteWithPopover
+                    index={row.id}
+                    title='Discard External Tracking'
+                    tooltipText='Discard this external tracking'
+                    contentText='Confirm to discard this external tracking?'
+                    extraCmd={
+                      <div className={classes.errorContainer}>
+                        <TextField
+                          label='Discard Reason'
+                          autoFocus
+                          value={this.state.cancelReason}
+                          onChange={this.onCancelReasonChange}
+                        />
+                        {this.state.showError && (
+                          <Danger>
+                            <span>{this.state.errorMessage}</span>
+                          </Danger>
+                        )}
+                      </div>
+                    }
+                    onCancelClick={this.handleCancelClick}
+                    onConfirmDelete={this.handleConfirmDelete}
+                    isUseCallBack
+                    buttonProps={{ style: { marginLeft: 8 } }}
+                  />
+                )}
             </React.Fragment>
           )
         },
+      },
+      {
+        columnName: 'result',
+        width: 250,
+        render: row => (
+          <div>
+            {row.labTrackingResults && (
+              <Attachment
+                label='Attachment'
+                attachments={row.labTrackingResults}
+                isReadOnly={true}
+                hideRemarks
+                listOnly={true}
+                simple
+                hiddenDelete
+                fieldName='labTrackingResults'
+              />
+            )}
+          </div>
+        ),
       },
     ],
   }
 
   editRow = (row, e) => {
-    const { dispatch, labTrackingDetails, readOnly } = this.props
+    const { dispatch, labTrackingDetails, readOnly, resultType } = this.props
     const { list } = labTrackingDetails
     if (readOnly) return
 
@@ -97,12 +184,62 @@ class PatientGrid extends PureComponent {
       payload: {
         showModal: true,
         entity: list.find(o => o.id === row.id),
+        resultType,
       },
     })
   }
 
+  handleCancelClick = () => {
+    this.setState({
+      showError: false,
+      errorMessage: '',
+      cancelReason: '',
+    })
+  }
+
+  onCancelReasonChange = event => {
+    if (event.target.value !== '' || event.target.value !== undefined)
+      this.setState({
+        showError: false,
+        cancelReason: event.target.value,
+      })
+  }
+
+  handleConfirmDelete = async (id, toggleVisibleCallback) => {
+    const { dispatch } = this.props
+    if (
+      this.state.cancelReason === '' ||
+      this.state.cancelReason === undefined
+    ) {
+      this.setState({
+        showError: true,
+        errorMessage: 'Discard reason is required',
+      })
+    } else {
+      await dispatch({
+        type: 'labTrackingDetails/discard',
+        payload: {
+          id: id,
+          cancelReason: this.state.cancelReason,
+          cfg: {
+            message: 'External tracking discarded.',
+          },
+        },
+      })
+      await dispatch({
+        type: 'labTrackingDetails/query',
+      })
+      this.setState({
+        showError: false,
+        errorMessage: '',
+        cancelReason: '',
+      })
+      toggleVisibleCallback()
+    }
+  }
+
   render() {
-    const { height } = this.props
+    const { height, resultType } = this.props
     return (
       <CommonTableGrid
         type='labTrackingDetails'
@@ -111,6 +248,13 @@ class PatientGrid extends PureComponent {
           height,
         }}
         {...this.configs}
+        columns={
+          resultType === PATIENT_LAB.MEDICAL_CHECKUP
+            ? this.configs.columns.filter(
+                column => ['sentBy', 'remarks'].indexOf(column.name) < 0,
+              )
+            : this.configs.columns.filter(column => column.name !== 'result')
+        }
       />
     )
   }
