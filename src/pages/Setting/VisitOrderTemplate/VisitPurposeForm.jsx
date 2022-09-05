@@ -47,12 +47,12 @@ function VisitPurposeForm(props) {
         // isActive: undefined,
       },
     }).then(r => {
-      console.log(r)
+      let {
+        data: { data: options = [] },
+      } = r
       setState({
         ...state,
-        visitPurposeOptions: r.data.data.map(item => {
-          return { ...item, isActive: true }
-        }),
+        visitPurposeOptions: options.filter(r => r.isActive == true),
       })
     })
   }, [])
