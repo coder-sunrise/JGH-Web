@@ -74,7 +74,16 @@ class OverallGrid extends PureComponent {
         render: row => {
           let tooltip = ''
           if (row.labTrackingStatusFK === 5) {
-            tooltip = `Discard Reason: ${row.discardReason}`
+            tooltip = (
+              <div>
+                <div>
+                  {`Discarded by ${row.discardByUser || ''} at ${moment(
+                    row.discardDate,
+                  ).format(dateFormatLongWithTimeNoSec)}`}
+                </div>
+                <div>{`Reason: ${row.discardReason}`}</div>
+              </div>
+            )
           }
 
           return (
@@ -144,7 +153,9 @@ class OverallGrid extends PureComponent {
                   <Edit />
                 </Button>
               </Tooltip>
-              {ableToViewByAuthority('reception.viewexternaltracking.delete') &&
+              {ableToViewByAuthority(
+                'reception.viewexternaltracking.discard',
+              ) &&
                 row.labTrackingStatusFK !== 5 &&
                 (row.labTrackingResults || []).length === 0 && (
                   <DeleteWithPopover
@@ -234,7 +245,7 @@ class OverallGrid extends PureComponent {
           id: id,
           cancelReason: this.state.cancelReason,
           cfg: {
-            message: 'External tracking deleted.',
+            message: 'External tracking discarded.',
           },
         },
       })
