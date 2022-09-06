@@ -74,6 +74,7 @@ class PatientGrid extends PureComponent {
       {
         columnName: 'visitPurposeFK',
         width: 80,
+        sortBy: 'VisitFKNavigation.VisitPurposeFK',
         render: row => {
           const { visitPurpose } = this.props
           const pupose = visitPurpose.find(x => x.id === row.visitPurposeFK)
@@ -83,6 +84,11 @@ class PatientGrid extends PureComponent {
             </Tooltip>
           )
         },
+      },
+      { columnName: 'filterServiceName', sortingEnabled: false },
+      {
+        columnName: 'serviceCenterName',
+        sortBy: 'ServiceCenterFKNavigation.DisplayValue',
       },
       {
         columnName: 'action',
@@ -102,7 +108,7 @@ class PatientGrid extends PureComponent {
                 clinicSettings={clinicSettings}
                 handlePrint={handlePrintClick}
               />
-              <Tooltip title='Edit Patient Lab Result' placement='bottom'>
+              <Tooltip title='Edit external tracking record' placement='bottom'>
                 <Button
                   size='sm'
                   onClick={() => {
@@ -119,12 +125,11 @@ class PatientGrid extends PureComponent {
               {ableToViewByAuthority(
                 'reception.viewexternaltracking.discard',
               ) &&
-                row.labTrackingStatusFK !== 5 &&
-                (row.labTrackingResults || []).length === 0 && (
+                row.labTrackingStatusFK !== 5 && (
                   <DeleteWithPopover
                     index={row.id}
                     title='Discard External Tracking'
-                    tooltipText='Discard this external tracking'
+                    tooltipText='Discard external tracking record'
                     contentText='Confirm to discard this external tracking?'
                     extraCmd={
                       <div className={classes.errorContainer}>
@@ -153,7 +158,8 @@ class PatientGrid extends PureComponent {
       },
       {
         columnName: 'result',
-        width: 250,
+        width: 220,
+        sortingEnabled: false,
         render: row => (
           <div>
             {row.labTrackingResults && (

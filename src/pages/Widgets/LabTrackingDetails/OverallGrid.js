@@ -1,7 +1,14 @@
 import React, { PureComponent } from 'react'
+import moment from 'moment'
 import { Edit, Delete } from '@material-ui/icons'
 import CommonTableGrid from '@/components/CommonTableGrid'
-import { Button, Tooltip, TextField, Danger } from '@/components'
+import {
+  Button,
+  Tooltip,
+  TextField,
+  Danger,
+  dateFormatLongWithTimeNoSec,
+} from '@/components'
 import PatientResultButton from './PatientResultPrintBtn'
 import Authorized from '@/utils/Authorized'
 import { ableToViewByAuthority } from '@/utils/utils'
@@ -60,12 +67,11 @@ class OverallGrid extends PureComponent {
       { columnName: 'estimateReceiveDate', type: 'date', width: 130 },
       { columnName: 'orderedDate', type: 'date', width: 100 },
       { columnName: 'receivedDate', type: 'date', width: 105 },
-      { columnName: 'filterServiceName', width: 200 },
+      { columnName: 'filterServiceName', width: 200, sortingEnabled: false },
       {
         columnName: 'serviceCenterName',
         width: 200,
-        sortBy:
-          'ServiceCenterServiceFKNavigation.ServiceCenterFKNavigation.DisplayValue',
+        sortBy: 'ServiceCenterFKNavigation.DisplayValue',
       },
       { columnName: 'supplierName', width: 150 },
       {
@@ -139,7 +145,7 @@ class OverallGrid extends PureComponent {
                 clinicSettings={clinicSettings}
                 handlePrint={handlePrintClick}
               />
-              <Tooltip title='Edit Patient Lab Result' placement='bottom'>
+              <Tooltip title='Edit external tracking record' placement='bottom'>
                 <Button
                   disabled={readOnly}
                   size='sm'
@@ -156,12 +162,11 @@ class OverallGrid extends PureComponent {
               {ableToViewByAuthority(
                 'reception.viewexternaltracking.discard',
               ) &&
-                row.labTrackingStatusFK !== 5 &&
-                (row.labTrackingResults || []).length === 0 && (
+                row.labTrackingStatusFK !== 5 && (
                   <DeleteWithPopover
                     index={row.id}
                     title='Discard External Tracking'
-                    tooltipText='Discard this external tracking'
+                    tooltipText='Discard external tracking record'
                     contentText='Confirm to discard this external tracking?'
                     extraCmd={
                       <div className={classes.errorContainer}>

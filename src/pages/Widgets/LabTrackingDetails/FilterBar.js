@@ -113,7 +113,7 @@ class FilterBar extends PureComponent {
   }
 
   render() {
-    const { handleSubmit, IsOverallGrid, values } = this.props
+    const { handleSubmit, IsOverallGrid, values, resultType } = this.props
     return (
       <div>
         <GridContainer alignItems='flex-end'>
@@ -204,33 +204,35 @@ class FilterBar extends PureComponent {
               )}
             />
           </div>
-          <FastField
-            name='isAllDateChecked'
-            render={args => {
-              return (
-                <Tooltip
-                  title={formatMessage({
-                    id: 'form.date.placeholder.allDate',
-                  })}
-                  placement='bottom'
-                >
-                  <Checkbox
-                    label={formatMessage({
+          {resultType !== PATIENT_LAB.MEDICAL_CHECKUP && (
+            <FastField
+              name='isAllDateChecked'
+              render={args => {
+                return (
+                  <Tooltip
+                    title={formatMessage({
                       id: 'form.date.placeholder.allDate',
                     })}
-                    inputLabel=' '
-                    style={{
-                      width: 80,
-                      marginLeft: 10,
-                      position: 'relative',
-                      bottom: '-6px',
-                    }}
-                    {...args}
-                  />
-                </Tooltip>
-              )
-            }}
-          />
+                    placement='bottom'
+                  >
+                    <Checkbox
+                      label={formatMessage({
+                        id: 'form.date.placeholder.allDate',
+                      })}
+                      inputLabel=' '
+                      style={{
+                        width: 80,
+                        marginLeft: 10,
+                        position: 'relative',
+                        bottom: '-6px',
+                      }}
+                      {...args}
+                    />
+                  </Tooltip>
+                )
+              }}
+            />
+          )}
           <FastField
             name='labTrackingStatusIDs'
             render={args => (
@@ -238,7 +240,7 @@ class FilterBar extends PureComponent {
                 label='Status'
                 {...args}
                 code='ltlabtrackingstatus'
-                style={{ width: 110, marginLeft: 0 }}
+                style={{ width: 110, marginLeft: 8 }}
                 mode='multiple'
                 all={-99}
                 defaultOptions={[
