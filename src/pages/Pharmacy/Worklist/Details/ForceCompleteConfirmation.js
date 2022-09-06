@@ -31,6 +31,7 @@ const ForceCompleteConfirmation = ({ classes, handleSubmit, onClose }) => {
       <GridItem md={10}>
         <TextField
           label='Remarks'
+          maxLength={200}
           autoFocus
           onChange={e => setForceCompleteReason(e.target.value)}
         />
