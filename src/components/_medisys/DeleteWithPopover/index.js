@@ -59,7 +59,7 @@ const DeleteWithPopover = ({
         <div className={classes.popoverContainer}>
           <p className={classes.popoverMessage}>{contentText}</p>
           <SizeContainer size='sm'>
-            {extraCmd && <div style={{ marginRight: 8 }}>{extraCmd}</div>}
+            {show && <div style={{ marginRight: 8 }}>{extraCmd}</div>}
           </SizeContainer>
           <Button size='sm' color='danger' onClick={handleCancelClick}>
             Cancel

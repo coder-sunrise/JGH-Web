@@ -29,7 +29,7 @@ const styles = theme => ({
   },
   errorContainer: {
     textAlign: 'left',
-    lineHeight: '1em',
+    height: 75,
     paddingBottom: theme.spacing(1),
     '& span': {
       fontSize: '.8rem',
