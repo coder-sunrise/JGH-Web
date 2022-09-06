@@ -686,11 +686,15 @@ const getOrdersData = val => {
         remarks: po?.remarks,
         subject: medicationStock[0].displayValue,
         totalAfterGST: po.amount,
-        totalAfterItemAdjustment:
-        preOrderMedicationItem?.totalAfterItemAdjustment || po?.quantity * medicationStock[0].sellingPrice,
-        totalAfterOverallAdjustment:
-        preOrderMedicationItem?.totalAfterOverallAdjustment || po?.quantity * medicationStock[0].sellingPrice,
-        totalPrice: preOrderMedicationItem?.totalPrice || po?.quantity * medicationStock[0].sellingPrice,
+        totalAfterItemAdjustment: po.hasPaid
+          ? preOrderMedicationItem?.totalAfterItemAdjustment
+          : po?.quantity * medicationStock[0].sellingPrice,
+        totalAfterOverallAdjustment: po.hasPaid
+          ? preOrderMedicationItem?.totalAfterOverallAdjustment
+          : po?.quantity * medicationStock[0].sellingPrice,
+        totalPrice: po.hasPaid
+          ? preOrderMedicationItem?.totalPrice
+          : po?.quantity * medicationStock[0].sellingPrice,
         type: '1',
         unitPrice: medicationStock[0].sellingPrice || 0,
         instruction: po?.instruction || instruction,
@@ -739,15 +743,15 @@ const getOrdersData = val => {
         remarks: po?.remark,
         sequence: 0,
         subject: vacinnationStock[0].displayValue,
-        totalAfterItemAdjustment:
-          preOrderVaccinationItem?.totalAfterItemAdjustment ||
-          po?.quantity * vacinnationStock[0].sellingPrice,
-        totalAfterOverallAdjustment:
-          preOrderVaccinationItem?.totalAfterOverallAdjustment ||
-          po?.quantity * vacinnationStock[0].sellingPrice,
-        totalPrice:
-          preOrderVaccinationItem?.totalPrice ||
-          po?.quantity * vacinnationStock[0].sellingPrice,
+        totalAfterItemAdjustment: po.hasPaid
+          ? preOrderVaccinationItem?.totalAfterItemAdjustment
+          : po?.quantity * vacinnationStock[0].sellingPrice,
+        totalAfterOverallAdjustment: po.hasPaid
+          ? preOrderVaccinationItem?.totalAfterOverallAdjustment
+          : po?.quantity * vacinnationStock[0].sellingPrice,
+        totalPrice: po.hasPaid
+          ? preOrderVaccinationItem?.totalPrice
+          : po?.quantity * vacinnationStock[0].sellingPrice,
         type: '2',
         unitPrice: vacinnationStock[0].sellingPrice,
         uomCode:
@@ -809,15 +813,15 @@ const getOrdersData = val => {
         subject:
           preOrderConsumableItem?.consumableName ||
           consumableStock[0].displayValue,
-        totalAfterItemAdjustment:
-          preOrderConsumableItem?.totalAfterItemAdjustment ||
-          consumableStock[0].sellingPrice * po.quantity,
-        totalAfterOverallAdjustment:
-          preOrderConsumableItem?.totalAfterOverallAdjustment ||
-          consumableStock[0].sellingPrice * po.quantity,
-        totalPrice:
-          preOrderConsumableItem?.totalPrice ||
-          consumableStock[0].sellingPrice * po.quantity,
+        totalAfterItemAdjustment: po.hasPaid
+          ? preOrderConsumableItem?.totalAfterItemAdjustment
+          : consumableStock[0].sellingPrice * po.quantity,
+        totalAfterOverallAdjustment: po.hasPaid
+          ? preOrderConsumableItem?.totalAfterOverallAdjustment
+          : consumableStock[0].sellingPrice * po.quantity,
+        totalPrice: po.hasPaid
+          ? preOrderConsumableItem?.totalPrice
+          : consumableStock[0].sellingPrice * po.quantity,
         type: '4',
         unitOfMeasurement: uom.name,
         unitPrice: consumableStock[0].sellingPrice * po.quantity,
@@ -858,14 +862,15 @@ const getOrdersData = val => {
         serviceName:
           preOrderServiceItem?.serviceName || service[0].displayValue,
         subject: preOrderServiceItem?.serviceName || service[0].displayValue,
-        total:
-          preOrderServiceItem?.totalPrice || service[0].unitPrice * po.quantity,
-        totalAfterItemAdjustment:
-          preOrderServiceItem?.totalAfterItemAdjustment ||
-          service[0].unitPrice * po.quantity,
-        totalAfterOverallAdjustment:
-          preOrderServiceItem?.totalAfterOverallAdjustment ||
-          service[0].unitPrice * po.quantity,
+        total: po.hasPaid
+          ? preOrderServiceItem?.totalPrice
+          : service[0].unitPrice * po.quantity,
+        totalAfterItemAdjustment: po.hasPaid
+          ? preOrderServiceItem?.totalAfterItemAdjustment
+          : service[0].unitPrice * po.quantity,
+        totalAfterOverallAdjustment: po.hasPaid
+          ? preOrderServiceItem?.totalAfterOverallAdjustment
+          : service[0].unitPrice * po.quantity,
         type: (() => {
           if (po.preOrderItemType === 'Radiology') return ORDER_TYPES.RADIOLOGY
 
