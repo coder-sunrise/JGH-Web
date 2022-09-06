@@ -182,7 +182,7 @@ class DailyResourceManagement extends PureComponent {
               { name: 'timeSpace', title: 'Time From & To' },
               {
                 name: 'maxCapacity',
-                title: 'Max Slot',
+                title: 'Max. Slot',
               },
               { name: 'usedSlot', title: 'Used Slot' },
               { name: 'balanceSlot', title: 'Bal. Slot' },
