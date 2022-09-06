@@ -146,6 +146,33 @@ class Banner extends PureComponent {
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.props.patient !== nextProps.patient) return true
+    if (this.props.codetable !== nextProps.codetable) return true
+    if (this.props.loading !== nextProps.loading) return true
+    if (this.props.visitRegistration !== nextProps.visitRegistration)
+      return true
+    if (this.props.clinicSettings !== nextProps.clinicSettings) return true
+    if (this.props.global !== nextProps.global) return true
+
+    if (this.state.showNotesModal !== nextState.showNotesModal) return true
+    if (this.state.showSchemeModal !== nextState.showSchemeModal) return true
+    if (
+      this.state.showNonClaimableHistoryModal !==
+      nextState.showNonClaimableHistoryModal
+    )
+      return true
+    if (
+      this.state.showExaminationDetailsModal !==
+      nextState.showExaminationDetailsModal
+    )
+      return true
+    if (this.state.showPreOrderModal !== nextState.showPreOrderModal)
+      return true
+
+    return false
+  }
+
   getAllergyData() {
     const { patient } = this.props
     const { entity } = patient
@@ -291,6 +318,12 @@ class Banner extends PureComponent {
       type: 'codetable/fetchCodes',
       payload: {
         code: 'copaymentscheme',
+      },
+    })
+    await dispatch({
+      type: 'codetable/fetchCodes',
+      payload: {
+        code: 'ctnationality',
       },
     })
   }
@@ -546,6 +579,14 @@ class Banner extends PureComponent {
     if (!!tagData) return tagData
     return '-'
   }
+
+  getNationality = nationalityFK => {
+    const { codetable } = this.props
+    const { ctnationality = [] } = codetable
+    const nationality = ctnationality.find(o => o.id === nationalityFK)
+    return nationality?.name || ''
+  }
+
   refreshGovtBalance = () => {
     this.refreshChasBalance()
     this.refreshMedisaveBalance()
@@ -1118,38 +1159,18 @@ class Banner extends PureComponent {
         {') '}
         <span className={classes.part}>{info.patientAccountNo}</span>
         {', '}
-        <span className={classes.part}>
-          {
-            <CodeSelect
-              code='ctGender'
-              // optionLabelLength={1}
-              text
-              labelField='code'
-              value={info.genderFK}
-            />
-          }
-        </span>
+        <span className={classes.part}>{info.genderFK === 1 ? 'F' : 'M'}</span>
         {'/'}
         <span className={classes.part}>{year > 1 ? `${year}` : `${year}`}</span>
         {', '}
         <span className={classes.part}>
-          <DatePicker
-            className={classes.part}
-            text
-            format={dateFormatLong}
-            value={info.dob}
-          />
+          {moment(info.dob).format(dateFormatLong)}
         </span>
         <span className={classes.part}>{`, ${info.contact?.mobileContactNumber
           ?.number || ''}`}</span>
         {', '}
         <span className={classes.part}>
-          <CodeSelect
-            className={classes.part}
-            text
-            code='ctNationality'
-            value={info.nationalityFK}
-          />
+          {this.getNationality(info.nationalityFK)}
         </span>
 
         <span className={classes.part} style={{ top: 3, position: 'relative' }}>
