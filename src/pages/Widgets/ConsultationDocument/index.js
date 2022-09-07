@@ -148,7 +148,9 @@ class ConsultationDocument extends PureComponent {
   constructor(props) {
     super(props)
     const { dispatch } = props
-
+    this.state = {
+      isShowPopover: false,
+    }
     dispatch({
       type: 'codetable/fetchCodes',
       payload: {
@@ -215,7 +217,10 @@ class ConsultationDocument extends PureComponent {
             size='sm'
             style={{ margin: 0 }}
             rows={rows}
-            onRowDoubleClick={this.editRow}
+            onRowDoubleClick={(row, e) => {
+              if (this.state.isShowPopover) return
+              this.editRow(row, e)
+            }}
             columns={[
               { name: 'type', title: 'Type' },
               { name: 'subject', title: 'Subject' },
@@ -297,6 +302,9 @@ class ConsultationDocument extends PureComponent {
                             },
                           })
                         }
+                        onVisibleChange={visible => {
+                          this.setState({ isShowPopover: visible })
+                        }}
                       >
                         <Tooltip title='Delete'>
                           <Button size='sm' color='danger' justIcon>

@@ -26,13 +26,19 @@ const DeleteWithPopover = ({
   onCancelClick,
   buttonProps = {},
   isUseCallBack,
+  onVisibleChange,
 }) => {
   const [show, setShow] = useState(false)
 
-  const toggleVisibleChange = () => setShow(!show)
+  const toggleVisibleChange = (v = false) => {
+    if (onVisibleChange) {
+      onVisibleChange(v)
+    }
+    setShow(!show)
+  }
 
   const handleCancelClick = () => {
-    toggleVisibleChange()
+    toggleVisibleChange(false)
     if (onCancelClick) onCancelClick(index)
   }
 

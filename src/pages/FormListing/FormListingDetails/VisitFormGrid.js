@@ -74,6 +74,7 @@ class VisitFormGrid extends PureComponent {
     this.state = {
       openFormType: false,
       includeVoidForms: false,
+      isShowPopover: false,
     }
 
     dispatch({
@@ -227,6 +228,9 @@ class VisitFormGrid extends PureComponent {
         onCancelClick={() => {
           setReason(undefined)
         }}
+        onVisibleChange={visible => {
+          this.setState({ isShowPopover: visible })
+        }}
         onConfirmDelete={handleConfirmDelete}
       />
     )
@@ -267,7 +271,10 @@ class VisitFormGrid extends PureComponent {
               ? list
               : list.filter(o => o.statusFK !== 4)
           }
-          onRowDoubleClick={this.editRow}
+          onRowDoubleClick={(row, e) => {
+            if (this.state.isShowPopover) return
+            this.editRow(row, e)
+          }}
           columns={[
             { name: 'formName', title: 'Form' },
             { name: 'updateByUser', title: 'Last Updated By' },
@@ -392,6 +399,9 @@ class VisitFormGrid extends PureComponent {
                               this.props.queryFormListing()
                             })
                           }
+                        }}
+                        onVisibleChange={visible => {
+                          this.setState({ isShowPopover: visible })
                         }}
                       >
                         <Tooltip title='Delete'>
