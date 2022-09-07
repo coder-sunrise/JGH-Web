@@ -147,13 +147,14 @@ class Banner extends PureComponent {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (this.props.patient !== nextProps.patient) return true
-    if (this.props.codetable !== nextProps.codetable) return true
-    if (this.props.loading !== nextProps.loading) return true
-    if (this.props.visitRegistration !== nextProps.visitRegistration)
+    if (!_.isEqual(this.props.patient, nextProps.patient)) return true
+    if (!_.isEqual(this.props.codetable, nextProps.codetable)) return true
+    if (!_.isEqual(this.props.loading, nextProps.loading)) return true
+    if (!_.isEqual(this.props.visitRegistration, nextProps.visitRegistration))
       return true
-    if (this.props.clinicSettings !== nextProps.clinicSettings) return true
-    if (this.props.global !== nextProps.global) return true
+    if (!_.isEqual(this.props.clinicSettings, nextProps.clinicSettings))
+      return true
+    if (!_.isEqual(this.props.global, nextProps.global)) return true
 
     if (this.state.showNotesModal !== nextState.showNotesModal) return true
     if (this.state.showSchemeModal !== nextState.showSchemeModal) return true
