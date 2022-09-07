@@ -913,7 +913,9 @@ class Medication extends PureComponent {
       op.inventoryMedication_MedicationPrecaution &&
       op.inventoryMedication_MedicationPrecaution.length > 0
     ) {
-      op.inventoryMedication_MedicationPrecaution.forEach((im, i) => {
+      _.sortBy(op.inventoryMedication_MedicationPrecaution, [
+        'sequence',
+      ]).forEach((im, i) => {
         const precaution = ctmedicationprecaution.find(
           t => t.id === im.medicationPrecautionFK,
         )
