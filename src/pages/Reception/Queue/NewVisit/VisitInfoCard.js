@@ -120,15 +120,14 @@ const VisitInfoCard = ({
   visitMode,
   ctvisitpurpose,
   doctorProfiles,
+  visitRemarks,
   ...restProps
 }) => {
   const [visitGroupMessage, setVisitGroupMessage] = useState()
   const [visitGroupPopup, setVisitGroupPopup] = useState(false)
-  const [newVisitRemarks, setNewVisitRemarks] = useState(
-    restProps?.visitRegistration?.appointment?.appointments[0]
-      ?.appointmentRemarks,
-  )
-
+  useEffect(() => {
+    setFieldValue(FormField['visit.visitRemarks'], visitRemarks)
+  }, [visitRemarks])
   useEffect(() => {
     if (currentVisitTemplate) {
       let activeItemTotal = getVisitOrderTemplateTotal(
@@ -136,6 +135,7 @@ const VisitInfoCard = ({
         currentVisitTemplate,
       )
       setFieldValue(FormField['visit.VisitOrderTemplateTotal'], activeItemTotal)
+      setFieldValue(FormField['visit.visitRemarks'], visitRemarks)
     } else {
       if (!restProps.values.visitOrderTemplateFK)
         setFieldValue(FormField['visit.VisitOrderTemplateTotal'], undefined)
@@ -151,9 +151,7 @@ const VisitInfoCard = ({
       return 'Queue No. already existed in current queue list'
     return ''
   }
-  useEffect(() => {
-    setFieldValue(FormField['visit.visitRemarks'], newVisitRemarks)
-  }, [newVisitRemarks])
+
   const isPrimaryDoctorConsultated =
     restProps.values?.visitPrimaryDoctor &&
     restProps.values?.visitPrimaryDoctor?.consultationStatus !== 'Waiting'

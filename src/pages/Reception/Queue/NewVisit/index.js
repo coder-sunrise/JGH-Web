@@ -689,6 +689,10 @@ class NewVisit extends PureComponent {
                           }
                           attachments={values.visitAttachment}
                           visitType={values.visitPurposeFK}
+                          visitRemarks={
+                            this.props.visitRegistration?.appointment
+                              ?.appointments[0]?.appointmentRemarks
+                          }
                           dispatch={dispatch}
                           visitOrderTemplateOptions={visitOrderTemplateOptions}
                           {...this.props}
