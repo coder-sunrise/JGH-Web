@@ -671,7 +671,6 @@ class Medication extends PureComponent {
         const frequency = medicationFrequencyList.find(
           o => o.id === prescriptionItem[i].drugFrequencyFK,
         )
-
         newTotalQuantity +=
           dosage.multiplier *
           frequency.multiplier *
@@ -679,7 +678,7 @@ class Medication extends PureComponent {
       }
     }
 
-    newTotalQuantity = Math.ceil(newTotalQuantity * 10) / 10 || 0
+    newTotalQuantity = Math.ceil(newTotalQuantity * 100) / 100 || 0
     const { conversion } = currentMedication
     if (conversion) newTotalQuantity = Math.ceil(newTotalQuantity / conversion)
     setFieldValue(`quantity`, newTotalQuantity)
