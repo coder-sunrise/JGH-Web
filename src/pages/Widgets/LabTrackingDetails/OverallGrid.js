@@ -15,7 +15,12 @@ import { ableToViewByAuthority } from '@/utils/utils'
 import { DeleteWithPopover } from '@/components/_medisys'
 
 class OverallGrid extends PureComponent {
-  state = { showError: false, errorMessage: '', cancelReason: '' }
+  state = {
+    showError: false,
+    errorMessage: '',
+    cancelReason: '',
+    isShowPopover: false,
+  }
 
   configs = {
     columns: [
@@ -185,6 +190,9 @@ class OverallGrid extends PureComponent {
                     }
                     onCancelClick={this.handleCancelClick}
                     onConfirmDelete={this.handleConfirmDelete}
+                    onVisibleChange={visible => {
+                      this.setState({ isShowPopover: visible })
+                    }}
                     isUseCallBack
                     buttonProps={{ style: { marginLeft: 8 } }}
                   />
@@ -271,7 +279,10 @@ class OverallGrid extends PureComponent {
     return (
       <CommonTableGrid
         type='labTrackingDetails'
-        onRowDoubleClick={this.editRow}
+        onRowDoubleClick={(row, e) => {
+          if (this.state.isShowPopover) return
+          this.editRow(row, e)
+        }}
         TableProps={{
           height,
         }}

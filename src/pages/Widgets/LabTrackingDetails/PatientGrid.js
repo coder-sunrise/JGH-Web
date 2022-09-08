@@ -16,7 +16,12 @@ import { PATIENT_LAB } from '@/utils/constants'
 import { Attachment, DeleteWithPopover } from '@/components/_medisys'
 
 class PatientGrid extends PureComponent {
-  state = { showError: false, errorMessage: '', cancelReason: '' }
+  state = {
+    showError: false,
+    errorMessage: '',
+    cancelReason: '',
+    isShowPopover: false,
+  }
   configs = {
     columns: [
       { name: 'visitDate', title: 'Visit Date' },
@@ -148,6 +153,9 @@ class PatientGrid extends PureComponent {
                     }
                     onCancelClick={this.handleCancelClick}
                     onConfirmDelete={this.handleConfirmDelete}
+                    onVisibleChange={visible => {
+                      this.setState({ isShowPopover: visible })
+                    }}
                     isUseCallBack
                     buttonProps={{ style: { marginLeft: 8 } }}
                   />
@@ -249,7 +257,10 @@ class PatientGrid extends PureComponent {
     return (
       <CommonTableGrid
         type='labTrackingDetails'
-        onRowDoubleClick={this.editRow}
+        onRowDoubleClick={(row, e) => {
+          if (this.state.isShowPopover) return
+          this.editRow(row, e)
+        }}
         TableProps={{
           height,
         }}

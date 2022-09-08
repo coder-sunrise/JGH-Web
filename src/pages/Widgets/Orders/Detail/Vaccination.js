@@ -443,7 +443,7 @@ class Vaccination extends PureComponent {
               : undefined)),
       )
       if (dosage) {
-        newTotalQuantity = roundTo(dosage.multiplier, 1)
+        newTotalQuantity = roundTo(dosage.multiplier, 2)
         calculated = true
       }
       if (currentVaccination?.prescribingUOM?.id === uomfk) {
