@@ -889,7 +889,7 @@ class Detail extends PureComponent {
       }
     }
 
-    newTotalQuantity = Math.ceil(newTotalQuantity * 10) / 10 || 0
+    newTotalQuantity = Math.ceil(newTotalQuantity * 100) / 100 || 0
     const { conversion } = currentMedication
     if (conversion) newTotalQuantity = Math.ceil(newTotalQuantity / conversion)
     setFieldValue(`quantity`, newTotalQuantity)
