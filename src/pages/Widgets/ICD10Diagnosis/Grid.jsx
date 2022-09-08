@@ -1,18 +1,25 @@
-import React, { Fragment, useState, useEffect } from 'react'
-import { CommonTableGrid, Button } from '@/components'
-import { primaryColor, grayColor, border } from '@/assets/jss'
+import React, { useState, useEffect } from 'react'
+import { CommonTableGrid } from '@/components'
+import { primaryColor } from '@/assets/jss'
 import { render } from 'react-dom'
-import AddIcon from '@material-ui/icons/Add'
+import { useSelector } from 'umi'
 export default function Grid(props) {
   const { diagnosis, visitRegistration } = props
-  const [diagnosisHistoryData, setDiagnosisHistoryData] = useState([])
-  const [selectItemsNum, setSelectItemsNum] = useState()
-  const [newVisitdate, setNewVisitdate] = useState(
-    visitRegistration?.entity?.visit?.visitDate,
+  const { patientDiansiosHistoryList } = useSelector(
+    state => state.patientHistory,
   )
-  const [addIconDisabled, setAddIconDisabled] = useState(false)
+  const [diagnosisHistoryData, setDiagnosisHistoryData] = useState(
+    patientDiansiosHistoryList.list.map(item => {
+      return {
+        ...item,
+        action: 'add',
+      }
+    }),
+  )
+  const [selectItemsNum, setSelectItemsNum] = useState()
   const columns = [
-    { name: 'visitdate', title: 'Visit Date' },
+    { name: 'visitDate', title: 'Visit Date' },
+    // { name: 'icD10DiagnosisDescription', title: 'Diagnosis' },
     { name: 'icD10JpnDiagnosisDescription', title: 'Diagnosis' },
     { name: 'diagnosisType', title: 'Type' },
     { name: 'onsetDate', title: 'Onset Date' },
@@ -20,93 +27,26 @@ export default function Grid(props) {
     { name: 'validityDays', title: 'Validity(Days)' },
     { name: 'action', title: 'Action' },
   ]
-  const styles = () => ({
-    nameColumn: {
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      display: 'inline-block',
-      textOverflow: 'ellipsis',
-      width: 330,
-      paddingLeft: 8,
-      float: 'left',
-      marginTop: 6,
-    },
-    instructionColumn: {
-      display: 'inline-block',
-      width: 400,
-      paddingLeft: 8,
-      float: 'left',
-      marginTop: 6,
-    },
-    quantityColumn: {
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      display: 'inline-block',
-      textOverflow: 'ellipsis',
-      width: 150,
-      paddingLeft: 8,
-      float: 'left',
-      marginTop: 6,
-    },
-    actionColumn: {
-      width: 30,
-      float: 'left',
-    },
-    addIcon: {
-      cursor: 'pointer',
-      color: primaryColor,
-    },
-    rightIcon: {
-      position: 'relative',
-      fontWeight: 600,
-      color: 'white',
-      fontSize: '0.7rem',
-      padding: '2px 3px',
-      height: 20,
-      cursor: 'pointer',
-      margin: '0px 1px',
-      lineHeight: '16px',
-    },
-  })
-  useEffect(() => {
-    console.log(diagnosis)
-    setNewVisitdate(111)
-    if (diagnosisHistoryData.length === 0) {
-      setDiagnosisHistoryData(
-        diagnosis.rows.map(item => {
-          return {
-            ...item,
-            visitdate: visitRegistration?.entity?.visit?.visitDate,
-            action: 'add',
-          }
-        }),
-      )
-    }
-  }, [diagnosis])
-  const data = diagnosis.rows.map(item => {
-    return {
-      ...item,
-      visitdate: visitRegistration?.entity?.visit?.visitDate,
-      action: 'add',
-    }
-  })
-  console.log(diagnosisHistoryData)
-  const onChangeItems = (row, iconName) => {
-    console.log(diagnosisHistoryData, 'diagnosisHistoryData')
-    console.log(newVisitdate)
-    setDiagnosisHistoryData(data)
-    // const newOnSelectItems = diagnosisHistoryData.map(item => {
-    //   if (item.id === row.id) {
-    //     item.action = iconName
-    //   }
-    //   return item
-    // })
-    // setDiagnosisHistoryData(newOnSelectItems)
-    // const { getGridSelectNum } = props
-    // const AddFromPastModal = newOnSelectItems.filter(
-    //   item => item.action === 'minus',
-    // ).length
-    // getGridSelectNum(AddFromPastModal)
+  // Change add and minus icon
+  const onSelectItems = (row, iconName) => {
+    const newOnSelectItems = diagnosisHistoryData.map(item => {
+      if (item.id === row.id) {
+        item.action = iconName
+      }
+      return item
+    })
+    setDiagnosisHistoryData(newOnSelectItems)
+    // Gets the selected nums,pass to the parent component
+    const { getGridSelectNum, getGridDiangnosisHistoryID } = props
+    const AddFromPastModal = newOnSelectItems.filter(
+      item => item.action === 'minus',
+    ).length
+    getGridSelectNum(AddFromPastModal)
+    // Gets the selected data,pass to the parent component
+    const getDiagnosisHistoryID = newOnSelectItems.filter(
+      item => item.action === 'minus',
+    )
+    getGridDiangnosisHistoryID(getDiagnosisHistoryID)
   }
   return (
     <>
@@ -120,7 +60,10 @@ export default function Grid(props) {
           }}
         >
           <span style={{ color: 'red ' }}>
-            {diagnosisHistoryData.filter(item => item.action === 'add').length}
+            {
+              diagnosisHistoryData.filter(item => item.action === 'minus')
+                .length
+            }
           </span>
           <span>&nbsp;&nbsp;diagnosis select</span>
         </div>
@@ -128,52 +71,134 @@ export default function Grid(props) {
       <CommonTableGrid
         forceRender
         columns={columns}
-        rows={data}
+        rows={diagnosisHistoryData}
         FuncProps={{ pager: false }}
         columnExtensions={[
           {
-            columnName: 'visitdate',
+            columnName: 'visitDate',
             type: 'date',
+            align: 'center',
           },
           {
             columnName: 'firstVisitDate',
             type: 'date',
+            align: 'center',
           },
           {
             columnName: 'onsetDate',
             type: 'date',
+            align: 'center',
+          },
+          {
+            columnName: 'diagnosisType',
+            align: 'center',
           },
           {
             columnName: 'icD10JpnDiagnosisDescription',
-            sortingEnabled: false,
-            width: 150,
+            width: 250,
+            render: row => {
+              if (
+                Date.parse(row.onsetDate) >
+                  Date.parse(row.effectiveStartDate) &&
+                Date.parse(row.firstVisitDate) <
+                  Date.parse(row.effectiveEndDate)
+              ) {
+                if (diagnosis.favouriteDiagnosisLanguage === 'JP') {
+                  return <span>{row.icD10JpnDiagnosisDescription}</span>
+                } else {
+                  return <span>{row.icD10DiagnosisDescription}</span>
+                }
+              } else {
+                if (diagnosis.favouriteDiagnosisLanguage === 'JP') {
+                  return (
+                    <span>
+                      <span style={{ color: 'red', fontStyle: 'italic' }}>
+                        <sup>#1&nbsp;</sup>
+                      </span>
+                      inactive diagnosis {row.icD10JpnDiagnosisDescription}
+                    </span>
+                  )
+                } else {
+                  return (
+                    <span>
+                      <span style={{ color: 'red', fontStyle: 'italic' }}>
+                        <sup>#1&nbsp;</sup>
+                      </span>
+                      inactive diagnosis {row.icD10DiagnosisDescription}
+                    </span>
+                  )
+                }
+              }
+            },
           },
           {
             columnName: 'validityDays',
-            sortingEnabled: false,
             align: 'center',
           },
           {
             columnName: 'action',
             align: 'center',
             sortingEnabled: false,
-            width: 100,
+            width: 70,
             render: row => {
-              return row.action === 'add' ? (
-                <Button
-                  color='primary'
-                  justIcon
-                  onClick={() => {
-                    onChangeItems(row, 'add')
-                  }}
-                >
-                  <AddIcon></AddIcon>
-                </Button>
-              ) : (
-                <Button disabled color='#ccc' justIcon>
-                  <AddIcon></AddIcon>
-                </Button>
-              )
+              if (row.action == 'add') {
+                if (
+                  Date.parse(row.onsetDate) >
+                    Date.parse(row.effectiveStartDate) &&
+                  Date.parse(row.firstVisitDate) <
+                    Date.parse(row.effectiveEndDate)
+                ) {
+                  return (
+                    <span
+                      className='material-icons'
+                      style={{
+                        cursor: 'pointer',
+                        color: primaryColor,
+                        marginTop: 4,
+                        marginLeft: 5,
+                      }}
+                      onClick={() => {
+                        onSelectItems(row, 'minus')
+                      }}
+                    >
+                      add_circle_outline
+                    </span>
+                  )
+                } else {
+                  return (
+                    <span
+                      className='material-icons'
+                      style={{
+                        cursor: 'pointer',
+                        color: '#ccc',
+                        marginTop: 4,
+                        marginLeft: 5,
+                      }}
+                    >
+                      add_circle_outline
+                    </span>
+                  )
+                }
+              } else {
+                if (row.action != 'add') {
+                  return (
+                    <span
+                      className='material-icons'
+                      style={{
+                        cursor: 'pointer',
+                        color: 'red',
+                        marginTop: 4,
+                        marginLeft: 5,
+                      }}
+                      onClick={() => {
+                        onSelectItems(row, 'add')
+                      }}
+                    >
+                      remove_circle_outline
+                    </span>
+                  )
+                }
+              }
             },
           },
         ]}

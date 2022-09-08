@@ -46,6 +46,9 @@ export default createListViewModel({
       patientReferralHistory: {
         entity: { data: [] },
       },
+      patientDiansiosHistoryList: {
+        list: [],
+      },
     },
     subscriptions: ({ dispatch, history }) => {
       history.listen(async (loct, method) => {
@@ -161,6 +164,18 @@ export default createListViewModel({
             },
           })
           return response.data
+        }
+        return false
+      },
+      *queryDiagnosisHistory({ payload }, { call, put }) {
+        const response = yield call(service.queryDiagnosisHistory, payload)
+
+        if (response.status === '200') {
+          yield put({
+            type: 'getDiagnosisHistory',
+            payload: response,
+          })
+          return response
         }
         return false
       },
@@ -482,6 +497,15 @@ export default createListViewModel({
                 return { ...s }
               }
             }),
+          },
+        }
+      },
+      getDiagnosisHistory(st, { payload }) {
+        const { data } = payload
+        return {
+          ...st,
+          patientDiansiosHistoryList: {
+            list: data,
           },
         }
       },

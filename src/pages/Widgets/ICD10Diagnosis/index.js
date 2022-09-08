@@ -36,7 +36,14 @@ class ICD10Diagnosis extends PureComponent {
     itemValues: [],
   }
   componentDidMount() {
-    const { dispatch } = this.props
+    const { dispatch, consultation } = this.props
+    const { patientMedicalHistory } = consultation.entity
+    dispatch({
+      type: 'patientHistory/queryDiagnosisHistory',
+      payload: {
+        patientProfileId: patientMedicalHistory.id,
+      },
+    })
     this.fetchCodeTables()
   }
 
@@ -62,11 +69,9 @@ class ICD10Diagnosis extends PureComponent {
   }
 
   onSearchDiagnosisHistory = () => {
-    // console.log('onSearchDiagnosisHistory')
-    // console.log(this.props)
-    this.toggleAddFromPastModal()
+    this.setState({ showAddFromPastModal: true })
   }
-
+  // Gets the selectNums selected by the Grid
   getGridSelectNum = values => {
     if (values >= 1) {
       this.setState({ confirmPropsSave: false })
@@ -74,9 +79,18 @@ class ICD10Diagnosis extends PureComponent {
       this.setState({ confirmPropsSave: true })
     }
   }
+  // Gets the selectData selected by the Grid
+  getGridDiangnosisHistoryID = value => {
+    this.setState({ newDiagnosisData: value })
+  }
+
   toggleAddFromPastModal = () => {
-    const { showAddFromPastModal } = this.state
-    this.setState({ showAddFromPastModal: !showAddFromPastModal })
+    const { form } = this.arrayHelpers
+    const { values } = form
+    console.log(values.corDiagnosis, 'values.corDiagnosis')
+    const newValues = values.corDiagnosis.concat(this.state.newDiagnosisData)
+    values.corDiagnosis = newValues
+    this.setState({ showAddFromPastModal: false })
   }
   fetchCodeTables = async () => {
     const { dispatch } = this.props
@@ -289,12 +303,15 @@ class ICD10Diagnosis extends PureComponent {
             <CommonModal
               open={showAddFromPastModal}
               title='Diagnosis History'
-              onClose={this.toggleAddFromPastModal}
+              onClose={() => {
+                this.setState({ showAddFromPastModal: false })
+              }}
               onConfirm={this.toggleAddFromPastModal}
               maxWidth='md'
               showFooter={true}
               overrideLoading
               cancelText='Cancel'
+              confirmText='Save'
               footProps={{
                 confirmProps: {
                   disabled: this.state.confirmPropsSave,
@@ -302,11 +319,20 @@ class ICD10Diagnosis extends PureComponent {
               }}
             >
               <>
-                {/* <FilterBar {...this.props}></FilterBar> */}
-                <Grid
-                  getGridSelectNum={this.getGridSelectNum}
-                  {...this.props}
-                ></Grid>
+                <div
+                  style={{
+                    maxHeight: '70vh',
+                    overflowY: 'auto',
+                    width: '953px',
+                    padding: '8px',
+                  }}
+                >
+                  <Grid
+                    getGridSelectNum={this.getGridSelectNum}
+                    getGridDiangnosisHistoryID={this.getGridDiangnosisHistoryID}
+                    {...this.props}
+                  ></Grid>
+                </div>
               </>
             </CommonModal>
           </div>
