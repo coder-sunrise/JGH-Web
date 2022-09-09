@@ -13,6 +13,12 @@ const fns = {
       body: { visitId: params.visitId },
     })
   },
+  discard: async params => {
+    return await request(`${url}/Discard/${params.id}`, {
+      method: 'PUT',
+      body: params,
+    })
+  },
 }
 
 export default fns

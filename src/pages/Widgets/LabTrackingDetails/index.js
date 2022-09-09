@@ -27,6 +27,14 @@ const styles = theme => ({
     alignItems: 'stretch',
     height: 'calc(100vh - 80px)',
   },
+  errorContainer: {
+    textAlign: 'left',
+    height: 75,
+    paddingBottom: theme.spacing(1),
+    '& span': {
+      fontSize: '.8rem',
+    },
+  },
 })
 
 @connect(({ labTrackingDetails, clinicSettings, global }) => ({
@@ -56,13 +64,14 @@ class LabTrackingDetails extends PureComponent {
       },
     })
   }
-  
+
   toggleModal = () => {
     const { labTrackingDetails } = this.props
     this.props.dispatch({
       type: 'labTrackingDetails/updateState',
       payload: {
         showModal: !labTrackingDetails.showModal,
+        resultType: undefined,
       },
     })
   }
@@ -111,6 +120,9 @@ class LabTrackingDetails extends PureComponent {
     } else if (resultType === PATIENT_LAB.CONSULTATION) {
       tableHeight =
         mainDivHeight - 80 - ($('.filterLabTrackingBar').height() || 0)
+    } else if (resultType === PATIENT_LAB.MEDICAL_CHECKUP) {
+      tableHeight =
+        mainDivHeight - 273 - ($('.filterLabTrackingBar').height() || 45)
     } else {
       tableHeight = height - 260 - ($('.filterLabTrackingBar').height() || 0)
     }
@@ -134,6 +146,7 @@ class LabTrackingDetails extends PureComponent {
             dispatch={dispatch}
             IsOverallGrid={IsOverallGrid}
             patientId={patientID}
+            resultType={resultType}
           />
         </div>
 
@@ -158,17 +171,20 @@ class LabTrackingDetails extends PureComponent {
             />
           )}
         </div>
-          <CommonModal
-            open={labTrackingDetails.showModal}
-            title='Edit External Tracking / Results'
-            observe='LabResultsDetail'
-            maxWidth='md'
-            bodyNoPadding
-            onClose={this.toggleModal}
-            onConfirm={this.toggleModal}
-          >
+        <CommonModal
+          open={
+            labTrackingDetails.showModal &&
+            resultType === labTrackingDetails.resultType
+          }
+          title='Edit External Tracking / Results'
+          observe='LabResultsDetail'
+          maxWidth='md'
+          bodyNoPadding
+          onClose={this.toggleModal}
+          onConfirm={this.toggleModal}
+        >
           <Detail {...cfg} {...this.props} mode='integrated' />
-          </CommonModal>
+        </CommonModal>
       </div>
     )
   }

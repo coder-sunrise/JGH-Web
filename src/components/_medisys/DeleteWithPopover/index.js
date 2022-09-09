@@ -5,12 +5,11 @@ import Delete from '@material-ui/icons/Delete'
 // common components
 import { Button, Popover, SizeContainer, Tooltip } from '@/components'
 
-const styles = (theme) => ({
+const styles = theme => ({
   popoverContainer: {
     textAlign: 'center',
   },
   popoverMessage: {
-    paddingLeft: theme.spacing(3),
     paddingBottom: theme.spacing(1),
   },
 })
@@ -26,22 +25,26 @@ const DeleteWithPopover = ({
   onConfirmDelete,
   onCancelClick,
   buttonProps = {},
+  isUseCallBack,
+  onVisibleChange,
 }) => {
-  const [
-    show,
-    setShow,
-  ] = useState(false)
+  const [show, setShow] = useState(false)
 
-  const toggleVisibleChange = () => setShow(!show)
+  const toggleVisibleChange = (v = false) => {
+    if (onVisibleChange) {
+      onVisibleChange(v)
+    }
+    setShow(!show)
+  }
 
   const handleCancelClick = () => {
-    toggleVisibleChange()
+    toggleVisibleChange(false)
     if (onCancelClick) onCancelClick(index)
   }
 
   const onConfirmClick = () => {
     onConfirmDelete(index, toggleVisibleChange)
-    toggleVisibleChange()
+    if (!isUseCallBack) toggleVisibleChange()
   }
 
   return (

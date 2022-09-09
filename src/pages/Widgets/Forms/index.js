@@ -187,6 +187,7 @@ class Forms extends PureComponent {
     this.state = {
       openFormType: false,
       includeVoidForms: false,
+      isShowPopover: false,
     }
 
     dispatch({
@@ -209,9 +210,12 @@ class Forms extends PureComponent {
   }
 
   editRow = row => {
-    const { isEnableEditOrder = true, forms:{rows = []} } = this.props
+    const {
+      isEnableEditOrder = true,
+      forms: { rows = [] },
+    } = this.props
     if (!isEnableEditOrder) return
-    row = rows.find(r=>r.uid == row.uid)
+    row = rows.find(r => r.uid == row.uid)
     if (row.statusFK === 4) return
     this.props.dispatch({
       type: 'forms/updateState',
@@ -325,6 +329,9 @@ class Forms extends PureComponent {
         onCancelClick={() => {
           setReason(undefined)
         }}
+        onVisibleChange={visible => {
+          this.setState({ isShowPopover: visible })
+        }}
         onConfirmDelete={handleConfirmDelete}
       />
     )
@@ -408,7 +415,10 @@ class Forms extends PureComponent {
               ? rows
               : rows.filter(o => o.statusFK !== 4)
           }
-          onRowDoubleClick={this.editRow}
+          onRowDoubleClick={(row, e) => {
+            if (this.state.isShowPopover) return
+            this.editRow(row, e)
+          }}
           columns={[
             { name: 'formName', title: 'Form' },
             { name: 'updateByUser', title: 'Last Updated By' },
@@ -519,6 +529,9 @@ class Forms extends PureComponent {
                               },
                             })
                           }
+                          onVisibleChange={visible => {
+                            this.setState({ isShowPopover: visible })
+                          }}
                         >
                           <Tooltip title='Delete'>
                             <Button size='sm' color='danger' justIcon>

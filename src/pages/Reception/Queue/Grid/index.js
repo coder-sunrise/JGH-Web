@@ -226,7 +226,7 @@ class Grid extends React.Component {
         const clinicRoleFK =
           user.data.clinicianProfile.userProfile.role?.clinicRoleFK
         if (clinicRoleFK === 1) {
-          id = '6'
+          id = '7'
         } else {
           id = '1'
         }

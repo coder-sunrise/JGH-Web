@@ -270,7 +270,7 @@ const getVisitDoctorUserId = props => {
   validationSchema: Yup.object().shape({
     quantity: Yup.number()
       .min(0.1, 'Min. value is 0.1')
-      .max(999, 'Quantity must be between 0.0 and 999')
+      .max(999, 'Quantity must be between 0.1 and 999')
       .required(),
     dispenseUOMFK: Yup.number().required(),
     totalPrice: Yup.number().required(),
@@ -671,7 +671,6 @@ class Medication extends PureComponent {
         const frequency = medicationFrequencyList.find(
           o => o.id === prescriptionItem[i].drugFrequencyFK,
         )
-
         newTotalQuantity +=
           dosage.multiplier *
           frequency.multiplier *
@@ -679,7 +678,7 @@ class Medication extends PureComponent {
       }
     }
 
-    newTotalQuantity = Math.ceil(newTotalQuantity * 10) / 10 || 0
+    newTotalQuantity = Math.ceil(newTotalQuantity * 100) / 100 || 0
     const { conversion } = currentMedication
     if (conversion) newTotalQuantity = Math.ceil(newTotalQuantity / conversion)
     setFieldValue(`quantity`, newTotalQuantity)
@@ -913,7 +912,9 @@ class Medication extends PureComponent {
       op.inventoryMedication_MedicationPrecaution &&
       op.inventoryMedication_MedicationPrecaution.length > 0
     ) {
-      op.inventoryMedication_MedicationPrecaution.forEach((im, i) => {
+      _.sortBy(op.inventoryMedication_MedicationPrecaution, [
+        'sequence',
+      ]).forEach((im, i) => {
         const precaution = ctmedicationprecaution.find(
           t => t.id === im.medicationPrecautionFK,
         )

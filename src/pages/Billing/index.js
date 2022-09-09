@@ -1327,7 +1327,7 @@ class Billing extends Component {
               collapses={[
                 {
                   key: 0,
-                  title: 'Dispensing Details',
+                  title: 'Order Details',
                   content: (
                     <div className={classes.dispenseContainer}>
                       <DispenseDetails
@@ -1425,7 +1425,7 @@ class Billing extends Component {
         </Paper>
         <GridContainer>
           <GridItem
-            md={isEnablePackage && this.state.isConsumedPackage ? 6 : 8}
+            md={isEnablePackage && this.state.isConsumedPackage ? 5 : 7}
           >
             <div
               style={{
@@ -1489,7 +1489,7 @@ class Billing extends Component {
             </div>
           </GridItem>
           <GridItem
-            md={isEnablePackage && this.state.isConsumedPackage ? 6 : 4}
+            md={isEnablePackage && this.state.isConsumedPackage ? 7 : 5}
             style={{ paddingRight: 0 }}
           >
             <React.Fragment>
@@ -1544,7 +1544,7 @@ class Billing extends Component {
                   }
                 >
                   <ArrowBack />
-                  Dispense
+                  Order Details
                 </Button>
                 <Button
                   color='primary'

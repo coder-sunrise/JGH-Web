@@ -15,7 +15,7 @@ import {
   getDrugAllergy,
 } from '@/pages/Widgets/Orders/utils'
 import { getTranslationValue, getUniqueId } from '@/utils/utils'
-import FitlerBar from './FilterBar'
+import FilterBar from './FilterBar'
 import Grid from './Grid'
 import { getClinicianProfile } from '../../../ConsultationDocument/utils'
 
@@ -912,7 +912,7 @@ class PastMedication extends PureComponent {
         text='Retrieving medication history list...'
       >
         <div>
-          <FitlerBar
+          <FilterBar
             type={type}
             selectItemCount={this.state.addedItems.length}
             handelSearch={this.handelSearch}

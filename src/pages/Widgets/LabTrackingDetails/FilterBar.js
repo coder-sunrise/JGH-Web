@@ -3,7 +3,7 @@ import { formatMessage } from 'umi'
 import Search from '@material-ui/icons/Search'
 import { findGetParameter } from '@/utils/utils'
 import moment from 'moment'
-
+import { PATIENT_LAB, VISIT_TYPE } from '@/utils/constants'
 import {
   Button,
   CommonModal,
@@ -44,7 +44,7 @@ const searchResult = (values, props) => {
   const {
     visitDate,
     isAllDateChecked,
-    labTrackingStatusFK,
+    labTrackingStatusIDs,
     serviceName,
     searchValue,
     visitTypeIDs,
@@ -75,9 +75,9 @@ const searchResult = (values, props) => {
       ? undefined
       : visitStartDate || undefined,
     lsteql_visitDate: isAllDateChecked ? undefined : visitEndDate || undefined,
-    labTrackingStatusFK: labTrackingStatusFK || undefined,
     apiCriteria: {
-      searchValue: searchValue ? searchValue : undefined,
+      searchValue:
+        searchValue && searchValue.trim().length ? searchValue : undefined,
       serviceCenterIDs:
         serviceCenterIDs && serviceCenterIDs.length > 0
           ? serviceCenterIDs.join(',')
@@ -86,8 +86,13 @@ const searchResult = (values, props) => {
         visitTypeIDs && visitTypeIDs.length > 0
           ? visitTypeIDs.join(',')
           : undefined,
+      serviceName:
+        serviceName && serviceName.trim().length ? serviceName : undefined,
+      labTrackingStatusIDs:
+        labTrackingStatusIDs && labTrackingStatusIDs.length > 0
+          ? labTrackingStatusIDs.join(',')
+          : undefined,
     },
-    serviceName: serviceName || undefined,
   }
   dispatch({
     type: 'labTrackingDetails/query',
@@ -98,12 +103,6 @@ const searchResult = (values, props) => {
 class FilterBar extends PureComponent {
   constructor(props) {
     super(props)
-    const { setFieldValue } = props
-
-    setTimeout(() => {
-      setFieldValue('visitDate', [moment().toDate(), moment().toDate()])
-      setFieldValue('visitTypeIDs', [-99])
-    }, 1)
   }
 
   componentDidMount = () => {
@@ -114,7 +113,7 @@ class FilterBar extends PureComponent {
   }
 
   render() {
-    const { handleSubmit, IsOverallGrid, values } = this.props
+    const { handleSubmit, IsOverallGrid, values, resultType } = this.props
     return (
       <div>
         <GridContainer alignItems='flex-end'>
@@ -205,41 +204,53 @@ class FilterBar extends PureComponent {
               )}
             />
           </div>
-          <FastField
-            name='isAllDateChecked'
-            render={args => {
-              return (
-                <Tooltip
-                  title={formatMessage({
-                    id: 'form.date.placeholder.allDate',
-                  })}
-                  placement='bottom'
-                >
-                  <Checkbox
-                    label={formatMessage({
+          {resultType !== PATIENT_LAB.MEDICAL_CHECKUP && (
+            <FastField
+              name='isAllDateChecked'
+              render={args => {
+                return (
+                  <Tooltip
+                    title={formatMessage({
                       id: 'form.date.placeholder.allDate',
                     })}
-                    inputLabel=' '
-                    style={{
-                      width: 80,
-                      marginLeft: 10,
-                      position: 'relative',
-                      bottom: '-6px',
-                    }}
-                    {...args}
-                  />
-                </Tooltip>
-              )
-            }}
-          />
+                    placement='bottom'
+                  >
+                    <Checkbox
+                      label={formatMessage({
+                        id: 'form.date.placeholder.allDate',
+                      })}
+                      inputLabel=' '
+                      style={{
+                        width: 80,
+                        marginLeft: 10,
+                        position: 'relative',
+                        bottom: '-6px',
+                      }}
+                      {...args}
+                    />
+                  </Tooltip>
+                )
+              }}
+            />
+          )}
           <FastField
-            name='labTrackingStatusFK'
+            name='labTrackingStatusIDs'
             render={args => (
               <CodeSelect
                 label='Status'
                 {...args}
                 code='ltlabtrackingstatus'
-                style={{ width: 110, marginLeft: 10 }}
+                style={{ width: 110, marginLeft: 8 }}
+                mode='multiple'
+                all={-99}
+                defaultOptions={[
+                  {
+                    isExtra: true,
+                    id: -99,
+                    displayValue: 'All status',
+                  },
+                ]}
+                maxTagPlaceholder='status'
               />
             )}
           />
@@ -250,7 +261,7 @@ class FilterBar extends PureComponent {
             size='sm'
             onClick={handleSubmit}
             style={{
-              marginLeft: 20,
+              marginLeft: 10,
               position: 'relative',
               bottom: 6,
             }}
@@ -267,6 +278,22 @@ export default memo(
   withFormikExtend({
     handleSubmit: (values, { props, resetForm }) => {
       searchResult(values, props)
+    },
+    mapPropsToValues: ({ resultType }) => {
+      return {
+        visitDate: [
+          resultType === PATIENT_LAB.MEDICAL_CHECKUP
+            ? moment()
+                .add(-1, 'month')
+                .add(1, 'day')
+                .toDate()
+            : moment().toDate(),
+          moment().toDate(),
+        ],
+        visitTypeIDs:
+          resultType === PATIENT_LAB.MEDICAL_CHECKUP ? [VISIT_TYPE.MC] : [-99],
+        labTrackingStatusIDs: [1, 2, 3, 4],
+      }
     },
   })(FilterBar),
 )

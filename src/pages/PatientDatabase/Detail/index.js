@@ -321,11 +321,12 @@ class PatientDetail extends PureComponent {
       {
         id: '11',
         name: 'Pre-Order List',
+        schema: schemas.preOrderList,
         component: Loadable({
           loader: () => import('./Pre-Order'),
           render: (loaded, p) => {
             let Cmpnet = loaded.default
-            return <Cmpnet {...p} />
+            return <Cmpnet schema={schemas.preOrderList} {...p} />
           },
           loading: Loading,
         }),

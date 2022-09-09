@@ -5,7 +5,7 @@ import Undo from '@material-ui/icons/Undo'
 // common components
 import { Button, Popover, SizeContainer, Tooltip } from '@/components'
 
-const styles = (theme) => ({
+const styles = theme => ({
   popoverContainer: {
     textAlign: 'center',
   },
@@ -24,16 +24,19 @@ const VoidWithPopover = ({
   extraCmd,
   onConfirmDelete,
   onCancelClick,
+  onVisibleChange,
 }) => {
-  const [
-    show,
-    setShow,
-  ] = useState(false)
+  const [show, setShow] = useState(false)
 
-  const toggleVisibleChange = () => setShow(!show)
+  const toggleVisibleChange = (v = false) => {
+    if (onVisibleChange) {
+      onVisibleChange(v)
+    }
+    setShow(!show)
+  }
 
   const handleCancelClick = () => {
-    toggleVisibleChange()
+    toggleVisibleChange(false)
     if (onCancelClick) onCancelClick(index)
   }
 

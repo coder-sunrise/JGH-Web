@@ -1,11 +1,27 @@
 import React, { PureComponent } from 'react'
-import { Edit } from '@material-ui/icons'
+import moment from 'moment'
+import { Edit, Delete } from '@material-ui/icons'
 import CommonTableGrid from '@/components/CommonTableGrid'
-import { Button, Tooltip } from '@/components'
+import {
+  Button,
+  Tooltip,
+  TextField,
+  Danger,
+  dateFormatLongWithTimeNoSec,
+} from '@/components'
 import PatientResultButton from './PatientResultPrintBtn'
 import Authorized from '@/utils/Authorized'
+import { ableToViewByAuthority } from '@/utils/utils'
+import { DeleteWithPopover } from '@/components/_medisys'
 
 class OverallGrid extends PureComponent {
+  state = {
+    showError: false,
+    errorMessage: '',
+    cancelReason: '',
+    isShowPopover: false,
+  }
+
   configs = {
     columns: [
       { name: 'visitDate', title: 'Visit Date' },
@@ -17,7 +33,7 @@ class OverallGrid extends PureComponent {
         name: 'doctorProfileFKNavigation.ClinicianProfile.Name',
         title: 'Doctor',
       },
-      { name: 'serviceName', title: 'Service Name' },
+      { name: 'filterServiceName', title: 'Service Name' },
       { name: 'serviceCenterName', title: 'Service Center Name' },
       { name: 'supplierName', title: 'Supplier' },
       { name: 'orderedDate', title: 'Ordered Date' },
@@ -56,15 +72,38 @@ class OverallGrid extends PureComponent {
       { columnName: 'estimateReceiveDate', type: 'date', width: 130 },
       { columnName: 'orderedDate', type: 'date', width: 100 },
       { columnName: 'receivedDate', type: 'date', width: 105 },
-      { columnName: 'serviceName', width: 200 },
+      { columnName: 'filterServiceName', width: 200, sortingEnabled: false },
       {
         columnName: 'serviceCenterName',
         width: 200,
-        sortBy:
-          'ServiceCenterServiceFKNavigation.ServiceCenterFKNavigation.DisplayValue',
+        sortBy: 'ServiceCenterFKNavigation.DisplayValue',
       },
       { columnName: 'supplierName', width: 150 },
-      { columnName: 'labTrackingStatusDisplayValue', width: 110 },
+      {
+        columnName: 'labTrackingStatusDisplayValue',
+        width: 110,
+        render: row => {
+          let tooltip = ''
+          if (row.labTrackingStatusFK === 5) {
+            tooltip = (
+              <div>
+                <div>
+                  {`Discarded by ${row.discardByUser || ''} at ${moment(
+                    row.discardDate,
+                  ).format(dateFormatLongWithTimeNoSec)}`}
+                </div>
+                <div>{`Reason: ${row.discardReason}`}</div>
+              </div>
+            )
+          }
+
+          return (
+            <Tooltip title={tooltip}>
+              <span>{row.labTrackingStatusDisplayValue}</span>
+            </Tooltip>
+          )
+        },
+      },
       { columnName: 'sentBy', width: 100 },
       { columnName: 'remarks', width: 200 },
       {
@@ -96,9 +135,9 @@ class OverallGrid extends PureComponent {
         columnName: 'action',
         sortingEnabled: false,
         align: 'center',
-        width: 100,
+        width: 110,
         render: row => {
-          const { clinicSettings, handlePrintClick } = this.props
+          const { clinicSettings, handlePrintClick, classes } = this.props
           const accessRight = Authorized.check('reception/labtracking') || {
             rights: 'hidden',
           }
@@ -111,7 +150,7 @@ class OverallGrid extends PureComponent {
                 clinicSettings={clinicSettings}
                 handlePrint={handlePrintClick}
               />
-              <Tooltip title='Edit Patient Lab Result' placement='bottom'>
+              <Tooltip title='Edit external tracking record' placement='bottom'>
                 <Button
                   disabled={readOnly}
                   size='sm'
@@ -125,6 +164,39 @@ class OverallGrid extends PureComponent {
                   <Edit />
                 </Button>
               </Tooltip>
+              {ableToViewByAuthority(
+                'reception.viewexternaltracking.discard',
+              ) &&
+                row.labTrackingStatusFK !== 5 && (
+                  <DeleteWithPopover
+                    index={row.id}
+                    title='Discard External Tracking'
+                    tooltipText='Discard external tracking record'
+                    contentText='Confirm to discard this external tracking?'
+                    extraCmd={
+                      <div className={classes.errorContainer}>
+                        <TextField
+                          label='Discard Reason'
+                          autoFocus
+                          value={this.state.cancelReason}
+                          onChange={this.onCancelReasonChange}
+                        />
+                        {this.state.showError && (
+                          <Danger>
+                            <span>{this.state.errorMessage}</span>
+                          </Danger>
+                        )}
+                      </div>
+                    }
+                    onCancelClick={this.handleCancelClick}
+                    onConfirmDelete={this.handleConfirmDelete}
+                    onVisibleChange={visible => {
+                      this.setState({ isShowPopover: visible })
+                    }}
+                    isUseCallBack
+                    buttonProps={{ style: { marginLeft: 8 } }}
+                  />
+                )}
             </React.Fragment>
           )
         },
@@ -140,7 +212,7 @@ class OverallGrid extends PureComponent {
   }
 
   editRow = (row, e) => {
-    const { dispatch, labTrackingDetails } = this.props
+    const { dispatch, labTrackingDetails, resultType } = this.props
     const { list } = labTrackingDetails
 
     dispatch({
@@ -148,8 +220,58 @@ class OverallGrid extends PureComponent {
       payload: {
         showModal: true,
         entity: list.find(o => o.id === row.id),
+        resultType,
       },
     })
+  }
+
+  handleCancelClick = () => {
+    this.setState({
+      showError: false,
+      errorMessage: '',
+      cancelReason: '',
+    })
+  }
+
+  onCancelReasonChange = event => {
+    if (event.target.value !== '' || event.target.value !== undefined)
+      this.setState({
+        showError: false,
+        cancelReason: event.target.value,
+      })
+  }
+
+  handleConfirmDelete = async (id, toggleVisibleCallback) => {
+    const { dispatch } = this.props
+    if (
+      this.state.cancelReason === '' ||
+      this.state.cancelReason === undefined
+    ) {
+      this.setState({
+        showError: true,
+        errorMessage: 'Discard reason is required',
+      })
+    } else {
+      await dispatch({
+        type: 'labTrackingDetails/discard',
+        payload: {
+          id: id,
+          cancelReason: this.state.cancelReason,
+          cfg: {
+            message: 'External tracking discarded.',
+          },
+        },
+      })
+      await dispatch({
+        type: 'labTrackingDetails/query',
+      })
+      this.setState({
+        showError: false,
+        errorMessage: '',
+        cancelReason: '',
+      })
+      toggleVisibleCallback()
+    }
   }
 
   render() {
@@ -157,7 +279,10 @@ class OverallGrid extends PureComponent {
     return (
       <CommonTableGrid
         type='labTrackingDetails'
-        onRowDoubleClick={this.editRow}
+        onRowDoubleClick={(row, e) => {
+          if (this.state.isShowPopover) return
+          this.editRow(row, e)
+        }}
         TableProps={{
           height,
         }}

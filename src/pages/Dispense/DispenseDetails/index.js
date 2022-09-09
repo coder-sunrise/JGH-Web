@@ -154,6 +154,7 @@ const DispenseDetails = ({
   user,
   visitRegistration,
   isIncludeExpiredItem = false,
+  isCodeTableLoaded,
 }) => {
   const {
     dispenseItems = [],
@@ -469,7 +470,11 @@ const DispenseDetails = ({
         <Authorized authority='dispense.actualizeorderitems'>
           <Link
             component='button'
-            style={{ marginLeft: 10, textDecoration: 'underline' }}
+            style={{
+              marginLeft: 10,
+              marginTop: -4,
+              textDecoration: 'underline',
+            }}
             onClick={() => {
               handleMultiActualizationClick(type)
             }}
@@ -1033,18 +1038,6 @@ const DispenseDetails = ({
                 Discard
               </ProgressButton>
             )}
-            {!isFromMedicalCheckup && !isBillFirstVisit && (
-              <Authorized authority='queue.dispense.savedispense'>
-                <ProgressButton
-                  color='success'
-                  size='sm'
-                  onClick={onSaveClick}
-                  disabled={isIncludeExpiredItem}
-                >
-                  Save Dispense
-                </ProgressButton>
-              </Authorized>
-            )}
             {isRetailVisit && (
               <ProgressButton
                 color='primary'
@@ -1074,14 +1067,14 @@ const DispenseDetails = ({
             {(!isFromMedicalCheckup ||
               (medicalCheckupWorkitemStatusFK !== 3 &&
                 medicalCheckupWorkitemStatusFK !== 4)) &&
-              !isRetailVisit &&
-              visitStatus !== VISIT_STATUS.PAUSED && (
+              !isRetailVisit && (
                 <Authorized authority='queue.dispense.editorder'>
                   <ProgressButton
                     color='primary'
                     size='sm'
                     icon={<Edit />}
                     onClick={onEditOrderClick}
+                    disabled={!isCodeTableLoaded}
                   >
                     Edit Order
                   </ProgressButton>
@@ -1108,6 +1101,22 @@ const DispenseDetails = ({
               <div className={classes.tableContainer}>
                 <div>
                   <h5 style={{ display: 'inline-block' }}>Dispense Details</h5>
+                  {!viewOnly && !isFromMedicalCheckup && !isBillFirstVisit && (
+                    <Authorized authority='queue.dispense.savedispense'>
+                      <Link
+                        component='button'
+                        style={{
+                          marginLeft: 10,
+                          marginTop: -4,
+                          textDecoration: 'underline',
+                        }}
+                        onClick={onSaveClick}
+                        disabled={isIncludeExpiredItem}
+                      >
+                        Save Dispense
+                      </Link>
+                    </Authorized>
+                  )}
                   {viewOnly
                     ? ''
                     : actualizeSelectedItemButton(
