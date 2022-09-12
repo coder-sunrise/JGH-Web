@@ -16,6 +16,7 @@ import {
   Select,
 } from '@/components'
 import { LAB_WORKITEM_STATUS } from '@/utils/constants'
+const MODE = { NEW: 'new', EDIT: 'edit', CANCEL: 'cancel' }
 
 const { Panel } = Collapse
 
@@ -52,6 +53,7 @@ const TestCategoryPanel = ({
                 cur =>
                   cur.id === item.id &&
                   (cur.statusFK === LAB_WORKITEM_STATUS.SPECIMENCOLLECTED ||
+                    cur.statusFK === LAB_WORKITEM_STATUS.CANCELLED ||
                     cur.statusFK === LAB_WORKITEM_STATUS.SPECIMENRECEIVED),
               )}
               onChange={e =>
@@ -71,6 +73,7 @@ const TestCategoryCollapse = ({
   testCategories = [],
   onChange,
   value,
+  mode,
 }) => {
   const addItem = (prev, newItem) => {
     const added =
@@ -80,7 +83,10 @@ const TestCategoryCollapse = ({
               ? {
                   ...prevItem,
                   labSpecimenFK: labSpecimenId,
-                  statusFK: LAB_WORKITEM_STATUS.SPECIMENCOLLECTED,
+                  statusFK:
+                    mode == MODE.CANCEL
+                      ? LAB_WORKITEM_STATUS.CANCELLED
+                      : LAB_WORKITEM_STATUS.SPECIMENCOLLECTED,
                 }
               : prevItem,
           )
@@ -89,7 +95,10 @@ const TestCategoryCollapse = ({
             {
               ...newItem,
               labSpecimenFK: labSpecimenId,
-              statusFK: LAB_WORKITEM_STATUS.SPECIMENCOLLECTED,
+              statusFK:
+                mode == MODE.CANCEL
+                  ? LAB_WORKITEM_STATUS.CANCELLED
+                  : LAB_WORKITEM_STATUS.SPECIMENCOLLECTED,
             },
           ]
 
@@ -152,9 +161,6 @@ const TestCategoryCollapse = ({
           new Set(categoryWorkitems.map(x => x.testPanelFK)).size !==
           categoryWorkitems.length
 
-        console.group('Start Group')
-        console.groupEnd()
-
         return (
           <Panel
             header={
@@ -166,8 +172,10 @@ const TestCategoryCollapse = ({
                     categoryWorkitems.length ===
                     value?.filter(
                       x =>
-                        x.statusFK === LAB_WORKITEM_STATUS.SPECIMENCOLLECTED &&
-                        x.testCategoryFK === item.testCategoryFK,
+                        (x.statusFK === LAB_WORKITEM_STATUS.CANCELLED &&
+                          x.testCategoryFK === item.testCategoryFK) ||
+                        (x.statusFK === LAB_WORKITEM_STATUS.SPECIMENCOLLECTED &&
+                          x.testCategoryFK === item.testCategoryFK),
                     ).length
                   }
                   onChange={e => {
@@ -182,6 +190,7 @@ const TestCategoryCollapse = ({
             key={item.testCategoryFK}
           >
             <TestCategoryPanel
+              mode={mode}
               onAddWorkitem={handleAdd}
               onRemoveWorkitem={handleRemove}
               categoryWorkitems={categoryWorkitems}

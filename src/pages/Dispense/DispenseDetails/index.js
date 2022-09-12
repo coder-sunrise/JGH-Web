@@ -692,6 +692,20 @@ const DispenseDetails = ({
     }
     return false
   }
+  const existsCanceledLab = () => {
+    const { entity = {} } = dispense
+    const { service = [] } = entity
+    if (
+      service.find(s => {
+        const { workitem = {} } = s
+        const { labWorkitems = [] } = workitem
+        return labWorkitems.find(lw => lw.statusFK == 9)
+      })
+    ) {
+      return true
+    }
+    return false
+  }
 
   const isMandatoryWaistCircumference = () => {
     const { entity = {} } = visitRegistration
@@ -720,7 +734,7 @@ const DispenseDetails = ({
   }
 
   const onHandelFinalize = () => {
-    if (existsCanceledRadiology()) {
+    if (existsCanceledRadiology() || existsCanceledLab()) {
       dispatch({
         type: 'global/updateAppState',
         payload: {
@@ -1213,6 +1227,7 @@ const DispenseDetails = ({
                 patient={patient}
                 visitId={visitId}
                 classes={classes}
+                userId={user?.data?.id}
               />
             )}
 

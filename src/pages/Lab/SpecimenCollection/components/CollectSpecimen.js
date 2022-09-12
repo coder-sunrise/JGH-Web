@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const MODE = { NEW: 'new', EDIT: 'edit' }
+const MODE = { NEW: 'new', EDIT: 'edit', CANCEL: 'cancel' }
 
 const CollectSpecimen = ({
   open,
@@ -38,6 +38,7 @@ const CollectSpecimen = ({
   enableReceiveSpecimen = false,
   onConfirm,
   onClose,
+  userId,
 }) => {
   if (!open) return ''
   const classes = useStyles()
@@ -49,6 +50,8 @@ const CollectSpecimen = ({
   const [showModal, setShowModal] = useState(false)
   const ctspecimentype = useCodeTable('ctspecimentype')
   const [form] = Form.useForm()
+  const [cancelConfirmBtnState, setCancelConfirmBtnState] = useState(true)
+  const [lastUpdateData, setLastUpdateData] = useState()
 
   function cleanUpStates() {
     setWorkitemsByTestCategory([])
@@ -67,9 +70,13 @@ const CollectSpecimen = ({
         payload: { id: visitId },
       }).then(visitData => {
         if (visitData) {
-          mode === MODE.NEW
-            ? initializeNewData(visitData)
-            : initializeEditingData(visitData)
+          if (mode === MODE.NEW) {
+            initializeNewData(visitData)
+          } else if (mode === MODE.EDIT) {
+            initializeEditingData(visitData)
+          } else {
+            initializeCancelData(visitData)
+          }
         }
       })
     } else {
@@ -140,6 +147,35 @@ const CollectSpecimen = ({
     })
   }
 
+  const initializeCancelData = visitData => {
+    prepareLabWorkitemsByCategory(
+      visitData.labWorkitems.filter(
+        item =>
+          item.statusFK === LAB_WORKITEM_STATUS.NEW ||
+          item.statusFK === LAB_WORKITEM_STATUS.CANCELLED,
+      ),
+    )
+    form.resetFields()
+    let firstCancelLabWorkitem = _.sortBy(
+      visitData.labWorkitems.filter(
+        item => item.statusFK === LAB_WORKITEM_STATUS.CANCELLED,
+      ),
+      ['cancelledDate'],
+      ['asc'],
+    ).at(-1)
+    setLastUpdateData({
+      cancelledDate: firstCancelLabWorkitem?.cancelledDate.format(
+        'MMM D, YYYY h:mm A',
+      ),
+      cancelledByUserName: firstCancelLabWorkitem?.cancelledByUserName,
+    })
+    form.setFieldsValue({
+      labWorkitems: visitData.labWorkitems.filter(
+        item => item.statusFK === LAB_WORKITEM_STATUS.CANCELLED,
+      ),
+      cancelReason: firstCancelLabWorkitem?.cancelReason ?? '',
+    })
+  }
   const prepareLabWorkitemsByCategory = labWorkitems => {
     setWorkitemsByTestCategory(
       _(
@@ -158,6 +194,9 @@ const CollectSpecimen = ({
     )
   }
   const checkSpecimenWorkitems = (_, value) => {
+    if (mode == MODE.CANCEL) {
+      return Promise.resolve()
+    }
     if (
       value.filter(
         item => item.statusFK === LAB_WORKITEM_STATUS.SPECIMENCOLLECTED,
@@ -173,28 +212,61 @@ const CollectSpecimen = ({
 
   const handleFinish = () => {
     var values = form.getFieldsValue(true)
-    const payload = {
-      id: mode === MODE.EDIT ? labSpecimenId : undefined,
-      ...values,
-    }
-
-    dispatch({
-      type: 'specimenCollection/upsert',
-      payload,
-    }).then(result => {
-      if (result) {
-        onConfirm &&
-          onConfirm(result.id, { isPrintLabel: isPrintLabel, copies: copies })
-        cleanUpStates()
+    if (mode == MODE.CANCEL) {
+      values.labWorkitems.map(item => {
+        if (item.cancelledDate) {
+          return {
+            ...item,
+          }
+        } else {
+          return {
+            ...item,
+            cancelledByUserFK: userId,
+          }
+        }
+      })
+      dispatch({
+        type: 'specimenCollection/cancel',
+        payload: {
+          cancelledByUserFK: userId,
+          ...values,
+        },
+      }).then(r => {
+        onConfirm && onConfirm()
+      })
+    } else {
+      const payload = {
+        id: mode === MODE.EDIT ? labSpecimenId : undefined,
+        ...values,
       }
-    })
+
+      dispatch({
+        type: 'specimenCollection/upsert',
+        payload,
+      }).then(result => {
+        if (result) {
+          onConfirm &&
+            onConfirm(result.id, {
+              isPrintLabel: isPrintLabel,
+              copies: copies,
+            })
+          cleanUpStates()
+        }
+      })
+    }
   }
 
   return (
     <CommonModal
       classes={classes}
       open={showModal}
-      title={mode === MODE.NEW ? 'Collect Specimen' : 'Edit Specimen'}
+      title={
+        mode === MODE.NEW
+          ? 'Collect Specimen'
+          : mode === MODE.EDIT
+          ? 'Edit Specimen'
+          : 'Cancel Test Panel'
+      }
       onClose={() => {
         onClose && onClose()
         cleanUpStates()
@@ -203,64 +275,81 @@ const CollectSpecimen = ({
         form.validateFields().then(values => form.submit())
       }}
       showFooter={true}
+      footProps={{
+        confirmProps: {
+          disabled: mode === MODE.CANCEL && cancelConfirmBtnState,
+        },
+      }}
       maxWidth='md'
     >
-      <Form form={form} onFinish={handleFinish}>
-        <Space align='start' style={{ display: 'flex', marginBottom: 12 }}>
-          <Form.Item
-            name='specimenTypeFK'
-            rules={[{ required: true, message: 'Specimen type is required.' }]}
-          >
-            <Select
-              label='Specimen Type'
-              style={{ width: 160 }}
-              valueField='id'
-              options={ctspecimentype}
-            ></Select>
-          </Form.Item>
-          <Form.Item
-            name='specimenCollectionDate'
-            rules={[
-              { required: true, message: 'Collection date is required.' },
-            ]}
-          >
-            <DatePicker
-              disabled={mode !== MODE.NEW}
-              showTime
-              style={{ width: 150 }}
-              label='Collection Date'
-              format={dateFormatLongWithTimeNoSec}
-            />
-          </Form.Item>
-          {mode !== MODE.NEW && (
-            <Form.Item name='accessionNo' noStyle>
-              <TextField label='Accession No.' disabled />
+      <Form
+        form={form}
+        onFinish={handleFinish}
+        onValuesChange={(changedValues, allValues) =>
+          allValues.cancelReason != null
+            ? setCancelConfirmBtnState(false)
+            : setCancelConfirmBtnState(true)
+        }
+      >
+        {mode !== MODE.CANCEL && (
+          <Space align='start' style={{ display: 'flex', marginBottom: 12 }}>
+            <Form.Item
+              name='specimenTypeFK'
+              rules={[
+                { required: true, message: 'Specimen type is required.' },
+              ]}
+            >
+              <Select
+                label='Specimen Type'
+                style={{ width: 160 }}
+                valueField='id'
+                options={ctspecimentype}
+              ></Select>
             </Form.Item>
-          )}
-          {enableReceiveSpecimen && (
-            <Fragment>
-              <Form.Item name='dateReceived'>
-                <DatePicker
-                  showTime
-                  style={{ width: 150 }}
-                  label='Date Received'
-                  format={dateFormatLongWithTimeNoSec}
-                />
+            <Form.Item
+              name='specimenCollectionDate'
+              rules={[
+                { required: true, message: 'Collection date is required.' },
+              ]}
+            >
+              <DatePicker
+                disabled={mode !== MODE.NEW}
+                showTime
+                style={{ width: 150 }}
+                label='Collection Date'
+                format={dateFormatLongWithTimeNoSec}
+              />
+            </Form.Item>
+            {mode !== MODE.NEW && (
+              <Form.Item name='accessionNo' noStyle>
+                <TextField label='Accession No.' disabled />
               </Form.Item>
-              <Checkbox
-                // defaultChecked={true}
-                onChange={e => {
-                  form.setFieldsValue({
-                    dateReceived: e.target.checked ? moment() : undefined,
-                  })
-                }}
-                style={{ marginTop: 30 }}
-              >
-                Receive Specimen
-              </Checkbox>
-            </Fragment>
-          )}
-        </Space>
+            )}
+            {enableReceiveSpecimen && (
+              <Fragment>
+                <Form.Item name='dateReceived'>
+                  <DatePicker
+                    showTime
+                    style={{ width: 150 }}
+                    label='Date Received'
+                    format={dateFormatLongWithTimeNoSec}
+                  />
+                </Form.Item>
+                <Checkbox
+                  // defaultChecked={true}
+                  onChange={e => {
+                    form.setFieldsValue({
+                      dateReceived: e.target.checked ? moment() : undefined,
+                    })
+                  }}
+                  style={{ marginTop: 30 }}
+                >
+                  Receive Specimen
+                </Checkbox>
+              </Fragment>
+            )}
+          </Space>
+        )}
         {workItemsByTestCategory.length > 0 && (
           <Form.Item
             name='labWorkitems'
@@ -272,6 +361,7 @@ const CollectSpecimen = ({
             noStyle
           >
             <TestCategoryCollapse
+              mode={mode}
               labSpecimenId={labSpecimenId}
               testCategories={workItemsByTestCategory}
               defaultActiveKey={workItemsByTestCategory.map(
@@ -280,12 +370,30 @@ const CollectSpecimen = ({
             />
           </Form.Item>
         )}
+        {mode == MODE.CANCEL && (
+          <>
+            <Form.Item
+              name='cancelReason'
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your Reason',
+                },
+              ]}
+            >
+              <TextField label='Reason' />
+            </Form.Item>
+            {lastUpdateData?.cancelledByUserName && (
+              <p>{`Last updated by ${lastUpdateData.cancelledByUserName} on ${lastUpdateData.cancelledDate}`}</p>
+            )}
+          </>
+        )}
         {testPanelValidationError && (
           <Typography.Text type='danger'>
             {testPanelValidationError}
           </Typography.Text>
         )}
-        <PrintLabel />
+        {mode !== MODE.CANCEL && <PrintLabel />}
       </Form>
     </CommonModal>
   )
@@ -294,7 +402,7 @@ const CollectSpecimen = ({
 CollectSpecimen.propTypes = {
   id: PropTypes.number.isRequired,
   open: PropTypes.bool.isRequired,
-  mode: PropTypes.oneOf(['new', 'edit']).isRequired,
+  mode: PropTypes.oneOf(['new', 'edit', 'cancel']).isRequired,
   enableReceiveSpecimen: PropTypes.bool,
   onConfirm: PropTypes.func,
   onClose: PropTypes.func,

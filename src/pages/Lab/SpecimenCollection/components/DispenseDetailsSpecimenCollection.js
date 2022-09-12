@@ -38,6 +38,7 @@ const DispenseDetailsSpecimenCollection = ({
   handlePrint,
   patient = {},
   classes,
+  userId,
   ...restProps
 }) => {
   if (!visitId) return ''
@@ -439,10 +440,26 @@ const DispenseDetailsSpecimenCollection = ({
             Collect Specimen
           </Link>
         )}
+      {Authorized.check('queue.cancellabtestpanel')?.rights === 'enable' && (
+        <Link
+          component='button'
+          style={{ marginLeft: 10, textDecoration: 'underline' }}
+          onClick={() => {
+            setCollectSpecimenPara({
+              open: true,
+              visitId,
+              labSpecimenId: undefined,
+              mode: 'cancel',
+            })
+          }}
+        >
+          Cancel Test Panel
+        </Link>
+      )}
       <CollectSpecimen
         {...collectSpecimenPara}
         onConfirm={(newId, printInfo) => {
-          if (printInfo.isPrintLabel) {
+          if (printInfo?.isPrintLabel) {
             printSpecimenLabel(newId, printInfo.copies)
           }
           closeCollectSpecimen()
@@ -450,6 +467,7 @@ const DispenseDetailsSpecimenCollection = ({
         onClose={() => {
           closeCollectSpecimen()
         }}
+        userId={userId}
       ></CollectSpecimen>
       <DiscardSpecimen
         {...discardSpecimenPara}
