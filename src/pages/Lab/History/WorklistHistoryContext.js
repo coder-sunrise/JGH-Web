@@ -15,6 +15,10 @@ const WorklistHistoryContext = createContext(null)
 export const WorklistHistoryContextProvider = props => {
   const handlerRef = useRef(null)
 
+  const [isAnyWorklistModelOpened, setIsAnyWorklistModelOpened] = useState(
+    false,
+  )
+
   const setPaginationChangeHandler = handler => {
     console.log('setPaginationChangeHandler', handler)
     handlerRef.current = handler
@@ -31,6 +35,8 @@ export const WorklistHistoryContextProvider = props => {
       value={{
         setPaginationChangeHandler,
         triggerPaginationChange,
+        isAnyWorklistModelOpened,
+        setIsAnyWorklistModelOpened,
       }}
     >
       {props.children}

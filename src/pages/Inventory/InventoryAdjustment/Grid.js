@@ -14,6 +14,9 @@ import Authorized from '@/utils/Authorized'
 const viewAdjustmentDetailAuthority =
   'inventoryadjustment.inventoryadjustmentdetails'
 class Grid extends PureComponent {
+  state = {
+    isShowPopover: false,
+  }
   configs = {
     columns: [
       { name: 'transactionNo', title: 'Transaction No' },
@@ -26,7 +29,7 @@ class Grid extends PureComponent {
       {
         columnName: 'action',
         align: 'center',
-        render: (row) => {
+        render: row => {
           return (
             <Authorized authority={viewAdjustmentDetailAuthority}>
               <Fragment>
@@ -46,6 +49,9 @@ class Grid extends PureComponent {
                     setTimeout(() => {
                       this.cancelRow(row)
                     }, 1)
+                  }}
+                  onVisibleChange={visible => {
+                    this.setState({ isShowPopover: visible })
                   }}
                 >
                   <Button
@@ -83,7 +89,7 @@ class Grid extends PureComponent {
     ],
   }
 
-  editRow = async (row) => {
+  editRow = async row => {
     const { toggleModal } = this.props
     const accessRight = Authorized.check(viewAdjustmentDetailAuthority)
     if (!accessRight || accessRight.rights !== 'enable') {
@@ -105,7 +111,7 @@ class Grid extends PureComponent {
       })
   }
 
-  cancelRow = (row) => {
+  cancelRow = row => {
     this.props
       .dispatch({
         type: 'inventoryAdjustment/removeRow',
@@ -120,13 +126,16 @@ class Grid extends PureComponent {
       })
   }
 
-  render () {
+  render() {
     const { height } = this.props
     return (
       <CommonTableGrid
         style={{ margin: 0 }}
         type='inventoryAdjustment'
-        onRowDoubleClick={this.editRow}
+        onRowDoubleClick={(row, e) => {
+          if (this.state.isShowPopover) return
+          this.editRow(row, e)
+        }}
         TableProps={{
           height,
         }}

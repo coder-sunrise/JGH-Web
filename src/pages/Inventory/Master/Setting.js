@@ -205,7 +205,8 @@ const Setting = ({
                   id:
                     'inventory.master.setting.prescriptionToDispenseConversion',
                 })}
-                format='0.0'
+                precision={2}
+                format='0.00'
                 {...args}
               />
             )}

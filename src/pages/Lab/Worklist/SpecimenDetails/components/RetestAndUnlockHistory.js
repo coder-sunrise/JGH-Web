@@ -25,10 +25,15 @@ import { Description } from '@material-ui/icons'
 import { dataReady } from '@syncfusion/ej2-react-schedule'
 import { FlagIndicator } from '../../components'
 
-export const RetestHistory = ({ open, dataSource, onClose, onConfirm }) => {
+export const RetestAndUnlockHistory = ({
+  open,
+  dataSource,
+  onClose,
+  onConfirm,
+}) => {
   const [showModal, setShowModal] = useState(false)
   const cttestpanelitem = useCodeTable('cttestpanelitem')
-  const [retestHistories, setRetestHistories] = useState([])
+  const [retestAndUnlockHistories, setRetestAndUnlockHistories] = useState([])
   const [isSelectedAnalyzerResult, setIsSelectedAnalyzerResult] = useState(null)
   const { entity: patient } = useSelector(s => s.patient)
   const dispatch = useDispatch()
@@ -36,11 +41,11 @@ export const RetestHistory = ({ open, dataSource, onClose, onConfirm }) => {
   useEffect(() => {
     setShowModal(open)
     if (open && dataSource) {
-      setRetestHistories(dataSource)
+      setRetestAndUnlockHistories(dataSource)
     }
 
     return () => {
-      setRetestHistories([])
+      setRetestAndUnlockHistories([])
     }
   }, [dataSource])
 
@@ -101,22 +106,43 @@ export const RetestHistory = ({ open, dataSource, onClose, onConfirm }) => {
         size={50}
         style={{ height: 600, overflow: 'scroll', padding: 10 }}
       >
-        {retestHistories.map(history => (
+        {retestAndUnlockHistories.map(history => (
           <Space direction='vertical'>
-            <div>{`Sent to Retest by ${history.retestBy} at ${moment(
-              history.retestAt,
-            ).format(dateFormatLongWithTimeNoSec)}`}</div>
-            <div>{`Retest Reason: ${history.retestReason}`}</div>
-
+            {!history.isUnlock && (
+              <>
+                <div>{`Sent to Retest by ${history.requestBy} at ${moment(
+                  history.requestAt,
+                ).format(dateFormatLongWithTimeNoSec)}`}</div>
+                <div>{`Retest Reason: ${history.retestReason}`}</div>
+              </>
+            )}
+            {history.isUnlock && (
+              <>
+                <div>{`Unlocked by ${history.requestBy} at ${moment(
+                  history.requestAt,
+                ).format(dateFormatLongWithTimeNoSec)}`}</div>
+                <div>{`Unlock Reason: ${history.unlockReason}`}</div>
+              </>
+            )}
             {history.firstVerifier && (
               <div>{`First Verified by ${history.firstVerifier} at ${moment(
                 history.firstVerifiedDate,
               ).format(dateFormatLongWithTimeNoSec)}`}</div>
             )}
+            {history.secondVerifier && (
+              <div>
+                {`Second Verified by ${history.secondVerifier} at ${moment(
+                  history.secondVerifiedDate,
+                ).format(dateFormatLongWithTimeNoSec)}`}
+              </div>
+            )}
+            {history.reportRemarks && (
+              <div>{`Report Remarks: ${history.reportRemarks}`}</div>
+            )}
             <Table
               bordered
               columns={columns}
-              dataSource={history.resultsBeforeRetest}
+              dataSource={history.resultsBefore}
               pagination={false}
               size='small'
             />
