@@ -136,7 +136,6 @@ const VisitInfoCard = ({
         currentVisitTemplate,
       )
       setFieldValue(FormField['visit.VisitOrderTemplateTotal'], activeItemTotal)
-      setFieldValue(FormField['visit.visitRemarks'], visitRemarks)
     } else {
       if (!restProps.values.visitOrderTemplateFK)
         setFieldValue(FormField['visit.VisitOrderTemplateTotal'], undefined)

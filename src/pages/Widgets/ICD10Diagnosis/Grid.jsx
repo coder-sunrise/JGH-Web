@@ -12,14 +12,12 @@ export default function Grid(props) {
     patientDiansiosHistoryList.list.map(item => {
       return {
         ...item,
-        action: 'add',
+        isSelected: true,
       }
     }),
   )
-  const [selectItemsNum, setSelectItemsNum] = useState()
   const columns = [
     { name: 'visitDate', title: 'Visit Date' },
-    // { name: 'icD10DiagnosisDescription', title: 'Diagnosis' },
     { name: 'icD10JpnDiagnosisDescription', title: 'Diagnosis' },
     { name: 'diagnosisType', title: 'Type' },
     { name: 'onsetDate', title: 'Onset Date' },
@@ -31,7 +29,7 @@ export default function Grid(props) {
   const onSelectItems = (row, iconName) => {
     const newOnSelectItems = diagnosisHistoryData.map(item => {
       if (item.id === row.id) {
-        item.action = iconName
+        item.isSelected = iconName
       }
       return item
     })
@@ -39,12 +37,12 @@ export default function Grid(props) {
     // Gets the selected nums,pass to the parent component
     const { getGridSelectNum, getGridDiangnosisHistoryID } = props
     const AddFromPastModal = newOnSelectItems.filter(
-      item => item.action === 'minus',
+      item => item.isSelected === false,
     ).length
     getGridSelectNum(AddFromPastModal)
     // Gets the selected data,pass to the parent component
     const getDiagnosisHistoryID = newOnSelectItems.filter(
-      item => item.action === 'minus',
+      item => item.isSelected === false,
     )
     getGridDiangnosisHistoryID(getDiagnosisHistoryID)
   }
@@ -61,7 +59,7 @@ export default function Grid(props) {
         >
           <span style={{ color: 'red ' }}>
             {
-              diagnosisHistoryData.filter(item => item.action === 'minus')
+              diagnosisHistoryData.filter(item => item.isSelected === false)
                 .length
             }
           </span>
@@ -77,31 +75,38 @@ export default function Grid(props) {
           {
             columnName: 'visitDate',
             type: 'date',
+            width: 110,
             align: 'center',
           },
           {
             columnName: 'firstVisitDate',
             type: 'date',
             align: 'center',
+            width: 110,
           },
           {
             columnName: 'onsetDate',
             type: 'date',
             align: 'center',
+            width: 110,
           },
           {
             columnName: 'diagnosisType',
             align: 'center',
+            width: 110,
+          },
+          {
+            columnName: 'validityDays',
+            align: 'center',
+            width: 110,
           },
           {
             columnName: 'icD10JpnDiagnosisDescription',
-            width: 250,
+            width: 300,
             render: row => {
               if (
-                Date.parse(row.onsetDate) >
-                  Date.parse(row.effectiveStartDate) &&
-                Date.parse(row.firstVisitDate) <
-                  Date.parse(row.effectiveEndDate)
+                Date.now() > Date.parse(row.effectiveStartDate) &&
+                Date.now() < Date.parse(row.effectiveEndDate)
               ) {
                 if (diagnosis.favouriteDiagnosisLanguage === 'JP') {
                   return <span>{row.icD10JpnDiagnosisDescription}</span>
@@ -134,21 +139,15 @@ export default function Grid(props) {
             },
           },
           {
-            columnName: 'validityDays',
-            align: 'center',
-          },
-          {
             columnName: 'action',
             align: 'center',
             sortingEnabled: false,
-            width: 70,
+            width: 80,
             render: row => {
-              if (row.action == 'add') {
+              if (row.isSelected === true) {
                 if (
-                  Date.parse(row.onsetDate) >
-                    Date.parse(row.effectiveStartDate) &&
-                  Date.parse(row.firstVisitDate) <
-                    Date.parse(row.effectiveEndDate)
+                  Date.now() > Date.parse(row.effectiveStartDate) &&
+                  Date.now() < Date.parse(row.effectiveEndDate)
                 ) {
                   return (
                     <span
@@ -160,7 +159,7 @@ export default function Grid(props) {
                         marginLeft: 5,
                       }}
                       onClick={() => {
-                        onSelectItems(row, 'minus')
+                        onSelectItems(row, false)
                       }}
                     >
                       add_circle_outline
@@ -182,7 +181,7 @@ export default function Grid(props) {
                   )
                 }
               } else {
-                if (row.action != 'add') {
+                if (row.isSelected != true) {
                   return (
                     <span
                       className='material-icons'
@@ -193,7 +192,7 @@ export default function Grid(props) {
                         marginLeft: 5,
                       }}
                       onClick={() => {
-                        onSelectItems(row, 'add')
+                        onSelectItems(row, true)
                       }}
                     >
                       remove_circle_outline

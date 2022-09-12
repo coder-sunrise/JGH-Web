@@ -36,14 +36,6 @@ class ICD10Diagnosis extends PureComponent {
     itemValues: [],
   }
   componentDidMount() {
-    const { dispatch, consultation } = this.props
-    const { patientMedicalHistory } = consultation.entity
-    dispatch({
-      type: 'patientHistory/queryDiagnosisHistory',
-      payload: {
-        patientProfileId: patientMedicalHistory.id,
-      },
-    })
     this.fetchCodeTables()
   }
 
@@ -67,9 +59,20 @@ class ICD10Diagnosis extends PureComponent {
       })
     }
   }
-
+  // Click history open the Commonmoadl
   onSearchDiagnosisHistory = () => {
-    this.setState({ showAddFromPastModal: true })
+    const { dispatch, consultation } = this.props
+    const { patientMedicalHistory } = consultation.entity
+    dispatch({
+      type: 'patientHistory/queryDiagnosisHistory',
+      payload: {
+        patientProfileId: patientMedicalHistory.id,
+      },
+    }).then(res => {
+      if (res.status === '200') {
+        this.setState({ showAddFromPastModal: true })
+      }
+    })
   }
   // Gets the selectNums selected by the Grid
   getGridSelectNum = values => {
@@ -87,7 +90,6 @@ class ICD10Diagnosis extends PureComponent {
   toggleAddFromPastModal = () => {
     const { form } = this.arrayHelpers
     const { values } = form
-    console.log(values.corDiagnosis, 'values.corDiagnosis')
     const newValues = values.corDiagnosis.concat(this.state.newDiagnosisData)
     values.corDiagnosis = newValues
     this.setState({ showAddFromPastModal: false })
@@ -300,41 +302,45 @@ class ICD10Diagnosis extends PureComponent {
                 History
               </ProgressButton>
             </Tooltip>
-            <CommonModal
-              open={showAddFromPastModal}
-              title='Diagnosis History'
-              onClose={() => {
-                this.setState({ showAddFromPastModal: false })
-              }}
-              onConfirm={this.toggleAddFromPastModal}
-              maxWidth='md'
-              showFooter={true}
-              overrideLoading
-              cancelText='Cancel'
-              confirmText='Save'
-              footProps={{
-                confirmProps: {
-                  disabled: this.state.confirmPropsSave,
-                },
-              }}
-            >
-              <>
-                <div
-                  style={{
-                    maxHeight: '70vh',
-                    overflowY: 'auto',
-                    width: '953px',
-                    padding: '8px',
-                  }}
-                >
-                  <Grid
-                    getGridSelectNum={this.getGridSelectNum}
-                    getGridDiangnosisHistoryID={this.getGridDiangnosisHistoryID}
-                    {...this.props}
-                  ></Grid>
-                </div>
-              </>
-            </CommonModal>
+            {showAddFromPastModal && (
+              <CommonModal
+                open={true}
+                title='Diagnosis History'
+                onClose={() => {
+                  this.setState({ showAddFromPastModal: false })
+                }}
+                onConfirm={this.toggleAddFromPastModal}
+                maxWidth='md'
+                showFooter={true}
+                overrideLoading
+                cancelText='Cancel'
+                confirmText='Save'
+                footProps={{
+                  confirmProps: {
+                    disabled: this.state.confirmPropsSave,
+                  },
+                }}
+              >
+                <>
+                  <div
+                    style={{
+                      maxHeight: '70vh',
+                      overflowY: 'auto',
+                      width: '953px',
+                      padding: '8px',
+                    }}
+                  >
+                    <Grid
+                      getGridSelectNum={this.getGridSelectNum}
+                      getGridDiangnosisHistoryID={
+                        this.getGridDiangnosisHistoryID
+                      }
+                      {...this.props}
+                    ></Grid>
+                  </div>
+                </>
+              </CommonModal>
+            )}
           </div>
         </AuthorizedContext.Provider>
       </div>
