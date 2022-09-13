@@ -31,6 +31,7 @@ import {
 import { VisitTypeTag } from '@/components/_medisys'
 import { TestPanelColumn } from '../components/TestPanelColumn'
 import { RetestSpecimen } from './components/RetestSpecimen'
+import { UnlockSpecimen } from './components/UnlockSpecimen'
 import { SpecimenDetailsStep } from './components'
 import { useCodeTable } from '@/utils/hooks'
 import { LabResultTable } from './components/LabResultTable'
@@ -39,12 +40,18 @@ import {
   LAB_SPECIMEN_STATUS,
   LAB_SPECIMEN_STATUS_COLORS,
 } from '@/utils/constants'
-import { RetestHistory } from './components/RetestHistory'
+import { RetestAndUnlockHistory } from './components/RetestAndUnlockHistory'
 
 const { Panel } = Collapse
 const { TextArea } = Input
 
-const ActionButtons = ({ specimenStatusFK, onStart, onRetest, onVerify }) => {
+const ActionButtons = ({
+  specimenStatusFK,
+  onStart,
+  onRetest,
+  onVerify,
+  onUnlock,
+}) => {
   return (
     <React.Fragment>
       {specimenStatusFK === LAB_SPECIMEN_STATUS.NEW &&
@@ -67,6 +74,12 @@ const ActionButtons = ({ specimenStatusFK, onStart, onRetest, onVerify }) => {
         Authorized.check('lab.verifytest')?.rights === 'enable' && (
           <ProgressButton color='success' onClick={onVerify}>
             Verify
+          </ProgressButton>
+        )}
+      {specimenStatusFK === LAB_SPECIMEN_STATUS.COMPLETED &&
+        Authorized.check('lab.unlock')?.rights === 'enable' && (
+          <ProgressButton color='warning' onClick={onUnlock}>
+            Unlock
           </ProgressButton>
         )}
     </React.Fragment>
@@ -92,6 +105,7 @@ export const SpecimenDetails = ({
   isDisposePatientEntity = true,
   isReadonly = false,
   hideRawData = false,
+  from,
 }) => {
   if (!open) return ''
   const dispatch = useDispatch()
@@ -102,9 +116,13 @@ export const SpecimenDetails = ({
     open: false,
     retestSpecimen: undefined,
   })
-  const [retestHistoryPara, setRetestHistoryPara] = useState({
+  const [retestAndUnlockHistoryPara, setRetestAndUnlockHistoryPara] = useState({
     open: false,
     id: undefined,
+  })
+  const [unlockSpecimenPara, setUnlockSpecimenPara] = useState({
+    open: false,
+    unlockSpecimen: undefined,
   })
 
   const [showRawData, setShowRawData] = useState(false)
@@ -190,8 +208,35 @@ export const SpecimenDetails = ({
     querySpecimenDetails()
   }
 
-  const closeRetestHistory = () => {
-    setRetestHistoryPara({
+  const handleUnlock = async () => {
+    const values = await form.validateFields()
+    setUnlockSpecimenPara({
+      open: true,
+      unlockSpecimen: { ...entity, ...values },
+    })
+  }
+
+  const closeUnlockSpecimen = () => {
+    setUnlockSpecimenPara({
+      open: false,
+      unlockSpecimen: undefined,
+    })
+  }
+
+  const confirmUnlockSpecimen = () => {
+    setUnlockSpecimenPara({
+      open: false,
+      unlockSPecimen: undefined,
+    })
+    querySpecimenDetails()
+    if (from === 'labHistory') {
+      cleanUp()
+      onClose && onClose()
+    }
+  }
+
+  const closeRetestAndUnlockHistory = () => {
+    setRetestAndUnlockHistoryPara({
       open: false,
       id: undefined,
     })
@@ -344,6 +389,7 @@ export const SpecimenDetails = ({
                   onStart={handleStart}
                   onVerify={handleVerify}
                   onRetest={handleRetest}
+                  onUnlock={handleUnlock}
                 />,
               ]
             : [],
@@ -395,7 +441,7 @@ export const SpecimenDetails = ({
                         <Typography.Text strong style={{ flexGrow: 1 }}>
                           Final Result
                         </Typography.Text>
-                        {entity.hasAnyRetest && (
+                        {entity.hasAnyRetestOrUnlock && (
                           <Tooltip title='Result History'>
                             <span
                               className='material-icons'
@@ -404,9 +450,10 @@ export const SpecimenDetails = ({
                                 cursor: 'pointer',
                               }}
                               onClick={event => {
-                                setRetestHistoryPara({
+                                setRetestAndUnlockHistoryPara({
                                   open: true,
-                                  dataSource: entity.labRetestHistories,
+                                  dataSource:
+                                    entity.labRetestAndUnlockHistories,
                                 })
                               }}
                             >
@@ -478,13 +525,23 @@ export const SpecimenDetails = ({
           confirmRetestSpecimen()
         }}
       />
-      <RetestHistory
-        {...retestHistoryPara}
+      <UnlockSpecimen
+        {...unlockSpecimenPara}
         onClose={() => {
-          closeRetestHistory()
+          closeUnlockSpecimen()
         }}
         onConfirm={() => {
-          closeRetestHisotry()
+          confirmUnlockSpecimen()
+        }}
+        from={from}
+      />
+      <RetestAndUnlockHistory
+        {...retestAndUnlockHistoryPara}
+        onClose={() => {
+          closeRetestAndUnlockHistory()
+        }}
+        onConfirm={() => {
+          closeRetestAndUnlockHistory()
         }}
       />
     </React.Fragment>

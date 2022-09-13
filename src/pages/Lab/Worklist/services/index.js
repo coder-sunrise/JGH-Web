@@ -11,6 +11,7 @@ const fns = {
   startLabTest: params => service.upsert(`${url}/startLabTest`, params),
   saveLabTest: params => service.upsert(`${url}/saveLabTest`, params),
   retestSpecimen: params => service.upsert(`${url}/retestSpecimen`, params),
+  unlockSpecimen: params => service.upsert(`${url}/unlockSpecimen`, params),
   verifyLabTest: params => service.upsert(`${url}/verifyLabTest`, params),
   resendOrder: params => service.upsert(`${url}/resendOrder`, params),
   selectRetestResult: params =>
