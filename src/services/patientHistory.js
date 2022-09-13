@@ -1,7 +1,6 @@
 import * as service from '@/services/common'
 
 const url = '/api/PatientHistory'
-const url1 = '/api/PatientDiagnosisHistory'
 const invoiceHistoryUrl = '/api/invoice/patient'
 const invoiceHistoryDetailsUrl = '/api/invoice/historyDetails'
 const queueUrl = '/api/queue'
@@ -42,7 +41,7 @@ const fns = {
   },
 
   queryDiagnosisHistory: params => {
-    return service.query(`${url1}/DiagnosisHistory`, params)
+    return service.query(`${url}/DiagnosisHistory`, params)
   },
   queryReferralHistory: params => {
     return service.queryList(`${url}/Referral`, params)

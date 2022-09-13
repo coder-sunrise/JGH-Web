@@ -120,7 +120,7 @@ export default function Grid(props) {
                       <span style={{ color: 'red', fontStyle: 'italic' }}>
                         <sup>#1&nbsp;</sup>
                       </span>
-                      Paratyphold fever C &nbsp;
+                      &nbsp;
                       {row.icD10JpnDiagnosisDescription}
                     </span>
                   )
@@ -130,7 +130,7 @@ export default function Grid(props) {
                       <span style={{ color: 'red', fontStyle: 'italic' }}>
                         <sup>#1&nbsp;</sup>
                       </span>
-                      Paratyphold fever C &nbsp;
+                      &nbsp;
                       {row.icD10DiagnosisDescription}
                     </span>
                   )
