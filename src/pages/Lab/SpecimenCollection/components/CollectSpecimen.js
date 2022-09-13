@@ -156,7 +156,7 @@ const CollectSpecimen = ({
       ),
     )
     form.resetFields()
-    let firstCancelLabWorkitem = _.sortBy(
+    let lastCancelLabWorkitem = _.sortBy(
       visitData.labWorkitems.filter(
         item => item.statusFK === LAB_WORKITEM_STATUS.CANCELLED,
       ),
@@ -164,16 +164,16 @@ const CollectSpecimen = ({
       ['asc'],
     ).at(-1)
     setLastUpdateData({
-      cancelledDate: firstCancelLabWorkitem?.cancelledDate.format(
-        'MMM D, YYYY h:mm A',
+      cancelledDate: lastCancelLabWorkitem?.cancelledDate.format(
+        'DD MM YYYY HH:MM',
       ),
-      cancelledByUserName: firstCancelLabWorkitem?.cancelledByUserName,
+      cancelledByUserName: lastCancelLabWorkitem?.cancelledByUserName,
     })
     form.setFieldsValue({
       labWorkitems: visitData.labWorkitems.filter(
         item => item.statusFK === LAB_WORKITEM_STATUS.CANCELLED,
       ),
-      cancelReason: firstCancelLabWorkitem?.cancelReason ?? '',
+      cancelReason: lastCancelLabWorkitem?.cancelReason ?? '',
     })
   }
   const prepareLabWorkitemsByCategory = labWorkitems => {
@@ -377,7 +377,7 @@ const CollectSpecimen = ({
               rules={[
                 {
                   required: true,
-                  message: 'Please input your Reason',
+                  message: 'Reason is required',
                 },
               ]}
             >
