@@ -81,6 +81,12 @@ export default createListViewModel({
         }
         return r
       },
+      *cancel({ payload }, { call }) {
+        const r = yield call(service.cancel, payload)
+        if (r === 204) {
+          notification.success({ message: 'Cancelled test panel updated' })
+        }
+      },
       *ack({ payload }, { call, put }) {
         const r = yield call(service.ack, payload)
         return r && r === 204

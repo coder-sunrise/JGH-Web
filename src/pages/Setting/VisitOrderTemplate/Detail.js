@@ -17,6 +17,7 @@ import { CALENDAR_RESOURCE } from '@/utils/constants'
 import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
 
 import { DoctorLabel } from '@/components/_medisys'
+import './DetailStyle.css'
 @connect(({ codetable }) => ({ codetable }))
 @withFormikExtend({
   mapPropsToValues: ({
@@ -192,6 +193,7 @@ class Detail extends PureComponent {
     return (
       <Fragment>
         <div
+          id='VisitPurposeDetailContainer'
           style={{
             maxHeight: 'calc(100vh - 200px)',
             overflowY: 'auto',

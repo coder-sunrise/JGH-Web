@@ -10,6 +10,7 @@ import {
   CodeSelect,
   Tooltip,
   VisitTypeSelect,
+  Checkbox,
 } from '@/components'
 import { ProTable, Input, Button } from '@medisys/component'
 import service from './services'
@@ -30,6 +31,7 @@ import CollectSpecimen from './components/CollectSpecimen'
 import { usePrintSpecimenLabel } from './components/PrintSpecimenLabel'
 import { TestPanelPriorityNote } from '../Worklist/components'
 import { TestPanelColumn } from '../Worklist/components/TestPanelColumn'
+import { LAB_WORKITEM_STATUS } from '@/utils/constants'
 
 const { queryList } = service
 const api = {
@@ -67,11 +69,17 @@ const SpecimenCollection = ({
   specimenCollection: { specimenCollectionColumnSetting = [] },
   codetable,
   handlePrint,
+  user,
   mainDivHeight = 700,
 }) => {
   const dispatch = useDispatch()
   const visitTypes = useVisitTypes()
   const [visitId, setVisitId] = useState()
+  const [TheCurrentCancelId, setTheCurrentCancelId] = useState()
+  const [
+    isShowCancelledTestPanelCol,
+    setIsShowCancelledTestPanelCol,
+  ] = useState(true)
   const ref = useRef()
   const printSpecimenLabel = usePrintSpecimenLabel(handlePrint)
 
@@ -103,14 +111,31 @@ const SpecimenCollection = ({
       },
       {
         key: 'testPanels',
-        title: 'Test Panel',
+        title: 'New Test Panel',
         dataIndex: 'testPanels',
         sorter: false,
         search: false,
         width: 200,
-        render: (_dom, entity) => (
-          <TestPanelColumn testPanels={entity.testPanels} />
-        ),
+        render: (_dom, entity) => {
+          let newTestPanels = entity.testPanels.filter(
+            item => item.statusFK == LAB_WORKITEM_STATUS.NEW,
+          )
+          return <TestPanelColumn testPanels={newTestPanels} />
+        },
+      },
+      {
+        key: 'cancelledTestPanels',
+        title: 'Cancelled Test Panel',
+        dataIndex: 'testPanels',
+        sorter: false,
+        search: false,
+        width: 200,
+        render: (_dom, entity) => {
+          let cancelledTestPanels = entity.testPanels.filter(
+            item => item.statusFK == LAB_WORKITEM_STATUS.CANCELLED,
+          )
+          return <TestPanelColumn testPanels={cancelledTestPanels} />
+        },
       },
       {
         key: 'firstOrderDate',
@@ -158,18 +183,32 @@ const SpecimenCollection = ({
         sorter: false,
         search: false,
         fixed: 'right',
-        width: 95,
+        width: 150,
         render: (_dom, entity) => {
           return Authorized.check('lab.collectspecimen')?.rights ===
             'enable' ? (
-            <Button
-              onClick={() => {
-                setVisitId(entity.id)
-              }}
-              type='link'
-            >
-              Collect Specimen
-            </Button>
+            <div>
+              <Tooltip title='Collect Specimen'>
+                <Button
+                  onClick={() => {
+                    setVisitId(entity.id)
+                  }}
+                  type='link'
+                >
+                  Collect
+                </Button>
+              </Tooltip>
+              <Tooltip title='Cancel Test Panel'>
+                <Button
+                  onClick={() => {
+                    setTheCurrentCancelId(entity.id)
+                  }}
+                  type='link'
+                >
+                  Cancel
+                </Button>
+              </Tooltip>
+            </div>
           ) : (
             <span></span>
           )
@@ -202,7 +241,7 @@ const SpecimenCollection = ({
         renderFormItem: (item, { type, defaultRender, ...rest }, form) => {
           return (
             <DatePicker
-              style={{ width: 250 }}
+              style={{ width: 200 }}
               label='Order Date From'
               placeholder=''
             />
@@ -220,7 +259,7 @@ const SpecimenCollection = ({
         renderFormItem: (item, { type, defaultRender, ...rest }, form) => {
           return (
             <DatePicker
-              style={{ width: 250 }}
+              style={{ width: 200 }}
               label='Order Date To'
               placeholder=''
             />
@@ -241,7 +280,7 @@ const SpecimenCollection = ({
               mode='multiple'
               maxTagCount={0}
               maxTagPlaceholder='Visit Types'
-              style={{ width: 250 }}
+              style={{ width: 200 }}
               localFilter={item => {
                 return item.id !== VISIT_TYPE.OTC
               }}
@@ -275,12 +314,38 @@ const SpecimenCollection = ({
                 mode='multiple'
                 options={visitDoctorOptions}
                 placeholder=''
-                style={{ width: 250 }}
+                style={{ width: 200 }}
                 maxTagCount={0}
                 maxTagPlaceholder='Doctors'
                 // renderDropdown={(option) => <DoctorLabel doctor={option} />}
               />
             </Tooltip>
+          )
+        },
+      },
+      {
+        // title: Display Cancelled Test Panel
+        hideInTable: true,
+        title: '',
+        dataIndex: '',
+        initialValue: [-99],
+        renderFormItem: (item, { type, defaultRender, ...rest }, form) => {
+          return (
+            <Checkbox
+              label='Display Cancelled Test Panel'
+              style={{ width: 250, marginTop: '20px' }}
+              checked={
+                specimenCollectionColumnSetting?.cancelledTestPanels?.show
+              }
+              onChange={e => {
+                saveColumnsSetting(dispatch, {
+                  ...specimenCollectionColumnSetting,
+                  cancelledTestPanels: {
+                    show: e.target.value,
+                  },
+                })
+              }}
+            />
           )
         },
       },
@@ -325,6 +390,7 @@ const SpecimenCollection = ({
 
   const onCloseCollectSpecimen = () => {
     setVisitId(undefined)
+    setTheCurrentCancelId(undefined)
     ref.current.reload()
   }
 
@@ -337,7 +403,7 @@ const SpecimenCollection = ({
           columns={columns}
           api={api}
           search={{
-            span: 8,
+            span: 9,
             collapsed: false,
             collapseRender: false,
             searchText: 'Search',
@@ -416,12 +482,22 @@ const SpecimenCollection = ({
         open={visitId != undefined && visitId != null}
         visitId={visitId}
         onConfirm={(newId, printInfo) => {
-          if (printInfo.isPrintLabel) {
+          if (printInfo?.isPrintLabel) {
             printSpecimenLabel(newId, printInfo.copies)
           }
           onCloseCollectSpecimen()
         }}
         onClose={onCloseCollectSpecimen}
+      ></CollectSpecimen>
+      <CollectSpecimen
+        mode='cancel'
+        open={TheCurrentCancelId != undefined && TheCurrentCancelId != null}
+        onConfirm={() => {
+          onCloseCollectSpecimen()
+        }}
+        visitId={TheCurrentCancelId}
+        onClose={onCloseCollectSpecimen}
+        userId={user?.data?.id}
       ></CollectSpecimen>
     </Fragment>
   )
@@ -429,9 +505,10 @@ const SpecimenCollection = ({
 
 export default compose(
   withWebSocket(),
-  connect(({ specimenCollection, codetable, global }) => ({
+  connect(({ specimenCollection, codetable, global, user }) => ({
     specimenCollection,
     codetable,
     mainDivHeight: global.mainDivHeight,
+    user,
   })),
 )(SpecimenCollection)
