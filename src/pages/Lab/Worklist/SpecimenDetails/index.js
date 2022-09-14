@@ -104,7 +104,7 @@ export const SpecimenDetails = ({
   onConfirm,
   isDisposePatientEntity = true,
   isReadonly = false,
-  hideRawData = false,
+  hideIfFromOrder = false,
   from,
 }) => {
   if (!open) return ''
@@ -441,7 +441,7 @@ export const SpecimenDetails = ({
                         <Typography.Text strong style={{ flexGrow: 1 }}>
                           Final Result
                         </Typography.Text>
-                        {entity.hasAnyRetestOrUnlock && (
+                        {entity.hasAnyRetestOrUnlock && !hideIfFromOrder && (
                           <Tooltip title='Result History'>
                             <span
                               className='material-icons'
@@ -461,7 +461,7 @@ export const SpecimenDetails = ({
                             </span>
                           </Tooltip>
                         )}
-                        {!hideRawData && (
+                        {!hideIfFromOrder && (
                           <Fragment>
                             <Checkbox
                               onChange={e => setShowRawData(e.target.checked)}
@@ -470,14 +470,16 @@ export const SpecimenDetails = ({
                           </Fragment>
                         )}
                       </Space>
-                      <div style={{ flexGrow: 1, textAlign: 'right' }}>
-                        {Authorized.check('lab.starttest')?.rights ===
-                          'enable' && (
-                          <Button type='link' onClick={resendOrder}>
-                            Resend Order
-                          </Button>
-                        )}
-                      </div>
+                      {!hideIfFromOrder && (
+                        <div style={{ flexGrow: 1, textAlign: 'right' }}>
+                          {Authorized.check('lab.starttest')?.rights ===
+                            'enable' && (
+                            <Button type='link' onClick={resendOrder}>
+                              Resend Order
+                            </Button>
+                          )}
+                        </div>
+                      )}
                     </GridItem>
                     <GridItem md={12} style={{ paddingTop: 8 }}>
                       <Form.Item name='labWorkitemResults'>
