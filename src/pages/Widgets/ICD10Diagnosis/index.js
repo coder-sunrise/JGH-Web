@@ -5,11 +5,18 @@ import { FieldArray } from 'formik'
 import { getUniqueGUID } from 'utils'
 import { withStyles } from '@material-ui/core'
 import Add from '@material-ui/icons/Add'
-import { AuthorizedContext, Button } from '@/components'
+import {
+  AuthorizedContext,
+  Button,
+  Tooltip,
+  ProgressButton,
+  CommonModal,
+} from '@/components'
 import Authorized from '@/utils/Authorized'
 import ICD10DiagnosisItem from './item'
 import { USER_PREFERENCE_TYPE } from '@/utils/constants'
-
+import Grid from './Grid'
+import { ThreeSixtySharp } from '@material-ui/icons'
 const styles = theme => ({
   diagnosisRow: {
     marginBottom: theme.spacing(1),
@@ -23,8 +30,10 @@ const styles = theme => ({
   orders,
 }))
 class ICD10Diagnosis extends PureComponent {
+  state = {
+    showAddFromPastModal: false,
+  }
   componentDidMount() {
-    const { dispatch } = this.props
     this.fetchCodeTables()
   }
 
@@ -48,7 +57,29 @@ class ICD10Diagnosis extends PureComponent {
       })
     }
   }
-
+  // Click history open the Commonmoadl
+  onSearchDiagnosisHistory = () => {
+    const { dispatch, consultation } = this.props
+    const { patientMedicalHistory } = consultation.entity
+    dispatch({
+      type: 'patientHistory/queryDiagnosisHistory',
+      payload: {
+        patientProfileId: patientMedicalHistory.id,
+      },
+    }).then(res => {
+      if (res.status === '200') {
+        this.setState({ showAddFromPastModal: true })
+      }
+    })
+  }
+  // Gets the selectData selected by the Grid
+  getGridDiangnosisHistoryID = value => {
+    const { form } = this.arrayHelpers
+    const { values } = form
+    const newValues = values.corDiagnosis.concat(value)
+    values.corDiagnosis = newValues
+    this.setState({ showAddFromPastModal: false })
+  }
   fetchCodeTables = async () => {
     const { dispatch } = this.props
     await Promise.all([
@@ -80,7 +111,6 @@ class ICD10Diagnosis extends PureComponent {
       isNew: true,
     })
   }
-
   handleAddDiagnosisClick = () => {
     let index = 0
     if (this.diagnosis.length === 0) {
@@ -188,7 +218,7 @@ class ICD10Diagnosis extends PureComponent {
 
   render() {
     const { rights, diagnosis, dispatch } = this.props
-
+    const { showAddFromPastModal } = this.state
     const favLang = diagnosis.favouriteDiagnosisLanguage || 'EN'
     return (
       <div>
@@ -249,6 +279,32 @@ class ICD10Diagnosis extends PureComponent {
             >
               <Add /> Add Diagnosis
             </Button>
+            <Tooltip title={`Add Diagnosis From diagnosis History`}>
+              <ProgressButton
+                color='primary'
+                icon={<Add />}
+                onClick={this.onSearchDiagnosisHistory}
+              >
+                History
+              </ProgressButton>
+            </Tooltip>
+            {showAddFromPastModal && (
+              <CommonModal
+                open={true}
+                title='Diagnosis History'
+                onClose={() => {
+                  this.setState({ showAddFromPastModal: false })
+                }}
+                maxWidth='md'
+                cancelText='Cancel'
+                observe='Confirm'
+              >
+                <Grid
+                  {...this.props}
+                  getGridDiangnosisHistoryID={this.getGridDiangnosisHistoryID}
+                ></Grid>
+              </CommonModal>
+            )}
           </div>
         </AuthorizedContext.Provider>
       </div>

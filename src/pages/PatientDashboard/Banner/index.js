@@ -11,6 +11,7 @@ import Edit from '@material-ui/icons/Edit'
 import Refresh from '@material-ui/icons/Sync'
 import ExpandMoreTwoTone from '@material-ui/icons/ExpandMoreTwoTone'
 import ExpandLessTwoTone from '@material-ui/icons/ExpandLessTwoTone'
+import { ClockCircleOutlined } from '@ant-design/icons'
 import { getAppendUrl } from '@/utils/utils'
 import classnames from 'classnames'
 import { withStyles } from '@material-ui/core/styles'
@@ -35,7 +36,6 @@ import {
   CommonModal,
   notification,
 } from '@/components'
-
 import Authorized from '@/utils/Authorized'
 import { currencySymbol } from '@/utils/config'
 import { control } from '@/components/Decorator'
@@ -1046,6 +1046,9 @@ class Banner extends PureComponent {
     const viewPatientProfileAccess = Authorized.check(
       'patientdatabase.patientprofiledetails',
     )
+    const patientHistoryAccess = Authorized.check(
+      'patientdatabase.patientprofiledetails',
+    )
 
     const { entity } = patient
     if (!entity)
@@ -1196,6 +1199,36 @@ class Banner extends PureComponent {
               clinicSettings={clinicSettings}
             />
           </span>
+        )}
+        {patientHistoryAccess.rights === 'enable' && (
+          <Tooltip
+            title={`Patient History`}
+            enterDelay={100}
+            placement='bottom-start'
+          >
+            <span
+              onClick={() =>
+                history.push(
+                  getAppendUrl({
+                    md: 'pt',
+                    cmt: 6,
+                    pid: info.id,
+                  }),
+                )
+              }
+            >
+              <ClockCircleOutlined
+                style={{
+                  marginLeft: '10px',
+                  fontSize: '20px',
+                  top: 3,
+                  position: 'relative',
+                  color: '#4254BC',
+                  cursor: 'pointer',
+                }}
+              ></ClockCircleOutlined>
+            </span>
+          </Tooltip>
         )}
       </div>
     )
