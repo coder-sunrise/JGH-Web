@@ -285,7 +285,7 @@ class ICD10Diagnosis extends PureComponent {
                 icon={<Add />}
                 onClick={this.onSearchDiagnosisHistory}
               >
-                History
+                History1
               </ProgressButton>
             </Tooltip>
             {showAddFromPastModal && (

@@ -240,7 +240,7 @@ export default function Grid(props) {
           <span style={{ color: 'red', fontStyle: 'italic' }}>
             <sup>#1&nbsp;</sup>
           </span>
-          inactive diagnosis
+          inactive diagnosis1
         </span>
       </div>
     </>
