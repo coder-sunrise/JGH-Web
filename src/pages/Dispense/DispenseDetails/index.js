@@ -142,6 +142,7 @@ const DispenseDetails = ({
   codetable,
   dispense = {},
   handlePrint,
+  handlePreviewReport,
   history,
   onDrugLabelClick,
   showDrugLabelSelection,
@@ -1311,6 +1312,7 @@ const DispenseDetails = ({
       >
         <DrugLabelSelection
           handlePrint={handlePrint}
+          handlePreviewReport={handlePreviewReport}
           values={values}
           currentDrugToPrint={currentDrugToPrint}
           dispatch={dispatch}

@@ -137,23 +137,27 @@ const withWebSocket = () => Component => {
         )
         if (result)
           notification.success({
-            message: `Job sent to the printer.`,
+            message: `Printing job sent to the printer.`,
           })
         return result
       }
       return false
     }
 
-    handlePreviewReport = async content => {
+    handlePreviewReport = async (content, previewEventId) => {
       if (content) {
         const result = await this.prepareJobForWebSocket(
           AESEncryptor.encrypt(
             JSON.stringify({
               messageType: WebSocketMessageType.Preview,
               message: content,
+              previewEventId: previewEventId || Date.now(),
             }),
           ),
         )
+        notification.success({
+          message: `Preview job sent to the printer.`,
+        })
         return result
       }
       return false
