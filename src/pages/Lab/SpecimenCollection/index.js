@@ -76,10 +76,7 @@ const SpecimenCollection = ({
   const visitTypes = useVisitTypes()
   const [visitId, setVisitId] = useState()
   const [TheCurrentCancelId, setTheCurrentCancelId] = useState()
-  const [
-    isShowCancelledTestPanelCol,
-    setIsShowCancelledTestPanelCol,
-  ] = useState(true)
+
   const ref = useRef()
   const printSpecimenLabel = usePrintSpecimenLabel(handlePrint)
 

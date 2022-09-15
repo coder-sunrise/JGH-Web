@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react'
-import _ from 'lodash'
+import _, { now } from 'lodash'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import { Space, Collapse, Checkbox, InputNumber, Form, Typography } from 'antd'
@@ -52,6 +52,7 @@ const CollectSpecimen = ({
   const [form] = Form.useForm()
   const [cancelConfirmBtnState, setCancelConfirmBtnState] = useState(true)
   const [lastUpdateData, setLastUpdateData] = useState()
+  const [originLabWorkitemList, setOriginLabWorkitemList] = useState([])
 
   function cleanUpStates() {
     setWorkitemsByTestCategory([])
@@ -148,6 +149,13 @@ const CollectSpecimen = ({
   }
 
   const initializeCancelData = visitData => {
+    setOriginLabWorkitemList(
+      visitData.labWorkitems.filter(
+        item =>
+          item.statusFK == LAB_WORKITEM_STATUS.CANCELLED ||
+          item.statusFK == LAB_WORKITEM_STATUS.NEW,
+      ),
+    )
     prepareLabWorkitemsByCategory(
       visitData.labWorkitems.filter(
         item =>
@@ -212,25 +220,49 @@ const CollectSpecimen = ({
 
   const handleFinish = () => {
     var values = form.getFieldsValue(true)
+    let { cancelReason = '', labWorkitems = [] } = values
+    //Get LabWorkitem for sending changes
+    // let changedLabWorkitemList = []
+    // values.labWorkitems.forEach(Nitem => {
+    //   originLabWorkitemList.forEach(Oitem => {
+    //     if (Nitem.id == Oitem.id) {
+    //       if (Nitem.statusFK !== Oitem.statusFK) {
+    //         changedLabWorkitemList.push(Nitem)
+    //       }
+    //     }
+    //   })
+    // })
+    // console.log(changedLabWorkitemList)
+
     if (mode == MODE.CANCEL) {
-      values.labWorkitems.map(item => {
-        if (item.cancelledDate) {
+      // Process items that need to be submitted
+      let afterProcessingLabWorkitems = labWorkitems.map(item => {
+        if (item.statusFK == LAB_WORKITEM_STATUS.NEW) {
           return {
             ...item,
+            cancelReason: null,
+            cancelledDate: null,
+            cancelledByUserFK: null,
           }
         } else {
-          return {
-            ...item,
-            cancelledByUserFK: userId,
+          if (item.cancelledDate == null || undefined) {
+            return {
+              ...item,
+              cancelReason,
+              cancelledByUserFK: userId,
+              cancelledDate: moment(),
+            }
+          } else {
+            return {
+              ...item,
+              cancelReason,
+            }
           }
         }
       })
       dispatch({
         type: 'specimenCollection/cancel',
-        payload: {
-          cancelledByUserFK: userId,
-          ...values,
-        },
+        payload: afterProcessingLabWorkitems,
       }).then(r => {
         onConfirm && onConfirm()
       })

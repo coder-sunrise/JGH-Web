@@ -196,7 +196,7 @@ export default compose(
         ...returnValue,
         schemes,
         clinicSettings: clinicSettings.settings,
-        dispensingQuantity: returnValue.dispensingQuantity || null,
+        dispensingQuantity: returnValue.dispensingQuantity || '',
       }
     },
 
