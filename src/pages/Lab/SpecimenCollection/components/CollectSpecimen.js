@@ -151,7 +151,9 @@ const CollectSpecimen = ({
   const initializeCancelData = visitData => {
     setOriginLabWorkitemList(
       visitData.labWorkitems.filter(
-        item => item.statusFK == 9 || item.statusFK == 1,
+        item =>
+          item.statusFK == LAB_WORKITEM_STATUS.CANCELLED ||
+          item.statusFK == LAB_WORKITEM_STATUS.NEW,
       ),
     )
     prepareLabWorkitemsByCategory(
@@ -235,7 +237,7 @@ const CollectSpecimen = ({
     if (mode == MODE.CANCEL) {
       // Process items that need to be submitted
       let afterProcessingLabWorkitems = labWorkitems.map(item => {
-        if (item.statusFK == 1) {
+        if (item.statusFK == LAB_WORKITEM_STATUS.NEW) {
           return {
             ...item,
             cancelReason: null,
@@ -246,14 +248,14 @@ const CollectSpecimen = ({
           if (item.cancelledDate == null || undefined) {
             return {
               ...item,
-              cancelReason: values.cancelReason,
+              cancelReason,
               cancelledByUserFK: userId,
               cancelledDate: moment(),
             }
           } else {
             return {
               ...item,
-              cancelReason: values.cancelReason,
+              cancelReason,
             }
           }
         }
