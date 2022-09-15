@@ -32,8 +32,6 @@ const styles = theme => ({
 class ICD10Diagnosis extends PureComponent {
   state = {
     showAddFromPastModal: false,
-    confirmPropsSave: true,
-    itemValues: [],
   }
   componentDidMount() {
     this.fetchCodeTables()
@@ -74,23 +72,11 @@ class ICD10Diagnosis extends PureComponent {
       }
     })
   }
-  // Gets the selectNums selected by the Grid
-  getGridSelectNum = values => {
-    if (values >= 1) {
-      this.setState({ confirmPropsSave: false })
-    } else {
-      this.setState({ confirmPropsSave: true })
-    }
-  }
   // Gets the selectData selected by the Grid
   getGridDiangnosisHistoryID = value => {
-    this.setState({ newDiagnosisData: value })
-  }
-
-  toggleAddFromPastModal = () => {
     const { form } = this.arrayHelpers
     const { values } = form
-    const newValues = values.corDiagnosis.concat(this.state.newDiagnosisData)
+    const newValues = values.corDiagnosis.concat(value)
     values.corDiagnosis = newValues
     this.setState({ showAddFromPastModal: false })
   }
@@ -309,36 +295,14 @@ class ICD10Diagnosis extends PureComponent {
                 onClose={() => {
                   this.setState({ showAddFromPastModal: false })
                 }}
-                onConfirm={this.toggleAddFromPastModal}
                 maxWidth='md'
-                showFooter={true}
-                overrideLoading
                 cancelText='Cancel'
-                confirmText='Save'
-                footProps={{
-                  confirmProps: {
-                    disabled: this.state.confirmPropsSave,
-                  },
-                }}
+                observe='Confirm'
               >
-                <>
-                  <div
-                    style={{
-                      maxHeight: '70vh',
-                      overflowY: 'auto',
-                      width: '953px',
-                      padding: '8px',
-                    }}
-                  >
-                    <Grid
-                      getGridSelectNum={this.getGridSelectNum}
-                      getGridDiangnosisHistoryID={
-                        this.getGridDiangnosisHistoryID
-                      }
-                      {...this.props}
-                    ></Grid>
-                  </div>
-                </>
+                <Grid
+                  {...this.props}
+                  getGridDiangnosisHistoryID={this.getGridDiangnosisHistoryID}
+                ></Grid>
               </CommonModal>
             )}
           </div>
