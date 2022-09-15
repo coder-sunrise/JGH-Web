@@ -218,16 +218,17 @@ export default function Grid(props) {
           ]}
         ></CommonTableGrid>
       </div>
-      {footer({
-        onConfirm: () => {
-          const { getGridDiangnosisHistoryID } = props
-          getGridDiangnosisHistoryID(getDiagnosisHistoryNewData)
-        },
-        confirmBtnText: 'Save',
-        confirmProps: {
-          disabled: confirmPropsSave,
-        },
-      })}
+      {footer &&
+        footer({
+          onConfirm: () => {
+            const { getGridDiangnosisHistoryID } = props
+            getGridDiangnosisHistoryID(getDiagnosisHistoryNewData)
+          },
+          confirmBtnText: 'Save',
+          confirmProps: {
+            disabled: confirmPropsSave,
+          },
+        })}
       <div
         style={{
           height: 30,
