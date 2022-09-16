@@ -103,7 +103,6 @@ class Dispense extends PureComponent {
         payload: {
           code: 'inventorymedication',
           force: true,
-          temp: true,
         },
       }),
       dispatch({
@@ -111,7 +110,6 @@ class Dispense extends PureComponent {
         payload: {
           code: 'inventoryvaccination',
           force: true,
-          temp: true,
         },
       }),
       dispatch({
@@ -119,7 +117,6 @@ class Dispense extends PureComponent {
         payload: {
           code: 'inventoryconsumable',
           force: true,
-          temp: true,
         },
       }),
       dispatch({
@@ -127,7 +124,6 @@ class Dispense extends PureComponent {
         payload: {
           code: 'ctservice',
           force: true,
-          temp: true,
         },
       }),
     ]).then(r => {

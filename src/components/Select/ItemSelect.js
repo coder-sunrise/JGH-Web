@@ -39,7 +39,6 @@ const ItemSelect = ({ codetable, itemType, ...props }) => {
       payload: {
         code: 'ctservice',
         force: true,
-        temp: true,
       },
     })
     await dispatch({

@@ -104,7 +104,7 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
                       labelField='displayValue'
                       itemType={form.values.itemType}
                       disabled={!form.values.itemType}
-                      temp
+                      force
                     />
                   </Tooltip>
                 )
@@ -123,7 +123,7 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
                     label='Order By'
                     noDefaultValue
                     mode='multiple'
-                    temp={false}
+                    force={false}
                     maxTagPlaceholder='options '
                     maxTagCount={0}
                     {...args}

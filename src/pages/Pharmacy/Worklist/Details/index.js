@@ -19,7 +19,6 @@ const PharmacyDetails = ({
       payload: {
         code: 'inventorymedication',
         force: true,
-        temp: true,
       },
     })
 
@@ -28,7 +27,6 @@ const PharmacyDetails = ({
       payload: {
         code: 'inventoryvaccination',
         force: true,
-        temp: true,
       },
     })
 
@@ -37,7 +35,6 @@ const PharmacyDetails = ({
       payload: {
         code: 'inventoryconsumable',
         force: true,
-        temp: true,
       },
     })
 
@@ -46,7 +43,6 @@ const PharmacyDetails = ({
       payload: {
         code: 'ctservice',
         force: true,
-        temp: true,
       },
     })
   }

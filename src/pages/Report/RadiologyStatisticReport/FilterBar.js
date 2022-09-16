@@ -54,7 +54,7 @@ const FilterBar = ({
                     label='Radiology Technologist'
                     noDefaultValue
                     mode='multiple'
-                    temp={true}
+                    force={true}
                     orderBy={[
                       ['clinicRoleFK', o => (o.name || '').toLowerCase()],
                       ['desc', 'asc'],

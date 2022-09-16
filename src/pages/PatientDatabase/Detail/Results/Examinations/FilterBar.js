@@ -238,7 +238,7 @@ const FilterBar = props => {
                   mode='multiple'
                   labelField='name'
                   maxTagCount={0}
-                  temp
+                  force
                 />
               )
             }}
@@ -259,7 +259,7 @@ const FilterBar = props => {
                   maxTagCount={0}
                   mode='multiple'
                   labelField='name'
-                  temp
+                  force
                 />
               )
             }}
