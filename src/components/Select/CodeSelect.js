@@ -39,7 +39,7 @@ class CodeSelect extends React.PureComponent {
         payload: {
           code: props.code.toLowerCase(),
           temp: props.temp,
-          force: props.force,
+          force: props.temp || props.force,
           filter: props.remoteFilter,
         },
       })
