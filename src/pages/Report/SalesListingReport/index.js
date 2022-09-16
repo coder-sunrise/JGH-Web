@@ -22,7 +22,7 @@ class SalesListingReport extends ReportBase {
     return <FilterBar handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
   }
 
-  renderContent = (reportDatas) => {
+  renderContent = reportDatas => {
     return <SalesList reportDatas={reportDatas} />
   }
 }
@@ -32,8 +32,12 @@ const SalesListingReportWithFormik = withFormik({
     dateFrom: Yup.date().required(),
   }),
   mapPropsToValues: () => ({
-    dateFrom: moment(new Date()).startOf('month').toDate(),
-    dateTo: moment(new Date()).endOf('month').toDate(),
+    dateFrom: moment(new Date())
+      .startOf('month')
+      .toDate(),
+    dateTo: moment(new Date())
+      .endOf('month')
+      .toDate(),
   }),
 })(SalesListingReport)
 
