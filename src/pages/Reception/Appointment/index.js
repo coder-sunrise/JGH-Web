@@ -273,6 +273,39 @@ class Appointment extends React.PureComponent {
         calendarView: CALENDAR_VIEWS.DAY,
       },
     })
+
+    dispatch({
+      type: 'codetable/fetchCodes',
+      payload: {
+        code: 'ctcopayer',
+      },
+    })
+    dispatch({
+      type: 'visitRegistration/getVisitOrderTemplateListForDropdown',
+      payload: {
+        pagesize: 9999,
+      },
+    }).then(response => {
+      if (response) {
+        const { data } = response
+        const templateOptions = data
+          .filter(template => template.isActive)
+          .map(template => {
+            return {
+              ...template,
+              value: template.id,
+              name: template.displayValue,
+            }
+          })
+
+        dispatch({
+          type: 'visitRegistration/updateState',
+          payload: {
+            visitOrderTemplateOptions: templateOptions,
+          },
+        })
+      }
+    })
   }
 
   componentWillUnmount() {

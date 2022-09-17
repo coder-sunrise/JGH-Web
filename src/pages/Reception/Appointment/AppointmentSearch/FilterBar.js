@@ -30,6 +30,8 @@ import {
 import { appointmentStatusReception } from '@/utils/codes'
 import { CALENDAR_RESOURCE } from '@/utils/constants'
 import Authorized from '@/utils/Authorized'
+import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
+import { create } from 'lodash'
 
 const createPayload = (
   values,
@@ -47,6 +49,8 @@ const createPayload = (
     apptDate,
     isPrint,
     dob,
+    copayerIDs = [],
+    visitPurposeIDs = [],
   } = values
 
   const commonPayload = {
@@ -70,12 +74,14 @@ const createPayload = (
   ) {
     selectedDoctor = [-1]
   }
+
   if (isPrint) {
     return {
       ...commonPayload,
       bookBy: bookBy.length > 0 ? bookBy : undefined,
       doctor: selectedDoctor.length > 0 ? selectedDoctor : undefined,
-      room: filterByRoomBlockGroup > 0 ? filterByRoomBlockGroup : undefined,
+      room:
+        filterByRoomBlockGroup.length > 0 ? filterByRoomBlockGroup : undefined,
       SearchText: searchValue || '',
       ApptType:
         filterByApptType.length == 0 || filterByApptType.indexOf(-99) > -1
@@ -86,6 +92,14 @@ const createPayload = (
           ? filterByAppointmentStatus
           : undefined,
       dob: dob,
+      copayerIDs:
+        copayerIDs.length == 0 || copayerIDs.indexOf(-99) > -1
+          ? undefined
+          : copayerIDs,
+      visitPurposeIDs:
+        visitPurposeIDs.length == 0 || visitPurposeIDs.indexOf(-99) > -1
+          ? undefined
+          : visitPurposeIDs,
     }
   }
 
@@ -101,6 +115,14 @@ const createPayload = (
     isIncludeRescheduledByClinic: true,
     isIncludeHistory: true,
     dob: dob,
+    copayerIDs:
+      copayerIDs.length == 0 || copayerIDs.indexOf(-99) > -1
+        ? undefined
+        : copayerIDs.join(),
+    visitPurposeIDs:
+      visitPurposeIDs.length == 0 || visitPurposeIDs.indexOf(-99) > -1
+        ? undefined
+        : visitPurposeIDs.join(),
   }
 }
 
@@ -118,7 +140,12 @@ const FilterBar = ({
     filterByAppointmentStatus = [],
   } = values
 
-  const { viewOtherApptAccessRight, isActiveCalendarResource } = restValues
+  const {
+    viewOtherApptAccessRight,
+    isActiveCalendarResource,
+    visitOrderTemplateOptions,
+    ctcopayer,
+  } = restValues
 
   const [showReport, setShowReport] = useState(false)
 
@@ -287,7 +314,46 @@ const FilterBar = ({
             }}
           />
         </GridItem>
-        <GridItem xs md={12}>
+        <GridItem md={3}>
+          <FastField
+            name='copayerIDs'
+            render={args => (
+              <CodeSelect
+                {...args}
+                title='Select "All" will display active and inactive co-payers'
+                options={[
+                  { id: 0, displayValue: 'None' },
+                  ..._.sortBy(ctcopayer, 'displayValue'),
+                ]}
+                labelField='displayValue'
+                mode='multiple'
+                label='Co-Payers'
+                renderDropdown={option => {
+                  return <CopayerDropdownOption option={option} />
+                }}
+              />
+            )}
+          />
+        </GridItem>
+        <GridItem md={3}>
+          <FastField
+            name='visitPurposeIDs'
+            render={args => (
+              <CodeSelect
+                {...args}
+                title='Select "All" will display active and inactive visit purpose'
+                options={[
+                  { id: 0, displayValue: 'None' },
+                  ..._.sortBy(visitOrderTemplateOptions, 'displayValue'),
+                ]}
+                labelField='displayValue'
+                mode='multiple'
+                label='Visit Purpose'
+              />
+            )}
+          />
+        </GridItem>
+        <GridItem xs md={6} style={{ marginTop: 20 }}>
           <ProgressButton
             icon={<Search />}
             color='primary'

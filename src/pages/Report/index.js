@@ -85,7 +85,7 @@ class Report extends React.Component {
           !this.state.searchText
         )
       })
-      console.log(filtered)
+
       return {
         title: o,
         items: this.group[o],
@@ -131,7 +131,7 @@ class Report extends React.Component {
 
   render() {
     const menus = this.menus().filter(item => item.itemCount > 0)
-    console.log(menus)
+
     return (
       <CardContainer hideHeader>
         <TextField prefix={<Search />} onChange={this.onFilterChange} />
