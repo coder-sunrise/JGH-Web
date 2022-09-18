@@ -121,11 +121,14 @@ const VisitInfoCard = ({
   visitMode,
   ctvisitpurpose,
   doctorProfiles,
+  visitRemarks,
   ...restProps
 }) => {
   const [visitGroupMessage, setVisitGroupMessage] = useState()
   const [visitGroupPopup, setVisitGroupPopup] = useState(false)
-
+  useEffect(() => {
+    setFieldValue(FormField['visit.visitRemarks'], visitRemarks)
+  }, [visitRemarks])
   useEffect(() => {
     if (currentVisitTemplate) {
       let activeItemTotal = getVisitOrderTemplateTotal(

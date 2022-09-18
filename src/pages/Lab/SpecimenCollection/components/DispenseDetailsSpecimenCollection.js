@@ -489,7 +489,7 @@ const DispenseDetailsSpecimenCollection = ({
         }}
         isDisposePatientEntity={false}
         isReadonly={true}
-        hideRawData
+        hideIfFromOrder={true}
       />
     </React.Fragment>
   )

@@ -15,6 +15,7 @@ import {
   notification,
   CheckboxGroup,
   CommonTableGrid,
+  ProgressButton,
 } from '@/components'
 import { Alert } from 'antd'
 import { ThreeSixtySharp } from '@material-ui/icons'
@@ -103,7 +104,7 @@ class DrugLeafletSelection extends PureComponent {
       data: [...rows],
     })
   }
-  printLeaflet = async (printData = {}) => {
+  printLeaflet = async (printData = {}, messageType) => {
     const { visitid } = this.props
     const visitinvoicedrugids = _.join(
       printData.map(x => {
@@ -118,12 +119,15 @@ class DrugLeafletSelection extends PureComponent {
           return _.join(x.instructionId, ',')
         }),
     )
+    const previewEventId = Date.now()
     if (this.state.printlanguage.includes('EN')) {
       await this.doPrintLeaflet(
         visitid,
         visitinvoicedrugids,
         instructionIds,
         'EN',
+        messageType,
+        previewEventId,
       )
     }
     if (this.state.printlanguage.includes('JP')) {
@@ -132,15 +136,21 @@ class DrugLeafletSelection extends PureComponent {
         visitinvoicedrugids,
         instructionIds,
         'JP',
+        messageType,
+        previewEventId,
       )
     }
-    this.props.onConfirmPrintLeaflet()
+    if (messageType != 5) {
+      this.props.onConfirmPrintLeaflet()
+    }
   }
   doPrintLeaflet = async (
     visitid,
     visitinvoicedrugids,
     instructionIds,
     lan,
+    messageType,
+    previewEventId,
   ) => {
     const data = await getRawData(REPORT_ID.PATIENT_INFO_LEAFLET, {
       visitinvoicedrugids,
@@ -187,10 +197,17 @@ class DrugLeafletSelection extends PureComponent {
         }),
       },
     ]
-    await this.props.handlePrint(JSON.stringify(payload))
+    if (messageType === 5) {
+      await this.props.handlePreviewReport(
+        JSON.stringify(payload),
+        previewEventId,
+      )
+    } else {
+      await this.props.handlePrint(JSON.stringify(payload))
+    }
   }
 
-  printDrugSummaryLabel = async (printData = {}) => {
+  printDrugSummaryLabel = async (printData = {}, messageType) => {
     const { visitid } = this.props
     const visitinvoicedrugids = _.join(
       printData.map(x => {
@@ -205,12 +222,15 @@ class DrugLeafletSelection extends PureComponent {
           return _.join(x.instructionId, ',')
         }),
     )
+    const previewEventId = Date.now()
     if (this.state.printlanguage.includes('EN')) {
       await this.doPrintDrugSummaryLabel(
         visitid,
         visitinvoicedrugids,
         instructionIds,
         'EN',
+        messageType,
+        previewEventId,
       )
     }
     if (this.state.printlanguage.includes('JP')) {
@@ -219,6 +239,8 @@ class DrugLeafletSelection extends PureComponent {
         visitinvoicedrugids,
         instructionIds,
         'JP',
+        messageType,
+        previewEventId,
       )
     }
     this.props.onConfirmPrintLeaflet()
@@ -228,6 +250,8 @@ class DrugLeafletSelection extends PureComponent {
     visitinvoicedrugids,
     instructionIds,
     lan,
+    messageType,
+    previewEventId,
   ) => {
     const data = await getRawData(REPORT_ID.DRUG_SUMMARY_LABEL_80MM_45MM, {
       visitinvoicedrugids,
@@ -293,7 +317,14 @@ class DrugLeafletSelection extends PureComponent {
         }),
       },
     ]
-    await this.props.handlePrint(JSON.stringify(payload))
+    if (messageType === 5) {
+      await this.props.handlePreviewReport(
+        JSON.stringify(payload),
+        previewEventId,
+      )
+    } else {
+      await this.props.handlePrint(JSON.stringify(payload))
+    }
   }
   render() {
     const {
@@ -302,6 +333,7 @@ class DrugLeafletSelection extends PureComponent {
       rows,
       classes,
       handlePrint,
+      handlePreviewReport,
       clinicSettings,
       showInvoiceAmountNegativeWarning,
     } = this.props
@@ -379,7 +411,28 @@ class DrugLeafletSelection extends PureComponent {
               this.printDrugSummaryLabel(selectedData)
             }
           },
-          confirmBtnText: 'Confirm',
+          extraButtons: (
+            <ProgressButton
+              color='info'
+              icon={null}
+              type='submit'
+              disabled={showDrugWarning || showLanguageWarning}
+              onClick={() => {
+                const { selectedRows } = this.state
+                const selectedData = rows.filter(item =>
+                  selectedRows.includes(item.id),
+                )
+                if (this.props.type === 'PIL') {
+                  this.printLeaflet(selectedData, 5)
+                } else if (this.props.type === 'drugsummarylabel') {
+                  this.printDrugSummaryLabel(selectedData, 5)
+                }
+              }}
+            >
+              Preview
+            </ProgressButton>
+          ),
+          confirmBtnText: 'Print',
           confirmProps: { disabled: showDrugWarning || showLanguageWarning },
         })}
       </div>

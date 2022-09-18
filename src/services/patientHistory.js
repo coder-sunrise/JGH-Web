@@ -40,6 +40,9 @@ const fns = {
     return service.query(`${url}/VisitHistory`, params)
   },
 
+  queryDiagnosisHistory: params => {
+    return service.query(`${url}/DiagnosisHistory`, params)
+  },
   queryReferralHistory: params => {
     return service.queryList(`${url}/Referral`, params)
   },
