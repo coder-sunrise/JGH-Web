@@ -14,7 +14,6 @@ const amountProps = {
 }
 
 const PaymentSummary = ({
-  payerDistributedAmt = 0.0,
   payerDistributedAmtBeforeGST = 0.0,
   outstanding = 0.0,
   gstAmount,
@@ -37,6 +36,26 @@ const PaymentSummary = ({
           <GridItem xs={6} md={12}>
             <NumberInput
               prefix='GST Amount:'
+              value={gstAmount}
+              size='sm'
+              {...amountProps}
+            />
+          </GridItem>
+        )}
+        {gstAmount !== undefined && (
+          <GridItem xs={6} md={12}>
+            <NumberInput
+              prefix='GST Rounding:'
+              value={gstAmount}
+              size='sm'
+              {...amountProps}
+            />
+          </GridItem>
+        )}
+        {gstAmount !== undefined && (
+          <GridItem xs={6} md={12}>
+            <NumberInput
+              prefix='Final GST Amount:'
               value={gstAmount}
               size='sm'
               {...amountProps}

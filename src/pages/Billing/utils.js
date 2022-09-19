@@ -21,31 +21,14 @@ export const constructPayload = values => {
     signature,
   } = values
   const { invoiceItems, ...restInvoice } = invoice
-  const gstValue = invoice.gstValue || 0
   let _invoicePayer = invoicePayer.filter(payer => {
     if (payer.id === undefined && payer.isCancelled) return false
     return true
   })
 
-  let newsequence = -1
-  for (let index = 0; index < _invoicePayer.length; index++) {
-    if (_invoicePayer[index].id) {
-      newsequence = _invoicePayer[index].sequence
-    } else {
-      newsequence += 1
-      _invoicePayer[index].sequence = newsequence
-    }
-  }
-  let copayerTotalGstAmount = 0
-  let copayerTotalClaimedAmount = 0
   _invoicePayer = _invoicePayer.filter(payer =>
     payer.id ? payer.isModified : true,
   )
-  const isFullyClaimed =
-    _.sumBy(
-      _invoicePayer.filter(t => !t.isCancelled),
-      'payerDistributedAmtBeforeGST',
-    ) === invoice.totalAftAdj
   _invoicePayer = _invoicePayer.map((payer, index) => {
     const {
       schemeConfig,
@@ -62,78 +45,35 @@ export const constructPayload = values => {
     const _payer = {
       ...restPayer,
       isModified: restPayer.id ? isModified : false,
-      invoicePayerItem: payer.invoicePayerItem
-        .filter(item => item.claimAmountBeforeGST > 0)
-        .map(item => {
-          if (typeof item.id !== 'string') {
-            const gstAmount = roundTo(
-              (item.claimAmountBeforeGST * gstValue) / 100,
-            )
-            // invoicePayerGstAmount += gstAmount
-            return {
-              ...item,
-              claimAmount: item.claimAmountBeforeGST + gstAmount,
-              outstanding: item.claimAmountBeforeGST + gstAmount,
-            }
+      invoicePayerItem: payer.invoicePayerItem.map(item => {
+        if (typeof item.id !== 'string') {
+          return {
+            ...item,
           }
-          const {
-            invoiceItemFK,
-            _claimedAmount,
-            disabled,
-            itemCode,
-            rowIndex,
-            notClaimableBySchemeIds,
-            invoiceItemTypeFK,
-            itemDescription,
-            coverage,
-            payableBalance,
-            claimAmountBeforeGST,
-            id,
-            ...restItem
-          } = item
-          const gstItemAmount = roundTo((claimAmountBeforeGST * gstValue) / 100)
-          // invoicePayerGstAmount += gstItemAmount
-          const _invoicePayerItem = {
-            ...restItem,
-            invoiceItemFK,
-            claimAmountBeforeGST: claimAmountBeforeGST,
-            claimAmount: claimAmountBeforeGST + gstItemAmount,
-            outstanding: claimAmountBeforeGST + gstItemAmount,
-            payableBalance,
-            invoiceItemTypeFK,
-            itemName: itemDescription,
-          }
-          return _invoicePayerItem
-        }),
+        }
+        const {
+          invoiceItemFK,
+          _claimedAmount,
+          disabled,
+          itemCode,
+          rowIndex,
+          notClaimableBySchemeIds,
+          invoiceItemTypeFK,
+          itemDescription,
+          coverage,
+          id,
+          ...restItem
+        } = item
+        const _invoicePayerItem = {
+          ...restItem,
+          invoiceItemFK,
+          invoiceItemTypeFK,
+          itemName: itemDescription,
+        }
+        return _invoicePayerItem
+      }),
     }
 
-    // copayerTotalGstAmount += invoicePayerGstAmount
-    // if (copayerTotalGstAmount > gstAmount) {
-    //   invoicePayerGstAmount = gstAmount - copayerTotalGstAmount
-    //   _payer.gstAmount = invoicePayerGstAmount
-    // } else {
-    //   _payer.gstAmount = invoicePayerGstAmount
-    // }
-    if (
-      isFullyClaimed &&
-      index === _invoicePayer.filter(t => !t.isCancelled).length - 1
-    ) {
-      _payer.gstAmount = roundTo(
-        invoice.gstAmount -
-          _.sumBy(
-            _invoicePayer.filter(
-              t => t.sequence !== _payer.sequence && !t.isCancelled,
-            ),
-            'gstAmount',
-          ),
-      )
-    } else {
-      _payer.gstAmount = roundTo(
-        (_payer.payerDistributedAmtBeforeGST * gstValue) / 100,
-      )
-    }
-    _payer.payerDistributedAmt =
-      _payer.gstAmount + _payer.payerDistributedAmtBeforeGST
     return _payer
   })
 
@@ -161,6 +101,109 @@ export const constructPayload = values => {
   return payload
 }
 
+export const reCalculateInvoicePayerGst = (invoicePayer, invoice) => {
+  const gstValue = invoice.gstValue
+  let _invoicePayer = invoicePayer.filter(payer => {
+    if (payer.id === undefined && payer.isCancelled) return false
+    return true
+  })
+
+  let newsequence = -1
+  for (let index = 0; index < _invoicePayer.length; index++) {
+    if (_invoicePayer[index].id) {
+      newsequence = _invoicePayer[index].sequence
+    } else {
+      newsequence += 1
+      _invoicePayer[index].sequence = newsequence
+    }
+  }
+  // let copayerTotalGstAmount = 0
+  // let copayerTotalClaimedAmount = 0
+  const isInvoiceFullyClaimed =
+    _.sumBy(
+      _invoicePayer.filter(t => !t.isCancelled),
+      'payerDistributedAmtBeforeGST',
+    ) === invoice.totalAftAdj
+  invoice.invoiceItems.forEach(item => {
+    item._itemTotalGST = 0
+    item._itemTotalClaimedBeforeGST = 0
+  })
+  _invoicePayer = _invoicePayer.map((payer, index) => {
+    if (payer.isCancelled) {
+      return payer
+    }
+    const _payer = {
+      ...payer,
+      invoicePayerItem: payer.invoicePayerItem
+        .filter(item => item.claimAmountBeforeGST > 0)
+        .map(item => {
+          let actualGstAmount = roundTo(
+            (item.claimAmountBeforeGST * gstValue) / 100,
+          )
+          const curr_invoiceItem = invoice.invoiceItems.find(
+            x => x.id === item.invoiceItemFK,
+          )
+          const invocieItemGstAmount = curr_invoiceItem.gstAmount
+          curr_invoiceItem._itemTotalClaimedBeforeGST = roundTo(
+            curr_invoiceItem._itemTotalClaimedBeforeGST +
+              item.claimAmountBeforeGST,
+          )
+          if (
+            roundTo(curr_invoiceItem._itemTotalGST + actualGstAmount) >
+            invocieItemGstAmount
+          ) {
+            actualGstAmount = roundTo(
+              invocieItemGstAmount - curr_invoiceItem._itemTotalGST,
+            )
+          } else if (
+            curr_invoiceItem._itemTotalClaimedBeforeGST ==
+            curr_invoiceItem.totalBeforeGst
+          ) {
+            actualGstAmount = roundTo(
+              invocieItemGstAmount - curr_invoiceItem._itemTotalGST,
+            )
+          }
+          curr_invoiceItem._itemTotalGST = roundTo(
+            curr_invoiceItem._itemTotalGST + actualGstAmount,
+          )
+
+          if (typeof item.id !== 'string') {
+            // invoicePayerGstAmount += actualGstAmount
+            return {
+              ...item,
+              claimAmount: roundTo(item.claimAmountBeforeGST + actualGstAmount),
+              outstanding: roundTo(item.claimAmountBeforeGST + actualGstAmount),
+              _gstamount: actualGstAmount,
+            }
+          }
+          // invoicePayerGstAmount += gstItemAmount
+          const _invoicePayerItem = {
+            ...item,
+            claimAmount: roundTo(item.claimAmountBeforeGST + actualGstAmount),
+            outstanding: roundTo(item.claimAmountBeforeGST + actualGstAmount),
+            _gstamount: actualGstAmount,
+          }
+          return _invoicePayerItem
+        }),
+    }
+    const payerGSTAmountChanged =
+      roundTo(_.sumBy(_payer.invoicePayerItem, '_gstamount')) !==
+      _payer.gstAmount
+    if (payerGSTAmountChanged) {
+      _payer.gstAmount = roundTo(_.sumBy(_payer.invoicePayerItem, '_gstamount'))
+      _payer.isModified = true
+    }
+    _payer.payerDistributedAmtBeforeGST = roundTo(
+      _.sumBy(_payer.invoicePayerItem, 'claimAmountBeforeGST'),
+    )
+    _payer.payerDistributedAmt = roundTo(
+      _payer.gstAmount + _payer.payerDistributedAmtBeforeGST,
+    )
+    _payer.payerOutstanding = _payer.payerDistributedAmt
+    return _payer
+  })
+  return _invoicePayer
+}
 const getPatientCorporateScheme = patient => {
   const today = moment()
   return patient.patientScheme
