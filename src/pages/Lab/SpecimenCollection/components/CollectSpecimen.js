@@ -217,6 +217,23 @@ const CollectSpecimen = ({
     setTestPanelValidationError(errorMsg)
     return Promise.reject(new Error(errorMsg))
   }
+  const checkCancelReason = (_, value) => {
+    let labWorkitemsField = form.getFieldValue('labWorkitems')
+    if (
+      labWorkitemsField.every(item => {
+        if (item.statusFK === LAB_WORKITEM_STATUS.NEW) {
+          return true
+        }
+      })
+    ) {
+      return Promise.resolve()
+    } else {
+      if (!value) {
+        return Promise.reject(new Error('Reason is required'))
+      }
+      return Promise.resolve()
+    }
+  }
 
   const handleFinish = () => {
     var values = form.getFieldsValue(true)
@@ -408,8 +425,7 @@ const CollectSpecimen = ({
               name='cancelReason'
               rules={[
                 {
-                  required: true,
-                  message: 'Reason is required',
+                  validator: checkCancelReason,
                 },
               ]}
             >
