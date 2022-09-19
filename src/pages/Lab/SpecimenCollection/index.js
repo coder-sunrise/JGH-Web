@@ -185,16 +185,20 @@ const SpecimenCollection = ({
           return Authorized.check('lab.collectspecimen')?.rights ===
             'enable' ? (
             <div>
-              <Tooltip title='Collect Specimen'>
-                <Button
-                  onClick={() => {
-                    setVisitId(entity.id)
-                  }}
-                  type='link'
-                >
-                  Collect
-                </Button>
-              </Tooltip>
+              {entity.testPanels.find(
+                item => item.statusFK == LAB_WORKITEM_STATUS.NEW,
+              ) && (
+                <Tooltip title='Collect Specimen'>
+                  <Button
+                    onClick={() => {
+                      setVisitId(entity.id)
+                    }}
+                    type='link'
+                  >
+                    Collect
+                  </Button>
+                </Tooltip>
+              )}
               <Tooltip title='Cancel Test Panel'>
                 <Button
                   onClick={() => {
