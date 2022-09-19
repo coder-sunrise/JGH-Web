@@ -61,7 +61,7 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
                     mode="multiple"
                     code={`Inventory${form.values.stockType}`}
                     labelField="displayValue"
-                    temp
+                    force
                   />
                 )
               }}

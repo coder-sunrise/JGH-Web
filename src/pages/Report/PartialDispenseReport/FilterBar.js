@@ -83,7 +83,7 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
                       mode='multiple'
                       code={`inventory${form.values.inventoryType}`}
                       labelField='displayValue'
-                      temp
+                      force
                     />
                   </Tooltip>
                 )

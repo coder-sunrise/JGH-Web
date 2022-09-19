@@ -32,7 +32,7 @@ const FilterBar = ({ classes, handleSubmit, isSubmitting, values }) => {
               name='packageIDs'
               render={args => (
                 <CodeSelect
-                  temp
+                  force
                   label='Package'
                   code='package'
                   labelField='displayValue'
