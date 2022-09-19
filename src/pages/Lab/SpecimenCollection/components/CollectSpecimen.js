@@ -173,7 +173,7 @@ const CollectSpecimen = ({
     ).at(-1)
     setLastUpdateData({
       cancelledDate: lastCancelLabWorkitem?.cancelledDate.format(
-        'DD MM YYYY HH:MM',
+        'DD MMM YYYY HH:mm',
       ),
       cancelledByUserName: lastCancelLabWorkitem?.cancelledByUserName,
     })
