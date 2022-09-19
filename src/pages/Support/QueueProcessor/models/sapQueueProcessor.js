@@ -6,7 +6,9 @@ export default createListViewModel({
   namespace: 'sapQueueProcessor',
   param: {
     service,
-    state: {},
+    state: {
+      filter: { apiCriteria: {} },
+    },
     effects: {
       *retrigger({ payload }, { call, put }) {
         const result = yield call(service.retrigger, payload)
