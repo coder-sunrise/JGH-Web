@@ -262,7 +262,7 @@ const CollectSpecimen = ({
             cancelledByUserFK: null,
           }
         } else {
-          if (item.cancelledDate == null || undefined) {
+          if (item.cancelledDate == null) {
             return {
               ...item,
               cancelReason,
