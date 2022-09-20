@@ -203,7 +203,7 @@ class Grid extends PureComponent {
                   item => item.code,
                 )
                 return (
-                  <Tooltip title={schemeCodeList.join(',')}>
+                  <Tooltip title={schemeCodeList.join(', ')}>
                     <span>{schemeCodeList.join(',')}</span>
                   </Tooltip>
                 )
