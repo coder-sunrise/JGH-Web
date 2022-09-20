@@ -300,6 +300,28 @@ class SchemesGrid extends PureComponent {
     )
   }
 
+  getCopayerDetails = (coPayerFK, mode) => {
+    let {
+      dispatch,
+      codetable: { ctcopayer = [] },
+      toggleCopayerDetailModal,
+    } = this.props
+    switch (mode) {
+      case 'few':
+        return ctcopayer.find(item => item.id == coPayerFK)
+      case 'full':
+        dispatch({
+          type: 'copayerDetail/queryCopayerDetails',
+          payload: {
+            id: coPayerFK,
+          },
+        })
+        toggleCopayerDetailModal()
+        break
+      default:
+        break
+    }
+  }
   render() {
     const labelTypes = ['Co-Payer Label', 'Co-Payer Cover Page']
     const { editingRowIds, rowChanges, anchorEl } = this.state
@@ -327,7 +349,7 @@ class SchemesGrid extends PureComponent {
         getInitialValue: row => {
           return [row.validFrom, row.validTo]
         },
-        width: 250,
+        width: 200,
         sortingEnabled: false,
         isDisabled: row => {
           return this.isPHPC(row)
@@ -337,7 +359,7 @@ class SchemesGrid extends PureComponent {
         columnName: 'schemeTypeFK',
         type: 'codeSelect',
         code: 'ctSchemeType',
-        width: 250,
+        width: 240,
         sortingEnabled: false,
         localFilter: opt => {
           return isMedisaveEnable ? opt : !this.isMedisave(opt)
@@ -554,9 +576,49 @@ class SchemesGrid extends PureComponent {
         },
       },
       {
-        columnName: 'accountNumber',
+        columnName: 'coPayerName',
         sortingEnabled: false,
         width: 250,
+        isDisabled: row => true,
+        render: row => {
+          let copayerDetail = this.getCopayerDetails(row.copayerFK, 'few')
+          return (
+            <Tooltip
+              title={
+                <div>
+                  <span>{copayerDetail?.displayValueWithCode}</span>
+                  <br />
+                  <span>
+                    {`Cr. Facility: ${copayerDetail?.creditFacility ?? ' - '}`}
+                  </span>
+                  <br />
+                  <span>
+                    {`Addr.: ${copayerDetail?.copayerAddress ?? ' - '}`}
+                  </span>
+                </div>
+              }
+            >
+              <span
+                style={{
+                  cursor: 'pointer',
+                  color: 'black',
+                  textDecoration: 'underline',
+                  wordBreak: 'break-word',
+                }}
+                onClick={e => {
+                  this.getCopayerDetails(row.copayerFK, 'full')
+                }}
+              >
+                {copayerDetail?.name}
+              </span>
+            </Tooltip>
+          )
+        },
+      },
+      {
+        columnName: 'accountNumber',
+        sortingEnabled: false,
+        width: 200,
         isDisabled: row => {
           return !this.isCorporate(row)
         },
@@ -722,6 +784,7 @@ class SchemesGrid extends PureComponent {
         columns={[
           { name: 'schemeTypeFK', title: 'Scheme Type' },
           { name: 'coPaymentSchemeFK', title: 'Scheme Name' },
+          { name: 'coPayerName', title: 'Copayer Name' },
           { name: 'accountNumber', title: 'Account Number' },
           { name: 'validRange', title: 'Valid Period' },
           { name: 'action', title: 'Action' },
