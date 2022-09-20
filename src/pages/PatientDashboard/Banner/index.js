@@ -171,6 +171,8 @@ class Banner extends PureComponent {
     if (this.state.showPreOrderModal !== nextState.showPreOrderModal)
       return true
 
+    if (this.state.isExpanded !== nextState.isExpanded) return true
+
     return false
   }
 
