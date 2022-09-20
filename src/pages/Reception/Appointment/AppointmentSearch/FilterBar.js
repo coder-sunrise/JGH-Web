@@ -326,7 +326,7 @@ const FilterBar = ({
                 ]}
                 labelField='displayValue'
                 mode='multiple'
-                label='Co-Payers'
+                label='Co-Payer'
                 renderDropdown={option => {
                   return <CopayerDropdownOption option={option} />
                 }}
