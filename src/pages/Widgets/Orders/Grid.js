@@ -2407,7 +2407,9 @@ export default ({
                   if (
                     deleteEnable &&
                     labWorkitems.filter(
-                      item => item.statusFK !== LAB_WORKITEM_STATUS.NEW,
+                      item =>
+                        item.statusFK !== LAB_WORKITEM_STATUS.NEW &&
+                        item.statusFK !== LAB_WORKITEM_STATUS.CANCELLED,
                     ).length > 0
                   ) {
                     deleteEnable = false
