@@ -7,7 +7,7 @@ export default createListViewModel({
   param: {
     service,
     state: {
-      filter: {},
+      filter: { apiCriteria: {} },
     },
     effects: {
       *retrigger({ payload }, { call, put }) {

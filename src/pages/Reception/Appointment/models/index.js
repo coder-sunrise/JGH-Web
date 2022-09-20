@@ -78,6 +78,11 @@ export default createListViewModel({
   param: {
     service,
     state: {
+      pagination: {
+        current: 1,
+        pagesize: 20,
+        totalRecords: 0,
+      },
       filterTemplates: [],
     },
     effects: {

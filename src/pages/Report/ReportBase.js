@@ -22,7 +22,7 @@ const defaultState = {
 }
 
 export default class ReportBase extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       ...defaultState,
@@ -42,17 +42,17 @@ export default class ReportBase extends React.Component {
   // }
 
   handleActivePanelChange = (event, panel) => {
-    this.setState((state) => ({
+    this.setState(state => ({
       ...state,
       activePanel: state.activePanel === panel.key ? -1 : panel.key,
     }))
   }
 
-  formatReportParams = (params) => {
+  formatReportParams = params => {
     return params
   }
 
-  getReportDatas = (params) => getRawData(this.state.reportId, { ...params })
+  getReportDatas = params => getRawData(this.state.reportId, { ...params })
 
   onExportCsvClick = async () => {
     if (this.props.validateForm) {
@@ -81,7 +81,7 @@ export default class ReportBase extends React.Component {
         return
       }
     }
-    this.setState((state) => ({
+    this.setState(state => ({
       ...state,
       loaded: false,
       isLoading: true,
@@ -92,7 +92,7 @@ export default class ReportBase extends React.Component {
     const reportDatas = await this.getReportDatas(params)
 
     if (reportDatas) {
-      this.setState((state) => ({
+      this.setState(state => ({
         ...state,
         activePanel: 0,
         loaded: true,
@@ -101,7 +101,7 @@ export default class ReportBase extends React.Component {
         reportDatas,
       }))
     } else {
-      this.setState((state) => ({
+      this.setState(state => ({
         ...state,
         loaded: false,
         isLoading: false,
@@ -132,19 +132,21 @@ export default class ReportBase extends React.Component {
     return null
   }
 
-  render () {
+  render() {
     const { height, values, setFieldValue } = this.props
     const formikProps = { values, setFieldValue }
     return (
       <Card style={{ padding: 6 }}>
         <GridContainer>
           <GridItem md={12}>
-            {this.renderFilterBar(
-              this.onSubmitClick,
-              this.state.isSubmitting,
-              formikProps,
-              this.onExportCsvClick,
-            )}
+            <div className='divReportFilterBar'>
+              {this.renderFilterBar(
+                this.onSubmitClick,
+                this.state.isSubmitting,
+                formikProps,
+                this.onExportCsvClick,
+              )}
+            </div>
           </GridItem>
           <GridItem md={12}>
             {this.state.isDisplayReportLayout ? (

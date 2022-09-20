@@ -481,7 +481,7 @@ class Consumable extends PureComponent {
                       style={{ position: 'relative' }}
                     >
                       <LocalSearchSelect
-                        temp
+                        force
                         label='Consumable Name'
                         labelField='combinDisplayValue'
                         onChange={this.changeConsumable}
