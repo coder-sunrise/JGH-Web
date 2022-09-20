@@ -182,36 +182,44 @@ const SpecimenCollection = ({
         fixed: 'right',
         width: 150,
         render: (_dom, entity) => {
-          return Authorized.check('lab.collectspecimen')?.rights ===
-            'enable' ? (
-            <div>
-              {entity.testPanels.find(
-                item => item.statusFK == LAB_WORKITEM_STATUS.NEW,
-              ) && (
-                <Tooltip title='Collect Specimen'>
+          return (
+            <>
+              {Authorized.check('lab.collectspecimen')?.rights === 'enable' ? (
+                <>
+                  {entity.testPanels.find(
+                    item => item.statusFK == LAB_WORKITEM_STATUS.NEW,
+                  ) && (
+                    <Tooltip title='Collect Specimen'>
+                      <Button
+                        onClick={() => {
+                          setVisitId(entity.id)
+                        }}
+                        type='link'
+                      >
+                        Collect
+                      </Button>
+                    </Tooltip>
+                  )}
+                </>
+              ) : (
+                <span></span>
+              )}
+              {Authorized.check('queue.cancellabtestpanel')?.rights ===
+              'enable' ? (
+                <Tooltip title='Cancel Test Panel'>
                   <Button
                     onClick={() => {
-                      setVisitId(entity.id)
+                      setTheCurrentCancelId(entity.id)
                     }}
                     type='link'
                   >
-                    Collect
+                    Cancel
                   </Button>
                 </Tooltip>
+              ) : (
+                <span></span>
               )}
-              <Tooltip title='Cancel Test Panel'>
-                <Button
-                  onClick={() => {
-                    setTheCurrentCancelId(entity.id)
-                  }}
-                  type='link'
-                >
-                  Cancel
-                </Button>
-              </Tooltip>
-            </div>
-          ) : (
-            <span></span>
+            </>
           )
         },
       },
