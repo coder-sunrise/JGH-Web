@@ -74,6 +74,7 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
                   remoteFilter={{
                     isActive: undefined,
                   }}
+                  maxTagTextLength={50}
                 />
               )}
             />
