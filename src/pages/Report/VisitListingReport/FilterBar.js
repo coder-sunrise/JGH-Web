@@ -103,6 +103,7 @@ const FilterBar = ({
               render={args => (
                 <CodeSelect
                   {...args}
+                  maxTagCount={0}
                   options={[
                     { id: 0, displayValue: 'None' },
                     ..._.sortBy(visitOrderTemplateOptions, 'displayValue'),
@@ -119,8 +120,8 @@ const FilterBar = ({
               name='doctorIDs'
               render={args => (
                 <DoctorProfileSelect
-                  mode='multiple'
                   {...args}
+                  maxTagCount={0}
                   allValue={-99}
                   allValueOption={{
                     id: -99,
@@ -129,6 +130,7 @@ const FilterBar = ({
                     },
                   }}
                   labelField='clinicianProfile.name'
+                  mode='multiple'
                 />
               )}
             />
@@ -139,6 +141,7 @@ const FilterBar = ({
               render={args => (
                 <CodeSelect
                   {...args}
+                  maxTagCount={0}
                   title='Copayers that patient visit claimed'
                   options={[
                     { id: 0, displayValue: 'None' },

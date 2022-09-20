@@ -149,11 +149,6 @@ const FilterBar = ({
 
   const [showReport, setShowReport] = useState(false)
 
-  const maxDoctorTagCount = filterByDoctor.length <= 1 ? 1 : 0
-  const maxApptTypeTagCount = filterByApptType.length <= 1 ? 1 : 0
-  const maxRoomBlockGroupTagCount = filterByRoomBlockGroup.length <= 1 ? 1 : 0
-  const maxAppointmentStatusTagCount =
-    filterByAppointmentStatus.length <= 1 ? 1 : 0
   const renderDropdown = option => {
     if (option.resourceType === CALENDAR_RESOURCE.DOCTOR)
       return (
@@ -216,7 +211,7 @@ const FilterBar = ({
                   localFilter={option => option.isActive}
                   code='ctcalendarresource'
                   valueField='id'
-                  maxTagCount={maxDoctorTagCount}
+                  maxTagCount={0}
                   maxTagPlaceholder='resources'
                   renderDropdown={renderDropdown}
                 />
@@ -230,6 +225,7 @@ const FilterBar = ({
             render={args => {
               return (
                 <ClinicianSelect
+                  maxTagCount={0}
                   label='Book By'
                   noDefaultValue
                   mode='multiple'
@@ -256,7 +252,7 @@ const FilterBar = ({
                   code='ctRoom'
                   mode='multiple'
                   maxTagPlaceholder='rooms'
-                  maxTagCount={maxRoomBlockGroupTagCount}
+                  maxTagCount={0}
                   {...args}
                 />
               )
@@ -288,7 +284,7 @@ const FilterBar = ({
                     displayValue: 'All appointment types',
                   },
                 ]}
-                maxTagCount={maxApptTypeTagCount}
+                maxTagCount={0}
                 maxTagPlaceholder='appointment types'
               />
             )}
@@ -305,7 +301,7 @@ const FilterBar = ({
                   label={formatMessage({
                     id: 'sms.appointment.status',
                   })}
-                  maxTagCount={maxAppointmentStatusTagCount}
+                  maxTagCount={0}
                   maxTagPlaceholder='appointment status'
                   {...args}
                 />
@@ -319,6 +315,7 @@ const FilterBar = ({
             render={args => (
               <CodeSelect
                 {...args}
+                maxTagCount={0}
                 title='Select "All" will display active and inactive co-payers'
                 options={[
                   { id: 0, displayValue: 'None' },
@@ -340,6 +337,7 @@ const FilterBar = ({
             render={args => (
               <CodeSelect
                 {...args}
+                maxTagCount={0}
                 title='Select "All" will display active and inactive visit purpose'
                 options={[
                   { id: 0, displayValue: 'None' },
