@@ -204,7 +204,7 @@ class Grid extends PureComponent {
                 )
                 return (
                   <Tooltip title={schemeCodeList.join(', ')}>
-                    <span>{schemeCodeList.join(',')}</span>
+                    <span>{schemeCodeList.join(', ')}</span>
                   </Tooltip>
                 )
               },
@@ -218,8 +218,8 @@ class Grid extends PureComponent {
                   item => item.name,
                 )
                 return (
-                  <Tooltip title={schemeNameList.join(',')}>
-                    <span>{schemeNameList.join(',')}</span>
+                  <Tooltip title={schemeNameList.join(', ')}>
+                    <span>{schemeNameList.join(', ')}</span>
                   </Tooltip>
                 )
               },
