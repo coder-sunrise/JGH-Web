@@ -107,6 +107,7 @@ const Scheme = ({
   showRefreshOrder,
   visitOrderTemplateFK,
 }) => {
+  console.log(invoicePayer)
   const {
     name,
     payerTypeFK,
@@ -129,6 +130,8 @@ const Scheme = ({
     invoicePayment = [],
     schemePayerFK,
     payerName,
+    gstRounding,
+    _originalGstAmount,
   } = invoicePayer
   const handleSchemeChange = value => onSchemeChange(value, index)
   const handleCancelClick = () => onCancelClick(index)
@@ -573,6 +576,8 @@ const Scheme = ({
                 outstanding={payerOutstanding}
                 gstAmount={gstAmount}
                 showTotalClaimAmount
+                gstRounding={gstRounding}
+                _originalGstAmount={_originalGstAmount}
               />
             </GridItem>
           </GridContainer>

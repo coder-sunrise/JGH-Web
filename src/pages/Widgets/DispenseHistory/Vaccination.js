@@ -81,7 +81,7 @@ export default ({ classes, current, fieldName = '', isFullScreen = true }) => {
       },
     },
     {
-      dataIndex: 'dispensedQuanity',
+      dataIndex: 'realDispensedQuanity',
       title: 'Qty.',
       align: 'right',
       width: isFullScreen ? 80 : 60,

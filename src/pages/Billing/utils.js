@@ -132,14 +132,20 @@ export const reCalculateInvoicePayerGst = (invoicePayer, invoice) => {
     if (payer.isCancelled) {
       return payer
     }
+    const _payerGSTAmount = (payer.payerDistributedAmtBeforeGST = roundTo(
+      _.sumBy(payer.invoicePayerItem, 'claimAmountBeforeGST'),
+    ))
     const _payer = {
       ...payer,
       invoicePayerItem: payer.invoicePayerItem
         .filter(item => item.claimAmountBeforeGST > 0)
         .map(item => {
-          let actualGstAmount = roundTo(
+          let gstRounding = 0
+          let finaGstAmount = 0
+          let expectedGstAmount = roundTo(
             (item.claimAmountBeforeGST * gstValue) / 100,
           )
+          finaGstAmount = expectedGstAmount
           const curr_invoiceItem = invoice.invoiceItems.find(
             x => x.id === item.invoiceItemFK,
           )
@@ -149,41 +155,33 @@ export const reCalculateInvoicePayerGst = (invoicePayer, invoice) => {
               item.claimAmountBeforeGST,
           )
           if (
-            roundTo(curr_invoiceItem._itemTotalGST + actualGstAmount) >
+            roundTo(curr_invoiceItem._itemTotalGST + expectedGstAmount) >
             invocieItemGstAmount
           ) {
-            actualGstAmount = roundTo(
+            finaGstAmount = roundTo(
               invocieItemGstAmount - curr_invoiceItem._itemTotalGST,
             )
           } else if (
             curr_invoiceItem._itemTotalClaimedBeforeGST ==
             curr_invoiceItem.totalBeforeGst
           ) {
-            actualGstAmount = roundTo(
+            finaGstAmount = roundTo(
               invocieItemGstAmount - curr_invoiceItem._itemTotalGST,
             )
           }
           curr_invoiceItem._itemTotalGST = roundTo(
-            curr_invoiceItem._itemTotalGST + actualGstAmount,
+            curr_invoiceItem._itemTotalGST + finaGstAmount,
           )
-
-          if (typeof item.id !== 'string') {
-            // invoicePayerGstAmount += actualGstAmount
-            return {
-              ...item,
-              claimAmount: roundTo(item.claimAmountBeforeGST + actualGstAmount),
-              outstanding: roundTo(item.claimAmountBeforeGST + actualGstAmount),
-              _gstamount: actualGstAmount,
-            }
+          if (expectedGstAmount != finaGstAmount) {
+            gstRounding = finaGstAmount - expectedGstAmount
           }
-          // invoicePayerGstAmount += gstItemAmount
-          const _invoicePayerItem = {
+          return {
             ...item,
-            claimAmount: roundTo(item.claimAmountBeforeGST + actualGstAmount),
-            outstanding: roundTo(item.claimAmountBeforeGST + actualGstAmount),
-            _gstamount: actualGstAmount,
+            claimAmount: roundTo(item.claimAmountBeforeGST + finaGstAmount),
+            outstanding: roundTo(item.claimAmountBeforeGST + finaGstAmount),
+            _gstamount: finaGstAmount,
+            gstRounding: gstRounding,
           }
-          return _invoicePayerItem
         }),
     }
     const payerGSTAmountChanged =
@@ -196,6 +194,12 @@ export const reCalculateInvoicePayerGst = (invoicePayer, invoice) => {
     _payer.payerDistributedAmtBeforeGST = roundTo(
       _.sumBy(_payer.invoicePayerItem, 'claimAmountBeforeGST'),
     )
+
+    _payer._originalGstAmount = roundTo(
+      (_payer.payerDistributedAmtBeforeGST * gstValue) / 100,
+    )
+    _payer.gstRounding = _payer.gstAmount - _payer._originalGstAmount
+
     _payer.payerDistributedAmt = roundTo(
       _payer.gstAmount + _payer.payerDistributedAmtBeforeGST,
     )
