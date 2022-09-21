@@ -30,6 +30,8 @@ import {
 import { appointmentStatusReception } from '@/utils/codes'
 import { CALENDAR_RESOURCE } from '@/utils/constants'
 import Authorized from '@/utils/Authorized'
+import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
+import { create } from 'lodash'
 
 const createPayload = (
   values,
@@ -47,6 +49,8 @@ const createPayload = (
     apptDate,
     isPrint,
     dob,
+    copayerIDs = [],
+    visitPurposeIDs = [],
   } = values
 
   const commonPayload = {
@@ -70,12 +74,14 @@ const createPayload = (
   ) {
     selectedDoctor = [-1]
   }
+
   if (isPrint) {
     return {
       ...commonPayload,
       bookBy: bookBy.length > 0 ? bookBy : undefined,
       doctor: selectedDoctor.length > 0 ? selectedDoctor : undefined,
-      room: filterByRoomBlockGroup > 0 ? filterByRoomBlockGroup : undefined,
+      room:
+        filterByRoomBlockGroup.length > 0 ? filterByRoomBlockGroup : undefined,
       SearchText: searchValue || '',
       ApptType:
         filterByApptType.length == 0 || filterByApptType.indexOf(-99) > -1
@@ -86,6 +92,14 @@ const createPayload = (
           ? filterByAppointmentStatus
           : undefined,
       dob: dob,
+      copayerIDs:
+        copayerIDs.length == 0 || copayerIDs.indexOf(-99) > -1
+          ? undefined
+          : copayerIDs,
+      visitPurposeIDs:
+        visitPurposeIDs.length == 0 || visitPurposeIDs.indexOf(-99) > -1
+          ? undefined
+          : visitPurposeIDs,
     }
   }
 
@@ -101,6 +115,14 @@ const createPayload = (
     isIncludeRescheduledByClinic: true,
     isIncludeHistory: true,
     dob: dob,
+    copayerIDs:
+      copayerIDs.length == 0 || copayerIDs.indexOf(-99) > -1
+        ? undefined
+        : copayerIDs.join(),
+    visitPurposeIDs:
+      visitPurposeIDs.length == 0 || visitPurposeIDs.indexOf(-99) > -1
+        ? undefined
+        : visitPurposeIDs.join(),
   }
 }
 
@@ -118,15 +140,15 @@ const FilterBar = ({
     filterByAppointmentStatus = [],
   } = values
 
-  const { viewOtherApptAccessRight, isActiveCalendarResource } = restValues
+  const {
+    viewOtherApptAccessRight,
+    isActiveCalendarResource,
+    visitOrderTemplateOptions,
+    ctcopayer,
+  } = restValues
 
   const [showReport, setShowReport] = useState(false)
 
-  const maxDoctorTagCount = filterByDoctor.length <= 1 ? 1 : 0
-  const maxApptTypeTagCount = filterByApptType.length <= 1 ? 1 : 0
-  const maxRoomBlockGroupTagCount = filterByRoomBlockGroup.length <= 1 ? 1 : 0
-  const maxAppointmentStatusTagCount =
-    filterByAppointmentStatus.length <= 1 ? 1 : 0
   const renderDropdown = option => {
     if (option.resourceType === CALENDAR_RESOURCE.DOCTOR)
       return (
@@ -145,7 +167,7 @@ const FilterBar = ({
   return (
     <Fragment>
       <GridContainer>
-        <GridItem md={6}>
+        <GridItem md={4}>
           <FastField
             name='searchValue'
             render={args => (
@@ -165,7 +187,15 @@ const FilterBar = ({
             render={args => <DatePicker {...args} label='DOB' />}
           />
         </GridItem>
-        <GridItem md={5}>
+        <GridItem md={3}>
+          <FastField
+            name='apptDate'
+            render={args => (
+              <DateRangePicker label='Appt Date From' label2='To' {...args} />
+            )}
+          />
+        </GridItem>
+        <GridItem md={4}>
           <Field
             name='filterByDoctor'
             render={args => (
@@ -181,7 +211,7 @@ const FilterBar = ({
                   localFilter={option => option.isActive}
                   code='ctcalendarresource'
                   valueField='id'
-                  maxTagCount={maxDoctorTagCount}
+                  maxTagCount={0}
                   maxTagPlaceholder='resources'
                   renderDropdown={renderDropdown}
                 />
@@ -189,37 +219,13 @@ const FilterBar = ({
             )}
           />
         </GridItem>
-        <GridItem md={6}>
-          <FastField
-            name='apptDate'
-            render={args => (
-              <DateRangePicker label='Appt Date From' label2='To' {...args} />
-            )}
-          />
-        </GridItem>
-        <GridItem md={6}>
-          <FastField
-            name='filterByRoomBlockGroup'
-            render={args => {
-              return (
-                <CodeSelect
-                  label='Room'
-                  code='ctRoom'
-                  mode='multiple'
-                  maxTagPlaceholder='rooms'
-                  maxTagCount={maxRoomBlockGroupTagCount}
-                  {...args}
-                />
-              )
-            }}
-          />
-        </GridItem>
-        <GridItem md={6}>
+        <GridItem md={4}>
           <Field
             name='bookBy'
             render={args => {
               return (
                 <ClinicianSelect
+                  maxTagCount={0}
                   label='Book By'
                   noDefaultValue
                   mode='multiple'
@@ -230,8 +236,30 @@ const FilterBar = ({
             }}
           />
         </GridItem>
-
-        <GridItem md={6}>
+        <GridItem md={2}>
+          <FastField
+            name='bookOn'
+            render={args => <DatePicker label='Book On' {...args} />}
+          />
+        </GridItem>
+        <GridItem md={2}>
+          <FastField
+            name='filterByRoomBlockGroup'
+            render={args => {
+              return (
+                <CodeSelect
+                  label='Room'
+                  code='ctRoom'
+                  mode='multiple'
+                  maxTagPlaceholder='rooms'
+                  maxTagCount={0}
+                  {...args}
+                />
+              )
+            }}
+          />
+        </GridItem>
+        <GridItem md={2}>
           <Field
             name='filterByApptType'
             render={args => (
@@ -256,19 +284,13 @@ const FilterBar = ({
                     displayValue: 'All appointment types',
                   },
                 ]}
-                maxTagCount={maxApptTypeTagCount}
+                maxTagCount={0}
                 maxTagPlaceholder='appointment types'
               />
             )}
           />
         </GridItem>
-        <GridItem md={6}>
-          <FastField
-            name='bookOn'
-            render={args => <DatePicker label='Book On' {...args} />}
-          />
-        </GridItem>
-        <GridItem md={6}>
+        <GridItem md={2}>
           <FastField
             name='filterByAppointmentStatus'
             render={args => {
@@ -279,7 +301,7 @@ const FilterBar = ({
                   label={formatMessage({
                     id: 'sms.appointment.status',
                   })}
-                  maxTagCount={maxAppointmentStatusTagCount}
+                  maxTagCount={0}
                   maxTagPlaceholder='appointment status'
                   {...args}
                 />
@@ -287,7 +309,50 @@ const FilterBar = ({
             }}
           />
         </GridItem>
-        <GridItem xs md={12}>
+        <GridItem md={3}>
+          <FastField
+            name='copayerIDs'
+            render={args => (
+              <CodeSelect
+                {...args}
+                maxTagCount={0}
+                title='Select "All" will display active and inactive co-payers'
+                options={[
+                  ..._.sortBy(ctcopayer, ({ displayValue }) =>
+                    displayValue.toLowerCase(),
+                  ),
+                ]}
+                labelField='displayValue'
+                mode='multiple'
+                label='Co-Payer'
+                renderDropdown={option => {
+                  return <CopayerDropdownOption option={option} />
+                }}
+              />
+            )}
+          />
+        </GridItem>
+        <GridItem md={3}>
+          <FastField
+            name='visitPurposeIDs'
+            render={args => (
+              <CodeSelect
+                {...args}
+                maxTagCount={0}
+                title='Select "All" will display active and inactive visit purpose'
+                options={[
+                  ..._.sortBy(visitOrderTemplateOptions, ({ displayValue }) =>
+                    displayValue.toLowerCase(),
+                  ),
+                ]}
+                labelField='displayValue'
+                mode='multiple'
+                label='Visit Purpose'
+              />
+            )}
+          />
+        </GridItem>
+        <GridItem xs md={6} style={{ marginTop: 20 }}>
           <ProgressButton
             icon={<Search />}
             color='primary'

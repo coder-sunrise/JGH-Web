@@ -501,21 +501,7 @@ class AntdSelect extends React.PureComponent {
         max,
         localFilter = () => true,
       } = props
-      console.log(
-        _.filter(
-          options,
-          // (o) => o[labelField].toLowerCase().indexOf(search) >= 0,
-          o =>
-            (Object.byString(o, labelField)
-              .toLowerCase()
-              .indexOf(search) >= 0 ||
-              (additionalSearchField &&
-                Object.byString(o, additionalSearchField)
-                  .toLowerCase()
-                  .indexOf(search) >= 0)) &&
-            localFilter(o),
-        ),
-      )
+
       this.setState({
         data: _.filter(
           options,

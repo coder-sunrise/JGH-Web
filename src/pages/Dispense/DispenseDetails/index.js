@@ -142,6 +142,7 @@ const DispenseDetails = ({
   codetable,
   dispense = {},
   handlePrint,
+  handlePreviewReport,
   history,
   onDrugLabelClick,
   showDrugLabelSelection,
@@ -692,6 +693,20 @@ const DispenseDetails = ({
     }
     return false
   }
+  const existsCanceledLab = async () => {
+    const { visitID } = dispense
+    let result = await dispatch({
+      type: 'specimenCollection/getVisitSpecimenCollection',
+      payload: { id: visitID },
+    })
+    if (result) {
+      const { LAB_WORKITEM_STATUS } = await import('@/utils/constants')
+      return result?.labWorkitems.some(
+        item => item.statusFK == LAB_WORKITEM_STATUS.CANCELLED,
+      )
+    }
+    return false
+  }
 
   const isMandatoryWaistCircumference = () => {
     const { entity = {} } = visitRegistration
@@ -719,8 +734,9 @@ const DispenseDetails = ({
     return false
   }
 
-  const onHandelFinalize = () => {
-    if (existsCanceledRadiology()) {
+  const onHandelFinalize = async () => {
+    let isExistsCanceledLab = await existsCanceledLab()
+    if (existsCanceledRadiology() || isExistsCanceledLab) {
       dispatch({
         type: 'global/updateAppState',
         payload: {
@@ -1213,6 +1229,7 @@ const DispenseDetails = ({
                 patient={patient}
                 visitId={visitId}
                 classes={classes}
+                userId={user?.data?.id}
               />
             )}
 
@@ -1311,6 +1328,7 @@ const DispenseDetails = ({
       >
         <DrugLabelSelection
           handlePrint={handlePrint}
+          handlePreviewReport={handlePreviewReport}
           values={values}
           currentDrugToPrint={currentDrugToPrint}
           dispatch={dispatch}

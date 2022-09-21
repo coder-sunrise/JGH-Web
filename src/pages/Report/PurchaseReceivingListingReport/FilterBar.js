@@ -43,7 +43,7 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
                     { value: 2, name: 'Consumable' },
                     { value: 3, name: 'Vaccination' },
                   ]}
-                  temp
+                  force
                 />
               )}
             />
@@ -62,7 +62,7 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
                     { value: 1, name: 'Purchase Order' },
                     { value: 2, name: 'Receiving Goods' },
                   ]}
-                  temp
+                  force
                 />
               )}
             />
@@ -78,7 +78,7 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
                   mode='multiple'
                   code='ctSupplier'
                   labelField='displayValue'
-                  temp
+                  force
                 />
               )}
             />

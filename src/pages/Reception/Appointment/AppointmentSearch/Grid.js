@@ -136,6 +136,8 @@ class Grid extends PureComponent {
           { name: 'duration', title: 'Duration' },
           { name: 'resource', title: 'Resource' },
           { name: 'appointmentTypeFK', title: 'Appt Type' },
+          { name: 'copayer', title: 'Co-Payer' },
+          { name: 'visitPurposeValue', title: 'Visit Purpose' },
           { name: 'roomFk', title: 'Room' },
           {
             name: 'rescheduleReason',
@@ -173,7 +175,8 @@ class Grid extends PureComponent {
             columnName: 'appointmentDate',
             type: 'date',
             width: 100,
-            render: row => `${moment(row.appointmentDate).format('DD MMM YYYY')}`,
+            render: row =>
+              `${moment(row.appointmentDate).format('DD MMM YYYY')}`,
           },
           {
             columnName: 'apptTime',
@@ -209,6 +212,12 @@ class Grid extends PureComponent {
                 />
               )
             },
+          },
+          { name: 'copayer', width: 150, sortingEnabled: false },
+          {
+            name: 'visitPurposeValue',
+            width: 150,
+            sortingEnabled: false,
           },
           {
             columnName: 'roomFk',
@@ -303,10 +312,10 @@ class Grid extends PureComponent {
           },
         ]}
         TableProps={{ rowComponent: this.appointmentRow, height }}
-        FuncConfig={{
+        FuncProps={{
           pager: true,
           pagerDefaultState: {
-            pagesize: 100,
+            pagesize: 20,
           },
           sort: true,
           sortConfig: {

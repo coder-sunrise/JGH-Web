@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 // formik
 import { FastField } from 'formik'
 // common components
@@ -24,13 +24,13 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
           <GridItem md={2}>
             <FastField
               name='groupByDoctor'
-              render={(args) => <Checkbox {...args} label='Group By Doctor' />}
+              render={args => <Checkbox {...args} label='Group By Doctor' />}
             />
           </GridItem>
           <GridItem md={1}>
             <FastField
               name='asAt'
-              render={(args) => <Checkbox {...args} label='As At' />}
+              render={args => <Checkbox {...args} label='As At' />}
             />
           </GridItem>
           <GridItem md={2}>
@@ -45,7 +45,7 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
           <GridItem md={4}>
             <FastField
               name='doctorIDs'
-              render={(args) => (
+              render={args => (
                 <DoctorProfileSelect
                   mode='multiple'
                   {...args}
@@ -64,12 +64,17 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
           <GridItem md={4}>
             <FastField
               name='categoryIDs'
-              render={(args) => (
+              render={args => (
                 <CodeSelect
                   {...args}
-                  code='ltinvoiceitemtype'
+                  code='ctservicecenter'
                   mode='multiple'
-                  label='Category'
+                  label='Service Center'
+                  force={true}
+                  remoteFilter={{
+                    isActive: undefined,
+                  }}
+                  maxTagTextLength={50}
                 />
               )}
             />

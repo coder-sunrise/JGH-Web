@@ -38,12 +38,14 @@ const DispenseDetailsSpecimenCollection = ({
   handlePrint,
   patient = {},
   classes,
+  userId,
   ...restProps
 }) => {
   if (!visitId) return ''
   const dispatch = useDispatch()
   const [labSpecimens, setLabSpecimens] = useState([])
   const [newLabWorkitems, setNewLabWorkitems] = useState([])
+  const [cancelledLabWorkitems, setCancelledLabWorkitems] = useState([])
   const [collectSpecimenPara, setCollectSpecimenPara] = useState({
     open: false,
     id: undefined,
@@ -316,6 +318,11 @@ const DispenseDetailsSpecimenCollection = ({
             lw => lw.statusFK === LAB_WORKITEM_STATUS.NEW,
           ),
         )
+        setCancelledLabWorkitems(
+          result.labWorkitems.filter(
+            lw => lw.statusFK === LAB_WORKITEM_STATUS.CANCELLED,
+          ),
+        )
 
         setLabSpecimens(groupWorkitemsBySpecimens(result.specimenLabWorkitems))
       }
@@ -439,10 +446,27 @@ const DispenseDetailsSpecimenCollection = ({
             Collect Specimen
           </Link>
         )}
+      {Authorized.check('queue.cancellabtestpanel')?.rights === 'enable' &&
+        [...newLabWorkitems, ...cancelledLabWorkitems].length > 0 && (
+          <Link
+            component='button'
+            style={{ marginLeft: 10, textDecoration: 'underline' }}
+            onClick={() => {
+              setCollectSpecimenPara({
+                open: true,
+                visitId,
+                labSpecimenId: undefined,
+                mode: 'cancel',
+              })
+            }}
+          >
+            Cancel Test Panel
+          </Link>
+        )}
       <CollectSpecimen
         {...collectSpecimenPara}
         onConfirm={(newId, printInfo) => {
-          if (printInfo.isPrintLabel) {
+          if (printInfo?.isPrintLabel) {
             printSpecimenLabel(newId, printInfo.copies)
           }
           closeCollectSpecimen()
@@ -450,6 +474,7 @@ const DispenseDetailsSpecimenCollection = ({
         onClose={() => {
           closeCollectSpecimen()
         }}
+        userId={userId}
       ></CollectSpecimen>
       <DiscardSpecimen
         {...discardSpecimenPara}
@@ -471,7 +496,7 @@ const DispenseDetailsSpecimenCollection = ({
         }}
         isDisposePatientEntity={false}
         isReadonly={true}
-        hideRawData
+        hideIfFromOrder={true}
       />
     </React.Fragment>
   )

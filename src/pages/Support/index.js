@@ -44,14 +44,9 @@ const styles = () => ({
 }))
 class Support extends PureComponent {
   constructor(props) {
-    const { clinicSettings } = props
-    const { isEnableAutoGenerateStatement = false } = clinicSettings
     super(props)
     const accessRight = Authorized.check('support.queueprocessor')
-    if (
-      !isEnableAutoGenerateStatement ||
-      !accessRight || (accessRight && accessRight.rights !== 'enable')
-    ) {
+    if (!accessRight || (accessRight && accessRight.rights !== 'enable')) {
       let index = menuData.findIndex(item => item.text === 'Queue Processor')
       if (index !== -1) {
         menuData.splice(index, 1)

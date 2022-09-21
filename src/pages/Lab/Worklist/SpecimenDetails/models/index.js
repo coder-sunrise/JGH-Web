@@ -54,6 +54,29 @@ export default createFormViewModel({
         }
         return status
       },
+      *unlockSpecimen({ payload }, { call, put }) {
+        const status = yield call(service.unlockSpecimen, payload)
+        if (
+          payload.from === 'labWorklist' &&
+          (status === 200 || status === 204)
+        ) {
+          notification.success({
+            message: 'The specimen is unlocked.',
+          })
+          return true
+        }
+
+        if (
+          payload.from === 'labHistory' &&
+          (status === 200 || status === 204)
+        ) {
+          notification.success({
+            message: 'The specimen is unlocked and has been moved to worklist.',
+          })
+          return true
+        }
+        return status
+      },
       *verifyLabTest({ payload }, { call, put }) {
         const status = yield call(service.verifyLabTest, payload)
         if (status === 200 || status === 204) {

@@ -42,7 +42,9 @@ export const STATUS_OPTIONS = [
 export const WorklistHistoryFilter = () => {
   const [form] = Form.useForm()
   const dispatch = useDispatch()
-  const { setPaginationChangeHandler } = useContext(WorklistHistoryContext)
+  const { setPaginationChangeHandler, isAnyWorklistModelOpened } = useContext(
+    WorklistHistoryContext,
+  )
 
   const { settings } = useSelector(s => s.clinicSettings)
   const { doctorprofile = [] } = useSelector(s => s.codetable)
@@ -64,6 +66,10 @@ export const WorklistHistoryFilter = () => {
     handleSearch()
     setPaginationChangeHandler(handleSearch)
   }, [])
+
+  useEffect(() => {
+    if (!isAnyWorklistModelOpened) handleSearch()
+  }, [isAnyWorklistModelOpened])
 
   const handleSearch = (pageNo = 1, pageSize = 20) => {
     const {

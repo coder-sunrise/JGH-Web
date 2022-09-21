@@ -1044,7 +1044,7 @@ class Package extends PureComponent {
                 return (
                   <div id={`autofocus_${values.type}`}>
                     <CodeSelect
-                      temp
+                      force
                       label='Package Name'
                       code='package'
                       labelField='displayValue'

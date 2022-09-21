@@ -16,12 +16,14 @@ import { DoctorProfileSelect } from '@/components/_medisys'
 import service from '@/services/patient'
 import Call from '@material-ui/icons/Call'
 import ReportDateRangePicker from '../ReportDateRangePicker'
+import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
 
 const { queryList, query } = service
 const FilterBar = ({
   handleSubmit,
   isSubmitting,
   visitOrderTemplateOptions = [],
+  ctcopayer = [],
   classes,
 }) => {
   const selectPatientProfile = args => {
@@ -101,7 +103,13 @@ const FilterBar = ({
               render={args => (
                 <CodeSelect
                   {...args}
-                  options={[{ id: 0, displayValue: 'None' }, ...visitOrderTemplateOptions]}
+                  maxTagCount={0}
+                  options={[
+                    { id: 0, displayValue: 'None' },
+                    ..._.sortBy(visitOrderTemplateOptions, ({ displayValue }) =>
+                      displayValue.toLowerCase(),
+                    ),
+                  ]}
                   labelField='displayValue'
                   mode='multiple'
                   label='Visit Purpose'
@@ -114,8 +122,8 @@ const FilterBar = ({
               name='doctorIDs'
               render={args => (
                 <DoctorProfileSelect
-                  mode='multiple'
                   {...args}
+                  maxTagCount={0}
                   allValue={-99}
                   allValueOption={{
                     id: -99,
@@ -124,6 +132,31 @@ const FilterBar = ({
                     },
                   }}
                   labelField='clinicianProfile.name'
+                  mode='multiple'
+                />
+              )}
+            />
+          </GridItem>
+          <GridItem md={2}>
+            <FastField
+              name='copayerIDs'
+              render={args => (
+                <CodeSelect
+                  {...args}
+                  maxTagCount={0}
+                  title='Copayers that patient visit claimed'
+                  options={[
+                    { id: 0, displayValue: 'None' },
+                    ..._.sortBy(ctcopayer, ({ displayValue }) =>
+                      displayValue.toLowerCase(),
+                    ),
+                  ]}
+                  labelField='displayValue'
+                  mode='multiple'
+                  label='Co-Payer'
+                  renderDropdown={option => {
+                    return <CopayerDropdownOption option={option} />
+                  }}
                 />
               )}
             />
@@ -144,6 +177,10 @@ const FilterBar = ({
                     {
                       value: 'Doctor',
                       label: 'Doctor',
+                    },
+                    {
+                      value: 'Copayer',
+                      label: 'Co-Payer',
                     },
                     {
                       value: 'None',

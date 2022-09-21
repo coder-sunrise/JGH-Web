@@ -7,6 +7,7 @@ import {
   EditableTableGrid,
   CommonTableGrid,
   NumberInput,
+  ProgressButton,
 } from '@/components'
 import { connect } from 'dva'
 
@@ -164,6 +165,24 @@ class DrugLabelSelection extends React.PureComponent {
       await this.props.handlePrint(JSON.stringify(printResult))
     }
     this.props.handleSubmit()
+  }
+  confirmPreview = async previewEventId => {
+    if (this.state.selectedLanguage.includes('JP')) {
+      let printResult = await this.getPrintResult('JP')
+      if (!printResult || printResult.length <= 0) return
+      await this.props.handlePreviewReport(
+        JSON.stringify(printResult),
+        previewEventId,
+      )
+    }
+    if (this.state.selectedLanguage.includes('EN')) {
+      let printResult = await this.getPrintResult('EN')
+      if (!printResult || printResult.length <= 0) return
+      await this.props.handlePreviewReport(
+        JSON.stringify(printResult),
+        previewEventId,
+      )
+    }
   }
   getPrintResult = async lan => {
     let drugLabelReportID = REPORT_ID.DRUG_LABEL_80MM_45MM
@@ -378,6 +397,19 @@ class DrugLabelSelection extends React.PureComponent {
               disabled: printLabelDisabled,
             },
             onConfirm: this.confirmPrint,
+            extraButtons: (
+              <ProgressButton
+                color='info'
+                icon={null}
+                type='submit'
+                disabled={printLabelDisabled}
+                onClick={() => {
+                  this.confirmPreview(Date.now())
+                }}
+              >
+                Preview
+              </ProgressButton>
+            ),
             confirmBtnText: 'Print',
           })}
       </div>

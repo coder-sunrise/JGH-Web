@@ -587,6 +587,7 @@ const WorklistGrid = ({ global, labWorklist, clinicSettings }) => {
           closeSpecimenDetails()
         }}
         onConfirm={() => {}}
+        from='labWorklist'
       />
       <RetestDetails
         {...retestDetailsPara}

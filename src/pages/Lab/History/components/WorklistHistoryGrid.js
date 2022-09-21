@@ -62,7 +62,9 @@ export const WorklistHistoryGrid = ({ labWorklistHistory }) => {
   const ctspecimentype = useCodeTable('ctspecimentype')
   const dispatch = useDispatch()
   const visitTypes = useVisitTypes()
-  const { triggerPaginationChange } = useContext(WorklistHistoryContext)
+  const { triggerPaginationChange, setIsAnyWorklistModelOpened } = useContext(
+    WorklistHistoryContext,
+  )
 
   const [labResultReportPreviewPara, setLabResultReportPreviewPara] = useState({
     open: false,
@@ -137,6 +139,7 @@ export const WorklistHistoryGrid = ({ labWorklistHistory }) => {
       open: false,
       id: undefined,
     })
+    setIsAnyWorklistModelOpened(false)
   }
 
   const expandedRowRender = (record, index, indent, expanded) => {
@@ -328,6 +331,7 @@ export const WorklistHistoryGrid = ({ labWorklistHistory }) => {
                   open: true,
                   id: record.labSpecimenFK,
                 })
+                setIsAnyWorklistModelOpened(true)
               },
             }
           }
@@ -442,7 +446,7 @@ export const WorklistHistoryGrid = ({ labWorklistHistory }) => {
         onConfirm={() => {
           closeSpecimenDetails()
         }}
-        isReadonly
+        from='labHistory'
       />
       <LabResultReportPreview
         {...labResultReportPreviewPara}

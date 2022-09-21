@@ -1,6 +1,8 @@
 import React from 'react'
 import * as Yup from 'yup'
+import $ from 'jquery'
 import moment from 'moment'
+import { connect } from 'dva'
 // formik
 import { withFormik } from 'formik'
 // sub components
@@ -8,6 +10,9 @@ import FilterBar from './FilterBar'
 import SalesList from './SalesList'
 import ReportBase from '../ReportBase'
 
+@connect(({ global }) => ({
+  mainDivHeight: global.mainDivHeight,
+}))
 class SalesListingReport extends ReportBase {
   constructor(props) {
     super(props)
@@ -22,8 +27,11 @@ class SalesListingReport extends ReportBase {
     return <FilterBar handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
   }
 
-  renderContent = (reportDatas) => {
-    return <SalesList reportDatas={reportDatas} />
+  renderContent = reportDatas => {
+    const { mainDivHeight = 700 } = this.props
+    const filterBarHeight = $('.divReportFilterBar').height() || 0
+    const height = mainDivHeight - filterBarHeight - 140
+    return <SalesList height={height} reportDatas={reportDatas} />
   }
 }
 
@@ -32,8 +40,12 @@ const SalesListingReportWithFormik = withFormik({
     dateFrom: Yup.date().required(),
   }),
   mapPropsToValues: () => ({
-    dateFrom: moment(new Date()).startOf('month').toDate(),
-    dateTo: moment(new Date()).endOf('month').toDate(),
+    dateFrom: moment(new Date())
+      .startOf('month')
+      .toDate(),
+    dateTo: moment(new Date())
+      .endOf('month')
+      .toDate(),
   }),
 })(SalesListingReport)
 

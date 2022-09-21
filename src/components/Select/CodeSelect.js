@@ -30,16 +30,15 @@ class CodeSelect extends React.PureComponent {
     const { dispatch, codetable } = props
     if (props.code) {
       const isExisted = codetable[props.code.toLowerCase()]
-      const { temp } = props
-      if (isExisted && !temp) {
+      const { force } = props
+      if (isExisted && !force) {
         return
       }
       dispatch({
         type: 'codetable/fetchCodes',
         payload: {
           code: props.code.toLowerCase(),
-          temp: props.temp,
-          force: props.temp,
+          force: props.force,
           filter: props.remoteFilter,
         },
       })
@@ -57,8 +56,7 @@ class CodeSelect extends React.PureComponent {
         type: 'codetable/fetchCodes',
         payload: {
           code: nextProps.code.toLowerCase(),
-          temp: nextProps.temp,
-          force: nextProps.temp,
+          force: nextProps.force,
           filter: nextProps.remoteFilter,
         },
       })

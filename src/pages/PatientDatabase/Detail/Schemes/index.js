@@ -6,6 +6,7 @@ import CHASCardReplacement from '@/components/_medisys/SchemePopover/CHASCardRep
 import { locationQueryParameters } from '@/utils/utils'
 import SchemesGrid from './SchemesGrid'
 import PayersGrid from './PayersGrid'
+import CopayerDetails from '@/pages/Setting/Company/CopayerDetails'
 
 const styles = () => ({})
 class Schemes extends PureComponent {
@@ -13,6 +14,7 @@ class Schemes extends PureComponent {
     showReplacementModal: false,
     refreshedSchemeData: {},
     targetPrintId: undefined,
+    showCopayerDetailModal: false,
   }
 
   handleReplacementModalVisibility = (show = false) => {
@@ -73,6 +75,22 @@ class Schemes extends PureComponent {
     return false
   }
 
+  toggleCopayerDetailModal = () => {
+    this.setState({
+      ...this.state,
+      showCopayerDetailModal: !this.state.showCopayerDetailModal,
+    })
+  }
+  closeCopayerDetail = () => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'copayerDetail/updateState',
+      payload: {
+        entity: undefined,
+      },
+    })
+    this.toggleCopayerDetailModal()
+  }
   createNewScheme = (result, values) => {
     let newPatientScheme = {}
     newPatientScheme.isNew = true
@@ -244,6 +262,7 @@ class Schemes extends PureComponent {
           targetPrintId={this.state.targetPrintId}
           onPrintButtonClick={this.onPrintButtonClick}
           entity={entity}
+          toggleCopayerDetailModal={this.toggleCopayerDetailModal}
           {...restProps}
         />
         <CommonModal
@@ -258,6 +277,15 @@ class Schemes extends PureComponent {
             refreshedSchemeData={this.state.refreshedSchemeData}
             handleOnClose={() => this.handleReplacementModalVisibility(false)}
           />
+        </CommonModal>
+        <CommonModal
+          open={this.state.showCopayerDetailModal}
+          title='Co-Payer Details'
+          onClose={this.closeCopayerDetail}
+          onConfirm={this.closeCopayerDetail}
+          fullScreen
+        >
+          <CopayerDetails fromCommonModal />
         </CommonModal>
         <div
           style={{
