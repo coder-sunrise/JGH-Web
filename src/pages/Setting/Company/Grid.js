@@ -120,7 +120,7 @@ class Grid extends PureComponent {
                   { name: 'coPayerTypeName', title: 'Type' },
                   { name: 'creditFacility', title: 'Credit Facility' },
                   { name: 'copayerAddress', title: 'Address' },
-                  { name: 'schemeCode', titlt: 'Scheme Code' },
+                  { name: 'schemeCode', title: 'Scheme Code' },
                   { name: 'schemeName', title: 'Scheme Name' },
                   { name: 'copayerContactPerson', title: 'Contact Person' },
                   { name: 'contactNo', title: 'Contact No.' },
@@ -199,12 +199,9 @@ class Grid extends PureComponent {
               sortingEnabled: false,
               width: 300,
               render: row => {
-                let schemeCodeList = row?.coPaymentSchemeDetails.map(
-                  item => item.code,
-                )
                 return (
-                  <Tooltip title={schemeCodeList.join(', ')}>
-                    <span>{schemeCodeList.join(', ')}</span>
+                  <Tooltip title={row?.schemeCodeList?.join(', ')}>
+                    <span>{row?.schemeCodeList?.join(', ')}</span>
                   </Tooltip>
                 )
               },
@@ -214,12 +211,9 @@ class Grid extends PureComponent {
               sortingEnabled: false,
               width: 300,
               render: row => {
-                let schemeNameList = row?.coPaymentSchemeDetails.map(
-                  item => item.name,
-                )
                 return (
-                  <Tooltip title={schemeNameList.join(', ')}>
-                    <span>{schemeNameList.join(', ')}</span>
+                  <Tooltip title={row?.schemeNameList?.join(', ')}>
+                    <span>{row?.schemeNameList?.join(', ')}</span>
                   </Tooltip>
                 )
               },
