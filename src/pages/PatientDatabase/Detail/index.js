@@ -575,8 +575,13 @@ class PatientDetail extends PureComponent {
       initialValues.contact?.contactAddress,
       _.isEqual,
     )
+    const newPatientFamilyMember = _.differenceWith(
+      values.patientFamilyGroup.patientFamilyMember,
+      initialValues.patientFamilyGroup.patientFamilyMember,
+      _.isEqual,
+    )
     //only primaryMember can can update family member info
-    if (newValues.length > 0) {
+    if (newValues.length > 0 || newPatientFamilyMember.length > 0) {
       const [familyMembers, address, scheme] = this.checkFamilyMembersInfoDiff(
         initialValues,
         values,
