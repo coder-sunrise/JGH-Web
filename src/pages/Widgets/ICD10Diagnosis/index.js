@@ -76,7 +76,9 @@ class ICD10Diagnosis extends PureComponent {
   getGridDiangnosisHistoryID = value => {
     const { form } = this.arrayHelpers
     const { values } = form
-    const newValues = values.corDiagnosis.concat(value)
+    const newValues = values.corDiagnosis
+      .concat(value)
+      .filter(item => item.isNew != true)
     values.corDiagnosis = newValues
     this.setState({ showAddFromPastModal: false })
   }

@@ -3,26 +3,33 @@ import { CommonTableGrid } from '@/components'
 import { primaryColor } from '@/assets/jss'
 import { render } from 'react-dom'
 import { useSelector } from 'umi'
+import moment from 'moment'
 export default function Grid(props) {
   const { diagnosis, visitRegistration, footer } = props
   const { patientDiansiosHistoryList } = useSelector(
     state => state.patientHistory,
   )
   const [diagnosisHistoryData, setDiagnosisHistoryData] = useState(
-    patientDiansiosHistoryList.list.map(item => {
-      return {
-        ...item,
-        isSelected: true,
-      }
-    }),
+    patientDiansiosHistoryList.list
+      .filter(
+        item =>
+          item.icD10JpnDiagnosisDescription != null ||
+          item.icD10DiagnosisDescription != null,
+      )
+      .map(item => {
+        return {
+          ...item,
+          isSelected: true,
+        }
+      }),
   )
   const columns = [
     { name: 'visitDate', title: 'Visit Date' },
-    { name: 'icD10JpnDiagnosisDescription', title: 'Diagnosis' },
+    { name: 'Diagnosis', title: 'Diagnosis' },
     { name: 'diagnosisType', title: 'Type' },
     { name: 'onsetDate', title: 'Onset Date' },
     { name: 'firstVisitDate', title: 'First Visit Date' },
-    { name: 'validityDays', title: 'Validity(Days)' },
+    { name: 'validityDays', title: 'Validity (Days)' },
     { name: 'action', title: 'Action' },
   ]
   const [confirmPropsSave, setConfirmPropsSave] = useState(true)
@@ -89,65 +96,60 @@ export default function Grid(props) {
               columnName: 'visitDate',
               type: 'date',
               width: 110,
-              align: 'center',
             },
             {
               columnName: 'firstVisitDate',
               type: 'date',
-              align: 'center',
               width: 110,
+              render: row => {
+                if (row.firstVisitDate != null) {
+                  return moment(row.firstVisitDate).format('DD MMM YYYY')
+                }
+              },
             },
             {
               columnName: 'onsetDate',
               type: 'date',
-              align: 'center',
               width: 110,
+              render: row => {
+                if (row.onsetDate != null) {
+                  return moment(row.onsetDate).format('DD MMM YYYY')
+                }
+              },
             },
             {
               columnName: 'diagnosisType',
-              align: 'center',
               width: 110,
             },
             {
               columnName: 'validityDays',
-              align: 'center',
               width: 110,
+              align: 'center',
             },
             {
-              columnName: 'icD10JpnDiagnosisDescription',
+              columnName: 'Diagnosis',
               width: 300,
               render: row => {
                 if (
                   Date.now() > Date.parse(row.effectiveStartDate) &&
                   Date.now() < Date.parse(row.effectiveEndDate)
                 ) {
-                  if (diagnosis.favouriteDiagnosisLanguage === 'JP') {
-                    return <span>{row.icD10JpnDiagnosisDescription}</span>
-                  } else {
-                    return <span>{row.icD10DiagnosisDescription}</span>
-                  }
+                  return (
+                    <span>
+                      {row.icD10DiagnosisDescription}&nbsp;
+                      {row.icD10JpnDiagnosisDescription}
+                    </span>
+                  )
                 } else {
-                  if (diagnosis.favouriteDiagnosisLanguage === 'JP') {
-                    return (
-                      <span>
-                        <span style={{ color: 'red', fontStyle: 'italic' }}>
-                          <sup>#1&nbsp;</sup>
-                        </span>
-                        &nbsp;
-                        {row.icD10JpnDiagnosisDescription}
+                  return (
+                    <span>
+                      <span style={{ color: 'red', fontStyle: 'italic' }}>
+                        <sup>#1&nbsp;</sup>
                       </span>
-                    )
-                  } else {
-                    return (
-                      <span>
-                        <span style={{ color: 'red', fontStyle: 'italic' }}>
-                          <sup>#1&nbsp;</sup>
-                        </span>
-                        &nbsp;
-                        {row.icD10DiagnosisDescription}
-                      </span>
-                    )
-                  }
+                      &nbsp; {row.icD10DiagnosisDescription}&nbsp;
+                      {row.icD10JpnDiagnosisDescription}
+                    </span>
+                  )
                 }
               },
             },
@@ -163,53 +165,62 @@ export default function Grid(props) {
                     Date.now() < Date.parse(row.effectiveEndDate)
                   ) {
                     return (
-                      <span
-                        className='material-icons'
-                        style={{
-                          cursor: 'pointer',
-                          color: primaryColor,
-                          marginTop: 4,
-                          marginLeft: 5,
-                        }}
-                        onClick={() => {
-                          onSelectItems(row, false)
-                        }}
-                      >
-                        add_circle_outline
-                      </span>
+                      <div style={{ height: '10px', width: '10px' }}>
+                        <span
+                          justIcon
+                          className='material-icons'
+                          style={{
+                            cursor: 'pointer',
+                            color: primaryColor,
+                            marginTop: -6,
+                            marginLeft: 20,
+                          }}
+                          onClick={() => {
+                            onSelectItems(row, false)
+                          }}
+                        >
+                          add_circle_outline
+                        </span>
+                      </div>
                     )
                   } else {
                     return (
-                      <span
-                        className='material-icons'
-                        style={{
-                          cursor: 'pointer',
-                          color: '#ccc',
-                          marginTop: 4,
-                          marginLeft: 5,
-                        }}
-                      >
-                        add_circle_outline
-                      </span>
+                      <div style={{ height: '10px', width: '10px' }}>
+                        <span
+                          justIcon
+                          className='material-icons'
+                          style={{
+                            cursor: 'pointer',
+                            color: '#ccc',
+                            marginTop: -6,
+                            marginLeft: 20,
+                          }}
+                        >
+                          add_circle_outline
+                        </span>
+                      </div>
                     )
                   }
                 } else {
                   if (row.isSelected != true) {
                     return (
-                      <span
-                        className='material-icons'
-                        style={{
-                          cursor: 'pointer',
-                          color: 'red',
-                          marginTop: 4,
-                          marginLeft: 5,
-                        }}
-                        onClick={() => {
-                          onSelectItems(row, true)
-                        }}
-                      >
-                        remove_circle_outline
-                      </span>
+                      <div style={{ height: '10px', width: '10px' }}>
+                        <span
+                          justIcon
+                          className='material-icons'
+                          style={{
+                            cursor: 'pointer',
+                            color: 'red',
+                            marginTop: -6,
+                            marginLeft: 20,
+                          }}
+                          onClick={() => {
+                            onSelectItems(row, true)
+                          }}
+                        >
+                          remove_circle_outline
+                        </span>
+                      </div>
                     )
                   }
                 }
@@ -224,7 +235,7 @@ export default function Grid(props) {
             const { getGridDiangnosisHistoryID } = props
             getGridDiangnosisHistoryID(getDiagnosisHistoryNewData)
           },
-          confirmBtnText: 'Save',
+          confirmBtnText: 'Confirm',
           confirmProps: {
             disabled: confirmPropsSave,
           },
