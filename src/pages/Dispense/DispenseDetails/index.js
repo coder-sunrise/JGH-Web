@@ -693,17 +693,17 @@ const DispenseDetails = ({
     }
     return false
   }
-  const existsCanceledLab = () => {
-    const { entity = {} } = dispense
-    const { service = [] } = entity
-    if (
-      service.find(s => {
-        const { workitem = {} } = s
-        const { labWorkitems = [] } = workitem
-        return labWorkitems.find(lw => lw.statusFK == 9)
-      })
-    ) {
-      return true
+  const existsCanceledLab = async () => {
+    const { visitID } = dispense
+    let result = await dispatch({
+      type: 'specimenCollection/getVisitSpecimenCollection',
+      payload: { id: visitID },
+    })
+    if (result) {
+      const { LAB_WORKITEM_STATUS } = await import('@/utils/constants')
+      return result?.labWorkitems.some(
+        item => item.statusFK == LAB_WORKITEM_STATUS.CANCELLED,
+      )
     }
     return false
   }
@@ -734,8 +734,9 @@ const DispenseDetails = ({
     return false
   }
 
-  const onHandelFinalize = () => {
-    if (existsCanceledRadiology() || existsCanceledLab()) {
+  const onHandelFinalize = async () => {
+    let isExistsCanceledLab = await existsCanceledLab()
+    if (existsCanceledRadiology() || isExistsCanceledLab) {
       dispatch({
         type: 'global/updateAppState',
         payload: {
