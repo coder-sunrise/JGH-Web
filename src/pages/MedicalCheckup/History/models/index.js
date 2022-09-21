@@ -78,6 +78,10 @@ export default createListViewModel({
         }
         return null
       },
+      *revert({ payload }, { call, put }) {
+        const response = yield call(service.revert, payload)
+        return response
+      },
     },
     reducers: {},
   },

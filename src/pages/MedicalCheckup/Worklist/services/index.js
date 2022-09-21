@@ -44,5 +44,10 @@ const fns = {
     service.upsert(`${url}/SummaryComment`, params),
   upsertIndividualComment: params =>
     service.upsert(`${url}/IndividualComment`, params),
+  discard: params => service.upsert(`${url}/Discard`, params),
+  complete: params => service.upsert(`${url}/Complete`, params),
+  queryMedicalCheckupHistory: params => service.query(`${url}/History`, params),
+  previewReportData: params =>
+    service.query(`${url}/PreviewReportData`, params),
 }
 export default fns

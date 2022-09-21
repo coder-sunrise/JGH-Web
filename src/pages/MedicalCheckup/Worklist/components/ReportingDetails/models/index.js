@@ -180,6 +180,14 @@ export default createFormViewModel({
         const response = yield call(service.upsertIndividualComment, payload)
         return response
       },
+      *queryMedicalCheckupHistory({ payload }, { call, put }) {
+        const response = yield call(service.queryMedicalCheckupHistory, payload)
+        return response
+      },
+      *previewReportData({ payload }, { call, put }) {
+        const response = yield call(service.previewReportData, payload)
+        return response
+      },
     },
     reducers: {},
   },

@@ -13,6 +13,7 @@ import SummaryComment from './SummaryComment'
 import TestResult from './TestResult'
 import ReportHistory from './ReportHistory'
 import ResultDetails from './ResultDetails'
+import CombineVisit from './CombineVisit'
 import {
   MEDICALCHECKUP_WORKITEM_STATUS,
   MEDICALCHECKUP_REPORTTYPE,
@@ -32,6 +33,9 @@ import {
   Tooltip,
   notification,
 } from '@/components'
+import withWebSocket from '@/components/Decorator/withWebSocket'
+import { getMedicalCheckupReportPayload } from '@/pages/MedicalCheckup/Worklist/components/Util'
+import CombineVisitIcon from '@/pages/MedicalCheckup/Worklist/components/CombineVisitIcon'
 
 const styles = theme => ({
   commentContainer: {
@@ -56,6 +60,8 @@ const ReportingDetails = props => {
     onClose = () => {},
     clinicSettings,
     visitRegistration,
+    handlePreviewReport,
+    mainDivHeight,
   } = props
   const reportingStatus = medicalCheckupReportingDetails.entity?.statusFK
   const { primaryPrintoutLanguage = 'EN' } = clinicSettings.settings
@@ -68,6 +74,8 @@ const ReportingDetails = props => {
   const [reportLanguage, setReportLanguage] = useState(undefined)
   const [showReportHistory, setShowReportHistory] = useState(false)
   const [showResultDetails, setShowResultDetails] = useState(false)
+  const [showCombineVisit, setShowCombineVisit] = useState(false)
+  const [patientProfileId, setPatientProfileId] = useState(undefined)
   const [placement, setPlacement] = useState('right')
   useEffect(() => {
     if (visitRegistration.entity?.visit) {
@@ -109,6 +117,11 @@ const ReportingDetails = props => {
   const toggleReportHistory = () => {
     const target = !showReportHistory
     setShowReportHistory(target)
+  }
+
+  const toggleCombineVisit = () => {
+    setPatientProfileId(undefined)
+    setShowCombineVisit(false)
   }
 
   const querySummaryCommentHistory = () => {
@@ -196,7 +209,8 @@ const ReportingDetails = props => {
   const getEditEnable = () => {
     return (
       reportingStatus !== MEDICALCHECKUP_WORKITEM_STATUS.PENDINGVERIFICATION &&
-      reportingStatus !== MEDICALCHECKUP_WORKITEM_STATUS.COMPLETED
+      reportingStatus !== MEDICALCHECKUP_WORKITEM_STATUS.COMPLETED &&
+      reportingStatus !== MEDICALCHECKUP_WORKITEM_STATUS.DISCARDED
     )
   }
 
@@ -405,6 +419,28 @@ const ReportingDetails = props => {
     if (modifyOthersCommentAccessRight.rights === 'enable') return true
     return false
   }
+
+  const printReport = () => {
+    dispatch({
+      type: 'medicalCheckupReportingDetails/previewReportData',
+      payload: {
+        id: medicalCheckupReportingDetails.medicalCheckupWorkitemId,
+      },
+    }).then(response => {
+      if (response && response.status === '200') {
+        const payload = getMedicalCheckupReportPayload(response.data)
+        handlePreviewReport(JSON.stringify(payload))
+      }
+    })
+  }
+
+  const combineVisit = _.orderBy(
+    medicalCheckupReportingDetails.entity?.medicalCheckupWorkitemGroup
+      ?.medicalCheckupWorkitemCombine || [],
+    ['visitDate'],
+    ['desc'],
+  )
+
   return (
     <div>
       <div style={{ marginTop: '-20px' }}>
@@ -477,6 +513,61 @@ const ReportingDetails = props => {
                   ?.medicalCheckupReport?.length || 0})`}
               </span>
             </Link>
+            {reportingStatus !== MEDICALCHECKUP_WORKITEM_STATUS.DISCARDED && (
+              <Link>
+                <span
+                  style={{
+                    textDecoration: 'underline',
+                    marginLeft: 10,
+                  }}
+                  onClick={e => {
+                    e.preventDefault()
+                    checkUnsaveChange(() => {
+                      printReport()
+                    })
+                  }}
+                >
+                  Print Report
+                </span>
+              </Link>
+            )}
+            {reportingStatus !== MEDICALCHECKUP_WORKITEM_STATUS.DISCARDED && (
+              <Link>
+                <span
+                  style={{
+                    textDecoration: 'underline',
+                    marginLeft: 10,
+                  }}
+                  onClick={e => {
+                    e.preventDefault()
+                    checkUnsaveChange(() => {
+                      setPatientProfileId(
+                        medicalCheckupReportingDetails.patientID,
+                      )
+                      setShowCombineVisit(true)
+                    })
+                  }}
+                >
+                  Combine Report
+                </span>
+              </Link>
+            )}
+            {combineVisit.length > 0 && (
+              <span style={{ marginLeft: 4 }}>
+                <CombineVisitIcon
+                  placement='top'
+                  combineVisit={[
+                    {
+                      visitDate:
+                        medicalCheckupReportingDetails.entity?.visitDate,
+                      reportId: medicalCheckupReportingDetails.entity?.reportId,
+                      isPrimary: true,
+                    },
+                    ...combineVisit,
+                  ]}
+                />
+              </span>
+            )}
             <div style={{ position: 'absolute', right: 3, top: 0 }}>
               <Button
                 size='small'
@@ -608,29 +699,52 @@ const ReportingDetails = props => {
       >
         <ReportHistory refreshMedicalCheckup={refreshMedicalCheckup} />
       </CommonModal>
+
+      <CommonModal
+        open={showCombineVisit}
+        title='Combine Visit'
+        onClose={toggleCombineVisit}
+        onConfirm={() => {
+          toggleCombineVisit()
+          refreshMedicalCheckup()
+        }}
+        maxWidth='md'
+        observe='CombineVisit'
+      >
+        <CombineVisit
+          patientProfileId={patientProfileId}
+          selectedLanguage={selectedLanguage}
+          medicalCheckupReportingDetails={medicalCheckupReportingDetails}
+          mainDivHeight={mainDivHeight}
+        />
+      </CommonModal>
     </div>
   )
 }
 
-export default compose(
-  withStyles(styles),
-  connect(
-    ({
-      patient,
-      loading,
-      medicalCheckupReportingDetails,
-      user,
-      labTrackingDetails,
-      clinicSettings,
-      visitRegistration,
-    }) => ({
-      patient: patient.entity || {},
-      loading,
-      medicalCheckupReportingDetails,
-      labTrackingDetails,
-      user,
-      clinicSettings,
-      visitRegistration,
-    }),
-  ),
-)(ReportingDetails)
+export default withWebSocket()(
+  compose(
+    withStyles(styles),
+    connect(
+      ({
+        patient,
+        loading,
+        medicalCheckupReportingDetails,
+        user,
+        labTrackingDetails,
+        clinicSettings,
+        visitRegistration,
+        global,
+      }) => ({
+        patient: patient.entity || {},
+        loading,
+        medicalCheckupReportingDetails,
+        labTrackingDetails,
+        user,
+        clinicSettings,
+        visitRegistration,
+        mainDivHeight: global.mainDivHeight,
+      }),
+    ),
+  )(ReportingDetails),
+)

@@ -222,6 +222,7 @@ export const formikMapPropsToValues = ({
               patientInfo,
               clinicSettings.settings,
             ),
+            isDataIncludedInPastVisit: true,
           },
         ]
       }

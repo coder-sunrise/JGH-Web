@@ -51,7 +51,6 @@ const ReportHistory = props => {
     classes,
     handlePreviewReport,
   } = props
-
   const height = window.innerHeight
   const updateReportStatus = (row, status, verifyRemarks) => {
     dispatch({

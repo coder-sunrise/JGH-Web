@@ -119,6 +119,7 @@ class CommentVerification extends PureComponent {
       medicalCheckupstatus !==
         MEDICALCHECKUP_WORKITEM_STATUS.PENDINGVERIFICATION &&
       medicalCheckupstatus !== MEDICALCHECKUP_WORKITEM_STATUS.COMPLETED &&
+      medicalCheckupstatus !== MEDICALCHECKUP_WORKITEM_STATUS.DISCARDED &&
       this.isCommentVerificationEnable()
     )
   }

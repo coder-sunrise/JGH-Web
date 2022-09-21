@@ -15,7 +15,9 @@ export default createListViewModel({
         isOnlyUrgent: false,
         isMyPatient: true,
       },
-      selectedStatus: Object.values(MEDICALCHECKUP_WORKITEM_STATUS),
+      selectedStatus: Object.values(MEDICALCHECKUP_WORKITEM_STATUS).filter(
+        s => s !== MEDICALCHECKUP_WORKITEM_STATUS.DISCARDED,
+      ),
     },
     setting: {},
     subscriptions: ({ dispatch, history }) => {
@@ -92,6 +94,16 @@ export default createListViewModel({
 
       *generateAutoComment({ payload }, { call, put }) {
         const response = yield call(service.generateAutoComment, payload)
+        return response
+      },
+
+      *discard({ payload }, { call, put }) {
+        const response = yield call(service.discard, payload)
+        return response
+      },
+
+      *complete({ payload }, { call, put }) {
+        const response = yield call(service.complete, payload)
         return response
       },
     },

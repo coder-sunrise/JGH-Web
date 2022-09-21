@@ -1,15 +1,18 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'dva'
 import moment from 'moment'
 import _ from 'lodash'
 import { history, connect } from 'umi'
 import { Card, Button } from 'antd'
+import { GridContextMenuButton as GridButton } from 'medisys-components'
 import { WORK_ITEM_TYPES } from '@/utils/constants'
 import NurseWorkItemInfo from '@/pages/Reception/Queue/Grid/WorkItemPopover/NurseWorkItemInfo'
 import RadioWorkItemInfo from '@/pages/Reception/Queue/Grid/WorkItemPopover/RadioWorkItemInfo'
 import LabWorkItemInfo from '@/pages/Reception/Queue/Grid/WorkItemPopover/LabWorkItemInfo'
 import { calculateAgeFromDOB } from '@/utils/dateUtils'
 import { UnorderedListOutlined } from '@ant-design/icons'
+import RedoOutlinedIcon from '@material-ui/icons/RedoOutlined'
+import AssignmentOutlined from '@material-ui/icons/AssignmentOutlined'
 import {
   dateFormatLongWithTimeNoSec,
   Icon,
@@ -24,6 +27,9 @@ import service from './services'
 import { hasValue } from '@/pages/Widgets/PatientHistory/config'
 import VisitOrderTemplateIndicateString from '@/pages/Widgets/Orders/VisitOrderTemplateIndicateString'
 import { getVisitOrderTemplateContent } from '../Worklist/components/Util'
+import { ableToViewByAuthority } from '@/utils/utils'
+import { MEDICALCHECKUP_WORKITEM_STATUS } from '@/utils/constants'
+import CombineVisitIcon from '@/pages/MedicalCheckup/Worklist/components/CombineVisitIcon'
 
 const { queryList, query } = service
 const api = {
@@ -64,6 +70,7 @@ const History = ({
     medicalCheckupWorklistHistoryColumnSetting = [],
   } = medicalCheckupWorklistHistory
   const dispatch = useDispatch()
+  const actionRef = useRef()
   const { doctorprofile = [] } = useSelector(s => s.codetable)
   useEffect(() => {
     dispatch({
@@ -87,13 +94,98 @@ const History = ({
 
   const visitDateForm = moment()
     .add(-1, 'month')
+    .add(1, 'day')
     .toDate()
   const visitDateTo = moment()
-    .add(-1, 'day')
-    .toDate()
+
+  const menus = [
+    {
+      id: 1,
+      label: 'Reporting Details',
+      Icon: AssignmentOutlined,
+    },
+    {
+      id: 2,
+      label: 'Revert Repoting',
+      Icon: RedoOutlinedIcon,
+      authority: 'medicalcheckupworklist.revert',
+    },
+  ]
+
+  const onCompleteMC = row => {
+    dispatch({
+      type: 'global/updateAppState',
+      payload: {
+        openConfirm: true,
+        openConfirmTitle: 'Revert Reporting',
+        openConfirmContent: `Confirm to revert this reporting?`,
+        onConfirmSave: () => {
+          dispatch({
+            type: `medicalCheckupWorklistHistory/revert`,
+            payload: {
+              id: row.id,
+            },
+          }).then(o => {
+            if (o) {
+              notification.success({
+                message: 'Medical Checkup report reverted.',
+              })
+            }
+            actionRef.current.reload()
+          })
+        },
+      },
+    })
+  }
+
+  const handleMenuItemClick = (row, id) => {
+    switch (id) {
+      case '1':
+        showReportingDetails(row)
+        break
+      case '2':
+        onCompleteMC(row)
+        break
+    }
+  }
 
   const defaultColumns = () => {
     return [
+      {
+        key: 'reportId',
+        title: 'Report ID',
+        dataIndex: 'reportId',
+        sorter: false,
+        search: false,
+        fixed: 'left',
+        width: 115,
+        render: (_dom, entity) => {
+          let combineVisit = []
+          if (entity.combineVisit) {
+            combineVisit = JSON.parse(entity.combineVisit)
+          }
+          return (
+            <span>
+              <span>{entity.reportId}</span>
+              {combineVisit.length > 0 && (
+                <span style={{ marginLeft: 4 }}>
+                  <CombineVisitIcon
+                    placement='bottom'
+                    combineVisit={[
+                      {
+                        visitDate: entity.visitDate,
+                        reportId: entity.reportId,
+                        isPrimary: true,
+                      },
+                      ...combineVisit,
+                    ]}
+                  />
+                </span>
+              )}
+            </span>
+          )
+        },
+      },
       {
         key: 'patientName',
         title: 'Patient Name',
@@ -140,7 +232,7 @@ const History = ({
         dataIndex: 'reportPriority',
         sorter: false,
         search: false,
-        width: 200,
+        width: 160,
         render: (_dom, entity) => {
           const remarks = `${entity.reportPriority}${
             entity.urgentReportRemarks ? `, ${entity.urgentReportRemarks}` : ''
@@ -250,7 +342,35 @@ const History = ({
         dataIndex: 'completedByUser',
         sorter: false,
         search: false,
-        width: 180,
+        width: 160,
+      },
+      {
+        key: 'statusFK',
+        title: 'Status',
+        dataIndex: 'statusFK',
+        sortBy: 'statusFK',
+        render: (_dom, entity) => {
+          if (entity.statusFK === 4) return 'Completed'
+          return (
+            <Tooltip
+              title={
+                <div>
+                  <div>
+                    {`Discarded by ${entity.discardedByUser || ''} at ${moment(
+                      entity.discardedDate,
+                    ).format(dateFormatLongWithTimeNoSec)}`}
+                  </div>
+                  <div>{`Reason: ${entity.discardedReason}`}</div>{' '}
+                </div>
+              }
+            >
+              <span>Discarded</span>
+            </Tooltip>
+          )
+        },
+        sorter: true,
+        search: false,
+        width: 100,
       },
       {
         key: 'action',
@@ -273,16 +393,25 @@ const History = ({
           ) {
             return ''
           }
+          const handleClick = event => {
+            const { key } = event
+            clickMenu(entity, key)
+          }
           return (
-            <Tooltip title='Reporting Details'>
-              <Button
-                onClick={() => {
-                  showReportingDetails(entity)
-                }}
-                type='primary'
-                size='small'
-                icon={<UnorderedListOutlined />}
-              />
+            <Tooltip title='More Options'>
+              <div>
+                <GridButton
+                  row={entity}
+                  contextMenuOptions={menus.filter(
+                    m =>
+                      ableToViewByAuthority(m.authority) &&
+                      (entity.statusFK ===
+                        MEDICALCHECKUP_WORKITEM_STATUS.DISCARDED ||
+                        m.id !== 2),
+                  )}
+                  onClick={handleMenuItemClick}
+                />
+              </div>
             </Tooltip>
           )
         },
@@ -355,6 +484,28 @@ const History = ({
           )
         },
       },
+      {
+        hideInTable: true,
+        title: '',
+        dataIndex: 'medicalCheckupStatus',
+        initialValue: [-99, 4, 5],
+        renderFormItem: (item, { type, defaultRender, ...rest }, form) => {
+          return (
+            <Select
+              label='Status'
+              options={[
+                { value: 4, name: 'Completed' },
+                { value: 5, name: 'Discarded' },
+              ]}
+              placeholder=''
+              style={{ width: 140 }}
+              mode='multiple'
+              maxTagCount={0}
+              maxTagPlaceholder='status'
+            />
+          )
+        },
+      },
     ]
   }
 
@@ -380,12 +531,13 @@ const History = ({
   return (
     <ProTable
       api={api}
+      actionRef={actionRef}
       rowSelection={false}
       columns={columns}
       tableClassName='custom_pro'
       options={{ density: false, reload: false }}
       search={{
-        span: 5,
+        span: 8,
         collapsed: false,
         collapseRender: false,
         searchText: 'Search',
@@ -415,6 +567,7 @@ const History = ({
           dateFrom,
           dateTo,
           visitDoctor,
+          medicalCheckupStatus = [],
           ...resValue
         } = values
         return {
@@ -430,6 +583,9 @@ const History = ({
             visitDoctor: visitDoctor?.includes(-99)
               ? null
               : visitDoctor?.join(','),
+            medicalCheckupStatus: medicalCheckupStatus?.includes(-99)
+              ? null
+              : medicalCheckupStatus?.join(','),
           },
         }
       }}
