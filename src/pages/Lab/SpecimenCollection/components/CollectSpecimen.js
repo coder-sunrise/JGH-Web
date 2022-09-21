@@ -272,6 +272,7 @@ const CollectSpecimen = ({
           } else {
             return {
               ...item,
+              cancelledDate: moment(),
               cancelReason,
             }
           }
