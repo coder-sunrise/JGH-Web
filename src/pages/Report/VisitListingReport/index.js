@@ -54,15 +54,14 @@ class VisitListing extends ReportBase {
     })
     if (response) {
       const { data } = response
-      const templateOptions = data
-        .filter(template => template.isActive)
-        .map(template => {
-          return {
-            ...template,
-            value: template.id,
-            name: template.displayValue,
-          }
-        })
+      const templateOptions = data.map(template => {
+        delete template.isActive
+        return {
+          ...template,
+          value: template.id,
+          name: template.displayValue,
+        }
+      })
 
       dispatch({
         type: 'visitRegistration/updateState',
@@ -74,7 +73,12 @@ class VisitListing extends ReportBase {
     await dispatch({
       type: 'codetable/fetchCodes',
       payload: {
+        force: true,
         code: 'ctcopayer',
+        filter: {
+          isActive: undefined,
+          apiCriteria: { excludeInactiveCodes: false },
+        },
       },
     })
   }
@@ -85,12 +89,16 @@ class VisitListing extends ReportBase {
       ctcopayer,
       classes,
     } = this.props
+    const formatedCopayers = ctcopayer.map(x => {
+      delete x.isActive
+      return { ...x }
+    })
     return (
       <FilterBar
         handleSubmit={handleSubmit}
         isSubmitting={isSubmitting}
         visitOrderTemplateOptions={visitOrderTemplateOptions}
-        ctcopayer={ctcopayer}
+        ctcopayer={formatedCopayers}
         classes={classes}
       />
     )
