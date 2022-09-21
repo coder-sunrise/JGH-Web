@@ -105,7 +105,9 @@ const FilterBar = ({
                   {...args}
                   options={[
                     { id: 0, displayValue: 'None' },
-                    ..._.sortBy(visitOrderTemplateOptions, 'displayValue'),
+                    ..._.sortBy(visitOrderTemplateOptions, ({ displayValue }) =>
+                      displayValue.toLowerCase(),
+                    ),
                   ]}
                   labelField='displayValue'
                   mode='multiple'
@@ -142,7 +144,9 @@ const FilterBar = ({
                   title='Copayers that patient visit claimed'
                   options={[
                     { id: 0, displayValue: 'None' },
-                    ..._.sortBy(ctcopayer, 'displayValue'),
+                    ..._.sortBy(ctcopayer, ({ displayValue }) =>
+                      displayValue.toLowerCase(),
+                    ),
                   ]}
                   labelField='displayValue'
                   mode='multiple'

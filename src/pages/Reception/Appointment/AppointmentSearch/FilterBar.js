@@ -323,7 +323,9 @@ const FilterBar = ({
                 title='Select "All" will display active and inactive co-payers'
                 options={[
                   { id: 0, displayValue: 'None' },
-                  ..._.sortBy(ctcopayer, 'displayValue'),
+                  ..._.sortBy(ctcopayer, ({ displayValue }) =>
+                    displayValue.toLowerCase(),
+                  ),
                 ]}
                 labelField='displayValue'
                 mode='multiple'
@@ -344,7 +346,9 @@ const FilterBar = ({
                 title='Select "All" will display active and inactive visit purpose'
                 options={[
                   { id: 0, displayValue: 'None' },
-                  ..._.sortBy(visitOrderTemplateOptions, 'displayValue'),
+                  ..._.sortBy(visitOrderTemplateOptions, ({ displayValue }) =>
+                    displayValue.toLowerCase(),
+                  ),
                 ]}
                 labelField='displayValue'
                 mode='multiple'
