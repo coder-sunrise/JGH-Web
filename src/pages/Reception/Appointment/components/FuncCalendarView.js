@@ -447,7 +447,7 @@ const CalendarView = ({
           item.resourceType === CALENDAR_RESOURCE.DOCTOR
             ? `Doctor-${item.resourceFK}`
             : `Resource-${item.resourceFK}`,
-        IsReadonly: isReadonly(appointment),
+        // IsReadonly: isReadonly(appointment),
         appointmentDate: appointmentDate,
         preOrder,
         visitPurposeValue: visitPurposeValue,
