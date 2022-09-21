@@ -87,6 +87,7 @@ export default function Grid(props) {
         }}
       >
         <CommonTableGrid
+          size='sm'
           forceRender
           columns={columns}
           rows={diagnosisHistoryData}
