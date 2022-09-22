@@ -476,6 +476,7 @@ const SpecimenCollection = ({
                   searchVisitDoctor?.indexOf(-99) > -1
                     ? null
                     : searchVisitDoctor?.join(),
+                isGetCancelledTestPanelData: true,
               },
             }
           }}
