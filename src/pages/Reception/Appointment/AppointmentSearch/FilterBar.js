@@ -144,7 +144,6 @@ const FilterBar = ({
     viewOtherApptAccessRight,
     isActiveCalendarResource,
     visitOrderTemplateOptions,
-    ctcopayer,
   } = restValues
 
   const [showReport, setShowReport] = useState(false)
@@ -315,13 +314,10 @@ const FilterBar = ({
             render={args => (
               <CodeSelect
                 {...args}
+                force
+                code='ctcopayer'
                 maxTagCount={0}
                 title='Select "All" will display active and inactive co-payers'
-                options={[
-                  ..._.sortBy(ctcopayer, ({ displayValue }) =>
-                    displayValue.toLowerCase(),
-                  ),
-                ]}
                 labelField='displayValue'
                 mode='multiple'
                 label='Co-Payer'
@@ -340,11 +336,7 @@ const FilterBar = ({
                 {...args}
                 maxTagCount={0}
                 title='Select "All" will display active and inactive visit purpose'
-                options={[
-                  ..._.sortBy(visitOrderTemplateOptions, ({ displayValue }) =>
-                    displayValue.toLowerCase(),
-                  ),
-                ]}
+                options={visitOrderTemplateOptions}
                 labelField='displayValue'
                 mode='multiple'
                 label='Visit Purpose'
