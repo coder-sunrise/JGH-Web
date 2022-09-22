@@ -204,7 +204,7 @@ const SpecimenCollection = ({
               ) : (
                 <span></span>
               )}
-              {Authorized.check('queue.cancellabtestpanel')?.rights ===
+              {Authorized.check('lab.cancellabtestpanel')?.rights ===
               'enable' ? (
                 <Tooltip title='Cancel Test Panel'>
                   <Button
