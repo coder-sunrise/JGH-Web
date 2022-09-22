@@ -12,6 +12,7 @@ import {
   Popover,
   notification,
   timeFormat24Hour,
+  timeFormatWithSecond,
 } from '@/components'
 // medisys components
 import { LoadingWrapper } from '@/components/_medisys'
@@ -389,6 +390,22 @@ const CalendarView = ({
     return false
   }
 
+  const checkIsTodayPublicHoliday = currentTime => {
+    const currentDate = moment(currentTime)
+
+    const holidays = publicHolidays.filter(item => {
+      const startDate = moment(item.startDate)
+      const endDate = moment(item.endDate)
+      if (currentDate.isBetween(startDate, endDate, 'days', '[]')) {
+        return true
+      }
+      return false
+    })
+    const holidayLabel = holidays.length > 0 ? holidays[0].displayValue : ''
+
+    return { isPublicHoliday: holidays.length > 0, holidayLabel }
+  }
+
   const eventList = useMemo(() => {
     return calendarEvents.reduce((events, appointment) => {
       const {
@@ -571,21 +588,33 @@ const CalendarView = ({
         ['asc'],
       )
       newAllResources.map(item => {
-        const dailyCapacitys = (
-          item.calendarResourceDailyCapacity || []
-        ).filter(
-          c =>
-            moment(c.dailyDate).format('DD MMM YYYY') ===
-            moment(event.date).format('DD MMM YYYY'),
+        const dailyCapacitys = _.orderBy(
+          (item.calendarResourceDailyCapacity || []).filter(
+            c =>
+              moment(c.dailyDate).format('DD MMM YYYY') ===
+              moment(event.date).format('DD MMM YYYY'),
+          ),
+          ['startTime'],
+          [],
         )
         if (dailyCapacitys.length) {
           const bgResourceColor = item.resourceDto?.balanceTagColorHex
           const totalMaxCapacity = _.sumBy(dailyCapacitys, 'maxCapacity')
           const totalUsedSlot = _.sumBy(dailyCapacitys, 'usedSlot')
           const totalBalCapacity = totalMaxCapacity - totalUsedSlot
-          tooltip = `${tooltip ? `${tooltip} \n` : ''}${
+          tooltip = `${tooltip ? `${tooltip} \n—————————————————————\n` : ''}${
             item.name
-          } bal.: ${totalBalCapacity}`
+          }`
+          dailyCapacitys.forEach(dailyCapacity => {
+            tooltip = `${tooltip ? `${tooltip} \n` : ''}&emsp;&emsp;${moment(
+              dailyCapacity.startTime,
+              timeFormatWithSecond,
+            ).format(timeFormat24Hour)}-${moment(
+              dailyCapacity.endTime,
+              timeFormatWithSecond,
+            ).format(timeFormat24Hour)} Bal.: ${dailyCapacity.maxCapacity -
+              dailyCapacity.usedSlot}`
+          })
           resourceList = `${resourceList ? resourceList : ''}<div style="${
             resourceList ? 'border-left:1px solid #ccc;' : ''
           }display:inline-block;padding:0px 4px;background-color:${bgResourceColor ||
@@ -594,8 +623,30 @@ const CalendarView = ({
           };font-size:15px;">${totalBalCapacity}</div>`
         }
       })
+      const { isPublicHoliday, holidayLabel } =
+        publicHolidays.length > 0
+          ? checkIsTodayPublicHoliday(event.date)
+          : { isPublicHoliday: false, holidayLabel: '' }
+      const isToday =
+        moment(event.date).format('DD MMM YYYY') ===
+        moment().format('DD MMM YYYY')
+      const holidayDiv = `<div style="padding-top:25px"><div style="height:103.6px; background-color:#7d7d7d; color:white; fontSize: 14px; text-align:center;">${holidayLabel}</div></div>`
       if (resourceList) {
-        event.element.innerHTML = `<div style="position:relative;">${event.element.innerHTML}<div title="${tooltip}" style="position:absolute;right:2px;top:-2px;border:1px solid #ccc;">${resourceList}</div></div>`
+        if (isPublicHoliday) {
+          event.element.innerHTML = `<div style="position:relative;">${holidayDiv}<div style="margin-top:${
+            isToday ? '-130.6px' : '-128.6px'
+          }">${
+            event.element.innerHTML
+          }</div><div title="${tooltip}" style="position:absolute;right:2px;top:1px;border:1px solid #ccc; width:calc(100% - 26px); text-align:right;">${resourceList}</div></div>`
+        } else {
+          event.element.innerHTML = `<div style="position:relative;">${event.element.innerHTML}<div title="${tooltip}" style="position:absolute;right:2px;top:-2px;border:1px solid #ccc; width:calc(100% - 26px); text-align:right;">${resourceList}</div></div>`
+        }
+      } else {
+        if (isPublicHoliday) {
+          event.element.innerHTML = `<div>${holidayDiv}<div style="margin-top:${
+            isToday ? '-130.6px' : '-128.6px'
+          }">${event.element.innerHTML}</div></div>`
+        }
       }
     }
   }
