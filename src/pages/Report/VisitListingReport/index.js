@@ -23,7 +23,6 @@ const styles = () => ({
 
 @connect(({ visitRegistration, codetable }) => ({
   visitRegistration,
-  ctcopayer: codetable.ctcopayer || [],
 }))
 class VisitListing extends ReportBase {
   constructor(props) {
@@ -50,6 +49,7 @@ class VisitListing extends ReportBase {
       type: 'visitRegistration/getVisitOrderTemplateListForDropdown',
       payload: {
         pagesize: 9999,
+        sorting: [{ columnName: 'displayValue', direction: 'asc' }],
       },
     })
     if (response) {
@@ -70,35 +70,19 @@ class VisitListing extends ReportBase {
         },
       })
     }
-    await dispatch({
-      type: 'codetable/fetchCodes',
-      payload: {
-        force: true,
-        code: 'ctcopayer',
-        filter: {
-          isActive: undefined,
-          apiCriteria: { excludeInactiveCodes: false },
-        },
-      },
-    })
   }
 
   renderFilterBar = (handleSubmit, isSubmitting) => {
     const {
       visitRegistration: { visitOrderTemplateOptions = [] },
-      ctcopayer,
       classes,
     } = this.props
-    const formatedCopayers = ctcopayer.map(x => {
-      delete x.isActive
-      return { ...x }
-    })
+
     return (
       <FilterBar
         handleSubmit={handleSubmit}
         isSubmitting={isSubmitting}
         visitOrderTemplateOptions={visitOrderTemplateOptions}
-        ctcopayer={formatedCopayers}
         classes={classes}
       />
     )
