@@ -464,7 +464,7 @@ const CalendarView = ({
           item.resourceType === CALENDAR_RESOURCE.DOCTOR
             ? `Doctor-${item.resourceFK}`
             : `Resource-${item.resourceFK}`,
-        IsReadonly: isReadonly(appointment),
+        isReadonly: isReadonly(appointment),
         appointmentDate: appointmentDate,
         preOrder,
         visitPurposeValue: visitPurposeValue,
@@ -693,7 +693,14 @@ const CalendarView = ({
         resourceTitleAccessor='calendarResourceName'
         eventAction={eventAction}
         dragStart={e => {
-          //e.navigation.enable = true
+          if (e.data.isReadonly) {
+            e.cancel = true
+          }
+        }}
+        resizeStart={e => {
+          if (e.data.isReadonly) {
+            e.cancel = true
+          }
         }}
         dragStop={e => {
           if (
