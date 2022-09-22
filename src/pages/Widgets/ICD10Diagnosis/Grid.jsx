@@ -23,6 +23,12 @@ export default function Grid(props) {
         }
       }),
   )
+  const [newDiagnosisHistoryData, setNewDiagnosisHistoryData] = useState(
+    diagnosisHistoryData.sort(function(a, b) {
+      return Date.parse(a.visitDate) < Date.parse(b.visitDate) ? 1 : -1
+    }),
+  )
+
   const columns = [
     { name: 'visitDate', title: 'Visit Date' },
     { name: 'Diagnosis', title: 'Diagnosis' },
@@ -90,18 +96,20 @@ export default function Grid(props) {
           size='sm'
           forceRender
           columns={columns}
-          rows={diagnosisHistoryData}
+          rows={newDiagnosisHistoryData}
           FuncProps={{ pager: false }}
           columnExtensions={[
             {
               columnName: 'visitDate',
               type: 'date',
               width: 110,
+              sortingEnabled: false,
             },
             {
               columnName: 'firstVisitDate',
               type: 'date',
               width: 110,
+              sortingEnabled: false,
               render: row => {
                 if (row.firstVisitDate != null) {
                   return moment(row.firstVisitDate).format('DD MMM YYYY')
@@ -112,6 +120,7 @@ export default function Grid(props) {
               columnName: 'onsetDate',
               type: 'date',
               width: 110,
+              sortingEnabled: false,
               render: row => {
                 if (row.onsetDate != null) {
                   return moment(row.onsetDate).format('DD MMM YYYY')
@@ -121,15 +130,18 @@ export default function Grid(props) {
             {
               columnName: 'diagnosisType',
               width: 110,
+              sortingEnabled: false,
             },
             {
               columnName: 'validityDays',
               width: 110,
               align: 'center',
+              sortingEnabled: false,
             },
             {
               columnName: 'Diagnosis',
               width: 300,
+              sortingEnabled: false,
               render: row => {
                 if (
                   Date.now() > Date.parse(row.effectiveStartDate) &&
