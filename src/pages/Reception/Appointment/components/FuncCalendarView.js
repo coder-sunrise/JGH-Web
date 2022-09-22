@@ -632,14 +632,22 @@ const CalendarView = ({
         moment().format('DD MMM YYYY')
       const holidayDiv = `<div style="padding-top:25px"><div style="height:103.6px; background-color:#7d7d7d; color:white; fontSize: 14px; text-align:center;">${holidayLabel}</div></div>`
       if (resourceList) {
+        const isMonthStart =
+          moment(event.date).format('DD MMM YYYY') ===
+          moment(event.date)
+            .startOf('month')
+            .format('DD MMM YYYY')
+        const resourceDiv = `<div title="${tooltip}" style="position:absolute; right:2px; top:${
+          isPublicHoliday ? '1px' : '-2px'
+        }; border:1px solid #ccc; width:calc(100% - ${
+          isMonthStart ? '44px' : '26px'
+        }); text-align:right;">${resourceList}</div>`
         if (isPublicHoliday) {
           event.element.innerHTML = `<div style="position:relative;">${holidayDiv}<div style="margin-top:${
             isToday ? '-130.6px' : '-128.6px'
-          }">${
-            event.element.innerHTML
-          }</div><div title="${tooltip}" style="position:absolute;right:2px;top:1px;border:1px solid #ccc; width:calc(100% - 26px); text-align:right;">${resourceList}</div></div>`
+          }">${event.element.innerHTML}</div>${resourceDiv}</div>`
         } else {
-          event.element.innerHTML = `<div style="position:relative;">${event.element.innerHTML}<div title="${tooltip}" style="position:absolute;right:2px;top:-2px;border:1px solid #ccc; width:calc(100% - 26px); text-align:right;">${resourceList}</div></div>`
+          event.element.innerHTML = `<div style="position:relative;">${event.element.innerHTML}${resourceDiv}</div>`
         }
       } else {
         if (isPublicHoliday) {
