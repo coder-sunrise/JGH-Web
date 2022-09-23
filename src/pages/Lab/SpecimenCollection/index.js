@@ -204,7 +204,7 @@ const SpecimenCollection = ({
               ) : (
                 <span></span>
               )}
-              {Authorized.check('queue.cancellabtestpanel')?.rights ===
+              {Authorized.check('lab.cancellabtestpanel')?.rights ===
               'enable' ? (
                 <Tooltip title='Cancel Test Panel'>
                   <Button
@@ -476,6 +476,7 @@ const SpecimenCollection = ({
                   searchVisitDoctor?.indexOf(-99) > -1
                     ? null
                     : searchVisitDoctor?.join(),
+                isGetCancelledTestPanelData: true,
               },
             }
           }}

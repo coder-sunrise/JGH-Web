@@ -24,7 +24,13 @@ class SalesListingReport extends ReportBase {
   }
 
   renderFilterBar = (handleSubmit, isSubmitting) => {
-    return <FilterBar handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
+    return (
+      <FilterBar
+        handleSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+        setFieldValue={this.props.setFieldValue}
+      />
+    )
   }
 
   renderContent = reportDatas => {
