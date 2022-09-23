@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 // formik
-import { FastField } from 'formik'
+import { FastField, Field } from 'formik'
 // common components
 import {
   Button,
@@ -13,8 +13,12 @@ import {
 } from '@/components'
 import { DoctorProfileSelect } from '@/components/_medisys'
 import ReportDateRangePicker from '../ReportDateRangePicker'
+import { INVOICE_ITEM_TYPE_BY_NAME } from '@/utils/constants'
 
-const FilterBar = ({ handleSubmit, isSubmitting }) => {
+const FilterBar = ({ handleSubmit, isSubmitting, setFieldValue }) => {
+  let [serviceCenterIDsFieldState, setServiceCenterIDsFieldState] = useState(
+    true,
+  )
   return (
     <SizeContainer size='sm'>
       <React.Fragment>
@@ -67,6 +71,32 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
               render={args => (
                 <CodeSelect
                   {...args}
+                  code='ltinvoiceitemtype'
+                  mode='multiple'
+                  label='Category'
+                  maxTagTextLength={50}
+                  onChange={(_, value) => {
+                    if (
+                      !!value.find(
+                        item => item?.id == INVOICE_ITEM_TYPE_BY_NAME.SERVICE,
+                      )
+                    ) {
+                      setServiceCenterIDsFieldState(false)
+                    } else {
+                      setServiceCenterIDsFieldState(true)
+                      setFieldValue('serviceCenterIDs', [])
+                    }
+                  }}
+                />
+              )}
+            />
+          </GridItem>
+          <GridItem md={4}>
+            <Field
+              name='serviceCenterIDs'
+              render={args => (
+                <CodeSelect
+                  {...args}
                   code='ctservicecenter'
                   mode='multiple'
                   label='Service Center'
@@ -75,6 +105,7 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
                     isActive: undefined,
                   }}
                   maxTagTextLength={50}
+                  disabled={serviceCenterIDsFieldState}
                 />
               )}
             />
