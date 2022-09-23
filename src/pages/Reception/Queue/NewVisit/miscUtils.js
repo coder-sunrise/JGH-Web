@@ -497,6 +497,16 @@ export const formikHandleSubmit = (
     )
   }
 
+  //remove reporting doctor that same as primary doctor
+  var duplicateDoctor = restValues.visitDoctor.find(
+    doctor =>
+      !doctor.isDeleted &&
+      doctor.doctorProfileFK === restValues.doctorProfileFK,
+  )
+  if (duplicateDoctor) {
+    duplicateDoctor.isDeleted = true
+  }
+
   let newVisitDoctor = restValues.visitDoctor
     .filter(d => d.id > 0 || !d.isDeleted)
     .map((d, index) => {

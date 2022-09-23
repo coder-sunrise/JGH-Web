@@ -527,7 +527,7 @@ const ReportingDetails = props => {
                     })
                   }}
                 >
-                  Print Report
+                  Preview Report
                 </span>
               </Link>
             )}
@@ -702,7 +702,7 @@ const ReportingDetails = props => {
 
       <CommonModal
         open={showCombineVisit}
-        title='Combine Visit'
+        title='Combine Report'
         onClose={toggleCombineVisit}
         onConfirm={() => {
           toggleCombineVisit()

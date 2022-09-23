@@ -16,7 +16,10 @@ import {
 import Print from '@material-ui/icons/Print'
 import Undo from '@material-ui/icons/Undo'
 import { hasValue } from '@/pages/Widgets/PatientHistory/config'
-import { MEDICALCHECKUP_REPORTSTATUS } from '@/utils/constants'
+import {
+  MEDICALCHECKUP_REPORTSTATUS,
+  MEDICALCHECKUP_WORKITEM_STATUS,
+} from '@/utils/constants'
 import withWebSocket from '@/components/Decorator/withWebSocket'
 import { commonDataReaderTransform } from '@/utils/utils'
 import { getReportContext } from '@/services/report'
@@ -87,6 +90,9 @@ const ReportHistory = props => {
   }
 
   const isVerifyEnable = () => {
+    const reportingStatus = medicalCheckupReportingDetails.entity?.statusFK
+    if (reportingStatus === MEDICALCHECKUP_WORKITEM_STATUS.DISCARDED)
+      return false
     const verifyReportAccessRight = Authorized.check(
       'medicalcheckupworklist.verifyreport',
     ) || {

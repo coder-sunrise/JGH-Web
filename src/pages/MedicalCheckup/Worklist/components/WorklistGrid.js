@@ -333,13 +333,13 @@ const WorklistGrid = ({
     },
     {
       id: 5,
-      label: 'Discard Repoting',
+      label: 'Discard Reporting',
       Icon: DeleteForeverOutlined,
       authority: 'medicalcheckupworklist.discard',
     },
     {
       id: 6,
-      label: 'Complete Repoting',
+      label: 'Complete Reporting',
       Icon: AssignmentTurnedInOutlinedIcon,
       authority: 'medicalcheckupworklist.complete',
     },

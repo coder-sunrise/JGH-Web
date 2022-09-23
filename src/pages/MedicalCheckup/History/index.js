@@ -11,7 +11,7 @@ import RadioWorkItemInfo from '@/pages/Reception/Queue/Grid/WorkItemPopover/Radi
 import LabWorkItemInfo from '@/pages/Reception/Queue/Grid/WorkItemPopover/LabWorkItemInfo'
 import { calculateAgeFromDOB } from '@/utils/dateUtils'
 import { UnorderedListOutlined } from '@ant-design/icons'
-import RedoOutlinedIcon from '@material-ui/icons/RedoOutlined'
+import UndoOutlinedIcon from '@material-ui/icons/UndoOutlined'
 import AssignmentOutlined from '@material-ui/icons/AssignmentOutlined'
 import {
   dateFormatLongWithTimeNoSec,
@@ -106,8 +106,8 @@ const History = ({
     },
     {
       id: 2,
-      label: 'Revert Repoting',
-      Icon: RedoOutlinedIcon,
+      label: 'Revert Reporting',
+      Icon: UndoOutlinedIcon,
       authority: 'medicalcheckupworklist.revert',
     },
   ]
