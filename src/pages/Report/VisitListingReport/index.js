@@ -23,7 +23,6 @@ const styles = () => ({
 
 @connect(({ visitRegistration, codetable }) => ({
   visitRegistration,
-  ctcopayer: codetable.ctcopayer || [],
 }))
 class VisitListing extends ReportBase {
   constructor(props) {
@@ -50,19 +49,19 @@ class VisitListing extends ReportBase {
       type: 'visitRegistration/getVisitOrderTemplateListForDropdown',
       payload: {
         pagesize: 9999,
+        sorting: [{ columnName: 'displayValue', direction: 'asc' }],
       },
     })
     if (response) {
       const { data } = response
-      const templateOptions = data
-        .filter(template => template.isActive)
-        .map(template => {
-          return {
-            ...template,
-            value: template.id,
-            name: template.displayValue,
-          }
-        })
+      const templateOptions = data.map(template => {
+        delete template.isActive
+        return {
+          ...template,
+          value: template.id,
+          name: template.displayValue,
+        }
+      })
 
       dispatch({
         type: 'visitRegistration/updateState',
@@ -71,26 +70,19 @@ class VisitListing extends ReportBase {
         },
       })
     }
-    await dispatch({
-      type: 'codetable/fetchCodes',
-      payload: {
-        code: 'ctcopayer',
-      },
-    })
   }
 
   renderFilterBar = (handleSubmit, isSubmitting) => {
     const {
       visitRegistration: { visitOrderTemplateOptions = [] },
-      ctcopayer,
       classes,
     } = this.props
+
     return (
       <FilterBar
         handleSubmit={handleSubmit}
         isSubmitting={isSubmitting}
         visitOrderTemplateOptions={visitOrderTemplateOptions}
-        ctcopayer={ctcopayer}
         classes={classes}
       />
     )

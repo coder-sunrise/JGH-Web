@@ -510,7 +510,7 @@ export default createListViewModel({
       *getPublicHolidayList({ payload }, { call, put }) {
         const result = yield call(phServices.queryList, {
           isActive: true,
-          lgteql_startDate: payload.start,
+          lgteql_endDate: payload.start,
           pagesize: 999,
         })
 
