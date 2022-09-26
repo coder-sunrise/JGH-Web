@@ -1590,11 +1590,6 @@ const Main = props => {
       },
     }).then(data => {
       if (data) {
-        data = _.orderBy(
-          data,
-          [t => t.dispenseByPharmacy, t => t.displayName.toLowerCase()],
-          ['desc', 'asc'],
-        )
         setDrugDrugSummaryLabelData(data)
         setShowDrugSummaryLabelSelectionPopup(true)
       }
