@@ -1,9 +1,26 @@
 import React, { useContext, useEffect, useState } from 'react'
 import moment from 'moment'
+import { useDispatch } from 'dva'
 import { Table } from 'antd'
 import { dateFormatLongWithTimeNoSec, Icon, Popover } from '@/components'
 
-const CombineVisitIcon = ({ combineVisit = [], placement = 'bottom' }) => {
+const CombineVisitIcon = ({ combineReportGroupFK, placement = 'bottom' }) => {
+  const [combineReport, setCombineReport] = useState([])
+  const dispatch = useDispatch()
+  const queryCombineReport = () => {
+    dispatch({
+      type: 'medicalCheckupReportingDetails/queryCombineReport',
+      payload: {
+        id: combineReportGroupFK,
+      },
+    }).then(r => {
+      if (r && r.status === '200') {
+        setCombineReport(r.data.data)
+      } else {
+        setCombineReport([])
+      }
+    })
+  }
   return (
     <Popover
       icon={null}
@@ -44,7 +61,7 @@ const CombineVisitIcon = ({ combineVisit = [], placement = 'bottom' }) => {
                 render: (_, row) => <span>{row.isPrimary ? 'YES' : 'NO'}</span>,
               },
             ]}
-            dataSource={combineVisit.map((item, index) => ({
+            dataSource={combineReport.map((item, index) => ({
               ...item,
               index: index + 1,
             }))}
@@ -57,6 +74,7 @@ const CombineVisitIcon = ({ combineVisit = [], placement = 'bottom' }) => {
         style={{
           color: '#1890f8',
         }}
+        onClick={queryCombineReport}
       />
     </Popover>
   )

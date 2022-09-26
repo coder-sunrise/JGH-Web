@@ -434,13 +434,6 @@ const ReportingDetails = props => {
     })
   }
 
-  const combineVisit = _.orderBy(
-    medicalCheckupReportingDetails.entity?.medicalCheckupWorkitemGroup
-      ?.medicalCheckupWorkitemCombine || [],
-    ['visitDate'],
-    ['desc'],
-  )
-
   return (
     <div>
       <div style={{ marginTop: '-20px' }}>
@@ -552,19 +545,15 @@ const ReportingDetails = props => {
                 </span>
               </Link>
             )}
-            {combineVisit.length > 0 && (
+            {medicalCheckupReportingDetails.entity
+              ?.medicalCheckupWorkitemGroup && (
               <span style={{ marginLeft: 4 }}>
                 <CombineVisitIcon
                   placement='top'
-                  combineVisit={[
-                    {
-                      visitDate:
-                        medicalCheckupReportingDetails.entity?.visitDate,
-                      reportId: medicalCheckupReportingDetails.entity?.reportId,
-                      isPrimary: true,
-                    },
-                    ...combineVisit,
-                  ]}
+                  combineReportGroupFK={
+                    medicalCheckupReportingDetails.entity
+                      .medicalCheckupWorkitemGroup.id
+                  }
                 />
               </span>
             )}

@@ -445,25 +445,14 @@ const WorklistGrid = ({
         fixed: 'left',
         width: 115,
         render: (_dom, entity) => {
-          let combineVisit = []
-          if (entity.combineVisit) {
-            combineVisit = JSON.parse(entity.combineVisit)
-          }
           return (
             <span>
               <span>{entity.reportId}</span>
-              {combineVisit.length > 0 && (
+              {entity.combineReportGroupFK > 0 && (
                 <span style={{ marginLeft: 4 }}>
                   <CombineVisitIcon
                     placement='bottom'
-                    combineVisit={[
-                      {
-                        visitDate: entity.visitDate,
-                        reportId: entity.reportId,
-                        isPrimary: true,
-                      },
-                      ...combineVisit,
-                    ]}
+                    combineReportGroupFK={entity.combineReportGroupFK}
                   />
                 </span>
               )}

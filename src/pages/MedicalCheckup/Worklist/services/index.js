@@ -49,5 +49,6 @@ const fns = {
   queryMedicalCheckupHistory: params => service.query(`${url}/History`, params),
   previewReportData: params =>
     service.query(`${url}/PreviewReportData`, params),
+  queryCombineReport: params => service.query(`${url}/CombineReport`, params),
 }
 export default fns
