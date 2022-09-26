@@ -15,7 +15,6 @@ const AppointmentSearch = ({
   ctcalendarresource = [],
   mainDivHeight = 700,
   visitOrderTemplateOptions = [],
-  ctcopayer = [],
 }) => {
   const [headerHeight, setHeaderHeight] = useState(0)
   const viewOtherApptAccessRight = Authorized.check(
@@ -78,7 +77,6 @@ const AppointmentSearch = ({
           viewOtherApptAccessRight={viewOtherApptAccessRight}
           isActiveCalendarResource={isActiveCalendarResource}
           visitOrderTemplateOptions={visitOrderTemplateOptions}
-          ctcopayer={ctcopayer}
         />
       </div>
       <Grid
@@ -92,12 +90,8 @@ const AppointmentSearch = ({
   )
 }
 
-export default connect(
-  ({ appointment, global, visitRegistration, codetable }) => ({
-    appointment,
-    mainDivHeight: global.mainDivHeight,
-    visitOrderTemplateOptions:
-      visitRegistration.visitOrderTemplateOptions || [],
-    ctcopayer: codetable.ctcopayer || [],
-  }),
-)(AppointmentSearch)
+export default connect(({ appointment, global, visitRegistration }) => ({
+  appointment,
+  mainDivHeight: global.mainDivHeight,
+  visitOrderTemplateOptions: visitRegistration.visitOrderTemplateOptions || [],
+}))(AppointmentSearch)

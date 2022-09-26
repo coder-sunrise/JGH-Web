@@ -275,15 +275,10 @@ class Appointment extends React.PureComponent {
     })
 
     dispatch({
-      type: 'codetable/fetchCodes',
-      payload: {
-        code: 'ctcopayer',
-      },
-    })
-    dispatch({
       type: 'visitRegistration/getVisitOrderTemplateListForDropdown',
       payload: {
         pagesize: 9999,
+        sorting: [{ columnName: 'displayValue', direction: 'asc' }],
       },
     }).then(response => {
       if (response) {

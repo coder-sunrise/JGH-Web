@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 // formik
 import { FastField, Field } from 'formik'
 // common components
@@ -17,15 +17,28 @@ import service from '@/services/patient'
 import Call from '@material-ui/icons/Call'
 import ReportDateRangePicker from '../ReportDateRangePicker'
 import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
+import { fetchCodeTable } from '@/utils/codetable'
 
 const { queryList, query } = service
 const FilterBar = ({
   handleSubmit,
   isSubmitting,
   visitOrderTemplateOptions = [],
-  ctcopayer = [],
   classes,
 }) => {
+  const [ctcopayer, setCTCopayer] = useState([])
+  useEffect(() => {
+    const response = fetchCodeTable('ctcopayer', {
+      isActive: undefined,
+      apiCriteria: { excludeInactiveCodes: false },
+    }).then(response => {
+      const newCopayer = [
+        { id: 0, displayValue: 'None' },
+        ...response.map(x => ({ ...x, isActive: true })),
+      ]
+      setCTCopayer(newCopayer)
+    })
+  }, [])
   const selectPatientProfile = args => {
     const { disabled } = args
     return (
@@ -106,9 +119,7 @@ const FilterBar = ({
                   maxTagCount={0}
                   options={[
                     { id: 0, displayValue: 'None' },
-                    ..._.sortBy(visitOrderTemplateOptions, ({ displayValue }) =>
-                      displayValue.toLowerCase(),
-                    ),
+                    ...visitOrderTemplateOptions,
                   ]}
                   labelField='displayValue'
                   mode='multiple'
@@ -138,19 +149,14 @@ const FilterBar = ({
             />
           </GridItem>
           <GridItem md={2}>
-            <FastField
+            <Field
               name='copayerIDs'
               render={args => (
                 <CodeSelect
                   {...args}
                   maxTagCount={0}
                   title='Copayers that patient visit claimed'
-                  options={[
-                    { id: 0, displayValue: 'None' },
-                    ..._.sortBy(ctcopayer, ({ displayValue }) =>
-                      displayValue.toLowerCase(),
-                    ),
-                  ]}
+                  options={ctcopayer}
                   labelField='displayValue'
                   mode='multiple'
                   label='Co-Payer'

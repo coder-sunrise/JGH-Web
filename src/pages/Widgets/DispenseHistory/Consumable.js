@@ -81,12 +81,12 @@ export default ({ classes, current, fieldName = '', isFullScreen = true }) => {
       },
     },
     {
-      dataIndex: 'quantity',
+      dataIndex: 'realDispensedQuanity',
       title: 'Qty.',
       align: 'right',
       width: isFullScreen ? 80 : 60,
       render: (text, row) => {
-        const qty = `${numeral(row.quantity || 0).format('0,0.0')}`
+        const qty = `${numeral(row.realDispensedQuanity || 0).format('0,0.0')}`
         return (
           <Tooltip title={qty}>
             <div>{qty}</div>

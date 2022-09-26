@@ -35,7 +35,10 @@ const LabWorkItemInfo = props => {
         workItemType: WORK_ITEM_TYPES_ENUM.LAB,
         workItemFK: workItemFK,
       },
-    }).then(detailData => {
+    }).then(result => {
+      let detailData = result.filter(
+        item => item.statusFK !== LAB_WORKITEM_STATUS.CANCELLED,
+      )
       const workItemFKArray = _.uniqBy(detailData, 'workitemFK').map(
         t => t.workitemFK,
       )

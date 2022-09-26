@@ -1126,7 +1126,11 @@ const DispenseDetails = ({
                           marginTop: -4,
                           textDecoration: 'underline',
                         }}
-                        onClick={onSaveClick}
+                        onClick={() => {
+                          setSelectedServiceAll(false)
+                          setSelectedAll(false)
+                          onSaveClick()
+                        }}
                         disabled={isIncludeExpiredItem}
                       >
                         Save Dispense
