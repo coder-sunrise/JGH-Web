@@ -1942,11 +1942,10 @@ const Main = props => {
           )}
         </GridItem>
       </GridContainer>
-      {((pharmacyDetails.fromModule === 'Main' &&
-        (values.orderItems || []).length > 0) ||
-        (pharmacyDetails.fromModule === 'History' &&
-          values.statusFK !== 4 &&
-          (values.orderItems || []).length > 0)) && (
+      /*orderItems is pending dispense item list */
+      {(pharmacyDetails.fromModule === 'Main' ||
+        ((values.orderItems || []).length > 0 &&
+          !values.forceCompleteReason)) && (
         <div style={{ margin: '8px 8px 0px 8px' }}>
           {pharmacyDetails.fromModule === 'History' && (
             <div style={{ fontWeight: 600, margin: '3px 0px' }}>
