@@ -74,11 +74,27 @@ class ICD10Diagnosis extends PureComponent {
   }
   // Gets the selectData selected by the Grid
   getGridDiangnosisHistoryID = value => {
+    const newValueData = value.map(item => {
+      return {
+        diagnosisType: item.diagnosisType,
+        remarks: item.remarks,
+        validityDays: item.validityDays,
+        icD10DiagnosisCode: item.icD10DiagnosisCode,
+        firstVisitDate: item.firstVisitDate,
+        icD10DiagnosisDescription: item.icD10DiagnosisDescription,
+        icD10DiagnosisFK: item.icD10DiagnosisFK,
+        icD10JpnDiagnosisDescription: item.icD10JpnDiagnosisDescription,
+        onsetDate: item.onsetDate,
+        remarks: item.remarks,
+        sequence: item.sequence,
+        validityDays: item.validityDays,
+        uid: getUniqueGUID(),
+        isNew: true,
+      }
+    })
     const { form } = this.arrayHelpers
     const { values } = form
-    const newValues = values.corDiagnosis
-      .concat(value)
-      .filter(item => item.isNew != true)
+    const newValues = values.corDiagnosis.concat(newValueData)
     values.corDiagnosis = newValues
     this.setState({ showAddFromPastModal: false })
   }

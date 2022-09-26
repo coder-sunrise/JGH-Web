@@ -23,6 +23,7 @@ export default function Grid(props) {
         }
       }),
   )
+
   const columns = [
     { name: 'visitDate', title: 'Visit Date' },
     { name: 'Diagnosis', title: 'Diagnosis' },
@@ -97,11 +98,13 @@ export default function Grid(props) {
               columnName: 'visitDate',
               type: 'date',
               width: 110,
+              sortingEnabled: false,
             },
             {
               columnName: 'firstVisitDate',
               type: 'date',
               width: 110,
+              sortingEnabled: false,
               render: row => {
                 if (row.firstVisitDate != null) {
                   return moment(row.firstVisitDate).format('DD MMM YYYY')
@@ -112,6 +115,7 @@ export default function Grid(props) {
               columnName: 'onsetDate',
               type: 'date',
               width: 110,
+              sortingEnabled: false,
               render: row => {
                 if (row.onsetDate != null) {
                   return moment(row.onsetDate).format('DD MMM YYYY')
@@ -121,15 +125,18 @@ export default function Grid(props) {
             {
               columnName: 'diagnosisType',
               width: 110,
+              sortingEnabled: false,
             },
             {
               columnName: 'validityDays',
               width: 110,
               align: 'center',
+              sortingEnabled: false,
             },
             {
               columnName: 'Diagnosis',
               width: 300,
+              sortingEnabled: false,
               render: row => {
                 if (
                   Date.now() > Date.parse(row.effectiveStartDate) &&
