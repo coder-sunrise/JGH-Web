@@ -1942,7 +1942,7 @@ const Main = props => {
           )}
         </GridItem>
       </GridContainer>
-      /*orderItems is pending dispense item list */
+      {/* orderItems is pending dispense item list */}
       {(pharmacyDetails.fromModule === 'Main' ||
         ((values.orderItems || []).length > 0 &&
           !values.forceCompleteReason)) && (
