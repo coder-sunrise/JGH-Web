@@ -166,26 +166,28 @@ const FilterBar = ({
   return (
     <Fragment>
       <GridContainer>
-        <GridItem md={4}>
-          <FastField
-            name='searchValue'
-            render={args => (
-              <TextField
-                {...args}
-                label={formatMessage({
-                  id: 'reception.queue.patientSearchPlaceholder',
-                })}
-                autoFocus
-              />
-            )}
-          />
-        </GridItem>
-        <GridItem md={1}>
-          <FastField
-            name='dob'
-            render={args => <DatePicker {...args} label='DOB' />}
-          />
-        </GridItem>
+        <GridContainer md={6}>
+          <GridItem md={9}>
+            <FastField
+              name='searchValue'
+              render={args => (
+                <TextField
+                  {...args}
+                  label={formatMessage({
+                    id: 'reception.queue.patientSearchPlaceholder',
+                  })}
+                  autoFocus
+                />
+              )}
+            />
+          </GridItem>
+          <GridItem md={3}>
+            <FastField
+              name='dob'
+              render={args => <DatePicker {...args} label='DOB' />}
+            />
+          </GridItem>
+        </GridContainer>
         <GridItem md={3}>
           <FastField
             name='apptDate'
@@ -194,7 +196,7 @@ const FilterBar = ({
             )}
           />
         </GridItem>
-        <GridItem md={4}>
+        <GridItem md={3}>
           <Field
             name='filterByDoctor'
             render={args => (
@@ -218,7 +220,7 @@ const FilterBar = ({
             )}
           />
         </GridItem>
-        <GridItem md={4}>
+        <GridItem md={3}>
           <Field
             name='bookBy'
             render={args => {
@@ -235,30 +237,32 @@ const FilterBar = ({
             }}
           />
         </GridItem>
-        <GridItem md={2}>
-          <FastField
-            name='bookOn'
-            render={args => <DatePicker label='Book On' {...args} />}
-          />
-        </GridItem>
-        <GridItem md={2}>
-          <FastField
-            name='filterByRoomBlockGroup'
-            render={args => {
-              return (
-                <CodeSelect
-                  label='Room'
-                  code='ctRoom'
-                  mode='multiple'
-                  maxTagPlaceholder='rooms'
-                  maxTagCount={0}
-                  {...args}
-                />
-              )
-            }}
-          />
-        </GridItem>
-        <GridItem md={2}>
+        <GridContainer md={3}>
+          <GridItem md={6}>
+            <FastField
+              name='bookOn'
+              render={args => <DatePicker label='Book On' {...args} />}
+            />
+          </GridItem>
+          <GridItem md={6}>
+            <FastField
+              name='filterByRoomBlockGroup'
+              render={args => {
+                return (
+                  <CodeSelect
+                    label='Room'
+                    code='ctRoom'
+                    mode='multiple'
+                    maxTagPlaceholder='rooms'
+                    maxTagCount={0}
+                    {...args}
+                  />
+                )
+              }}
+            />
+          </GridItem>
+        </GridContainer>
+        <GridItem md={3}>
           <Field
             name='filterByApptType'
             render={args => (
@@ -289,7 +293,7 @@ const FilterBar = ({
             )}
           />
         </GridItem>
-        <GridItem md={2}>
+        <GridItem md={3}>
           <FastField
             name='filterByAppointmentStatus'
             render={args => {
