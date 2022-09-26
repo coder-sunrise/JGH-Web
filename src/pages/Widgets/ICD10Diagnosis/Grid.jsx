@@ -23,11 +23,6 @@ export default function Grid(props) {
         }
       }),
   )
-  const [newDiagnosisHistoryData, setNewDiagnosisHistoryData] = useState(
-    diagnosisHistoryData.sort(function(a, b) {
-      return Date.parse(a.visitDate) < Date.parse(b.visitDate) ? 1 : -1
-    }),
-  )
 
   const columns = [
     { name: 'visitDate', title: 'Visit Date' },
@@ -96,7 +91,7 @@ export default function Grid(props) {
           size='sm'
           forceRender
           columns={columns}
-          rows={newDiagnosisHistoryData}
+          rows={diagnosisHistoryData}
           FuncProps={{ pager: false }}
           columnExtensions={[
             {
