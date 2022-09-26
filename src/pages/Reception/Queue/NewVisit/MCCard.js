@@ -15,6 +15,7 @@ import {
   EditableTableGrid,
   Popconfirm,
   Popover,
+  Checkbox,
 } from '@/components'
 import { DoctorLabel } from '@/components/_medisys'
 import Delete from '@material-ui/icons/Delete'
@@ -210,6 +211,22 @@ const MCCard = ({
                 authority='none'
                 disabled={!mcWorkItemInProgress || visitMode === 'view'}
                 label='Report Remarks'
+              />
+            )}
+          />
+        </div>
+        <div style={{ marginLeft: 10 }}>
+          <Field
+            name='medicalCheckupWorkitem[0].isDataIncludedInPastVisit'
+            render={args => (
+              <Checkbox
+                {...args}
+                simple
+                label='Main Visit'
+                style={{
+                  position: 'relative',
+                  top: 20,
+                }}
               />
             )}
           />

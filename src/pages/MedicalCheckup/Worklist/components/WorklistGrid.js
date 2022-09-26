@@ -28,17 +28,20 @@ import {
   dateFormatLong,
   Tooltip,
   notification,
+  TextField,
 } from '@/components'
 import { ProTable } from '@medisys/component'
 import { GridContextMenuButton as GridButton } from 'medisys-components'
 import MoreVert from '@material-ui/icons/MoreVert'
 import Description from '@material-ui/icons/Description'
 import FindInPage from '@material-ui/icons/FindInPage'
+import DeleteForeverOutlined from '@material-ui/icons/DeleteForeverOutlined'
+import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedInOutlined'
 import VisitForms from '@/pages/Reception/Queue/VisitForms'
 import FormatListBulletedOutlinedIcon from '@material-ui/icons/FormatListBulletedOutlined'
 import ListAltOutlinedIcon from '@material-ui/icons/ListAltOutlined'
 import AssignmentOutlined from '@material-ui/icons/AssignmentOutlined'
-import { commonDataReaderTransform } from '@/utils/utils'
+import { commonDataReaderTransform, ableToViewByAuthority } from '@/utils/utils'
 import withWebSocket from '@/components/Decorator/withWebSocket'
 import { CheckCircleOutlined } from '@ant-design/icons'
 import WorklistContext from '../WorklistContext'
@@ -50,10 +53,11 @@ import {
 } from './Util'
 import VisitOrderTemplateIndicateString from '@/pages/Widgets/Orders/VisitOrderTemplateIndicateString'
 import { useVT } from 'virtualizedtableforantd4'
+import CombineVisitIcon from '@/pages/MedicalCheckup/Worklist/components/CombineVisitIcon'
 
 const allMedicalCheckupReportStatuses = Object.values(
   MEDICALCHECKUP_WORKITEM_STATUS,
-)
+).filter(status => status !== MEDICALCHECKUP_WORKITEM_STATUS.DISCARDED)
 
 const saveColumnsSetting = (dispatch, columnsSetting) => {
   dispatch({
@@ -93,6 +97,9 @@ const WorklistGrid = ({
   const [filteredStatuses, setFilteredStatuses] = useState(selectedStatus)
   const [workitems, setWorkitems] = useState([])
   const [showForms, setShowForms] = useState(false)
+  const [isShowDeleteMC, setShowDeleteMC] = useState(false)
+  const [cancelMCId, setCancelMCId] = useState(undefined)
+  const [discardReason, setDiscardReason] = useState(undefined)
   const { setIsAnyWorklistModelOpened } = useContext(WorklistContext)
   const [vt] = useVT(() => ({ scroll: { y: height - 50 - 95 } }), [])
   useEffect(() => {
@@ -115,6 +122,16 @@ const WorklistGrid = ({
           list: [],
         },
       })
+    }
+  }
+
+  const toggleDeleteMC = () => {
+    const target = !isShowDeleteMC
+    setShowDeleteMC(target)
+    setIsAnyWorklistModelOpened(target)
+    if (!target) {
+      setDiscardReason(undefined)
+      setCancelMCId(undefined)
     }
   }
 
@@ -223,8 +240,75 @@ const WorklistGrid = ({
       case '4':
         viewReport(row)
         break
+      case '5':
+        onDeleteMC(row)
+        break
+      case '6':
+        onCompleteMC(row)
+        break
     }
   }
+
+  const onCompleteMC = row => {
+    dispatch({
+      type: 'global/updateAppState',
+      payload: {
+        openConfirm: true,
+        openConfirmTitle: 'Complete Reporting',
+        openConfirmContent: `Confirm to complete this reporting?`,
+        onConfirmSave: () => {
+          dispatch({
+            type: `medicalCheckupWorklist/complete`,
+            payload: {
+              id: row.id,
+            },
+          }).then(o => {
+            if (o) {
+              notification.success({
+                message: 'Medical Checkup report completed.',
+              })
+            }
+            dispatch({
+              type: `medicalCheckupWorklist/query`,
+            })
+          })
+        },
+      },
+    })
+  }
+
+  const onDeleteMC = row => {
+    setIsAnyWorklistModelOpened(true)
+    setShowDeleteMC(true)
+    setCancelMCId(row.id)
+  }
+
+  const onConfirmDeleteMC = () => {
+    if (discardReason === '' || discardReason === undefined) {
+      notification.warning({
+        message: 'Discard reason is required.',
+      })
+      return
+    }
+    dispatch({
+      type: `medicalCheckupWorklist/discard`,
+      payload: {
+        id: cancelMCId,
+        cancelReason: discardReason,
+      },
+    }).then(o => {
+      if (o) {
+        notification.success({
+          message: 'Reporting discarded.',
+        })
+      }
+      dispatch({
+        type: `medicalCheckupWorklist/query`,
+      })
+      toggleDeleteMC()
+    })
+  }
+
   const menus = [
     {
       id: 1,
@@ -246,6 +330,18 @@ const WorklistGrid = ({
       id: 4,
       label: 'View Reports',
       Icon: FindInPage,
+    },
+    {
+      id: 5,
+      label: 'Discard Reporting',
+      Icon: DeleteForeverOutlined,
+      authority: 'medicalcheckupworklist.discard',
+    },
+    {
+      id: 6,
+      label: 'Complete Reporting',
+      Icon: AssignmentTurnedInOutlinedIcon,
+      authority: 'medicalcheckupworklist.complete',
     },
   ]
 
@@ -341,6 +437,30 @@ const WorklistGrid = ({
         },
       },
       {
+        key: 'reportId',
+        title: 'Report ID',
+        dataIndex: 'reportId',
+        sorter: false,
+        search: false,
+        fixed: 'left',
+        width: 115,
+        render: (_dom, entity) => {
+          return (
+            <span>
+              <span>{entity.reportId}</span>
+              {entity.combineReportGroupFK > 0 && (
+                <span style={{ marginLeft: 4 }}>
+                  <CombineVisitIcon
+                    placement='bottom'
+                    combineReportGroupFK={entity.combineReportGroupFK}
+                  />
+                </span>
+              )}
+            </span>
+          )
+        },
+      },
+      {
         key: 'patientReferenceNo',
         title: 'Ref. No.',
         dataIndex: 'patientReferenceNo',
@@ -385,7 +505,7 @@ const WorklistGrid = ({
         dataIndex: 'reportPriority',
         sorter: false,
         search: false,
-        width: 200,
+        width: 160,
         render: (_dom, entity) => {
           const remarks = `${entity.reportPriority}${
             entity.urgentReportRemarks ? `, ${entity.urgentReportRemarks}` : ''
@@ -572,18 +692,18 @@ const WorklistGrid = ({
           ) {
             return ''
           }
-
-          const handleClick = event => {
-            const { key } = event
-            clickMenu(entity, key)
-          }
           return (
             <Tooltip title='More Options'>
               <div>
                 <GridButton
                   row={entity}
                   contextMenuOptions={menus.filter(
-                    m => entity.isExistsVerifiedReport || m.id !== 4,
+                    m =>
+                      ableToViewByAuthority(m.authority) &&
+                      (entity.isExistsVerifiedReport || m.id !== 4) &&
+                      (entity.statusFK !==
+                        MEDICALCHECKUP_WORKITEM_STATUS.COMPLETED ||
+                        m.id !== 6),
                   )}
                   onClick={handleMenuItemClick}
                 />
@@ -735,6 +855,28 @@ const WorklistGrid = ({
         overrideLoading
       >
         <VisitForms formCategory={FORM_CATEGORY.CORFORM} />
+      </CommonModal>
+
+      <CommonModal
+        open={isShowDeleteMC}
+        title='Discard Reporting'
+        onClose={toggleDeleteMC}
+        onConfirm={onConfirmDeleteMC}
+        maxWidth='sm'
+        showFooter={true}
+      >
+        <div style={{ padding: '0px 16px' }}>
+          <h4>Confirm to discard this reporting?</h4>
+          <TextField
+            label='Discard Reason'
+            autoFocus
+            value={discardReason}
+            onChange={event => {
+              setDiscardReason(event.target.value)
+            }}
+            maxLength={2000}
+          />
+        </div>
       </CommonModal>
     </div>
   )

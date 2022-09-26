@@ -344,17 +344,6 @@ class NewVisit extends PureComponent {
     }
 
     if (
-      visitDoctor.find(
-        x => !x.isDeleted && x.doctorProfileFK === doctorProfileFK,
-      )
-    ) {
-      notification.error({
-        message: 'Primary doctor and reporting doctor cannot be the same.',
-      })
-      return
-    }
-
-    if (
       visitDoctor.filter(x => !x.isDeleted).length !==
       _.uniqBy(
         visitDoctor.filter(x => !x.isDeleted),
@@ -362,31 +351,58 @@ class NewVisit extends PureComponent {
       ).length
     ) {
       notification.error({
-        message: 'Can not select duplicate doctor.',
+        message: 'Can not select duplicate reporting doctor.',
       })
       return
     }
 
     if (Object.keys(errors).length > 0) return handleSubmit()
 
-    const alreadyRegisteredVisit = list.reduce(
-      (registered, queue) =>
-        !registered ? queue.patientProfileFK === patientInfo.id : registered,
-      false,
-    )
+    const saveVisit = () => {
+      const alreadyRegisteredVisit = list.reduce(
+        (registered, queue) =>
+          !registered ? queue.patientProfileFK === patientInfo.id : registered,
+        false,
+      )
 
-    if (!values.id && alreadyRegisteredVisit)
-      return dispatch({
+      if (!values.id && alreadyRegisteredVisit) {
+        dispatch({
+          type: 'global/updateAppState',
+          payload: {
+            openConfirm: true,
+            openConfirmTitle: 'Confirm Register New Visit',
+            openConfirmContent:
+              'This patient already registered in current session, are you sure to continue?',
+            onConfirmSave: handleSubmit,
+          },
+        })
+      } else {
+        handleSubmit()
+      }
+    }
+
+    if (
+      visitDoctor.find(
+        x => !x.isDeleted && x.doctorProfileFK === doctorProfileFK,
+      )
+    ) {
+      dispatch({
         type: 'global/updateAppState',
         payload: {
           openConfirm: true,
-          openConfirmTitle: 'Confirm Register New Visit',
+          openConfirmTitle: 'Confirm Change Doctor',
           openConfirmContent:
-            'This patient already registered in current session, are you sure to continue?',
-          onConfirmSave: handleSubmit,
+            'Confirm to change reporting doctor to primary doctor?',
+          onConfirmSave: () => {
+            setTimeout(() => {
+              saveVisit()
+            }, 10)
+          },
         },
       })
-    return handleSubmit()
+    } else {
+      saveVisit()
+    }
   }
 
   getEyeWidgets = (isReadOnly, isRetail) => {

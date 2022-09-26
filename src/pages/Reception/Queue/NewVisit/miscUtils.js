@@ -222,6 +222,7 @@ export const formikMapPropsToValues = ({
               patientInfo,
               clinicSettings.settings,
             ),
+            isDataIncludedInPastVisit: true,
           },
         ]
       }
@@ -494,6 +495,16 @@ export const formikHandleSubmit = (
     visitEyeRefractionForm.formData = JSON.stringify(
       visitEyeRefractionForm.formData,
     )
+  }
+
+  //remove reporting doctor that same as primary doctor
+  var duplicateDoctor = restValues.visitDoctor.find(
+    doctor =>
+      !doctor.isDeleted &&
+      doctor.doctorProfileFK === restValues.doctorProfileFK,
+  )
+  if (duplicateDoctor) {
+    duplicateDoctor.isDeleted = true
   }
 
   let newVisitDoctor = restValues.visitDoctor

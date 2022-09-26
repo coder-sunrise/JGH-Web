@@ -10,7 +10,7 @@ import {
 const ALL_STATUS_VALUE = -99
 const allMedicalCheckupReportStatuses = Object.values(
   MEDICALCHECKUP_WORKITEM_STATUS,
-)
+).filter(s => s !== MEDICALCHECKUP_WORKITEM_STATUS.DISCARDED)
 
 const getStatusColor = statusId =>
   MEDICALCHECKUP_WORKITEM_STATUSES.find(x => x.id === statusId).color

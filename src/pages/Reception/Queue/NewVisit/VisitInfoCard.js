@@ -243,6 +243,7 @@ const VisitInfoCard = ({
   }
 
   const updateMedicalCheckup = (visitPurposeFK, isForInvoiceReplacement) => {
+    setFieldValue('medicalCheckupWorkitem[0].isDataIncludedInPastVisit', true)
     if (visitPurposeFK != VISIT_TYPE.MC || isForInvoiceReplacement) {
       setFieldValue('visitDoctor', [
         ...values.visitDoctor.map(d => {
@@ -257,10 +258,15 @@ const VisitInfoCard = ({
         getMCReportLanguage(patientInfo, clinicSettings.settings),
       ])
       setFieldValue('medicalCheckupWorkitem[0].reportPriority', 'Normal')
-      setFieldValue(
-        'medicalCheckupWorkitem[0].statusFK',
-        MEDICALCHECKUP_WORKITEM_STATUS.INPROGRESS,
-      )
+      if (
+        (values.medicalCheckupWorkitem || []).length <= 0 ||
+        !values.medicalCheckupWorkitem[0].id
+      ) {
+        setFieldValue(
+          'medicalCheckupWorkitem[0].statusFK',
+          MEDICALCHECKUP_WORKITEM_STATUS.INPROGRESS,
+        )
+      }
     }
   }
 
