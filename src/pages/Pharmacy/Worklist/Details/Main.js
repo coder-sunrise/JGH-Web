@@ -1966,11 +1966,12 @@ const Main = props => {
       )}
       {pharmacyDetails.fromModule === 'History' && (
         <div style={{ margin: '8px 8px 0px 8px' }}>
-          {(values.orderItems || []).length > 0 && (
-            <div style={{ fontWeight: 600, margin: '3px 0px' }}>
-              Completed Items
-            </div>
-          )}
+          {(values.orderItems || []).length > 0 &&
+            !values.forceCompleteReason && (
+              <div style={{ fontWeight: 600, margin: '3px 0px' }}>
+                Completed Items
+              </div>
+            )}
           <div style={{ overflowX: 'auto' }}>
             <AntdTable
               className={customtyles.table}

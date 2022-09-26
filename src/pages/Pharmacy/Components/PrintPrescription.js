@@ -61,14 +61,6 @@ const PrintPrescription = props => {
     }).then(data => {
       if (data) {
         handleClose()
-        data = _.orderBy(
-          data,
-          [
-            data => data.displayInLeaflet,
-            data => data.displayName.toLowerCase(),
-          ],
-          ['desc', 'asc'],
-        )
         setDrugLeafletData(data)
         setShowLeafletSelectionPopup(true)
       }
@@ -105,11 +97,6 @@ const PrintPrescription = props => {
         return
       }
       handleClose()
-      data = _.orderBy(
-        data,
-        ['dispenseByPharmacy', 'displayName'],
-        ['desc', 'asc'],
-      )
       setDrugSummaryLabelData(data)
       setShowDrugSummaryLabelSelectionPopup(true)
     })

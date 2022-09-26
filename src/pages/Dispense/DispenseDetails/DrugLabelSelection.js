@@ -93,26 +93,12 @@ class DrugLabelSelection extends React.PureComponent {
       if (data) {
         // filter when click print from table row.
         if (currentDrugToPrint && currentDrugToPrint.id) {
-          data = data.filter(
-            t => t.visitInvoiceDrugId === currentDrugToPrint.id,
-          )
-        }
-        if (source === 'pharmacy') {
-          data = _.orderBy(
-            data,
-            [
-              data => data.dispenseByPharmacy,
-              data => data.displayName.toLowerCase(),
-            ],
-            ['desc', 'asc'],
-          )
-        } else {
-          data = _.orderBy(
-            data,
-            [data => data.displayName.toLowerCase()],
-            ['asc'],
-          )
-        }
+                                                           data = data.filter(
+                                                             t =>
+                                                               t.visitInvoiceDrugId ===
+                                                               currentDrugToPrint.id,
+                                                           )
+                                                         }
         // set default language based on patient tranlsation and clinic setting.
         const translationFK =
           translationLinkFK ||
