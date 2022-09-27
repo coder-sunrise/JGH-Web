@@ -164,13 +164,14 @@ const CollectSpecimen = ({
       ),
     )
     form.resetFields()
-    let lastCancelLabWorkitem = _.sortBy(
-      visitData.labWorkitems.filter(
-        item => item.statusFK === LAB_WORKITEM_STATUS.CANCELLED,
-      ),
+    let cancelLabWorkitemList = visitData.labWorkitems.filter(
+      item => item.statusFK === LAB_WORKITEM_STATUS.CANCELLED,
+    )
+    let lastCancelLabWorkitem = _.orderBy(
+      cancelLabWorkitemList,
       ['cancelledDate'],
-      ['asc'],
-    ).at(-1)
+      ['desc'],
+    )[0]
     setLastUpdateData({
       cancelledDate: lastCancelLabWorkitem?.cancelledDate.format(
         'DD MMM YYYY HH:mm',
