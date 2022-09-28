@@ -27,11 +27,7 @@ export default class FamilyMembersInfoUpdate extends Component {
     }
   }
   componentWillMount = () => {
-    const {
-      dispatch,
-      patientProfileFK,
-      familyMembers = [],
-    } = this.props
+    const { dispatch, patientProfileFK, familyMembers = [] } = this.props
     dispatch({
       type: 'patient/getFamilyMembersInfo',
       payload: {
@@ -50,13 +46,17 @@ export default class FamilyMembersInfoUpdate extends Component {
       selectedAddressRows = [],
       selectedSchemeRows = [],
     } = this.state
-    const { onSelectionChange } = this.props
+    const {
+      onSelectionChange,
+      newContactAddress,
+      newPatientFamilyMember,
+    } = this.props
     const addressList = familyMembersInfo.filter(x => x.addressInfo)
     const schemeList = familyMembersInfo.filter(x => x.schemeInfo)
 
     return (
       <div>
-        {addressList.length > 0 && (
+        {!newContactAddress && (
           <div>
             <h5>Do you want to update your Family Members' Address too?</h5>
             <CommonTableGrid
@@ -85,36 +85,68 @@ export default class FamilyMembersInfoUpdate extends Component {
             />
           </div>
         )}
-        {schemeList.length > 0 && (
-          <div>
-            <h5>
-              Do you want to update your Family Members' Corporate Scheme too?
-            </h5>
-            <CommonTableGrid
-              rows={schemeList}
-              getRowId={r => r.familyMemberFK}
-              columns={schemeColumns}
-              columnExtensions={columnExtensions}
-              selection={selectedSchemeRows}
-              onSelectionChange={rows => {
-                familyMembersInfo.forEach(x => {
-                  x.isUpdateScheme = false
-                  if (rows.some(i => i === x.familyMemberFK))
-                    x.isUpdateScheme = true
-                })
-                this.setState({ familyMembersInfo, selectedSchemeRows: rows })
-                onSelectionChange(familyMembersInfo)
-              }}
-              FuncProps={{
-                pager: false,
-                selectable: true,
-                selectConfig: {
-                  showSelectAll: true,
-                  rowSelectionEnabled: () => true,
-                },
-              }}
-            />
-          </div>
+        {!newPatientFamilyMember && (
+          <>
+            <div>
+              <h5>
+                Do you want to update your Family Members' Corporate Scheme too?
+              </h5>
+              <CommonTableGrid
+                rows={schemeList}
+                getRowId={r => r.familyMemberFK}
+                columns={schemeColumns}
+                columnExtensions={columnExtensions}
+                selection={selectedSchemeRows}
+                onSelectionChange={rows => {
+                  familyMembersInfo.forEach(x => {
+                    x.isUpdateScheme = false
+                    if (rows.some(i => i === x.familyMemberFK))
+                      x.isUpdateScheme = true
+                  })
+                  this.setState({ familyMembersInfo, selectedSchemeRows: rows })
+                  onSelectionChange(familyMembersInfo)
+                }}
+                FuncProps={{
+                  pager: false,
+                  selectable: true,
+                  selectConfig: {
+                    showSelectAll: true,
+                    rowSelectionEnabled: () => true,
+                  },
+                }}
+              />
+            </div>
+            <div>
+              <h5>Do you want to update your Family Members' Address too?</h5>
+              <CommonTableGrid
+                rows={addressList}
+                getRowId={r => r.familyMemberFK}
+                columns={addressColumns}
+                columnExtensions={columnExtensions}
+                selection={selectedAddressRows}
+                onSelectionChange={rows => {
+                  familyMembersInfo.forEach(x => {
+                    x.isUpdateAddress = false
+                    if (rows.some(i => i === x.familyMemberFK))
+                      x.isUpdateAddress = true
+                  })
+                  this.setState({
+                    familyMembersInfo,
+                    selectedAddressRows: rows,
+                  })
+                  onSelectionChange(familyMembersInfo)
+                }}
+                FuncProps={{
+                  pager: false,
+                  selectable: true,
+                  selectConfig: {
+                    showSelectAll: true,
+                    rowSelectionEnabled: () => true,
+                  },
+                }}
+              />
+            </div>
+          </>
         )}
       </div>
     )
