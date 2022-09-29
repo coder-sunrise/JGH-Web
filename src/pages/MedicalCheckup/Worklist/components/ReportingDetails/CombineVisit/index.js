@@ -6,8 +6,10 @@ import moment from 'moment'
 import { withStyles } from '@material-ui/core'
 import {
   Tooltip,
-  dateFormatLongWithTimeNoSec,
+  dateFormatLong,
   CommonTableGrid,
+  GridContainer,
+  GridItem,
 } from '@/components'
 import { ListBoxComponent } from '@syncfusion/ej2-react-dropdowns'
 
@@ -52,9 +54,10 @@ const CombineVisit = ({
   }, [patientProfileId])
 
   const setDefaultComments = medicalCheckupWorkitems => {
-    let newComments =
+    let newComments = (
       medicalCheckupReportingDetails.entity?.medicalCheckupWorkitemGroup
         ?.medicalCheckupWorkitemCombineSummaryComment || []
+    ).map(item => ({ ...item }))
     const selectMCs = (
       medicalCheckupReportingDetails.entity?.medicalCheckupWorkitemGroup
         ?.medicalCheckupWorkitemCombine || []
@@ -230,83 +233,98 @@ const CombineVisit = ({
   }
   return (
     <div>
-      <div
-        style={{
-          overflowY: 'auto',
-          maxHeight: mainDivHeight - 140,
-          padding: '0px 8px 8px 8px',
-        }}
-      >
-        <CommonTableGrid
-          forceRender
-          rows={mcHistory.filter(
-            mc => mc.id !== medicalCheckupReportingDetails.entity?.id,
-          )}
-          columnExtensions={[
-            {
-              columnName: 'reportId',
-              sortingEnabled: false,
-              width: 110,
-            },
-            {
-              columnName: 'visitDate',
-              sortingEnabled: false,
-              width: 140,
-              render: row => (
-                <span>
-                  {moment(row.visitDate).format(dateFormatLongWithTimeNoSec)}
-                </span>
-              ),
-            },
-            {
-              columnName: 'visitPurpose',
-              sortingEnabled: false,
-              width: 200,
-            },
-            {
-              columnName: 'visitRemarks',
-              sortingEnabled: false,
-            },
-          ]}
-          columns={[
-            { name: 'reportId', title: 'Report ID' },
-            { name: 'visitDate', title: 'Visit Date' },
-            { name: 'visitPurpose', title: 'Visit Purpose' },
-            { name: 'visitRemarks', title: 'Visit Remarks' },
-          ]}
-          FuncProps={{
-            pager: false,
-            selectable: true,
-            selectConfig: {
-              showSelectAll: true,
-              rowSelectionEnabled: row => true,
-            },
-          }}
-          selection={selectedRows}
-          onSelectionChange={handleSelectionChange}
-          type='new'
-        />
-        <h4 style={{ marginTop: 8 }}>Combine Summary Comments:</h4>
-        <ListBoxComponent
-          dataSource={combineComments.filter(comment => !comment.isDeleted)}
-          allowDragAndDrop={true}
-          scope='combined-list'
-          fields={{ text: 'medicalCheckupSummaryCommentFK' }}
-          selectionSettings={{ mode: 'Single' }}
-          itemTemplate={row => (
+      <GridContainer>
+        <GridItem md={7}>
+          <div>
+            <h4>Current Available Medical Checkup Visits:</h4>
+            <CommonTableGrid
+              forceRender
+              rows={mcHistory.filter(
+                mc => mc.id !== medicalCheckupReportingDetails.entity?.id,
+              )}
+              columnExtensions={[
+                {
+                  columnName: 'reportId',
+                  sortingEnabled: false,
+                  width: 110,
+                },
+                {
+                  columnName: 'visitDate',
+                  sortingEnabled: false,
+                  width: 100,
+                  render: row => (
+                    <span>{moment(row.visitDate).format(dateFormatLong)}</span>
+                  ),
+                },
+                {
+                  columnName: 'visitPurpose',
+                  sortingEnabled: false,
+                  width: 160,
+                },
+                {
+                  columnName: 'visitRemarks',
+                  sortingEnabled: false,
+                },
+              ]}
+              columns={[
+                { name: 'reportId', title: 'Report ID' },
+                { name: 'visitDate', title: 'Visit Date' },
+                { name: 'visitPurpose', title: 'Visit Purpose' },
+                { name: 'visitRemarks', title: 'Visit Remarks' },
+              ]}
+              FuncProps={{
+                pager: false,
+                selectable: true,
+                selectConfig: {
+                  showSelectAll: true,
+                  rowSelectionEnabled: row => true,
+                },
+              }}
+              selection={selectedRows}
+              onSelectionChange={handleSelectionChange}
+              type='new'
+              TableProps={{
+                height: mainDivHeight - 170,
+              }}
+            />
+          </div>
+        </GridItem>
+        <GridItem md={5}>
+          <div>
+            <h4>Combine Summary Comments:</h4>
             <div
               style={{
-                padding: '6px 10px',
+                overflowY: 'auto',
+                maxHeight: mainDivHeight - 170,
               }}
             >
-              {selectedLanguage === 'EN'
-                ? row.englishComment
-                : row.japaneseComment}
+              <ListBoxComponent
+                dataSource={combineComments.filter(
+                  comment => !comment.isDeleted,
+                )}
+                allowDragAndDrop={true}
+                scope='combined-list'
+                fields={{ text: 'medicalCheckupSummaryCommentFK' }}
+                selectionSettings={{ mode: 'Single' }}
+                itemTemplate={row => (
+                  <div
+                    style={{
+                      padding: '6px 10px',
+                      borderBottom: '1px solid #CCCCCC',
+                    }}
+                  >
+                    {selectedLanguage === 'EN'
+                      ? row.englishComment
+                      : row.japaneseComment}
+                  </div>
+                )}
+                drop={onDropGroup}
+                style={{ width: '100%' }}
+              />
             </div>
-          )}
-          drop={onDropGroup}
-        />
-      </div>
+          </div>
+        </GridItem>
+      </GridContainer>
       {footer &&
         footer({
           onConfirm: onConfirmClick,

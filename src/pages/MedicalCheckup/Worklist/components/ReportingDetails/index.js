@@ -697,7 +697,7 @@ const ReportingDetails = props => {
           toggleCombineVisit()
           refreshMedicalCheckup()
         }}
-        maxWidth='md'
+        maxWidth='lg'
         observe='CombineVisit'
       >
         <CombineVisit
