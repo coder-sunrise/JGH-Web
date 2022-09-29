@@ -377,6 +377,13 @@ const tenantCodesMap = new Map([
       sorting: [{ columnName: 'displayValue', direction: 'asc' }],
     },
   ],
+  [
+    'statementgroup',
+    {
+      ...defaultParams,
+      sorting: [{ columnName: 'displayValue', direction: 'asc' }],
+    },
+  ],
 ])
 
 // always get latest codetable

@@ -62,6 +62,7 @@ const styles = () => ({
       statementEndDate,
       dueStartDate,
       dueEndDate,
+      statementGroupFK,
     } = values
     let statementDateFrom
     let statementDateTo
@@ -85,6 +86,8 @@ const styles = () => ({
         lgteql_statementDate: statementDateFrom,
         lsteql_statementDate: statementDateTo,
         isCancelled: false,
+        statementGroupFK:
+          typeof statementGroupFK === 'number' ? statementGroupFK : undefined,
         apiCriteria: {
           DueDateFrom: statementDueDateFrom,
           DueDateTo: statementDueDateTo,
@@ -200,13 +203,13 @@ class SearchBar extends PureComponent {
       <div>
         <GridContainer className={classes.container}>
           <GridItem container xs md={12}>
-            <GridItem md={3}>
+            <GridItem md={2}>
               <FastField
                 name='statementNo'
                 render={args => <TextField label='Statement No.' {...args} />}
               />
             </GridItem>
-            <GridItem md={3}>
+            <GridItem md={2}>
               <Field
                 name='statementStartDate'
                 render={args => (
@@ -223,7 +226,7 @@ class SearchBar extends PureComponent {
                 )}
               />
             </GridItem>
-            <GridItem md={3}>
+            <GridItem md={2}>
               <Field
                 name='statementEndDate'
                 render={args => (
@@ -242,9 +245,54 @@ class SearchBar extends PureComponent {
               />
             </GridItem>
 
-            <GridItem xs sm={3} md={3} style={{ marginTop: 13 }}>
+            <GridItem xs sm={3} md={1} style={{ marginTop: 13 }}>
               <FastField
                 name='isAllDateChecked'
+                render={args => {
+                  return <Checkbox label='All Date' {...args} />
+                }}
+              />
+            </GridItem>
+
+            <GridItem md={2}>
+              <Field
+                name='dueStartDate'
+                render={args => (
+                  <FilterBarDate
+                    noTodayLimit
+                    args={args}
+                    label='Statement Due From Date'
+                    disabled={isAllDueDateChecked}
+                    formValues={{
+                      startDate: dueStartDate,
+                      endDate: dueEndDate,
+                    }}
+                  />
+                )}
+              />
+            </GridItem>
+            <GridItem md={2}>
+              <Field
+                name='dueEndDate'
+                render={args => (
+                  <FilterBarDate
+                    label='Statement Due End Date'
+                    isEndDate
+                    noTodayLimit
+                    args={args}
+                    disabled={isAllDueDateChecked}
+                    formValues={{
+                      startDate: dueStartDate,
+                      endDate: dueEndDate,
+                    }}
+                  />
+                )}
+              />
+            </GridItem>
+
+            <GridItem xs sm={3} md={1} style={{ marginTop: 13 }}>
+              <FastField
+                name='isAllDueDateChecked'
                 render={args => {
                   return <Checkbox label='All Date' {...args} />
                 }}
@@ -254,7 +302,7 @@ class SearchBar extends PureComponent {
         </GridContainer>
         <GridContainer className={classes.container}>
           <GridItem container xs md={12}>
-            <GridItem xs sm={3} md={3} style={{ position: 'relative' }}>
+            <GridItem xs sm={3} md={2} style={{ position: 'relative' }}>
               <FastField
                 name='copayerFK'
                 render={args => {
@@ -284,86 +332,56 @@ class SearchBar extends PureComponent {
                 }}
               />
             </GridItem>
-            <GridItem md={3}>
-              <Field
-                name='dueStartDate'
-                render={args => (
-                  <FilterBarDate
-                    noTodayLimit
-                    args={args}
-                    label='Statement Due From Date'
-                    disabled={isAllDueDateChecked}
-                    formValues={{
-                      startDate: dueStartDate,
-                      endDate: dueEndDate,
-                    }}
-                  />
-                )}
-              />
-            </GridItem>
-            <GridItem md={3}>
-              <Field
-                name='dueEndDate'
-                render={args => (
-                  <FilterBarDate
-                    label='Statement Due End Date'
-                    isEndDate
-                    noTodayLimit
-                    args={args}
-                    disabled={isAllDueDateChecked}
-                    formValues={{
-                      startDate: dueStartDate,
-                      endDate: dueEndDate,
-                    }}
-                  />
-                )}
-              />
-            </GridItem>
-
-            <GridItem xs sm={3} md={3} style={{ marginTop: 13 }}>
+            <GridItem xs sm={3} md={2} style={{ position: 'relative' }}>
               <FastField
-                name='isAllDueDateChecked'
+                name='statementGroupFK'
                 render={args => {
-                  return <Checkbox label='All Date' {...args} />
+                  return (
+                    <CodeSelect
+                      size='sm'
+                      code='statementGroup'
+                      label='Statement Group'
+                      labelField='displayValue'
+                      {...args}
+                    />
+                  )
                 }}
-              />
+              ></FastField>
             </GridItem>
-          </GridItem>
-        </GridContainer>
-        <GridContainer className={classes.container}>
-          <GridItem xs sm={12} md={12} lg={12}>
-            <ProgressButton
-              color='primary'
-              icon={<Search />}
-              onClick={handleSubmit}
-            >
-              <FormattedMessage id='form.search' />
-            </ProgressButton>
-            <Authorized authority='finance/statement'>
+            <GridItem xs sm={6} md={6} lg={6} style={{ marginTop: 14 }}>
+              <ProgressButton
+                color='primary'
+                icon={<Search />}
+                onClick={handleSubmit}
+              >
+                <FormattedMessage id='form.search' />
+              </ProgressButton>
+              <Authorized authority='finance/statement'>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  onClick={() => {
+                    dispatch({
+                      type: 'statement/updateState',
+                      payload: {
+                        entity: undefined,
+                      },
+                    })
+                    history.push('/finance/statement/newstatement')
+                  }}
+                >
+                  <Add />
+                  New Statement
+                </Button>
+              </Authorized>
               <Button
                 variant='contained'
                 color='primary'
-                onClick={() => {
-                  dispatch({
-                    type: 'statement/updateState',
-                    payload: {
-                      entity: undefined,
-                    },
-                  })
-                  history.push('/finance/statement/newstatement')
-                }}
+                onClick={this.batchPrintClick}
               >
-                <Add />
-                New Statement
+                Batch Print
               </Button>
-            </Authorized>
-            <Button
-              variant='contained'
-              color='primary'
-              onClick={this.batchPrintClick}
-            >
-              Batch Print
-            </Button>
+            </GridItem>
           </GridItem>
         </GridContainer>
       </div>

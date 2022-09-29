@@ -251,10 +251,11 @@ class AddNewStatement extends PureComponent {
 
   getInvoiceList = e => {
     const { dispatch, values, statement, setValues } = this.props
-    const { InvoiceNo, effectiveDates, copayerFK } = values
+    const { InvoiceNo, effectiveDates, copayerFK, statementGroupFK } = values
 
     const payload = {
       'invoicePayer.CompanyFK': e || copayerFK,
+      'invoicePayer.StatementGroupFK': statementGroupFK,
       invoiceNo: InvoiceNo,
       lgteql_invoiceDate: effectiveDates ? effectiveDates[0] : undefined,
       lsteql_invoiceDate: effectiveDates ? effectiveDates[1] : undefined,
@@ -402,80 +403,152 @@ class AddNewStatement extends PureComponent {
                   }}
                 />
               </GridItem>
-            </GridContainer>
-
-            <GridItem md={3}>
-              <FastField
-                name='statementDate'
-                render={args => <DatePicker label='Statement Date' {...args} />}
-              />
-            </GridItem>
-            <GridItem md={1} />
-            <GridItem md={3}>
-              <FastField
-                name='paymentTerm'
-                render={args => (
-                  <NumberInput
-                    suffix='Days'
-                    qty
-                    label={formatMessage({
-                      id: 'finance.statement.paymentTerms',
-                    })}
-                    precision={0}
-                    max={999}
-                    min={0}
-                    {...args}
-                  />
-                )}
-              />
-            </GridItem>
-            <GridContainer>
               <GridItem md={3}>
-                <Field
-                  name='adjustmentValue'
+                <FastField
+                  name='statementGroupFK'
                   render={args => {
-                    if (values.adjustmentValueType === 'ExactAmount') {
-                      return (
-                        <NumberInput
-                          currency
-                          label='Statement Adjustment'
-                          precision={2}
-                          min={0}
-                          {...args}
-                        />
-                      )
-                    }
                     return (
-                      <NumberInput
-                        percentage
-                        label='Statement Adjustment'
-                        min={0}
-                        max={100}
-                        precision={2}
+                      <CodeSelect
+                        size='sm'
+                        code='statementGroup'
+                        label='Statement Group'
+                        labelField='displayValue'
                         {...args}
                       />
                     )
                   }}
                 />
               </GridItem>
-              <GridItem
-                md={1}
-                style={{ display: 'flex', alignItems: 'flex-end' }}
-              >
-                <Field
-                  name='adjustmentValueType'
+              <GridItem md={3}>
+                <FastField
+                  name='statementDate'
                   render={args => (
-                    <Switch
-                      checkedChildren='$'
-                      unCheckedChildren='%'
-                      checkedValue='ExactAmount'
-                      unCheckedValue='Percentage'
-                      label=''
+                    <DatePicker label='Statement Date' {...args} />
+                  )}
+                />
+              </GridItem>
+              <GridItem md={3}>
+                <FastField
+                  name='paymentTerm'
+                  render={args => (
+                    <NumberInput
+                      suffix='Days'
+                      qty
+                      label={formatMessage({
+                        id: 'finance.statement.paymentTerms',
+                      })}
+                      precision={0}
+                      max={999}
+                      min={0}
                       {...args}
                     />
                   )}
                 />
               </GridItem>
+            </GridContainer>
+            <GridContainer>
+              <GridContainer md={3}>
+                <span
+                  style={{
+                    marginLeft: 8,
+                    marginRight: 8,
+                    width: 'calc(100% - 68px)',
+                  }}
+                >
+                  <Field
+                    name='adminChargeValue'
+                    render={args => {
+                      if (values.adminChargeValueType === 'ExactAmount') {
+                        return (
+                          <NumberInput
+                            currency
+                            label='Corporate Charge'
+                            precision={2}
+                            min={0}
+                            {...args}
+                          />
+                        )
+                      }
+                      return (
+                        <NumberInput
+                          percentage
+                          label='Corporate Charge'
+                          max={100}
+                          precision={2}
+                          min={0}
+                          {...args}
+                        />
+                      )
+                    }}
+                  />
+                </span>
+                <span style={{ display: 'flex', alignItems: 'flex-end' }}>
+                  <Field
+                    name='adminChargeValueType'
+                    render={args => (
+                      <Switch
+                        checkedChildren='$'
+                        unCheckedChildren='%'
+                        checkedValue='ExactAmount'
+                        unCheckedValue='Percentage'
+                        label=''
+                        {...args}
+                      />
+                    )}
+                  />
+                </span>
+              </GridContainer>
+              <GridContainer md={3}>
+                <span
+                  style={{
+                    marginLeft: 8,
+                    marginRight: 8,
+                    width: 'calc(100% - 68px)',
+                  }}
+                >
+                  <Field
+                    name='adjustmentValue'
+                    render={args => {
+                      if (values.adjustmentValueType === 'ExactAmount') {
+                        return (
+                          <NumberInput
+                            currency
+                            label='Statement Adjustment'
+                            precision={2}
+                            min={0}
+                            {...args}
+                          />
+                        )
+                      }
+                      return (
+                        <NumberInput
+                          percentage
+                          label='Statement Adjustment'
+                          min={0}
+                          max={100}
+                          precision={2}
+                          {...args}
+                        />
+                      )
+                    }}
+                  />
+                </span>
+                <span style={{ display: 'flex', alignItems: 'flex-end' }}>
+                  <Field
+                    name='adjustmentValueType'
+                    render={args => (
+                      <Switch
+                        checkedChildren='$'
+                        unCheckedChildren='%'
+                        checkedValue='ExactAmount'
+                        unCheckedValue='Percentage'
+                        label=''
+                        {...args}
+                      />
+                    )}
+                  />
+                </span>
+              </GridContainer>
               <GridItem md={3}>
                 <FastField
                   name='adjustmentRemarks'
@@ -490,65 +563,15 @@ class AddNewStatement extends PureComponent {
                   }}
                 />
               </GridItem>
-            </GridContainer>
-
-            <GridContainer>
               <GridItem md={3}>
-                <Field
-                  name='adminChargeValue'
+                <FastField
+                  name='remark'
                   render={args => {
-                    if (values.adminChargeValueType === 'ExactAmount') {
-                      return (
-                        <NumberInput
-                          currency
-                          label='Corporate Charge'
-                          precision={2}
-                          min={0}
-                          {...args}
-                        />
-                      )
-                    }
-                    return (
-                      <NumberInput
-                        percentage
-                        label='Corporate Charge'
-                        max={100}
-                        precision={2}
-                        min={0}
-                        {...args}
-                      />
-                    )
+                    return <TextField label='Remarks' multiline {...args} />
                   }}
                 />
               </GridItem>
-              <GridItem
-                md={3}
-                style={{ display: 'flex', alignItems: 'flex-end' }}
-              >
-                <Field
-                  name='adminChargeValueType'
-                  render={args => (
-                    <Switch
-                      checkedChildren='$'
-                      unCheckedChildren='%'
-                      checkedValue='ExactAmount'
-                      unCheckedValue='Percentage'
-                      label=''
-                      {...args}
-                    />
-                  )}
-                />
-              </GridItem>
             </GridContainer>
-
-            <GridItem md={7}>
-              <FastField
-                name='remark'
-                render={args => {
-                  return <TextField label='Remarks' multiline {...args} />
-                }}
-              />
-            </GridItem>
           </GridContainer>
           <div
             style={{

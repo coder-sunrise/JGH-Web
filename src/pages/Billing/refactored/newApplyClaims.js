@@ -367,6 +367,13 @@ const ApplyClaims = ({
     return newInvoicePayer || newInvoicePayers
   }
 
+  const handleStatementGroupChange = (value, index, invoicePayerList) => {
+    const payer = invoicePayerList
+      ? invoicePayerList[index]
+      : tempInvoicePayer[index]
+    payer.statementGroupFK = value
+  }
+
   const toggleCopayerModal = () => setShowCoPaymentModal(!showCoPaymentModal)
 
   const toggleErrorPrompt = () => {
@@ -1187,6 +1194,7 @@ const ApplyClaims = ({
               isUpdatedAppliedInvoicePayerInfo={checkUpdatedAppliedInvoicePayerInfo()}
               showRefreshOrder={showRefreshOrder}
               visitOrderTemplateFK={visitOrderTemplateFK}
+              onStatementGroupChange={handleStatementGroupChange}
             />
           )
         })}

@@ -376,4 +376,11 @@ export const menuData = [
     text: 'Credit Facility',
     url: '/setting/creditfacility',
   },
+
+  {
+    authority: 'settings.clinicsetting.statementgroup',
+    title: 'Clinic Setting',
+    text: 'Statement Group',
+    url: '/setting/statementgroup',
+  },
 ]

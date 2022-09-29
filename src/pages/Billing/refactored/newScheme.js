@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import * as Yup from 'yup'
 import moment from 'moment'
 import _ from 'lodash'
-import { Add, Print } from '@material-ui/icons'
+import { Add, Print, Save } from '@material-ui/icons'
 // material ui
 import { Paper, withStyles } from '@material-ui/core'
 // common utils
@@ -17,6 +17,7 @@ import {
   EditableTableGrid,
   CardContainer,
   Popover,
+  CodeSelect,
 } from '@/components'
 // sub components
 import PaymentSummary from '@/pages/Finance/Invoice/Details/PaymentDetails/PaymentSummary'
@@ -33,6 +34,7 @@ import {
   CompanyInvoicePayerColumn,
   ApplyClaimsColumnExtension,
 } from '../variables'
+import { Divider } from 'antd'
 
 const styles = theme => ({
   gridRow: {
@@ -106,8 +108,8 @@ const Scheme = ({
   isUpdatedAppliedInvoicePayerInfo,
   showRefreshOrder,
   visitOrderTemplateFK,
+  onStatementGroupChange,
 }) => {
-  console.log(invoicePayer)
   const {
     name,
     payerTypeFK,
@@ -132,12 +134,15 @@ const Scheme = ({
     payerName,
     gstRounding,
     _originalGstAmount,
+    statementGroupFK,
   } = invoicePayer
   const handleSchemeChange = value => onSchemeChange(value, index)
   const handleCancelClick = () => onCancelClick(index)
   const handleEditClick = () => onEditClick(index)
   const handleApplyClick = () => onApplyClick(index)
   const handleDeleteClick = () => onDeleteClick(index)
+  const handleStatementGroupChange = value =>
+    onStatementGroupChange(value, index)
   const [showPrintInvoiceMenu, setShowPrintInvoiceMenu] = useState(false)
 
   const shouldDisableDelete = () => {
@@ -239,7 +244,7 @@ const Scheme = ({
   return (
     <Paper key={_key} elevation={4} className={classes.gridRow}>
       <GridContainer style={{ marginBottom: 16 }} alignItems='flex-start'>
-        <GridItem md={6} style={{ marginTop: 8, marginBottom: 16 }}>
+        <GridItem md={3} style={{ marginTop: 8, marginBottom: 16 }}>
           {/* Copayment Scheme [Only chas can select] */}
           <span
             style={{
@@ -279,6 +284,43 @@ const Scheme = ({
                 {name} - {payerName || payer.name}
               </span>
             )}
+          </span>
+        </GridItem>
+        <GridItem md={3}>
+          <span
+            style={{
+              display: 'inline-flex',
+              marginLeft: 8,
+              marginRight: 8,
+              width: 'calc(100% - 48px)',
+            }}
+          >
+            <CodeSelect
+              force
+              size='sm'
+              disabled={disableEdit}
+              code='statementGroup'
+              label='Statement Group'
+              title='Statement Group'
+              labelField='displayValue'
+              onChange={handleStatementGroupChange}
+              value={statementGroupFK}
+              dropdownRender={options => (
+                <div>
+                  {options}
+                  <Divider style={{ margin: '4px 0' }} />
+                  <Button color='primary' size='sm' style={{ marginLeft: 4 }}>
+                    <Add />
+                    Add Statement Group
+                  </Button>
+                </div>
+              )}
+            />
+          </span>
+          <span style={{ display: 'inline-flex', verticalAlign: 'super' }}>
+            <Button color='primary' size='sm' justIcon>
+              <Save />
+            </Button>
           </span>
         </GridItem>
         {(isCHAS || isMedisave) && (

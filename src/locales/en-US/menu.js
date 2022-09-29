@@ -182,6 +182,7 @@ export default {
   'menu.setting.individualcomment': 'Individual Comment',
   'menu.setting.summarycomment': 'Summary Comment',
   'menu.setting.resource': 'Resource',
+  'menu.setting.statementgroup': 'Statement Group',
 
   'menu.report': 'Report',
   'menu.report.report': 'Report',

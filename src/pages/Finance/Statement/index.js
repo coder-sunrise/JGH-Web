@@ -41,6 +41,7 @@ class Statement extends PureComponent {
       { name: 'statementNo', title: 'Statement No.' },
       { name: 'statementDate', title: 'Statement Date' },
       { name: 'company', title: 'Co-Payer' },
+      { name: 'statementGroupName', title: 'Statement Group' },
       { name: 'payableAmount', title: 'Payable Amount' },
       { name: 'totalPaid', title: 'Paid' },
       { name: 'outstandingAmount', title: 'Outstanding' },
@@ -185,6 +186,10 @@ class Statement extends PureComponent {
             {
               columnName: 'company',
               sortBy: 'CopayerFKNavigation.displayValue',
+            },
+            {
+              columnName: 'statementGroupName',
+              sortBy: 'statementGroupName',
             },
             {
               columnName: 'payableAmount',
