@@ -228,11 +228,7 @@ export const QueueColumnExtensions = props => {
                 alignItems: 'center',
               }}
             >
-              <span>
-                {row.isQueueNoDecimal === false
-                  ? Number(row.queueNo)
-                  : row.queueNo}
-              </span>
+              <span>{row.queueNo}</span>
               <div>
                 {row.patientIsActive &&
                   row.visitStatus !== VISIT_STATUS.UPCOMING_APPT && (
