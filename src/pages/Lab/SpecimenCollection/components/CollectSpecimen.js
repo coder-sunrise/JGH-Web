@@ -339,21 +339,24 @@ const CollectSpecimen = ({
         form={form}
         onFinish={handleFinish}
         onValuesChange={(changedValues, allValues) => {
+          function alterBtnState(flag) {
+            setCancelConfirmBtnState(!flag)
+          }
           if (
             !!originLabWorkitemList.find(
               item => item.statusFK == LAB_WORKITEM_STATUS.CANCELLED,
             )
           ) {
             // second
-            allValues.cancelReason != lastUpdateData?.cancelReason ||
-            getDirtyLabWorkitems(allValues.labWorkitems).length > 0
-              ? setCancelConfirmBtnState(false)
-              : setCancelConfirmBtnState(true)
+            alterBtnState(
+              allValues.cancelReason != lastUpdateData?.cancelReason ||
+                getDirtyLabWorkitems(allValues.labWorkitems).length > 0,
+            )
           } else {
             //first
-            getDirtyLabWorkitems(allValues.labWorkitems).length > 0
-              ? setCancelConfirmBtnState(false)
-              : setCancelConfirmBtnState(true)
+            alterBtnState(
+              getDirtyLabWorkitems(allValues.labWorkitems).length > 0,
+            )
           }
         }}
       >
