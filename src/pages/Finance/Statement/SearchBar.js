@@ -62,7 +62,7 @@ const styles = () => ({
       statementEndDate,
       dueStartDate,
       dueEndDate,
-      statementGroupFK,
+      statementGroupFK = [],
     } = values
     let statementDateFrom
     let statementDateTo
@@ -86,8 +86,11 @@ const styles = () => ({
         lgteql_statementDate: statementDateFrom,
         lsteql_statementDate: statementDateTo,
         isCancelled: false,
-        statementGroupFK:
-          typeof statementGroupFK === 'number' ? statementGroupFK : undefined,
+        [`${
+          statementGroupFK.length > 1 ? 'in_' : 'eql_'
+        }statementGroupFK`]: statementGroupFK.includes(-99)
+          ? undefined
+          : statementGroupFK.join('|'),
         apiCriteria: {
           DueDateFrom: statementDueDateFrom,
           DueDateTo: statementDueDateTo,
@@ -315,11 +318,7 @@ class SearchBar extends PureComponent {
                       additionalSearchField='code'
                       showOptionTitle={false}
                       renderDropdown={option => {
-                        return (
-                          <CopayerDropdownOption
-                            option={option}
-                          ></CopayerDropdownOption>
-                        )
+                        return <CopayerDropdownOption option={option} />
                       }}
                       localFilter={item =>
                         [
@@ -338,10 +337,13 @@ class SearchBar extends PureComponent {
                 render={args => {
                   return (
                     <CodeSelect
-                      size='sm'
+                      force
+                      mode='multiple'
                       code='statementGroup'
                       label='Statement Group'
                       labelField='displayValue'
+                      maxTagCount={0}
+                      maxTagPlaceholder='StatementGroup'
                       {...args}
                     />
                   )

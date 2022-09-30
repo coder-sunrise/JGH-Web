@@ -13,7 +13,9 @@ import {
   Select,
   ProgressButton,
   CodeSelect,
+  LocalSearchSelect,
 } from '@/components'
+import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
 
 @withFormikExtend({
   mapPropsToValues: ({ settingStatementGroup }) => ({
@@ -47,10 +49,19 @@ class Filter extends PureComponent {
           </GridItem>
           <GridItem xs={6} md={3}>
             <FastField
-              name='copayerfk'
+              name='copayerFK'
               render={args => {
                 return (
-                  <CodeSelect code='ctcopayer' label='Co-Payer' {...args} />
+                  <LocalSearchSelect
+                    code='ctCopayer'
+                    labelField='displayValue'
+                    additionalSearchField='code'
+                    label='Co-Payer'
+                    renderDropdown={option => {
+                      return <CopayerDropdownOption option={option} />
+                    }}
+                    {...args}
+                  />
                 )
               }}
             />
@@ -67,7 +78,7 @@ class Filter extends PureComponent {
                   const {
                     codeDisplayValue,
                     isActive,
-                    copayerfk,
+                    copayerFK,
                   } = this.props.values
                   this.props.dispatch({
                     type: 'settingStatementGroup/query',
@@ -80,7 +91,7 @@ class Filter extends PureComponent {
                           combineCondition: 'or',
                         },
                       ],
-                      copayerfk,
+                      copayerFK,
                     },
                   })
                 }}

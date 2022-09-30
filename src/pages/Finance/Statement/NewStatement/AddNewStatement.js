@@ -256,6 +256,7 @@ class AddNewStatement extends PureComponent {
     const payload = {
       'invoicePayer.CompanyFK': e || copayerFK,
       'invoicePayer.StatementGroupFK': statementGroupFK,
+      'invoicePayer.IsCancelled': false,
       invoiceNo: InvoiceNo,
       lgteql_invoiceDate: effectiveDates ? effectiveDates[0] : undefined,
       lsteql_invoiceDate: effectiveDates ? effectiveDates[1] : undefined,
@@ -409,10 +410,16 @@ class AddNewStatement extends PureComponent {
                   render={args => {
                     return (
                       <CodeSelect
-                        size='sm'
+                        force
                         code='statementGroup'
                         label='Statement Group'
                         labelField='displayValue'
+                        onChange={(value, option) => {
+                          const { setFieldValue } = this.props
+                          const { displayValue } = option || {}
+                          setFieldValue('statementGroupFK', value)
+                          setFieldValue('statementGroupName', displayValue)
+                        }}
                         {...args}
                       />
                     )

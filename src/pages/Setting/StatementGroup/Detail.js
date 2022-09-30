@@ -12,7 +12,9 @@ import {
   Button,
   notification,
   CodeSelect,
+  LocalSearchSelect,
 } from '@/components'
+import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
 
 const styles = theme => ({})
 
@@ -106,7 +108,18 @@ class Detail extends PureComponent {
                 name='copayerFK'
                 render={args => {
                   return (
-                    <CodeSelect code='ctcopayer' label='Co-Payer' {...args} />
+                    <LocalSearchSelect
+                      code='ctcopayer'
+                      label='Co-Payer'
+                      labelField='displayValue'
+                      additionalSearchField='code'
+                      showOptionTitle={false}
+                      renderDropdown={option => {
+                        return <CopayerDropdownOption option={option} />
+                      }}
+                      getPopupContainer={node => document.body}
+                      {...args}
+                    />
                   )
                 }}
               />

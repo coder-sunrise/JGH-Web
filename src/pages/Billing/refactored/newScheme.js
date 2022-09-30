@@ -305,6 +305,9 @@ const Scheme = ({
               labelField='displayValue'
               onChange={handleStatementGroupChange}
               value={statementGroupFK}
+              remoteFilter={{
+                copayerFK: companyFK,
+              }}
               dropdownRender={options => (
                 <div>
                   {options}
