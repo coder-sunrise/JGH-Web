@@ -359,6 +359,7 @@ const History = ({
         },
         sorter: true,
         search: false,
+        fixed: 'right',
         width: 100,
       },
       {
@@ -477,7 +478,7 @@ const History = ({
         hideInTable: true,
         title: '',
         dataIndex: 'medicalCheckupStatus',
-        initialValue: [-99, 4, 5],
+        initialValue: [4],
         renderFormItem: (item, { type, defaultRender, ...rest }, form) => {
           return (
             <Select
