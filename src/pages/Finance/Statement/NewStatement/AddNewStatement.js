@@ -343,7 +343,7 @@ class AddNewStatement extends PureComponent {
       statementAdjustment,
       statementAdjustmentType,
       defaultStatementAdjustmentRemarks,
-    } = op
+    } = op || {}
     setFieldValue('adminChargeValue', adminCharge || 0)
     setFieldValue('adminChargeValueType', adminChargeType || 'Percentage')
     setFieldValue('adjustmentValue', statementAdjustment || 0)

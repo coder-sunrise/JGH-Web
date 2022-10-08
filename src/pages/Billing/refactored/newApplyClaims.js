@@ -1,5 +1,6 @@
 import React, { Fragment, useState, useEffect, useCallback } from 'react'
 import _ from 'lodash'
+import moment from 'moment'
 // material ui
 import { withStyles } from '@material-ui/core'
 import Add from '@material-ui/icons/AddCircle'
@@ -367,11 +368,25 @@ const ApplyClaims = ({
     return newInvoicePayer || newInvoicePayers
   }
 
-  const handleStatementGroupChange = (value, index, invoicePayerList) => {
-    const payer = invoicePayerList
-      ? invoicePayerList[index]
-      : tempInvoicePayer[index]
+  const handleStatementGroupChange = (value, index) => {
+    const payer = tempInvoicePayer[index]
     payer.statementGroupFK = value
+  }
+
+  const handleAddStatementGroup = async (searchText, index) => {
+    const payer = tempInvoicePayer[index]
+    const response = await dispatch({
+      type: 'settingStatementGroup/upsert',
+      payload: {
+        isUserMaintainable: true,
+        copayerFK: payer.companyFK,
+        displayValue: searchText,
+        effectiveStartDate: moment().formatUTC(),
+        effectiveEndDate: moment('2099-12-31T23:59:59').formatUTC(false),
+      },
+    })
+    const { id } = response
+    payer.statementGroupFK = id
   }
 
   const toggleCopayerModal = () => setShowCoPaymentModal(!showCoPaymentModal)
@@ -1195,6 +1210,7 @@ const ApplyClaims = ({
               showRefreshOrder={showRefreshOrder}
               visitOrderTemplateFK={visitOrderTemplateFK}
               onStatementGroupChange={handleStatementGroupChange}
+              onAddStatementGroup={handleAddStatementGroup}
             />
           )
         })}

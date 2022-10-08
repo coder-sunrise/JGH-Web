@@ -1340,8 +1340,8 @@ const _routes = [
             authority: ['settings.clinicsetting.creditfacility'],
           },
           {
-            path: '/setting/statementGroup',
-            name: 'statementGroup',
+            path: '/setting/statementgroup',
+            name: 'statementgroup',
             component: './Setting/StatementGroup',
             authority: ['settings.clinicsetting.statementgroup'],
           },
