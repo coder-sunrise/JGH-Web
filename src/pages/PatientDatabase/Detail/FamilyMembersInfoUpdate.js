@@ -48,15 +48,15 @@ export default class FamilyMembersInfoUpdate extends Component {
     } = this.state
     const {
       onSelectionChange,
-      newContactAddress,
-      newPatientFamilyMember,
+      isContactAddressUpdateRequired,
+      isPatientFamilyMemberUpdateRequired,
     } = this.props
     const addressList = familyMembersInfo.filter(x => x.addressInfo)
     const schemeList = familyMembersInfo.filter(x => x.schemeInfo)
 
     return (
       <div>
-        {!newContactAddress && (
+        {!isContactAddressUpdateRequired && (
           <div>
             <h5>Do you want to update your Family Members' Address too?</h5>
             <CommonTableGrid
@@ -85,7 +85,7 @@ export default class FamilyMembersInfoUpdate extends Component {
             />
           </div>
         )}
-        {!newPatientFamilyMember && (
+        {!isPatientFamilyMemberUpdateRequired && (
           <>
             <div>
               <h5>
