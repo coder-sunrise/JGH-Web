@@ -123,7 +123,7 @@ class FilterBar extends PureComponent {
               render={args => (
                 <TextField
                   {...args}
-                  label='Patient Name, Acc. no, Patient Referrence No'
+                  label='Patient Name, Acc. no, Patient Ref. No.'
                   autoFocus
                   style={{ width: 300, marginLeft: 10 }}
                 />
