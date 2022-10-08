@@ -601,7 +601,7 @@ class SchemesGrid extends PureComponent {
               <span
                 style={{
                   cursor: 'pointer',
-                  color: 'black',
+                  color: 'blue',
                   textDecoration: 'underline',
                   wordBreak: 'break-word',
                 }}
