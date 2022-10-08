@@ -44,7 +44,11 @@ const Templates = ({
 
   if (!visible && selectedTemplateId) setSelectedTemplateId(null)
 
-  const saveFilterTemplate = (requestDelete, saveAsFavorite) => {
+  const saveFilterTemplate = (
+    requestDelete,
+    saveAsFavorite,
+    saveAsFavoriteExisted = false,
+  ) => {
     let newFilterTemplates = [...filterTemplates]
     let newTemplateObj
     let newId = 1
@@ -111,6 +115,11 @@ const Templates = ({
             },
           })
           setSelectedTemplateId(null)
+        } else if (saveAsFavoriteExisted) {
+          notification.success({
+            message: `Favorite template ${newTemplateObj.templateName} applied`,
+          })
+          setTemplateName('')
         } else {
           notification.success({
             message: `Template ${newTemplateObj.templateName} saved`,
@@ -215,6 +224,18 @@ const Templates = ({
                 <Delete />
                 Delete
               </Button>
+              <ProgressButton
+                onClick={() => {
+                  saveFilterTemplate(false, true, true)
+                }}
+                hidden={
+                  filterTemplates.find(
+                    template => template.id === selectedTemplateId,
+                  )?.isFavorite
+                }
+              >
+                Save as My Favourite
+              </ProgressButton>
             </GridItem>
           </GridContainer>
         )}
