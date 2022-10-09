@@ -243,7 +243,9 @@ class DrugLeafletSelection extends PureComponent {
         previewEventId,
       )
     }
-    this.props.onConfirmPrintLeaflet()
+    if (messageType !== 5) {
+      this.props.onConfirmPrintLeaflet()
+    }
   }
   doPrintDrugSummaryLabel = async (
     visitid,
