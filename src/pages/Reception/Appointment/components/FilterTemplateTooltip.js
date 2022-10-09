@@ -117,7 +117,7 @@ const Templates = ({
           setSelectedTemplateId(null)
         } else if (saveAsFavoriteExisted) {
           notification.success({
-            message: `Favorite template ${newTemplateObj.templateName} applied`,
+            message: `Favourite template ${newTemplateObj.templateName} applied`,
           })
           setTemplateName('')
         } else {
