@@ -56,7 +56,7 @@ export default class FamilyMembersInfoUpdate extends Component {
 
     return (
       <div>
-        {!contactAddressUpdateRequired && (
+        {contactAddressUpdateRequired && (
           <div>
             <h5>Do you want to update your Family Members' Address too?</h5>
             <CommonTableGrid
@@ -85,7 +85,7 @@ export default class FamilyMembersInfoUpdate extends Component {
             />
           </div>
         )}
-        {!patientFamilyMemberUpdateRequired && (
+        {patientFamilyMemberUpdateRequired && (
           <>
             <div>
               <h5>
