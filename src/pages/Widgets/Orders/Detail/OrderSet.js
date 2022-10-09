@@ -94,6 +94,7 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
       ctmedicationprecaution,
       ctvaccinationusage,
       doctorprofile,
+      inventoryconsumable,
     } = codetable
     const { entity: visitEntity } = visitRegistration
     const clinicianProfile = getClinicianProfile(codetable, visitEntity)
@@ -461,7 +462,10 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
 
     const getOrderConsumableFromOrderSet = (orderSetCode, orderSetItem) => {
       const { inventoryConsumable } = orderSetItem
-
+      const unitOfMeasurement = inventoryconsumable
+        .filter(item => item.id === inventoryConsumable.id)
+        .map(x => x.uom.name)
+        .join('')
       const isDefaultBatchNo = inventoryConsumable.consumableStock.find(
         o => o.isDefault === true,
       )
@@ -496,6 +500,7 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
           packageGlobalId: '',
           isDispensedByPharmacy: inventoryConsumable.isDispensedByPharmacy,
           isNurseActualizeRequired: inventoryConsumable.isNurseActualizable,
+          unitOfMeasurement: unitOfMeasurement,
         }
       }
 
