@@ -78,6 +78,15 @@ const Templates = ({
         template => template.id === selectedTemplateId,
       )
       newFilterTemplates[selectedTemplateindex] = newTemplateObj
+      dispatch({
+        type: 'appointment/updateState',
+        payload: {
+          filters: {
+            filterByDoctor,
+            filterByApptType,
+          },
+        },
+      })
     } else {
       const latestTemplate = _.maxBy(filterTemplates, 'id')
       if (latestTemplate) newId = latestTemplate.id + 1
