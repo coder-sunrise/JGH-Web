@@ -7,7 +7,6 @@ import { Tooltip } from '@/components'
 import { FileCopySharp } from '@material-ui/icons'
 import { orderItemTypes } from '@/utils/codes'
 import * as WidgetConfig from './config'
-import VisitOrderTemplateIndicateString from '@/pages/Widgets/Orders/VisitOrderTemplateIndicateString'
 
 const wrapCellTextStyle = {
   wordWrap: 'break-word',
@@ -62,12 +61,7 @@ export default ({
   showDrugLabelRemark,
   isFullScreen = true,
 }) => {
-  const {
-    isFromEditOrder,
-    editDispenseType,
-    editDispenseReason,
-    visitOrderTemplateDetails,
-  } = current
+  const { isFromEditOrder, editDispenseType, editDispenseReason } = current
   return (
     <div style={{ marginBottom: 8, marginTop: 8 }}>
       <Table
@@ -364,12 +358,6 @@ export default ({
             )}
         </div>
       )}
-      <br />
-      <div>
-        <VisitOrderTemplateIndicateString
-          visitOrderTemplateDetails={visitOrderTemplateDetails}
-        ></VisitOrderTemplateIndicateString>
-      </div>
     </div>
   )
 }
