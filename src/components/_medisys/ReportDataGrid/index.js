@@ -11,16 +11,13 @@ const ReportDataGrid = ({
   TableProps,
   ...restProps
 }) => {
-  let tableProps = TableProps
-
-  if (height) tableProps = { ...TableProps, height }
-
-  if (height === undefined && !noHeight) {
-    tableProps = { ...TableProps }
-  }
-  if (noHeight || (data.length <= 15 && height === undefined))
-    tableProps = { ...TableProps }
-
+  let tableProps = TableProps || {}
+  const reportDataGridHeight = localStorage.getItem('reportDataGridHeight')
+  const gridHeight = parseFloat(reportDataGridHeight)
+  tableProps.height =
+    noHeight || (data.length <= 15 && height === undefined)
+      ? undefined
+      : height || gridHeight
   return (
     <div style={{ width: '100%' }}>
       <CommonTableGrid
