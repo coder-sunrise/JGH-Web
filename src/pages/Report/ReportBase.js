@@ -1,4 +1,5 @@
 import React from 'react'
+import $ from 'jquery'
 import {
   GridContainer,
   GridItem,
@@ -132,7 +133,15 @@ export default class ReportBase extends React.Component {
     return null
   }
 
+  calculateReportDataGridHeight = () => {
+    const { mainDivHeight = 700 } = window.g_app._store.getState()['global']
+    const filterBarHeight = $('.divReportFilterBar').height() || 0
+    const height = mainDivHeight - filterBarHeight - 140
+    localStorage.setItem('reportDataGridHeight', height.toString())
+  }
+
   render() {
+    this.calculateReportDataGridHeight()
     const { height, values, setFieldValue } = this.props
     const formikProps = { values, setFieldValue }
     return (
