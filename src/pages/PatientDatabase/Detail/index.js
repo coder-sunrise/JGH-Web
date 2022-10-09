@@ -104,8 +104,8 @@ class PatientDetail extends PureComponent {
     },
     hasActiveSession: false,
     preSelectedMenu: '1',
-    isContactAddressUpdateRequired: false,
-    isPatientFamilyMemberUpdateRequired: false,
+    contactAddressUpdateRequired: false,
+    patientFamilyMemberUpdateRequired: false,
   }
 
   constructor(props) {
@@ -577,14 +577,14 @@ class PatientDetail extends PureComponent {
       initialValues.contact?.contactAddress,
     )
     this.setState({
-      isContactAddressUpdateRequired: newContactAddress,
+      contactAddressUpdateRequired: newContactAddress,
     })
     const newPatientFamilyMember = _.isEqual(
       values.patientFamilyGroup.patientFamilyMember,
       initialValues.patientFamilyGroup.patientFamilyMember,
     )
     this.setState({
-      isPatientFamilyMemberUpdateRequired: newPatientFamilyMember,
+      patientFamilyMemberUpdateRequired: newPatientFamilyMember,
     })
     //only primaryMember can can update family member info
     if (!newContactAddress || !newPatientFamilyMember) {
@@ -959,11 +959,11 @@ class PatientDetail extends PureComponent {
             {this.state.isUpdateFamilyMembersInfo && (
               <FamilyMembersInfoUpdate
                 dispatch={dispatch}
-                isContactAddressUpdateRequired={
-                  this.state.isContactAddressUpdateRequired
+                contactAddressUpdateRequired={
+                  this.state.contactAddressUpdateRequired
                 }
-                isPatientFamilyMemberUpdateRequired={
-                  this.state.isPatientFamilyMemberUpdateRequired
+                patientFamilyMemberUpdateRequired={
+                  this.state.patientFamilyMemberUpdateRequired
                 }
                 patientProfileFK={currentPatientId}
                 familyMembers={this.state.familyMembers}
