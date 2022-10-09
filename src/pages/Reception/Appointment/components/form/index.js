@@ -77,6 +77,7 @@ const gridValidationSchema = Yup.object().shape({
     patientSearch,
     global,
     visitRegistration,
+    clinicSettings,
   }) => ({
     loginSEMR,
     loading,
@@ -99,6 +100,9 @@ const gridValidationSchema = Yup.object().shape({
     ctresource: codetable.ctresource,
     codetable: codetable,
     mainDivHeight: global.mainDivHeight,
+    autoSelectPatientWhenSearchingCriteriaMatchInAppointment_ClinicSetting:
+      clinicSettings.settings
+        .autoSelectPatientWhenSearchingCriteriaMatchInAppointment ?? true,
   }),
 )
 @withFormikExtend({
@@ -335,6 +339,29 @@ class Form extends React.PureComponent {
     this.showSearchResult()
   }
 
+  onResetPatient = async () => {
+    const {
+      values,
+      setValues,
+      handleReset,
+      setFieldValue,
+      dispatch,
+    } = this.props
+    await setValues({
+      ...values,
+      patientAccountNo: undefined,
+      patientProfileFK: undefined,
+      patientName: undefined,
+      patientContactNo: undefined,
+      countryCodeFK: undefined,
+    })
+    setFieldValue('currentAppointment.visitOrderTemplateFK', null)
+    this.ApptHistoryRef.resetAppts()
+    dispatch({
+      type: 'patient/updateState',
+      payload: { entity: null, currentId: undefined },
+    })
+  }
   resetPatientSearchResult = () => {
     this.props.dispatch({
       type: 'patientSearch/updateState',
@@ -346,12 +373,19 @@ class Form extends React.PureComponent {
   }
 
   showSearchResult = () => {
-    const { patientSearchResult } = this.props
+    const {
+      values,
+      patientSearchResult,
+      autoSelectPatientWhenSearchingCriteriaMatchInAppointment_ClinicSetting,
+    } = this.props
 
     if (patientSearchResult) {
       const shouldPopulate = this.checkShouldPopulate(patientSearchResult)
 
-      if (shouldPopulate) {
+      if (
+        autoSelectPatientWhenSearchingCriteriaMatchInAppointment_ClinicSetting &&
+        shouldPopulate
+      ) {
         this.onSelectPatientClick(patientSearchResult[0], true)
         this.resetPatientSearchResult()
       } else this.toggleSearchPatientModal()
@@ -1423,6 +1457,7 @@ class Form extends React.PureComponent {
                   isEdit={values.id}
                   onViewPatientProfileClick={this.onViewPatientProfile}
                   onSearchPatientClick={this.onSearchPatient}
+                  onResetPatientClick={this.onResetPatient}
                   onCreatePatientClick={this.togglePatientProfileModal}
                   onRegisterToVisitClick={navigateDirtyCheck({
                     redirectUrl: this.getVisregUrl(),
@@ -1555,6 +1590,7 @@ class Form extends React.PureComponent {
                       onHistoryRowSelected({ ...data, isHistory: true })
                     }}
                     handleCopyAppointmentClick={handleCopyAppointmentClick}
+                    pushApptHistoryRef={ref => (this.ApptHistoryRef = ref)}
                   />
                 </CardContainer>
               </GridItem>
