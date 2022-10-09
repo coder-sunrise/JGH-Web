@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react'
 import _ from 'lodash'
+import numeral from 'numeral'
 import Yup from '@/utils/yup'
-import { FastEditableTableGrid, GridContainer, GridItem } from '@/components'
+import { CommonTableGrid, GridContainer, GridItem } from '@/components'
 import {
   podoOrderType,
   getInventoryItem,
@@ -21,7 +22,7 @@ const purchaseOrderDetailsSchema = Yup.object().shape({
 })
 
 class Grid extends PureComponent {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       onClickColumn: undefined,
@@ -52,12 +53,12 @@ class Grid extends PureComponent {
       return true
     }
 
-    await podoOrderType.map((x) => {
+    await podoOrderType.map(x => {
       fetchAndSaveCodeTable(x.ctName, {
         // excludeInactiveCodes: excludeInactiveCodes(),
         // excludeInactiveCodes: false,
         isActive: excludeInactiveCodes(),
-      }).then((list) => {
+      }).then(list => {
         const { inventoryItemList } = inventoryItemListing(
           list,
           x.itemFKName,
@@ -79,7 +80,7 @@ class Grid extends PureComponent {
     // })
   }
 
-  handleOnOrderTypeChanged = async (e) => {
+  handleOnOrderTypeChanged = async e => {
     const { dispatch, values } = this.props
     const { rows } = values
     const { row, option } = e
@@ -149,7 +150,7 @@ class Grid extends PureComponent {
     // return { ...row }
   }
 
-  onAddedRowsChange = (addedRows) => {
+  onAddedRowsChange = addedRows => {
     let newAddedRows = addedRows
     if (addedRows.length > 0) {
       if (!addedRows.isFocused) {
@@ -188,7 +189,7 @@ class Grid extends PureComponent {
 
         this.setState({ onClickColumn: undefined })
 
-        newAddedRows = addedRows.map((row) => ({
+        newAddedRows = addedRows.map(row => ({
           ...row,
           itemFK: selectedItem.value,
           quantityReceived: tempTotalQty,
@@ -198,7 +199,7 @@ class Grid extends PureComponent {
       } else {
         // Initialize new generated row
         this.setState({ onClickColumn: undefined })
-        newAddedRows = addedRows.map((row) => ({
+        newAddedRows = addedRows.map(row => ({
           ...row,
           orderQuantity: 0,
           bonusReceived: 0,
@@ -213,7 +214,7 @@ class Grid extends PureComponent {
     return newAddedRows
   }
 
-  onCommitChanges = (values) => ({ rows, added, changed, deleted }) => {
+  onCommitChanges = values => ({ rows, added, changed, deleted }) => {
     const { dispatch, calcPurchaseOrderSummary } = this.props
 
     if (deleted) {
@@ -236,12 +237,12 @@ class Grid extends PureComponent {
     return rows
   }
 
-  rowOptions = (row) => {
+  rowOptions = row => {
     const { purchaseOrderDetails } = this.props
-    const getUnusedItem = (stateName) => {
+    const getUnusedItem = stateName => {
       const unusedInventoryItem = _.differenceBy(
         this.state[stateName],
-        purchaseOrderDetails.rows.filter((o) => !o.isDeleted),
+        purchaseOrderDetails.rows.filter(o => !o.isDeleted),
         'itemFK',
       )
       return unusedInventoryItem
@@ -249,20 +250,17 @@ class Grid extends PureComponent {
 
     const getCurrentOptions = (stateName, filteredOptions) => {
       const selectedItem = this.state[stateName].find(
-        (o) => o.itemFK === row.itemFK,
+        o => o.itemFK === row.itemFK,
       )
       let currentOptions = filteredOptions
       if (selectedItem) {
-        currentOptions = [
-          ...filteredOptions,
-          selectedItem,
-        ]
+        currentOptions = [...filteredOptions, selectedItem]
       }
       return currentOptions
     }
 
-    const filterActiveCode = (ops) => {
-      return ops.filter((o) => o.isActive === true)
+    const filterActiveCode = ops => {
+      return ops.filter(o => o.isActive === true)
     }
     if (row.type === 1) {
       const filteredOptions = getUnusedItem('MedicationItemList')
@@ -294,7 +292,7 @@ class Grid extends PureComponent {
     return []
   }
 
-  calculateTotalPriceAndTotalQuantity = (e) => {
+  calculateTotalPriceAndTotalQuantity = e => {
     const { row } = e
     if (row) {
       const { orderQuantity, unitPrice } = row
@@ -302,7 +300,7 @@ class Grid extends PureComponent {
     }
   }
 
-  calculateUnitPrice = (e) => {
+  calculateUnitPrice = e => {
     const { row } = e
     if (row) {
       const { orderQuantity, totalPrice } = row
@@ -314,7 +312,7 @@ class Grid extends PureComponent {
     }
   }
 
-  render () {
+  render() {
     // const { purchaseOrderItems } = this.props
     const { values, isEditable, dispatch } = this.props
     const { rows } = values
@@ -349,7 +347,7 @@ class Grid extends PureComponent {
           type: 'select',
           options: podoOrderType,
           sortingEnabled: false,
-          onChange: (e) => {
+          onChange: e => {
             if (e.option) {
               this.handleOnOrderTypeChanged(e)
             }
@@ -384,16 +382,20 @@ class Grid extends PureComponent {
           disabled: true,
         },
         {
+          text: true,
           columnName: 'quantityReceived',
           type: 'number',
           format: '0.0',
           disabled: true,
+          render: r => numeral(r.quantityReceived).format('0.0'),
         },
         {
+          text: true,
           columnName: 'totalReceived',
           type: 'number',
           format: '0.0',
           disabled: true,
+          render: r => numeral(r.totalReceived).format('0.0'),
         },
         {
           columnName: 'unitPrice',
@@ -414,22 +416,22 @@ class Grid extends PureComponent {
     return (
       <GridContainer style={{ paddingRight: 20 }}>
         <GridItem xs={4} md={12}>
-          <FastEditableTableGrid
-            getRowId={(r) => r.uid}
+          <CommonTableGrid
+            getRowId={r => r.id}
             rows={rows}
-            schema={purchaseOrderDetailsSchema}
-            forceRenderDuration={5000}
+            // schema={purchaseOrderDetailsSchema}
+            // forceRenderDuration={5000}
             FuncProps={{
               pager: false,
             }}
-            EditingProps={{
-              showCommandColumn: isEditable,
-              showAddCommand: isEditable,
-              // showEditCommand: isEditable,
-              // showDeleteCommand: isEditable,
-              onCommitChanges: this.onCommitChanges(values),
-              onAddedRowsChange: this.onAddedRowsChange,
-            }}
+            // EditingProps={{
+            //   showCommandColumn: isEditable,
+            //   showAddCommand: isEditable,
+            //   // showEditCommand: isEditable,
+            //   // showDeleteCommand: isEditable,
+            //   onCommitChanges: this.onCommitChanges(values),
+            //   onAddedRowsChange: this.onAddedRowsChange,
+            // }}
             {...tableParas}
           />
         </GridItem>
