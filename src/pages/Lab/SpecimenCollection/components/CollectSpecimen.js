@@ -164,18 +164,20 @@ const CollectSpecimen = ({
       ),
     )
     form.resetFields()
-    let lastCancelLabWorkitem = _.sortBy(
-      visitData.labWorkitems.filter(
-        item => item.statusFK === LAB_WORKITEM_STATUS.CANCELLED,
-      ),
+    let cancelLabWorkitemList = visitData.labWorkitems.filter(
+      item => item.statusFK === LAB_WORKITEM_STATUS.CANCELLED,
+    )
+    let lastCancelLabWorkitem = _.orderBy(
+      cancelLabWorkitemList,
       ['cancelledDate'],
-      ['asc'],
-    ).at(-1)
+      ['desc'],
+    )[0]
     setLastUpdateData({
       cancelledDate: lastCancelLabWorkitem?.cancelledDate.format(
         'DD MMM YYYY HH:mm',
       ),
       cancelledByUserName: lastCancelLabWorkitem?.cancelledByUserName,
+      cancelReason: lastCancelLabWorkitem?.cancelReason,
     })
     form.setFieldsValue({
       labWorkitems: visitData.labWorkitems.filter(
@@ -234,22 +236,24 @@ const CollectSpecimen = ({
       return Promise.resolve()
     }
   }
+  // Get changed labworkitems
+  const getDirtyLabWorkitems = (LabWorkitems = []) => {
+    let changedLabWorkitemList = []
+    LabWorkitems.forEach(Nitem => {
+      originLabWorkitemList.forEach(Oitem => {
+        if (Nitem.id == Oitem.id) {
+          if (Nitem.statusFK !== Oitem.statusFK) {
+            changedLabWorkitemList.push(Nitem)
+          }
+        }
+      })
+    })
+    return changedLabWorkitemList
+  }
 
   const handleFinish = () => {
     var values = form.getFieldsValue(true)
     let { cancelReason = '', labWorkitems = [] } = values
-    //Get LabWorkitem for sending changes
-    // let changedLabWorkitemList = []
-    // values.labWorkitems.forEach(Nitem => {
-    //   originLabWorkitemList.forEach(Oitem => {
-    //     if (Nitem.id == Oitem.id) {
-    //       if (Nitem.statusFK !== Oitem.statusFK) {
-    //         changedLabWorkitemList.push(Nitem)
-    //       }
-    //     }
-    //   })
-    // })
-    // console.log(changedLabWorkitemList)
 
     if (mode == MODE.CANCEL) {
       // Process items that need to be submitted
@@ -334,11 +338,26 @@ const CollectSpecimen = ({
       <Form
         form={form}
         onFinish={handleFinish}
-        onValuesChange={(changedValues, allValues) =>
-          allValues.cancelReason != null
-            ? setCancelConfirmBtnState(false)
-            : setCancelConfirmBtnState(true)
-        }
+        onValuesChange={(changedValues, allValues) => {
+          if (
+            !!originLabWorkitemList.find(
+              item => item.statusFK == LAB_WORKITEM_STATUS.CANCELLED,
+            )
+          ) {
+            // second
+            setCancelConfirmBtnState(
+              !(
+                allValues.cancelReason != lastUpdateData?.cancelReason ||
+                getDirtyLabWorkitems(allValues.labWorkitems).length > 0
+              ),
+            )
+          } else {
+            //first
+            setCancelConfirmBtnState(
+              !getDirtyLabWorkitems(allValues.labWorkitems).length > 0,
+            )
+          }
+        }}
       >
         {mode !== MODE.CANCEL && (
           <Space align='start' style={{ display: 'flex', marginBottom: 12 }}>

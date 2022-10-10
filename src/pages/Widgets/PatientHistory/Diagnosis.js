@@ -64,7 +64,7 @@ export default ({
       format: dateFormatLong,
       render: text => (
         <div style={wrapCellTextStyle}>
-          {moment(text).format('DD MMM YYYY')}
+          {text ? moment(text).format('DD MMM YYYY') : '-'}
         </div>
       ),
     },
@@ -74,7 +74,7 @@ export default ({
       width: 110,
       render: text => (
         <div style={wrapCellTextStyle}>
-          {moment(text).format('DD MMM YYYY')}
+          {text ? moment(text).format('DD MMM YYYY') : '-'}
         </div>
       ),
     },
@@ -82,7 +82,7 @@ export default ({
       dataIndex: 'validityDays',
       title: 'Validity (Days)',
       width: 110,
-      render: text => <div style={wrapCellTextStyle}>{text}</div>,
+      render: text => <div style={wrapCellTextStyle}>{text || '-'}</div>,
     },
     {
       dataIndex: 'remarks',

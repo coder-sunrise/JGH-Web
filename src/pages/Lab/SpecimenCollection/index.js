@@ -45,6 +45,7 @@ const api = {
 const style = theme => ({})
 
 const saveColumnsSetting = (dispatch, columnsSetting) => {
+  delete columnsSetting['cancelledTestPanels']
   dispatch({
     type: 'specimenCollection/saveUserPreference',
     payload: {
@@ -76,7 +77,10 @@ const SpecimenCollection = ({
   const visitTypes = useVisitTypes()
   const [visitId, setVisitId] = useState()
   const [TheCurrentCancelId, setTheCurrentCancelId] = useState()
-
+  const [displayCancelledTestPanel, setDisPlayCancelledTestPanel] = useState(
+    false,
+  )
+  const [showCancelledTestPanelCol, setShowCancelledTestPanelCol] = useState()
   const ref = useRef()
   const printSpecimenLabel = usePrintSpecimenLabel(handlePrint)
 
@@ -126,6 +130,7 @@ const SpecimenCollection = ({
         dataIndex: 'testPanels',
         sorter: false,
         search: false,
+        hideInTable: !showCancelledTestPanelCol,
         width: 200,
         render: (_dom, entity) => {
           let cancelledTestPanels = entity.testPanels.filter(
@@ -337,22 +342,14 @@ const SpecimenCollection = ({
         hideInTable: true,
         title: '',
         dataIndex: '',
-        initialValue: [-99],
         renderFormItem: (item, { type, defaultRender, ...rest }, form) => {
           return (
             <Checkbox
               label='Display Cancelled Test Panel'
               style={{ width: 250, marginTop: '20px' }}
-              checked={
-                specimenCollectionColumnSetting?.cancelledTestPanels?.show
-              }
+              checked={displayCancelledTestPanel}
               onChange={e => {
-                saveColumnsSetting(dispatch, {
-                  ...specimenCollectionColumnSetting,
-                  cancelledTestPanels: {
-                    show: e.target.value,
-                  },
-                })
+                setDisPlayCancelledTestPanel(e.target.value)
               }}
             />
           )
@@ -434,7 +431,11 @@ const SpecimenCollection = ({
           }}
           options={{ density: false, reload: false }}
           columnsStateMap={specimenCollectionColumnSetting}
-          onColumnsStateChange={map => saveColumnsSetting(dispatch, map)}
+          onColumnsStateChange={(map = {}) => {
+            setDisPlayCancelledTestPanel(map?.cancelledTestPanels?.show)
+            setShowCancelledTestPanelCol(map?.cancelledTestPanels?.show)
+            saveColumnsSetting(dispatch, map)
+          }}
           defaultColumns={[]}
           pagination={{ pageSize: 20, showSizeChanger: true }}
           footer={() => <TestPanelPriorityNote />}
@@ -460,6 +461,7 @@ const SpecimenCollection = ({
             searchVisitDoctor,
             ...values
           }) => {
+            setShowCancelledTestPanelCol(displayCancelledTestPanel)
             return {
               ...values,
               apiCriteria: {
@@ -477,6 +479,7 @@ const SpecimenCollection = ({
                     ? null
                     : searchVisitDoctor?.join(),
                 isGetCancelledTestPanelData: true,
+                displayCancelledTestPanel,
               },
             }
           }}

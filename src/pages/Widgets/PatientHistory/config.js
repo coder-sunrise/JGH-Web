@@ -431,19 +431,19 @@ export const widgets = (
       loading: Loading,
     }),
   },
-  {
-    id: WIDGETS_ID.INVOICE,
-    name: 'Invoice',
-    authority: 'queue.consultation.widgets.order',
-    component: Loadable({
-      loader: () => import('./Invoice'),
-      render: (loaded, p) => {
-        let Cmpnet = loaded.default
-        return <Cmpnet {...props} {...p} />
-      },
-      loading: Loading,
-    }),
-  },
+  // {
+  //   id: WIDGETS_ID.INVOICE,
+  //   name: 'Invoice',
+  //   authority: 'queue.consultation.widgets.order',
+  //   component: Loadable({
+  //     loader: () => import('./Invoice'),
+  //     render: (loaded, p) => {
+  //       let Cmpnet = loaded.default
+  //       return <Cmpnet {...props} {...p} />
+  //     },
+  //     loading: Loading,
+  //   }),
+  // },
   {
     id: WIDGETS_ID.CONSULTATION_DOCUMENT,
     name: 'Consultation Document',
@@ -631,7 +631,8 @@ export const showWidget = (current, widgetId, selectNoteTypes = []) => {
   // check show orders
   if (
     widgetId === WIDGETS_ID.ORDERS &&
-    (!current.orders || current.orders.length === 0) && !current.isFromEditOrder
+    (!current.orders || current.orders.length === 0) &&
+    !current.isFromEditOrder
   )
     return false
   // check show document

@@ -1,8 +1,39 @@
 import { createFormViewModel } from 'medisys-model'
 import { useSelector } from 'dva'
 import { PHARMACY_STATUS } from '@/utils/constants'
-import { getTranslationValue, getUniqueId } from '@/utils/utils'
+import { getTranslationValue, getUniqueId, roundTo } from '@/utils/utils'
 import service from '../../services'
+
+const getActiveInventoryStock = (
+  inventoryStock = [],
+  invoiceItemTypeFK,
+  inventoryFK,
+  orderItems = [],
+) => {
+  let inventoryItemStock = []
+  _.orderBy(inventoryStock, ['isDefault', 'expiryDate'], ['asc']).forEach(
+    stockItem => {
+      if (stockItem.isDefault) inventoryItemStock.push({ ...stockItem })
+      const remainStock =
+        stockItem.stock -
+        roundTo(
+          _.sumBy(
+            orderItems.filter(
+              orderItem =>
+                stockItem.id === orderItem.stockFK &&
+                orderItem.invoiceItemTypeFK === invoiceItemTypeFK &&
+                orderItem.inventoryFK == inventoryFK,
+            ),
+            'dispenseQuantity',
+          ) || 0,
+        )
+      if (remainStock > 0) {
+        inventoryItemStock.push({ ...stockItem, remainStock })
+      }
+    },
+  )
+  return inventoryItemStock
+}
 
 const getPharmacyItems = (codetable, clinicSettings, entity = {}) => {
   const {
@@ -74,12 +105,11 @@ const getPharmacyItems = (codetable, clinicSettings, entity = {}) => {
                   'displayValue',
                 )
               : ''
-          const inventoryItemStock = _.orderBy(
-            (drugMixture.medication?.medicationStock || []).filter(
-              s => s.isDefault || s.stock > 0,
-            ),
-            ['isDefault', 'expiryDate'],
-            ['asc'],
+          const inventoryItemStock = getActiveInventoryStock(
+            drugMixture.medication?.medicationStock || [],
+            detaultDrugMixture.invoiceItemTypeFK,
+            detaultDrugMixture.inventoryFK,
+            orderItems,
           )
           let remainQty = drugMixture.quantity
           if (
@@ -88,15 +118,22 @@ const getPharmacyItems = (codetable, clinicSettings, entity = {}) => {
             inventoryItemStock.length
           ) {
             inventoryItemStock.forEach((itemStock, index) => {
-              const { id, batchNo, expiryDate, stock, isDefault } = itemStock
+              const {
+                id,
+                batchNo,
+                expiryDate,
+                stock,
+                isDefault,
+                remainStock,
+              } = itemStock
               if (remainQty > 0) {
                 let dispenseQuantity = 0
-                if (isDefault || remainQty <= stock) {
+                if (isDefault || remainQty <= remainStock) {
                   dispenseQuantity = remainQty
                   remainQty = -1
                 } else {
-                  dispenseQuantity = stock
-                  remainQty = remainQty - stock
+                  dispenseQuantity = remainStock
+                  remainQty = remainQty - remainStock
                 }
                 orderItems.push({
                   ...detaultDrugMixture,
@@ -253,25 +290,32 @@ const getPharmacyItems = (codetable, clinicSettings, entity = {}) => {
             )
           : ''
 
-      const inventoryItemStock = _.orderBy(
-        (item.medication?.medicationStock || []).filter(
-          s => s.isDefault || s.stock > 0,
-        ),
-        ['isDefault', 'expiryDate'],
-        ['asc'],
+      const inventoryItemStock = getActiveInventoryStock(
+        item.medication?.medicationStock || [],
+        item.invoiceItemTypeFK,
+        item.inventoryFK,
+        orderItems,
       )
+
       let remainQty = item.quantity
       if (remainQty > 0 && item.medication && inventoryItemStock.length) {
         inventoryItemStock.forEach((itemStock, index) => {
-          const { id, batchNo, expiryDate, stock, isDefault } = itemStock
+          const {
+            id,
+            batchNo,
+            expiryDate,
+            stock,
+            isDefault,
+            remainStock,
+          } = itemStock
           if (remainQty > 0) {
             let dispenseQuantity = 0
-            if (isDefault || remainQty <= stock) {
+            if (isDefault || remainQty <= remainStock) {
               dispenseQuantity = remainQty
               remainQty = -1
             } else {
-              dispenseQuantity = stock
-              remainQty = remainQty - stock
+              dispenseQuantity = remainStock
+              remainQty = remainQty - remainStock
             }
             orderItems.push({
               ...defaultItem(item, groupName),
@@ -331,25 +375,31 @@ const getPharmacyItems = (codetable, clinicSettings, entity = {}) => {
 
   const generateFromNormalConsumable = item => {
     if (entity.statusFK === PHARMACY_STATUS.NEW) {
-      const inventoryItemStock = _.orderBy(
-        (item.consumable?.consumableStock || []).filter(
-          s => s.isDefault || s.stock > 0,
-        ),
-        ['isDefault', 'expiryDate'],
-        ['asc'],
+      const inventoryItemStock = getActiveInventoryStock(
+        item.consumable?.consumableStock || [],
+        item.invoiceItemTypeFK,
+        item.inventoryFK,
+        orderItems,
       )
       let remainQty = item.quantity
       if (remainQty > 0 && item.consumable && inventoryItemStock.length) {
         inventoryItemStock.forEach((itemStock, index) => {
-          const { id, batchNo, expiryDate, stock, isDefault } = itemStock
+          const {
+            id,
+            batchNo,
+            expiryDate,
+            stock,
+            isDefault,
+            remainStock,
+          } = itemStock
           if (remainQty > 0) {
             let dispenseQuantity = 0
-            if (isDefault || remainQty <= stock) {
+            if (isDefault || remainQty <= remainStock) {
               dispenseQuantity = remainQty
               remainQty = -1
             } else {
-              dispenseQuantity = stock
-              remainQty = remainQty - stock
+              dispenseQuantity = remainStock
+              remainQty = remainQty - remainStock
             }
             orderItems.push({
               ...defaultItem(item, 'NormalDispense'),
@@ -529,25 +579,31 @@ const getPartialPharmacyItems = (codetable, clinicSettings, entity = {}) => {
                 'displayValue',
               )
             : ''
-        const inventoryItemStock = _.orderBy(
-          (drugMixture.medication?.medicationStock || []).filter(
-            s => s.isDefault || s.stock > 0,
-          ),
-          ['isDefault', 'expiryDate'],
-          ['asc'],
+        const inventoryItemStock = getActiveInventoryStock(
+          drugMixture.medication?.medicationStock || [],
+          detaultDrugMixture.invoiceItemTypeFK,
+          detaultDrugMixture.inventoryFK,
+          orderItems,
         )
         let remainQty = totalRemainQty
         if (drugMixture.medication && inventoryItemStock.length) {
           inventoryItemStock.forEach((itemStock, index) => {
-            const { id, batchNo, expiryDate, stock, isDefault } = itemStock
+            const {
+              id,
+              batchNo,
+              expiryDate,
+              stock,
+              isDefault,
+              remainStock,
+            } = itemStock
             if (remainQty > 0) {
               let dispenseQuantity = 0
-              if (isDefault || remainQty <= stock) {
+              if (isDefault || remainQty <= remainStock) {
                 dispenseQuantity = remainQty
                 remainQty = -1
               } else {
-                dispenseQuantity = stock
-                remainQty = remainQty - stock
+                dispenseQuantity = remainStock
+                remainQty = remainQty - remainStock
               }
               orderItems.push({
                 ...detaultDrugMixture,
@@ -613,25 +669,31 @@ const getPartialPharmacyItems = (codetable, clinicSettings, entity = {}) => {
           )
         : ''
 
-    const inventoryItemStock = _.orderBy(
-      (item.medication?.medicationStock || []).filter(
-        s => s.isDefault || s.stock > 0,
-      ),
-      ['isDefault', 'expiryDate'],
-      ['asc'],
+    const inventoryItemStock = getActiveInventoryStock(
+      item.medication?.medicationStock || [],
+      item.invoiceItemTypeFK,
+      item.inventoryFK,
+      orderItems,
     )
     let remainQty = totalRemainQty
     if (item.medication && inventoryItemStock.length) {
       inventoryItemStock.forEach((itemStock, index) => {
-        const { id, batchNo, expiryDate, stock, isDefault } = itemStock
+        const {
+          id,
+          batchNo,
+          expiryDate,
+          stock,
+          isDefault,
+          remainStock,
+        } = itemStock
         if (remainQty > 0) {
           let dispenseQuantity = 0
-          if (isDefault || remainQty <= stock) {
+          if (isDefault || remainQty <= remainStock) {
             dispenseQuantity = remainQty
             remainQty = -1
           } else {
-            dispenseQuantity = stock
-            remainQty = remainQty - stock
+            dispenseQuantity = remainStock
+            remainQty = remainQty - remainStock
           }
           orderItems.push({
             ...defaultItem(item, groupName),
@@ -693,25 +755,31 @@ const getPartialPharmacyItems = (codetable, clinicSettings, entity = {}) => {
       item.quantity -
       _.sumBy(item.pharmacyOrderItemTransaction, 'transactionQty')
     if (totalRemainQty <= 0) return
-    const inventoryItemStock = _.orderBy(
-      (item.consumable?.consumableStock || []).filter(
-        s => s.isDefault || s.stock > 0,
-      ),
-      ['isDefault', 'expiryDate'],
-      ['asc'],
+    const inventoryItemStock = getActiveInventoryStock(
+      item.consumable?.consumableStock || [],
+      item.invoiceItemTypeFK,
+      item.inventoryFK,
+      orderItems,
     )
     let remainQty = totalRemainQty
     if (item.consumable && inventoryItemStock.length) {
       inventoryItemStock.forEach((itemStock, index) => {
-        const { id, batchNo, expiryDate, stock, isDefault } = itemStock
+        const {
+          id,
+          batchNo,
+          expiryDate,
+          stock,
+          isDefault,
+          remainStock,
+        } = itemStock
         if (remainQty > 0) {
           let dispenseQuantity = 0
-          if (isDefault || remainQty <= stock) {
+          if (isDefault || remainQty <= remainStock) {
             dispenseQuantity = remainQty
             remainQty = -1
           } else {
-            dispenseQuantity = stock
-            remainQty = remainQty - stock
+            dispenseQuantity = remainStock
+            remainQty = remainQty - remainStock
           }
           orderItems.push({
             ...defaultItem(item, 'NormalDispense'),

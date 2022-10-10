@@ -879,21 +879,23 @@ const ApplyClaims = ({
         i => i.id === changedItem.invoiceItemFK,
       )
 
-      let eligibleAmount =
-        originalItem.totalBeforeGst - originalItem._claimedAmount
+      let eligibleAmount = roundTo(
+        originalItem.totalBeforeGst - originalItem._claimedAmount,
+      )
       if (eligibleAmount === 0) {
         const currentEditItemClaimedAmount = tempInvoicePayer
           .filter((_rest, i) => i !== index)
           .reduce(flattenInvoicePayersInvoiceItemList, [])
           .reduce((remainingClaimable, item) => {
             if (item.invoiceItemFK === changedItem.invoiceItemFK)
-              return remainingClaimable + item.claimAmountBeforeGST
+              return roundTo(remainingClaimable + item.claimAmountBeforeGST)
 
             return remainingClaimable
           }, 0)
 
-        eligibleAmount =
-          originalItem.totalBeforeGst - currentEditItemClaimedAmount
+        eligibleAmount = roundTo(
+          originalItem.totalBeforeGst - currentEditItemClaimedAmount,
+        )
       }
 
       let hasError = false

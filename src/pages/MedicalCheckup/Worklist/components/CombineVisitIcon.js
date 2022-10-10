@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import moment from 'moment'
 import { useDispatch } from 'dva'
 import { Table } from 'antd'
-import { dateFormatLongWithTimeNoSec, Icon, Popover } from '@/components'
+import { dateFormatLong, Icon, Popover } from '@/components'
 
 const CombineVisitIcon = ({ combineReportGroupFK, placement = 'bottom' }) => {
   const [combineReport, setCombineReport] = useState([])
@@ -27,7 +27,7 @@ const CombineVisitIcon = ({ combineReportGroupFK, placement = 'bottom' }) => {
       trigger='click'
       placement={placement}
       content={
-        <div style={{ width: 350 }}>
+        <div style={{ width: 310 }}>
           <Table
             bordered
             size='small'
@@ -50,7 +50,7 @@ const CombineVisitIcon = ({ combineReportGroupFK, placement = 'bottom' }) => {
                 dataIndex: 'visitDate',
                 key: 'visitDate',
                 render: (_, row) =>
-                  moment(row.visitDate).format(dateFormatLongWithTimeNoSec),
+                  moment(row.visitDate).format(dateFormatLong),
               },
               {
                 title: 'Primary',
