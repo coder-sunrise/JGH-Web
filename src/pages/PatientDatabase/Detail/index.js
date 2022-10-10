@@ -580,8 +580,8 @@ class PatientDetail extends PureComponent {
       contactAddressUpdateRequired: !newContactAddress,
     })
     const newPatientFamilyMember = _.isEqual(
-      values.patientFamilyGroup.patientFamilyMember,
-      initialValues.patientFamilyGroup.patientFamilyMember,
+      values.patientFamilyGroup?.patientFamilyMember,
+      initialValues.patientFamilyGroup?.patientFamilyMember,
     )
     this.setState({
       patientFamilyMemberUpdateRequired: !newPatientFamilyMember,
