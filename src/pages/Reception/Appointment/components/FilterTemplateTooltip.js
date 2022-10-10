@@ -279,7 +279,6 @@ const Templates = ({
                   onClick={() => saveFilterTemplate()}
                   disabled={
                     templateName.length === 0 ||
-                    filterTemplates.length >= 7 ||
                     (filterByDoctor.length === 0 &&
                       filterByApptType.length === 0)
                   }
