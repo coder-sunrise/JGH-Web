@@ -106,6 +106,7 @@ class PatientDetail extends PureComponent {
     preSelectedMenu: '1',
     contactAddressUpdateRequired: false,
     patientFamilyMemberUpdateRequired: false,
+    patientSchemeUpdateRequired: false,
   }
 
   constructor(props) {
@@ -586,8 +587,15 @@ class PatientDetail extends PureComponent {
     this.setState({
       patientFamilyMemberUpdateRequired: !newPatientFamilyMember,
     })
+    const newPatientScheme = _.isEqual(
+      values.patientScheme,
+      initialValues.patientScheme,
+    )
+    this.setState({
+      patientSchemeUpdateRequired: !newPatientScheme,
+    })
     //only primaryMember can can update family member info
-    if (!newContactAddress || !newPatientFamilyMember) {
+    if (!newContactAddress || !newPatientFamilyMember || !newPatientScheme) {
       const [familyMembers, address, scheme] = this.checkFamilyMembersInfoDiff(
         initialValues,
         values,
@@ -964,6 +972,9 @@ class PatientDetail extends PureComponent {
                 }
                 patientFamilyMemberUpdateRequired={
                   this.state.patientFamilyMemberUpdateRequired
+                }
+                patientSchemeUpdateRequired={
+                  this.state.patientSchemeUpdateRequired
                 }
                 patientProfileFK={currentPatientId}
                 familyMembers={this.state.familyMembers}
