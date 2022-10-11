@@ -50,6 +50,7 @@ export default class FamilyMembersInfoUpdate extends Component {
       onSelectionChange,
       contactAddressUpdateRequired,
       patientFamilyMemberUpdateRequired,
+      patientSchemeUpdateRequired,
     } = this.props
     const addressList = familyMembersInfo.filter(x => x.addressInfo)
     const schemeList = familyMembersInfo.filter(x => x.schemeInfo)
@@ -134,6 +135,39 @@ export default class FamilyMembersInfoUpdate extends Component {
                     familyMembersInfo,
                     selectedAddressRows: rows,
                   })
+                  onSelectionChange(familyMembersInfo)
+                }}
+                FuncProps={{
+                  pager: false,
+                  selectable: true,
+                  selectConfig: {
+                    showSelectAll: true,
+                    rowSelectionEnabled: () => true,
+                  },
+                }}
+              />
+            </div>
+          </>
+        )}
+        {patientSchemeUpdateRequired && (
+          <>
+            <div>
+              <h5>
+                Do you want to update your Family Members' Corporate Scheme too?
+              </h5>
+              <CommonTableGrid
+                rows={schemeList}
+                getRowId={r => r.familyMemberFK}
+                columns={schemeColumns}
+                columnExtensions={columnExtensions}
+                selection={selectedSchemeRows}
+                onSelectionChange={rows => {
+                  familyMembersInfo.forEach(x => {
+                    x.isUpdateScheme = false
+                    if (rows.some(i => i === x.familyMemberFK))
+                      x.isUpdateScheme = true
+                  })
+                  this.setState({ familyMembersInfo, selectedSchemeRows: rows })
                   onSelectionChange(familyMembersInfo)
                 }}
                 FuncProps={{

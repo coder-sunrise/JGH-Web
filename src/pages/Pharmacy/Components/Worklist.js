@@ -20,10 +20,17 @@ export const Worklist = ({ columns, partialPreparedChecked, ...restProps }) => {
           columnPercentage={columnPercentage}
           data={column}
           renderWorkitem={item => {
-            if (partialPreparedChecked && item.isFullyDispensed) return null
+            if (partialPreparedChecked && item.status === 'New') {
+              return
+            } else {
+              if (item.isFullyDispensed && partialPreparedChecked) {
+                return
+              }
+            }
             return <PharmacyWorkItem item={item} {...restProps} />
           }}
           {...restProps}
+          partialPreparedChecked={partialPreparedChecked}
         />
       ))}
     </div>
