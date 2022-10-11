@@ -414,6 +414,7 @@ class AddNewStatement extends PureComponent {
                         code='statementGroup'
                         label='Statement Group'
                         labelField='displayValue'
+                        disabled={statement.entity}
                         onChange={(value, option) => {
                           const { setFieldValue } = this.props
                           const { displayValue } = option || {}

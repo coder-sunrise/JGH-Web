@@ -250,6 +250,9 @@ const Scheme = ({
   const payerList = getPayerList(invoicePayer)
   const payer = payerList.find(p => p.id === schemePayerFK)
 
+  const disableAddStatementGroupBtn = () =>
+    _.isEmpty(statementGroupSearchText?.trim())
+
   return (
     <Paper key={_key} elevation={4} className={classes.gridRow}>
       <GridContainer style={{ marginBottom: 16 }} alignItems='flex-start'>
@@ -319,6 +322,7 @@ const Scheme = ({
                   color='primary'
                   size='sm'
                   style={{ marginLeft: 4 }}
+                  disabled={disableAddStatementGroupBtn()}
                   onClick={handleAddStatementGroup}
                 >
                   <Add />
