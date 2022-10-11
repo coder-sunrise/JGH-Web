@@ -316,7 +316,7 @@ class Detail extends PureComponent {
             confirmBtnText: 'Save',
             confirmProps: {
               disabled: values.rows.some(
-                x => !x.isDeleted && x.totalAftAdj < 0,
+                x => !x.isDeleted && (x.totalAftAdj < 0 || !x.quantity),
               ),
             },
           })}
