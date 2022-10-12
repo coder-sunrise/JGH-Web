@@ -102,7 +102,7 @@ const gridValidationSchema = Yup.object().shape({
     mainDivHeight: global.mainDivHeight,
     autoSelectPatientWhenSearchingCriteriaMatchInAppointment_ClinicSetting:
       clinicSettings.settings
-        .autoSelectPatientWhenSearchingCriteriaMatchInAppointment ?? true,
+        .autoSelectPatientWhenSearchingCriteriaMatchInAppointment ?? false,
   }),
 )
 @withFormikExtend({
