@@ -121,7 +121,7 @@ export default function Grid(props) {
               render: row => {
                 return (
                   <span>
-                    {row.diagnosisType == null ? '-' : row.validityDays}
+                    {row.diagnosisType == null ? '-' : row.diagnosisType}
                   </span>
                 )
               },
