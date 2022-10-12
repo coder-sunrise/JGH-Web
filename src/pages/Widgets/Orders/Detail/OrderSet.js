@@ -462,10 +462,9 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
 
     const getOrderConsumableFromOrderSet = (orderSetCode, orderSetItem) => {
       const { inventoryConsumable } = orderSetItem
-      const unitOfMeasurement = inventoryconsumable
-        .filter(item => item.id === inventoryConsumable.id)
-        .map(x => x.uom.name)
-        .join('')
+      const unitOfMeasurement = inventoryconsumable.find(
+        item => item.id === inventoryConsumable.id,
+      ).uom.name
       const isDefaultBatchNo = inventoryConsumable.consumableStock.find(
         o => o.isDefault === true,
       )

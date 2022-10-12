@@ -56,67 +56,10 @@ export default class FamilyMembersInfoUpdate extends Component {
     const schemeList = familyMembersInfo.filter(x => x.schemeInfo)
 
     return (
-      <div>
-        {contactAddressUpdateRequired && (
-          <div>
-            <h5>Do you want to update your Family Members' Address too?</h5>
-            <CommonTableGrid
-              rows={addressList}
-              getRowId={r => r.familyMemberFK}
-              columns={addressColumns}
-              columnExtensions={columnExtensions}
-              selection={selectedAddressRows}
-              onSelectionChange={rows => {
-                familyMembersInfo.forEach(x => {
-                  x.isUpdateAddress = false
-                  if (rows.some(i => i === x.familyMemberFK))
-                    x.isUpdateAddress = true
-                })
-                this.setState({ familyMembersInfo, selectedAddressRows: rows })
-                onSelectionChange(familyMembersInfo)
-              }}
-              FuncProps={{
-                pager: false,
-                selectable: true,
-                selectConfig: {
-                  showSelectAll: true,
-                  rowSelectionEnabled: () => true,
-                },
-              }}
-            />
-          </div>
-        )}
-        {patientFamilyMemberUpdateRequired && (
-          <>
-            <div>
-              <h5>
-                Do you want to update your Family Members' Corporate Scheme too?
-              </h5>
-              <CommonTableGrid
-                rows={schemeList}
-                getRowId={r => r.familyMemberFK}
-                columns={schemeColumns}
-                columnExtensions={columnExtensions}
-                selection={selectedSchemeRows}
-                onSelectionChange={rows => {
-                  familyMembersInfo.forEach(x => {
-                    x.isUpdateScheme = false
-                    if (rows.some(i => i === x.familyMemberFK))
-                      x.isUpdateScheme = true
-                  })
-                  this.setState({ familyMembersInfo, selectedSchemeRows: rows })
-                  onSelectionChange(familyMembersInfo)
-                }}
-                FuncProps={{
-                  pager: false,
-                  selectable: true,
-                  selectConfig: {
-                    showSelectAll: true,
-                    rowSelectionEnabled: () => true,
-                  },
-                }}
-              />
-            </div>
+      <>
+        <div>
+          {(patientFamilyMemberUpdateRequired ||
+            contactAddressUpdateRequired) && (
             <div>
               <h5>Do you want to update your Family Members' Address too?</h5>
               <CommonTableGrid
@@ -147,10 +90,11 @@ export default class FamilyMembersInfoUpdate extends Component {
                 }}
               />
             </div>
-          </>
-        )}
-        {patientSchemeUpdateRequired && (
-          <>
+          )}
+        </div>
+        <div>
+          {(patientFamilyMemberUpdateRequired ||
+            patientSchemeUpdateRequired) && (
             <div>
               <h5>
                 Do you want to update your Family Members' Corporate Scheme too?
@@ -167,7 +111,10 @@ export default class FamilyMembersInfoUpdate extends Component {
                     if (rows.some(i => i === x.familyMemberFK))
                       x.isUpdateScheme = true
                   })
-                  this.setState({ familyMembersInfo, selectedSchemeRows: rows })
+                  this.setState({
+                    familyMembersInfo,
+                    selectedSchemeRows: rows,
+                  })
                   onSelectionChange(familyMembersInfo)
                 }}
                 FuncProps={{
@@ -180,9 +127,9 @@ export default class FamilyMembersInfoUpdate extends Component {
                 }}
               />
             </div>
-          </>
-        )}
-      </div>
+          )}
+        </div>
+      </>
     )
   }
 }
