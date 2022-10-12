@@ -7,7 +7,10 @@ import { queryList as queryAppointments } from '@/services/calendar'
 import Authorized from '@/utils/Authorized'
 import { LoadingWrapper } from '@/components/_medisys'
 import { Table } from '@devexpress/dx-react-grid-material-ui'
-import { APPOINTMENT_STATUSOPTIONS, INVALID_APPOINTMENT_STATUS } from '@/utils/constants'
+import {
+  APPOINTMENT_STATUSOPTIONS,
+  INVALID_APPOINTMENT_STATUS,
+} from '@/utils/constants'
 import { futureApptTableParams, previousApptTableParams } from './variables'
 import { grayColors } from '@/assets/jss'
 import { getUniqueId } from '@/utils/utils'
@@ -55,6 +58,7 @@ class AppointmentHistory extends PureComponent {
     if (this.props.patient && this.props.patient.id > 0) {
       this.getAppts(this.props.patient.id)
     }
+    this.props.pushApptHistoryRef(this)
   }
 
   componentWillUnmount() {
@@ -154,6 +158,14 @@ class AppointmentHistory extends PureComponent {
     }
   }
 
+  resetAppts() {
+    this.setState({
+      futureAppt: [],
+      previousAppt: [],
+      patientProfileFK: null,
+      loadingAppt: false,
+    })
+  }
   async UNSAFE_componentWillReceiveProps(nextProps) {
     const { patient } = nextProps
 
@@ -179,19 +191,19 @@ class AppointmentHistory extends PureComponent {
     for (let i = 0; i < data.length; i++) {
       const { appointment_Resources, ...restValues } = data[i]
       const currentPatientAppts = appointment_Resources.map((appt, idx) => {
-        const {
-          startTime,
-          appointmentTypeFK,
-          calendarResourceFK,
-        } = appt
+        const { startTime, appointmentTypeFK, calendarResourceFK } = appt
         const apptStatusId = parseInt(restValues.appointmentStatusFk, 10)
-        const apptStatus = APPOINTMENT_STATUSOPTIONS.find(m => m.id === apptStatusId)
+        const apptStatus = APPOINTMENT_STATUSOPTIONS.find(
+          m => m.id === apptStatusId,
+        )
         const commonValues = {
           ...restValues,
           uid: getUniqueId(),
           apptResourceFK: appt.id,
           appointmentTypeFK,
-          appointmentDate: `${moment(restValues.appointmentDate).format('YYYY-MM-DD')}`,
+          appointmentDate: `${moment(restValues.appointmentDate).format(
+            'YYYY-MM-DD',
+          )}`,
           startTime: moment(startTime, 'HH:mm:ss').format('hh:mm A'),
           calendarResourceFK,
           appointmentStatus: apptStatus ? apptStatus.name || '' : '',
@@ -212,7 +224,7 @@ class AppointmentHistory extends PureComponent {
           rowspan: 0,
         }
       })
-  
+
       formattedList = [...formattedList, ...currentPatientAppts]
     }
     return formattedList
@@ -319,7 +331,7 @@ class AppointmentHistory extends PureComponent {
             <CommonTableGrid
               size='sm'
               rows={futureAppt}
-              getRowId={(r)=> `${r.id}_${r.apptResourceFK}`}
+              getRowId={r => `${r.id}_${r.apptResourceFK}`}
               onRowDoubleClick={handleRowDoubleClick}
               {...futureApptTableParams(appointmentTypes)}
               TableProps={{
@@ -343,7 +355,7 @@ class AppointmentHistory extends PureComponent {
             <CommonTableGrid
               size='sm'
               rows={previousAppt}
-              getRowId={(r)=> `${r.id}_${r.apptResourceFK}`}
+              getRowId={r => `${r.id}_${r.apptResourceFK}`}
               {...previousApptTableParams(
                 appointmentTypes,
                 handleCopyAppointmentClick,

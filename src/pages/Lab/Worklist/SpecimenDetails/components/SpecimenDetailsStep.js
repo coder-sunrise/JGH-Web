@@ -42,7 +42,6 @@ export const SpecimenDetailsStep = ({ timeline = [] }) => {
 
   const renderIcon = currentStep => {
     if (currentStep.actionDate) return <CompletedStep />
-    console.log('SpecimenDetailsStep - nextStep', nextStep)
     if (nextStep && nextStep.status === currentStep.status) return <NextStep />
 
     return <DefaultStep />
