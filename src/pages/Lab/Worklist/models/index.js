@@ -20,6 +20,14 @@ export default createListViewModel({
         }
         return status
       },
+      *editSpecimen({ payload }, { call, put }) {
+        const status = yield call(service.editSpecimen, payload)
+        if (status === 200 || status === 204) {
+          notification.success({ message: 'Lab specimen updated.' })
+          return true
+        }
+        return status
+      },
       *discardSpecimen({ payload }, { call, put }) {
         const status = yield call(service.discardSpecimen, payload)
 
