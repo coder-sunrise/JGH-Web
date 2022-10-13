@@ -112,6 +112,14 @@ class DetailsHeader extends PureComponent {
           </GridItem>
           <GridItem md={3} xs={12} className={classes.gridItem}>
             <Field
+              name='statementGroupName'
+              render={args => (
+                <TextField prefix='Statement Group Name:' {...cfg} {...args} />
+              )}
+            />
+          </GridItem>
+          <GridItem md={3} xs={12} className={classes.gridItem}>
+            <Field
               name='paymentTerm'
               render={args => (
                 <TextField

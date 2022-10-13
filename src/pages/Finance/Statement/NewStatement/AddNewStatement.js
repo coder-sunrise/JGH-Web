@@ -579,6 +579,22 @@ class AddNewStatement extends PureComponent {
                   }}
                 />
               </GridItem>
+              <GridItem md={12}>
+                <FastField
+                  name='attentionTo'
+                  render={args => {
+                    return (
+                      <TextField
+                        label='Attention To'
+                        maxLength={500}
+                        inputProps={{ maxLength: 500 }}
+                        multiline
+                        {...args}
+                      />
+                    )
+                  }}
+                />
+              </GridItem>
             </GridContainer>
           </GridContainer>
           <div

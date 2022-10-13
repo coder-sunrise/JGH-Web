@@ -181,6 +181,7 @@ class CoPayer extends Component {
         coPayer,
         patientCopayAmountType = 'Percentage',
         patientCopayAmount = 0,
+        statementGroupFK,
       },
       handleSubmit,
       validateForm,
@@ -218,6 +219,7 @@ class CoPayer extends Component {
       companyFK: copayerItem.id,
       patientCopayAmountType,
       patientCopayAmount,
+      statementGroupFK,
       isModified: false,
       _isConfirmed: true,
       _isEditing: false,
@@ -393,6 +395,23 @@ class CoPayer extends Component {
                   {...args}
                 />
               )}
+            />
+          </GridItem>
+          <GridItem md={6}>
+            <FastField
+              force
+              name='statementGroupFK'
+              render={args => {
+                return (
+                  <CodeSelect
+                    force
+                    code='statementGroup'
+                    label='Statement Group'
+                    labelField='displayValue'
+                    {...args}
+                  />
+                )
+              }}
             />
           </GridItem>
           <GridItem md={12}>
