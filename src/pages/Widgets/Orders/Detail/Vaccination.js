@@ -138,7 +138,7 @@ let i = 0
     let newCORVaccinationCert = corVaccinationCert
     if (isGenerateCertificate) {
       const { documenttemplate = [] } = codetable
-      if (corVaccinationCert.find(vc => !vc.isDeleted)) {
+      if (values.isDeleted) {
         notification.warning({
           message:
             'Any changes will not be reflected in the vaccination certificate.',
@@ -156,10 +156,14 @@ let i = 0
         } else {
           const { entity: visitEntity } = visitRegistration
           const clinicianProfile = getClinicianProfile(codetable, visitEntity)
+          const { ctgender } = codetable
           const { entity } = patient
-          const { name, patientAccountNo, genderFK, dob } = entity
-          const { ctgender = [] } = codetable
-          const gender = ctgender.find(o => o.id === genderFK) || {}
+          const gender = ctgender.find(o => o.id === entity.genderFK) || {}
+          const v = `Vaccination Certificate - ${entity.name}, ${
+            entity.patientAccountNo
+          }, ${gender.code || ''}, ${Math.floor(
+            moment.duration(moment().diff(entity.dob)).asYears(),
+          )}`
           const allDocs = rows.filter(s => !s.isDeleted)
           let nextSequence = 1
           if (allDocs && allDocs.length > 0) {
@@ -173,23 +177,20 @@ let i = 0
             if (!r) {
               return
             }
-            newCORVaccinationCert = [
-              ...corVaccinationCert,
-              {
-                type: '3',
-                certificateDate: moment(),
-                issuedByUserFK: clinicianProfile.userProfileFK,
-                subject: `Vaccination Certificate - ${name}, ${patientAccountNo}, ${gender.code ||
-                  ''}, ${Math.floor(
-                  moment.duration(moment().diff(dob)).asYears(),
-                )}`,
+            dispatch({
+              type: 'consultationDocument/upsertRow',
+              payload: {
+                sequence: nextSequence,
+                certificateDate: values.vaccinationGivenDate,
                 content: ReplaceCertificateTeplate(r.templateContent, {
                   ...values,
                   subject: currentType.getSubject(values),
                 }),
-                sequence: nextSequence,
+                issuedByUserFK: user.data.clinicianProfile.userProfileFK,
+                subject: v,
+                type: '3',
               },
-            ]
+            })
           })
         }
       }
