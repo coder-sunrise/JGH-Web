@@ -99,9 +99,6 @@ export const ReceiveSpecimen = ({
                   payload: {
                     ...payload,
                     specimenTypeFK,
-                    specimenTypeName: ctspecimentype.find(
-                      item => item.id === specimenTypeFK,
-                    )?.name,
                   },
                 }).then(result => {
                   if (result) {
