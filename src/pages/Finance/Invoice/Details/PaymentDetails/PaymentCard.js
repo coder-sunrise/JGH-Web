@@ -61,6 +61,7 @@ const PaymentCard = ({
   isEnableWriteOffinInvoice,
   visitOrderTemplateFK,
   isFromPastSession = false,
+  statementGroupName = '',
   actions: { handleVoidClick, handlePrinterClick, ...buttonActions },
 }) => {
   let _payerName = (
@@ -78,11 +79,13 @@ const PaymentCard = ({
       <p
         className={classes.title}
         title={`Copayer: ${companyName}\n${coPaymentSchemeName &&
-          'Scheme: ' + coPaymentSchemeName}`}
+          'Scheme: ' + coPaymentSchemeName}\n${statementGroupName &&
+          'StatementGroup: ' + statementGroupName}`}
       >
         <span>
           {payerTypeToString[payerTypeFK]} ({companyName})
           {coPaymentSchemeName && ` - ${coPaymentSchemeName}`}
+          {statementGroupName && ` - ${statementGroupName}`}
         </span>
       </p>
     )
@@ -91,6 +94,7 @@ const PaymentCard = ({
     _payerName = (
       <p className={classes.title}>
         {payerTypeToString[payerTypeFK]} ({payerName})
+        {statementGroupName && ` - ${statementGroupName}`}
       </p>
     )
   }
@@ -99,10 +103,12 @@ const PaymentCard = ({
       <p
         className={classes.title}
         title={`Copayer: ${companyName}\n${coPaymentSchemeName &&
-          'Scheme: ' + coPaymentSchemeName}`}
+          'Scheme: ' + coPaymentSchemeName}\n${statementGroupName &&
+          'StatementGroup: ' + statementGroupName}`}
       >
         {payerTypeToString[payerTypeFK]} ({companyName})
         {coPaymentSchemeName && ` - ${coPaymentSchemeName}`}
+        {statementGroupName && ` - ${statementGroupName}`}
       </p>
     )
   }

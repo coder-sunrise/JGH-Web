@@ -335,15 +335,40 @@ class AddNewStatement extends PureComponent {
     history.goBack()
   }
 
+  setDefaultContactPersonInfo = (dispatch, setFieldValue, copayerId) => {
+    if (!copayerId) return
+    dispatch({
+      type: 'copayerDetail/queryCopayerDetails',
+      payload: {
+        id: copayerId,
+      },
+    }).then(r => {
+      const { contactPersons = [] } = r || {}
+      const cp = contactPersons.find(x => x.isDefault) || {}
+      const cpfields = [
+        cp.name,
+        cp.mobileNumber,
+        cp.workNumber,
+        cp.faxNumber,
+        cp.emailAddress,
+        cp.remarks,
+      ].filter(f => f && `${f}`.trim())
+      setFieldValue('attentionTo', cpfields.join(' '))
+    })
+  }
+
   clearInvoiceList = (e, op) => {
-    const { setFieldValue } = this.props
+    const { dispatch, setFieldValue } = this.props
     const {
+      id: copayerId,
       adminCharge,
       adminChargeType,
       statementAdjustment,
       statementAdjustmentType,
       defaultStatementAdjustmentRemarks,
     } = op || {}
+
+    this.setDefaultContactPersonInfo(dispatch, setFieldValue, copayerId)
     setFieldValue('adminChargeValue', adminCharge || 0)
     setFieldValue('adminChargeValueType', adminChargeType || 'Percentage')
     setFieldValue('adjustmentValue', statementAdjustment || 0)
