@@ -2,8 +2,10 @@ import React, { Component } from 'react'
 import { connect } from 'dva'
 import * as Yup from 'yup'
 import _ from 'lodash'
+import moment from 'moment'
 // material ui
 import { withStyles } from '@material-ui/core'
+import { Add } from '@material-ui/icons'
 // common components
 import { Table } from '@devexpress/dx-react-grid-material-ui'
 import CopayerDropdownOption from '@/components/Select/optionRender/copayer'
@@ -24,6 +26,7 @@ import {
 import { INVOICE_PAYER_TYPE, COPAYER_TYPE } from '@/utils/constants'
 import { roundTo, getUniqueId } from '@/utils/utils'
 import { CoPayerColumns, CoPayerColExtensions } from '../variables'
+import { Divider } from 'antd'
 
 const styles = theme => ({
   container: {
@@ -268,6 +271,33 @@ class CoPayer extends Component {
     )
   }
 
+  disableAddStatementGroupBtn = () =>
+    _.isEmpty(this.state.statementGroupSearchText?.trim())
+
+  handleAddStatementGroup = async () => {
+    const {
+      dispatch,
+      setFieldValue,
+      values: { coPayer },
+    } = this.props
+    const { statementGroupSearchText } = this.state
+    const response = await dispatch({
+      type: 'settingStatementGroup/upsert',
+      payload: {
+        isUserMaintainable: true,
+        copayerFK: coPayer,
+        displayValue: statementGroupSearchText,
+        effectiveStartDate: moment().formatUTC(),
+        effectiveEndDate: moment('2099-12-31T23:59:59').formatUTC(false),
+      },
+    })
+  }
+
+  debounceStatementGroupSearch = _.debounce(
+    value => this.setState({ statementGroupSearchText: value }),
+    500,
+  )
+
   SummaryRow = p => {
     const { children } = p
     let countCol = children.find(c => {
@@ -338,6 +368,10 @@ class CoPayer extends Component {
                     dropdownStyle={{
                       width: 650,
                     }}
+                    onChange={val => {
+                      const { setFieldValue } = this.props
+                      setFieldValue('statementGroupFK', undefined)
+                    }}
                     renderDropdown={option => {
                       return (
                         <CopayerDropdownOption
@@ -398,16 +432,38 @@ class CoPayer extends Component {
             />
           </GridItem>
           <GridItem md={6}>
-            <FastField
+            <Field
               force
               name='statementGroupFK'
               render={args => {
+                const { coPayer } = values
                 return (
                   <CodeSelect
                     force
                     code='statementGroup'
                     label='Statement Group'
                     labelField='displayValue'
+                    onSearch={this.debounceStatementGroupSearch}
+                    localFilter={item => !coPayer || coPayer == item.copayerFK}
+                    remoteFilter={{
+                      copayerFK: coPayer,
+                    }}
+                    dropdownRender={options => (
+                      <div>
+                        {options}
+                        <Divider style={{ margin: '4px 0' }} />
+                        <Button
+                          color='primary'
+                          size='sm'
+                          style={{ marginLeft: 4 }}
+                          disabled={this.disableAddStatementGroupBtn()}
+                          onClick={this.handleAddStatementGroup}
+                        >
+                          <Add />
+                          Add Statement Group
+                        </Button>
+                      </div>
+                    )}
                     {...args}
                   />
                 )
