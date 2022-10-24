@@ -112,7 +112,7 @@ let i = 0
     expiryDate: Yup.date().min(moment(), 'EXPIRED!'),
   }),
 
-  handleSubmit: (values, { props, onConfirm, setValues }) => {
+  handleSubmit: async (values, { props, onConfirm, setValues }) => {
     const {
       dispatch,
       orders,
@@ -166,35 +166,31 @@ let i = 0
             const { sequence } = _.maxBy(allDocs, 'sequence')
             nextSequence = sequence + 1
           }
-          dispatch({
+          const response = await dispatch({
             type: 'settingDocumentTemplate/queryOne',
             payload: { id: defaultTemplate.id },
-          }).then(r => {
-            if (!r) {
-              return
-            }
-            newCORVaccinationCert = [
-              ...corVaccinationCert,
-              {
-                type: '3',
-                certificateDate: moment(),
-                issuedByUserFK: clinicianProfile.userProfileFK,
-                subject: `Vaccination Certificate - ${name}, ${patientAccountNo}, ${gender.code ||
-                  ''}, ${Math.floor(
-                  moment.duration(moment().diff(dob)).asYears(),
-                )}`,
-                content: ReplaceCertificateTeplate(r.templateContent, {
-                  ...values,
-                  subject: currentType.getSubject(values),
-                }),
-                sequence: nextSequence,
-              },
-            ]
           })
+          if (!response) return
+          newCORVaccinationCert = [
+            ...corVaccinationCert,
+            {
+              type: '3',
+              certificateDate: moment(),
+              issuedByUserFK: clinicianProfile.userProfileFK,
+              subject: `Vaccination Certificate - ${name}, ${patientAccountNo}, ${gender.code ||
+                ''}, ${Math.floor(
+                moment.duration(moment().diff(dob)).asYears(),
+              )}`,
+              content: ReplaceCertificateTeplate(response.templateContent, {
+                ...values,
+                subject: currentType.getSubject(values),
+              }),
+              sequence: nextSequence,
+            },
+          ]
         }
       }
     }
-
     const vaccination = inventoryvaccination.find(
       c => c.id === values.inventoryVaccinationFK,
     )
