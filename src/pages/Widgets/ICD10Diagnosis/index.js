@@ -59,12 +59,13 @@ class ICD10Diagnosis extends PureComponent {
   }
   // Click history open the Commonmoadl
   onSearchDiagnosisHistory = () => {
-    const { dispatch, consultation } = this.props
+    const { dispatch, consultation, visitRegistration } = this.props
     const { patientMedicalHistory } = consultation.entity
     dispatch({
       type: 'patientHistory/queryDiagnosisHistory',
       payload: {
         patientProfileId: patientMedicalHistory.id,
+        visitFK: visitRegistration?.entity?.id,
       },
     }).then(res => {
       if (res.status === '200') {
