@@ -310,6 +310,7 @@ class CommonForm extends PureComponent {
             disabled={disableEdit || signatureCounter > 0}
             color='primary'
             onClick={this.switchMode}
+            size='sm'
           >
             {isSigningMode ? 'Switch to Edit Mode' : 'Switch to Signing Mode'}
           </Button>

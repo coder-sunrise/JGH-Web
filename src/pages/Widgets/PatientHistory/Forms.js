@@ -2,18 +2,25 @@ import React, { useState } from 'react'
 import { Table } from 'antd'
 import moment from 'moment'
 // common components
-import { notification, Checkbox, DocumentEditor } from '@/components'
+import {
+  notification,
+  Checkbox,
+  DocumentEditor,
+  CommonModal,
+} from '@/components'
 import { formTypes, formStatus } from '@/utils/codes'
 import tablestyles from './PatientHistoryStyle.less'
-
+import CommonForm from '@/components/_medisys/Forms/CommonForm'
 const printRow = row => {
   DocumentEditor.print({
     documentName: row.formName,
-    document: row.formData,
+    document: JSON.parse(row.formData).content,
   })
 }
 
 export default ({ current }) => {
+  let [isShowModal, setIsShowModal] = useState(false)
+  let [formValue, setFormValue] = useState({})
   const { forms = [] } = current
   const [includeVoidForms, setIncludeVoidForms] = useState(false)
   return (
@@ -37,7 +44,8 @@ export default ({ current }) => {
             render: (text, row) => (
               <a
                 onClick={() => {
-                  printRow(row)
+                  setIsShowModal(true)
+                  setFormValue({ ...row, formData: JSON.parse(row.formData) })
                 }}
               >
                 {text}
@@ -70,6 +78,18 @@ export default ({ current }) => {
         }}
         className={tablestyles.table}
       />
+      <CommonModal
+        open={isShowModal}
+        title='Form'
+        onClose={() => {
+          setIsShowModal(false)
+        }}
+        observe='Form'
+        maxWidth='lg'
+        bodyNoPadding
+      >
+        <CommonForm values={formValue} />
+      </CommonModal>
     </div>
   )
 }
