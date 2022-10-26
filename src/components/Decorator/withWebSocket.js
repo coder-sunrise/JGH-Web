@@ -155,9 +155,6 @@ const withWebSocket = () => Component => {
             }),
           ),
         )
-        notification.success({
-          message: `Preview job sent to the printer.`,
-        })
         return result
       }
       return false
