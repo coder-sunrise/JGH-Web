@@ -96,7 +96,7 @@ const getDispenseItems = (clinicSettings, entity = {}) => {
     }
   }
 
-  const generateFromDrugmixture = item => {
+  const generateFromDrugmixture = (item, isForInvoiceReplacement) => {
     const drugMixtures = _.orderBy(
       item.prescriptionDrugMixture,
       ['sequence'],
@@ -117,7 +117,11 @@ const getDispenseItems = (clinicSettings, entity = {}) => {
         uid: getUniqueId(),
         medicationStock: drugMixture.medication?.medicationStock || [],
       }
-      if (drugMixture.isDispensedByPharmacy) {
+      if (isForInvoiceReplacement) {
+        orderItems.push({
+          ...detaultDrugMixture,
+        })
+      } else if (drugMixture.isDispensedByPharmacy) {
         if (drugMixture.dispenseItem.length) {
           drugMixture.dispenseItem.forEach((di, index) => {
             orderItems.push({
@@ -246,11 +250,12 @@ const getDispenseItems = (clinicSettings, entity = {}) => {
     groupItems[0].groupRowSpan = groupItems.length
   }
 
-  const generateFromNormalMedication = item => {
+  const generateFromNormalMedication = (item, isForInvoiceReplacement) => {
     const groupName = 'NormalDispense'
     if (
       (item.isPreOrder && !item.isChargeToday) ||
-      (!item.isPreOrder && item.hasPaid)
+      (!item.isPreOrder && item.hasPaid) ||
+      isForInvoiceReplacement
     ) {
       orderItems.push({
         ...defaultItem(item, groupName),
@@ -384,11 +389,12 @@ const getDispenseItems = (clinicSettings, entity = {}) => {
     groupItems[0].groupRowSpan = groupItems.length
   }
 
-  const generateFromNormalConsumable = item => {
+  const generateFromNormalConsumable = (item, isForInvoiceReplacement) => {
     const groupName = 'NormalDispense'
     if (
       (item.isPreOrder && !item.isChargeToday) ||
-      (!item.isPreOrder && item.hasPaid)
+      (!item.isPreOrder && item.hasPaid) ||
+      isForInvoiceReplacement
     ) {
       orderItems.push({
         ...defaultItem(item, groupName),
@@ -505,11 +511,12 @@ const getDispenseItems = (clinicSettings, entity = {}) => {
     groupItems[0].groupRowSpan = groupItems.length
   }
 
-  const generateFromNormalVaccination = item => {
+  const generateFromNormalVaccination = (item, isForInvoiceReplacement) => {
     const groupName = 'NormalDispense'
     if (
       (item.isPreOrder && !item.isChargeToday) ||
-      (!item.isPreOrder && item.hasPaid)
+      (!item.isPreOrder && item.hasPaid) ||
+      isForInvoiceReplacement
     ) {
       orderItems.push({
         ...defaultItem(item, groupName),
@@ -631,9 +638,9 @@ const getDispenseItems = (clinicSettings, entity = {}) => {
   sortOrderItems.forEach(item => {
     if (item.type === 'Medication') {
       if (item.isDrugMixture) {
-        generateFromDrugmixture(item)
+        generateFromDrugmixture(item, entity.isForInvoiceReplacement)
       } else {
-        generateFromNormalMedication(item)
+        generateFromNormalMedication(item, entity.isForInvoiceReplacement)
       }
     } else if (
       item.type === 'Open Prescription' ||
@@ -645,9 +652,9 @@ const getDispenseItems = (clinicSettings, entity = {}) => {
         groupRowSpan: 1,
       })
     } else if (item.type === 'Vaccination') {
-      generateFromNormalVaccination(item)
+      generateFromNormalVaccination(item, entity.isForInvoiceReplacement)
     } else {
-      generateFromNormalConsumable(item)
+      generateFromNormalConsumable(item, entity.isForInvoiceReplacement)
     }
   })
 
