@@ -1943,26 +1943,25 @@ const Main = props => {
         </GridItem>
       </GridContainer>
       {(pharmacyDetails.fromModule === 'Main' ||
-        (values.orderItems || []).length > 0) &&
-        !values.isFullyDispensed && (
-          <div style={{ margin: '8px 8px 0px 8px' }}>
-            {pharmacyDetails.fromModule === 'History' && (
-              <div style={{ fontWeight: 600, margin: '3px 0px' }}>
-                Pending Items
-              </div>
-            )}
-            <div style={{ overflowX: 'auto' }}>
-              <AntdTable
-                className={customtyles.table}
-                size='small'
-                bordered
-                pagination={false}
-                dataSource={getGroupDispenseItem('PendingItems')}
-                columns={getColumns('PendingItems', onPendingValueChange)}
-              />
+        (values.orderItems || []).length > 0) && (
+        <div style={{ margin: '8px 8px 0px 8px' }}>
+          {pharmacyDetails.fromModule === 'History' && (
+            <div style={{ fontWeight: 600, margin: '3px 0px' }}>
+              Pending Items
             </div>
+          )}
+          <div style={{ overflowX: 'auto' }}>
+            <AntdTable
+              className={customtyles.table}
+              size='small'
+              bordered
+              pagination={false}
+              dataSource={getGroupDispenseItem('PendingItems')}
+              columns={getColumns('PendingItems', onPendingValueChange)}
+            />
           </div>
-        )}
+        </div>
+      )}
       {pharmacyDetails.fromModule === 'History' && (
         <div style={{ margin: '8px 8px 0px 8px' }}>
           {(values.orderItems || []).length > 0 && (
@@ -1990,7 +1989,7 @@ const Main = props => {
                 size='small'
                 style={{
                   right: 0,
-                  top: 2,
+                  top: -2,
                   color: 'gray',
                 }}
               >
