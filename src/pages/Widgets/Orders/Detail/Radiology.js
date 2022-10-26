@@ -175,7 +175,10 @@ const getVisitDoctorUserId = props => {
     }),
     quantity: Yup.number().when('editServiceId', {
       is: val => val && val !== '',
-      then: Yup.number().required(),
+      then: Yup.number()
+        .integer()
+        .min(1, 'Min. value is 1')
+        .required(),
     }),
     total: Yup.number().when('editServiceId', {
       is: val => val && val !== '',

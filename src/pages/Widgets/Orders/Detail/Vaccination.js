@@ -99,7 +99,9 @@ let i = 0
     inventoryVaccinationFK: Yup.number().required(),
     totalPrice: Yup.number().required(),
     vaccinationGivenDate: Yup.date().required(),
-    quantity: Yup.number().required(),
+    quantity: Yup.number()
+      .min(0.1, 'Min. value is 0.1')
+      .required(),
     uomfk: Yup.number().required(),
     dispenseUOMFK: Yup.number().required(),
     totalAfterItemAdjustment: Yup.number().min(
