@@ -13,7 +13,7 @@ import Yup from '@/utils/yup'
 import { subscribeNotification } from '@/utils/realtime'
 import { ReportViewer } from '@/components/_medisys'
 import { getRawData } from '@/services/report'
-import { REPORT_ID } from '@/utils/constants'
+import { PharmacyWorkitemStatus, REPORT_ID } from '@/utils/constants'
 import { orderItemTypes } from '@/utils/codes'
 import Print from '@material-ui/icons/Print'
 import ForceCompleteConfirmation from './ForceCompleteConfirmation'
@@ -1942,8 +1942,10 @@ const Main = props => {
           )}
         </GridItem>
       </GridContainer>
+      {/* orderItems is pending dispense item list */}
       {(pharmacyDetails.fromModule === 'Main' ||
-        (values.orderItems || []).length > 0) && (
+        ((values.orderItems || []).length > 0 &&
+          !values.forceCompleteReason)) && (
         <div style={{ margin: '8px 8px 0px 8px' }}>
           {pharmacyDetails.fromModule === 'History' && (
             <div style={{ fontWeight: 600, margin: '3px 0px' }}>
