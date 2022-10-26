@@ -40,6 +40,7 @@ import {
   LAB_SPECIMEN_STATUS_COLORS,
 } from '@/utils/constants'
 import { RetestHistory } from './components/RetestHistory'
+import { ReceiveSpecimen } from '../components'
 
 const { Panel } = Collapse
 const { TextArea } = Input
@@ -109,6 +110,7 @@ export const SpecimenDetails = ({
 
   const [showRawData, setShowRawData] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [showEditSpecimenModal, setShowEditSpecimenModal] = useState(false)
   const currentStatus = entity.specimenStatusFK
   const [form] = Form.useForm()
 
@@ -166,7 +168,9 @@ export const SpecimenDetails = ({
       })
     }
   }
-
+  let toggleEditSpecimenModal = () => {
+    setShowEditSpecimenModal(!showEditSpecimenModal)
+  }
   const handleRetest = async () => {
     const values = await form.validateFields()
     setRetestSpecimenPara({
@@ -381,7 +385,10 @@ export const SpecimenDetails = ({
                   <SpecimenDetailsStep timeline={entity.timeline} />
                 </GridItem>
                 <GridItem md={12}>
-                  <HeaderInfo entity={entity} />
+                  <HeaderInfo
+                    entity={entity}
+                    toggleEditSpecimenModal={toggleEditSpecimenModal}
+                  />
                 </GridItem>
               </React.Fragment>
               {entity.specimenStatusFK !== LAB_SPECIMEN_STATUS.NEW && (
@@ -486,6 +493,13 @@ export const SpecimenDetails = ({
         onConfirm={() => {
           closeRetestHisotry()
         }}
+      />
+      <ReceiveSpecimen
+        mode='edit'
+        open={showEditSpecimenModal}
+        id={id}
+        onClose={toggleEditSpecimenModal}
+        onConfirm={toggleEditSpecimenModal}
       />
     </React.Fragment>
   )
