@@ -79,6 +79,7 @@ export default createListViewModel({
     service,
     state: {
       filterTemplates: [],
+      filters: {},
     },
     effects: {
       *saveFilterTemplate({ payload }, { call, put, select }) {
