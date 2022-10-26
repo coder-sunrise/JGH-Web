@@ -293,6 +293,10 @@ class Banner extends PureComponent {
         code: 'copaymentscheme',
       },
     })
+    await dispatch({
+      type: 'codetable/fetchCodes',
+      payload: { code: 'ctgender' },
+    })
   }
 
   openNotes = () => this.setState({ showNotesModal: true })

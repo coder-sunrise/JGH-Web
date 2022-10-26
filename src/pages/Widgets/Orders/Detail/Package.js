@@ -72,7 +72,7 @@ import { CollectionsOutlined } from '@material-ui/icons'
   validationSchema: Yup.object().shape({
     packageFK: Yup.number().required(),
   }),
-  handleSubmit: (values, { props, onConfirm, setValues, resetForm }) => {
+  handleSubmit: async (values, { props, onConfirm, setValues, resetForm }) => {
     const {
       dispatch,
       orders = {},
@@ -321,7 +321,7 @@ import { CollectionsOutlined } from '@material-ui/icons'
       return item
     }
 
-    const getOrderVaccinationFromPackage = (
+    const getOrderVaccinationFromPackage = async (
       packageCode,
       packageName,
       packageItem,
@@ -396,28 +396,30 @@ import { CollectionsOutlined } from '@material-ui/icons'
             dt.isDefaultTemplate === true && dt.documentTemplateTypeFK === 3,
         )
         if (defaultTemplate) {
-          dispatch({
+          const response = await dispatch({
             type: 'settingDocumentTemplate/queryOne',
             payload: { id: defaultTemplate.id },
-          }).then(r => {
-            if (!r) {
-              return
-            }
-            newCORVaccinationCert = [
-              {
-                type: '3',
-                certificateDate: moment(),
-                issuedByUserFK: clinicianProfile.userProfileFK,
-                subject: `Vaccination Certificate - ${name}, ${patientAccountNo}, ${gender.code ||
-                  ''}, ${Math.floor(
-                  moment.duration(moment().diff(dob)).asYears(),
-                )}`,
-                content: ReplaceCertificateTeplate(r.templateContent, item),
-                sequence: nextDocumentSequence,
-              },
-            ]
-            nextDocumentSequence += 1
           })
+          if (!response) {
+            return
+          }
+          newCORVaccinationCert = [
+            {
+              type: '3',
+              certificateDate: moment(),
+              issuedByUserFK: clinicianProfile.userProfileFK,
+              subject: `Vaccination Certificate - ${name}, ${patientAccountNo}, ${gender.code ||
+                ''}, ${Math.floor(
+                moment.duration(moment().diff(dob)).asYears(),
+              )}`,
+              content: ReplaceCertificateTeplate(
+                response.templateContent,
+                item,
+              ),
+              sequence: nextDocumentSequence,
+            },
+          ]
+          nextDocumentSequence += 1
         } else {
           showNoTemplate = true
         }
@@ -517,7 +519,11 @@ import { CollectionsOutlined } from '@material-ui/icons'
       return item
     }
 
-    const getOrderFromPackage = (packageCode, packageName, packageItem) => {
+    const getOrderFromPackage = async (
+      packageCode,
+      packageName,
+      packageItem,
+    ) => {
       let item
       if (packageItem.type === '1') {
         item = getOrderMedicationFromPackage(
@@ -527,7 +533,7 @@ import { CollectionsOutlined } from '@material-ui/icons'
         )
       }
       if (packageItem.type === '2') {
-        item = getOrderVaccinationFromPackage(
+        item = await getOrderVaccinationFromPackage(
           packageCode,
           packageName,
           packageItem,
@@ -554,7 +560,7 @@ import { CollectionsOutlined } from '@material-ui/icons'
     let datas = []
     let nextSequence = getNextSequence()
     for (let index = 0; index < packageItems.length; index++) {
-      const newOrder = getOrderFromPackage(
+      const newOrder = await getOrderFromPackage(
         selectedPackage.code,
         selectedPackage.displayValue,
         packageItems[index],
