@@ -590,7 +590,7 @@ class PatientHistory extends Component {
                 fromModule !== 'MedicalCheckup' && (
                   <Authorized authority='patientdashboard.editconsultation'>
                     <Tooltip title='Edit Consultation'>
-                      <Button
+                      <ProgressButton
                         color='primary'
                         style={{
                           marginLeft: theme.spacing(2),
@@ -668,9 +668,8 @@ class PatientHistory extends Component {
                             }
                           })
                         }}
-                      >
-                        <Edit />
-                      </Button>
+                        icon={<Edit />}
+                      ></ProgressButton>
                     </Tooltip>
                   </Authorized>
                 )}

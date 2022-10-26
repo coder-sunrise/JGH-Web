@@ -151,16 +151,8 @@ const getVisitDoctorUserId = props => {
       ...(orders.entity || orders.defaultService),
     }
     if (orders.entity) {
-      if (
-        (v.serviceItems?.length > 0
-          ? v.serviceItems[0].adjAmount
-          : v.adjAmount) <= 0
-      ) {
-        v.adjValue = Math.abs(
-          (v.serviceItems?.length > 0
-            ? v.serviceItems[0].adjValue
-            : v.adjValue) || 0,
-        )
+      if (v.totalAfterItemAdjustment <= v.total) {
+        v.adjValue = Math.abs(v.adjValue || 0)
         v.isMinus = true
       } else {
         v.isMinus = false
@@ -168,12 +160,8 @@ const getVisitDoctorUserId = props => {
       v.isExactAmount = v.adjType !== 'Percentage'
       if ((v.serviceItems || []).length) {
         v.serviceItems[0].isMinus = v.isMinus
-        v.serviceItems[0].isExactAmount =
-          v.serviceItems?.length > 0
-            ? v.serviceItems[0].isExactAmount
-            : v.isExactAmount
-        v.serviceItems[0].adjValue =
-          v.serviceItems?.length > 0 ? v.serviceItems[0].adjValue : v.adjValue
+        v.serviceItems[0].isExactAmount = v.isExactAmount
+        v.serviceItems[0].adjValue = v.adjValue
       }
     }
     return {
