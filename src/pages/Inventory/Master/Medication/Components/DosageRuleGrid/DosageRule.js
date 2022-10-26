@@ -584,6 +584,11 @@ const DosageRuleTable = ({
                     required: true,
                     message: `Required.`,
                   },
+                  {
+                    validator: (_, value) =>
+                      value < 0.1 ? Promise.reject() : Promise.resolve(),
+                    message: 'Min. value is 0.1',
+                  },
                 ]}
               >
                 <SingleDecimalInput
