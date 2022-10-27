@@ -5,7 +5,7 @@ import { fetchCodeTable } from '@/utils/codetable'
 export default createListViewModel({
   namespace: 'corporateBilling',
   config: {
-    queryOnLoad: true,
+    queryOnLoad: false,
   },
   param: {
     service,
