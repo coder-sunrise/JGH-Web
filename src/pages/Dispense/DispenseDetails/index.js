@@ -154,6 +154,7 @@ const DispenseDetails = ({
   user,
   visitRegistration,
   isIncludeExpiredItem = false,
+  isCodeTableLoaded,
 }) => {
   const {
     dispenseItems = [],
@@ -1082,6 +1083,7 @@ const DispenseDetails = ({
                     size='sm'
                     icon={<Edit />}
                     onClick={onEditOrderClick}
+                    disabled={!isCodeTableLoaded}
                   >
                     Edit Order
                   </ProgressButton>

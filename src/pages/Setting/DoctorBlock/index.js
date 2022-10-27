@@ -77,10 +77,10 @@ class DoctorBlock extends PureComponent {
     const { dispatch } = this.props
     dispatch({
       type: 'doctorBlock/delete',
-      payload: { id },
+      payload: { id, includeSeries: false },
     }).then(() => {
       dispatch({
-        type: 'doctorBlock/refresh',
+        type: 'doctorBlock/query',
       })
     })
   }

@@ -533,13 +533,14 @@ class PastMedication extends PureComponent {
     return data
   }
 
-  GetNewVaccination = () => {
+  GetNewVaccination = async () => {
     const {
       getNextSequence,
       codetable,
       type,
       visitRegistration,
       patient,
+      dispatch,
       consultationDocument: { rows = [] },
     } = this.props
     const {
@@ -565,119 +566,117 @@ class PastMedication extends PureComponent {
       nextSequence = documentSequence + 1
     }
     let showNoTemplate
-    data = data.concat(
-      vaccinations.map(item => {
-        let currentSequence = sequence
-        sequence += 1
+    for (let index = 0; index < vaccinations.length; index++) {
+      let item = vaccinations[index]
+      let currentSequence = sequence
+      sequence += 1
 
-        let vaccination = inventoryvaccination.find(
-          vacc => vacc.id === item.inventoryVaccinationFK,
-        )
-        let defaultBatch = vaccination.vaccinationStock.find(
-          o => o.isDefault === true,
-        )
+      let vaccination = inventoryvaccination.find(
+        vacc => vacc.id === item.inventoryVaccinationFK,
+      )
+      let defaultBatch = vaccination.vaccinationStock.find(
+        o => o.isDefault === true,
+      )
 
-        let usage = ctvaccinationusage.find(
-          vaccUsage => vaccUsage.id === item.usageMethodFK,
-        )
+      let usage = ctvaccinationusage.find(
+        vaccUsage => vaccUsage.id === item.usageMethodFK,
+      )
 
-        let dosage = ctmedicationdosage.find(
-          vaccdosage => vaccdosage.id === item.dosageFK,
-        )
+      let dosage = ctmedicationdosage.find(
+        vaccdosage => vaccdosage.id === item.dosageFK,
+      )
 
-        let uom = ctvaccinationunitofmeasurement.find(
-          vaccuom => vaccuom.id === item.uomfk,
-        )
-        let dispenseUOM = ctvaccinationunitofmeasurement.find(
-          vaccuom => vaccuom.id === item.dispenseUOMFK,
-        )
-        let newTotalQuantity = item.quantity
+      let uom = ctvaccinationunitofmeasurement.find(
+        vaccuom => vaccuom.id === item.uomfk,
+      )
+      let dispenseUOM = ctvaccinationunitofmeasurement.find(
+        vaccuom => vaccuom.id === item.dispenseUOMFK,
+      )
+      let newTotalQuantity = item.quantity
 
-        const totalPrice = newTotalQuantity * vaccination.sellingPrice
+      const totalPrice = newTotalQuantity * vaccination.sellingPrice
 
-        let newVaccination = {
-          type,
-          inventoryVaccinationFK: item.inventoryVaccinationFK,
-          vaccinationGivenDate: item.vaccinationGivenDate,
-          vaccinationCode: vaccination.code,
-          vaccinationName: vaccination.displayValue,
-          usageMethodFK: usage?.id,
-          usageMethodCode: usage?.code,
-          usageMethodDisplayValue: usage?.name,
-          dosageFK: dosage?.id,
-          dosageCode: dosage?.code,
-          dosageDisplayValue: dosage?.displayValue,
-          uomfk: uom?.id,
-          uomCode: uom?.code,
-          uomDisplayValue: uom?.name,
-          dispenseUOMFK: dispenseUOM?.id,
-          dispenseUOMCode: dispenseUOM?.code,
-          dispenseUOMDisplayValue: dispenseUOM?.name,
-          quantity: newTotalQuantity,
-          unitPrice: vaccination.sellingPrice,
-          totalPrice,
-          adjAmount: 0.0,
-          adjType: 'ExactAmount',
-          adjValue: 0,
-          totalAfterItemAdjustment: totalPrice,
-          sequence: currentSequence,
-          expiryDate: defaultBatch ? defaultBatch.expiryDate : undefined,
-          batchNo: defaultBatch ? defaultBatch.batchNo : undefined,
-          remarks: item.remarks,
-          isActive: true,
-          isDeleted: false,
-          subject: vaccination.displayValue,
-          caution: vaccination.caution,
-          isGenerateCertificate: vaccination.isAutoGenerateCertificate,
-          performingUserFK: this.getVisitDoctorUserId(this.props),
-          packageGlobalId: '',
-          isNurseActualizeRequired: vaccination.isNurseActualizable,
-          instruction: `${usage?.name || ''} ${dosage?.displayValue ||
-            ''} ${uom?.name || ''}`,
-        }
-        let newCORVaccinationCert = []
-        if (newVaccination.isGenerateCertificate) {
-          const { documenttemplate = [] } = codetable
-          const defaultTemplate = documenttemplate.find(
-            dt =>
-              dt.isDefaultTemplate === true && dt.documentTemplateTypeFK === 3,
-          )
-          if (defaultTemplate) {
-            dispatch({
-              type: 'settingDocumentTemplate/queryOne',
-              payload: { id: defaultTemplate.id },
-            }).then(r => {
-              if (!r) {
-                return
-              }
-              newCORVaccinationCert = [
-                {
-                  type: '3',
-                  certificateDate: moment(),
-                  issuedByUserFK: clinicianProfile.userProfileFK,
-                  subject: `Vaccination Certificate - ${name}, ${patientAccountNo}, ${gender.code ||
-                    ''}, ${Math.floor(
-                    moment.duration(moment().diff(dob)).asYears(),
-                  )}`,
-                  content: ReplaceCertificateTeplate(
-                    r.templateContent,
-                    newVaccination,
-                  ),
-                  sequence: nextSequence,
-                },
-              ]
-              nextSequence += 1
-            })
-          } else {
-            showNoTemplate = true
+      let newVaccination = {
+        type,
+        inventoryVaccinationFK: item.inventoryVaccinationFK,
+        vaccinationGivenDate: item.vaccinationGivenDate,
+        vaccinationCode: vaccination.code,
+        vaccinationName: vaccination.displayValue,
+        usageMethodFK: usage?.id,
+        usageMethodCode: usage?.code,
+        usageMethodDisplayValue: usage?.name,
+        dosageFK: dosage?.id,
+        dosageCode: dosage?.code,
+        dosageDisplayValue: dosage?.displayValue,
+        uomfk: uom?.id,
+        uomCode: uom?.code,
+        uomDisplayValue: uom?.name,
+        dispenseUOMFK: dispenseUOM?.id,
+        dispenseUOMCode: dispenseUOM?.code,
+        dispenseUOMDisplayValue: dispenseUOM?.name,
+        quantity: newTotalQuantity,
+        unitPrice: vaccination.sellingPrice,
+        totalPrice,
+        adjAmount: 0.0,
+        adjType: 'ExactAmount',
+        adjValue: 0,
+        totalAfterItemAdjustment: totalPrice,
+        sequence: currentSequence,
+        expiryDate: defaultBatch ? defaultBatch.expiryDate : undefined,
+        batchNo: defaultBatch ? defaultBatch.batchNo : undefined,
+        remarks: item.remarks,
+        isActive: true,
+        isDeleted: false,
+        subject: vaccination.displayValue,
+        caution: vaccination.caution,
+        isGenerateCertificate: vaccination.isAutoGenerateCertificate,
+        performingUserFK: this.getVisitDoctorUserId(this.props),
+        packageGlobalId: '',
+        isNurseActualizeRequired: vaccination.isNurseActualizable,
+        instruction: `${usage?.name || ''} ${dosage?.displayValue ||
+          ''} ${uom?.name || ''}`,
+      }
+      let newCORVaccinationCert = []
+      if (newVaccination.isGenerateCertificate) {
+        const { documenttemplate = [] } = codetable
+        const defaultTemplate = documenttemplate.find(
+          dt =>
+            dt.isDefaultTemplate === true && dt.documentTemplateTypeFK === 3,
+        )
+        if (defaultTemplate) {
+          const response = await dispatch({
+            type: 'settingDocumentTemplate/queryOne',
+            payload: { id: defaultTemplate.id },
+          })
+          if (!response) {
+            return
           }
+          newCORVaccinationCert = [
+            {
+              type: '3',
+              certificateDate: moment(),
+              issuedByUserFK: clinicianProfile.userProfileFK,
+              subject: `Vaccination Certificate - ${name}, ${patientAccountNo}, ${gender.code ||
+                ''}, ${Math.floor(
+                moment.duration(moment().diff(dob)).asYears(),
+              )}`,
+              content: ReplaceCertificateTeplate(
+                response.templateContent,
+                newVaccination,
+              ),
+              sequence: nextSequence,
+            },
+          ]
+          nextSequence += 1
+        } else {
+          showNoTemplate = true
         }
-        return {
-          ...newVaccination,
-          corVaccinationCert: newCORVaccinationCert,
-        }
-      }),
-    )
+      }
+      data.push({
+        ...newVaccination,
+        corVaccinationCert: newCORVaccinationCert,
+      })
+    }
     if (showNoTemplate) {
       notification.warning({
         message:
@@ -711,7 +710,7 @@ class PastMedication extends PureComponent {
     this.setAddedItems(addedItems)
   }
 
-  handleSubmit = () => {
+  handleSubmit = async () => {
     const { dispatch, onConfirm, type, codetable, patient } = this.props
     const { inventorymedication = [] } = codetable
     const { entity = {} } = patient
@@ -780,7 +779,7 @@ class PastMedication extends PureComponent {
         }
       })
     } else if (type === '2') {
-      data = this.GetNewVaccination()
+      data = await this.GetNewVaccination()
       data
         .filter(f => f.caution && f.caution.trim().length > 0)
         .map(m => {

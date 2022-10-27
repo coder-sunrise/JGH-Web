@@ -178,12 +178,7 @@ class Detail extends PureComponent {
   }
 
   render() {
-    const {
-      theme,
-      footer,
-      values,
-      handleSubmit,
-    } = this.props
+    const { theme, footer, values, handleSubmit } = this.props
     return (
       <Fragment>
         <div
@@ -309,7 +304,7 @@ class Detail extends PureComponent {
             confirmBtnText: 'Save',
             confirmProps: {
               disabled: values.rows.some(
-                x => !x.isDeleted && x.totalAftAdj < 0,
+                x => !x.isDeleted && (x.totalAftAdj < 0 || !x.quantity),
               ),
             },
           })}
