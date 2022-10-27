@@ -195,6 +195,20 @@ const schemaAllergies = {
     ),
 }
 
+const schemaPreOrderList = {
+  pendingPreOrderItem: Yup.array()
+    .compact(v => v.isDeleted)
+    .of(
+      Yup.object().shape({
+        preOrderItemType: Yup.string().required(),
+        itemName: Yup.string().required(),
+        quantity: Yup.number()
+          .required()
+          .min(1),
+      }),
+    ),
+}
+
 const schemaSchemes = {
   patientScheme: Yup.array()
     .compact(v => v.isDeleted)
@@ -341,12 +355,14 @@ const schema = props => {
     ...schemaEmergencyContact,
     ...schemaAllergies,
     ...schemaSchemes,
+    ...schemaPreOrderList,
   })
 
   patientDatabaseSchema.demographic = schemaDemographic
   patientDatabaseSchema.schemes = schemaSchemes
   patientDatabaseSchema.allergies = schemaAllergies
   patientDatabaseSchema.emergencyContact = schemaEmergencyContact
+  patientDatabaseSchema.preOrderList = schemaPreOrderList
   return patientDatabaseSchema
 }
 export default schema

@@ -219,6 +219,7 @@ const POForm = ({
                         id: 'inventory.pr.detail.pod.invoiceNo',
                       })}
                       disabled={!isFinalize}
+                      maxLength={100}
                       {...args}
                     />
                   )

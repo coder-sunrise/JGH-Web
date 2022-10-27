@@ -1,22 +1,17 @@
 import React, { PureComponent } from 'react'
-import {
-  IntegratedSummary,
-} from '@devexpress/dx-react-grid'
+import { IntegratedSummary } from '@devexpress/dx-react-grid'
 import { ReportDataGrid } from '@/components/_medisys'
 
 class SalesList extends PureComponent {
-  render () {
+  render() {
     let listData = []
-    const { reportDatas } = this.props
-    if (!reportDatas)
-      return null
+    const { height, reportDatas } = this.props
+    if (!reportDatas) return null
     if (reportDatas && reportDatas.SalesDetails) {
-      listData = reportDatas.SalesDetails.map(
-        (item, index) => ({
-          ...item,
-          id: `SalesList-${index}-${item.invoiceno}`,
-        }),
-      )
+      listData = reportDatas.SalesDetails.map((item, index) => ({
+        ...item,
+        id: `SalesList-${index}-${item.invoiceno}`,
+      }))
     }
 
     const SalesDetailsCols = [
@@ -36,16 +31,59 @@ class SalesList extends PureComponent {
     const SalesDetailsExtensions = [
       { columnName: 'date', type: 'date', sortingEnabled: false, width: 100 },
       { columnName: 'qty', type: 'number', sortingEnabled: false, width: 100 },
-      { columnName: 'unitPrice', type: 'currency', currency: true, sortingEnabled: false, width: 140 },
-      { columnName: 'adj', type: 'currency', currency: true, sortingEnabled: false, width: 100 },
-      { columnName: 'revenueAMT', type: 'currency', currency: true, sortingEnabled: false, width: 180, wordWrapEnabled: true },
-      { columnName: 'cnamt', type: 'currency', currency: true, sortingEnabled: false, width: 180, wordWrapEnabled: true },
-      { columnName: 'doctorName', sortingEnabled: false, wordWrapEnabled: true },
+      {
+        columnName: 'unitPrice',
+        type: 'currency',
+        currency: true,
+        sortingEnabled: false,
+        width: 140,
+      },
+      {
+        columnName: 'adj',
+        type: 'currency',
+        currency: true,
+        sortingEnabled: false,
+        width: 100,
+      },
+      {
+        columnName: 'revenueAMT',
+        type: 'currency',
+        currency: true,
+        sortingEnabled: false,
+        width: 180,
+        wordWrapEnabled: true,
+      },
+      {
+        columnName: 'cnamt',
+        type: 'currency',
+        currency: true,
+        sortingEnabled: false,
+        width: 180,
+        wordWrapEnabled: true,
+      },
+      {
+        columnName: 'doctorName',
+        sortingEnabled: false,
+        wordWrapEnabled: true,
+      },
       { columnName: 'patientID', sortingEnabled: false, width: 100 },
-      { columnName: 'patientName', sortingEnabled: false, wordWrapEnabled: true },
-      { columnName: 'itemCategory', sortingEnabled: false, wordWrapEnabled: true, width: 120 },
+      {
+        columnName: 'patientName',
+        sortingEnabled: false,
+        wordWrapEnabled: true,
+      },
+      {
+        columnName: 'itemCategory',
+        sortingEnabled: false,
+        wordWrapEnabled: true,
+        width: 120,
+      },
       { columnName: 'item', sortingEnabled: false, wordWrapEnabled: true },
-      { columnName: 'documentNo', sortingEnabled: false, wordWrapEnabled: true },
+      {
+        columnName: 'documentNo',
+        sortingEnabled: false,
+        wordWrapEnabled: true,
+      },
     ]
 
     let FuncProps = {
@@ -93,9 +131,7 @@ class SalesList extends PureComponent {
         grouping: true,
         groupingConfig: {
           state: {
-            grouping: [
-              { columnName: 'doctorName' },
-            ],
+            grouping: [{ columnName: 'doctorName' }],
           },
         },
       }
