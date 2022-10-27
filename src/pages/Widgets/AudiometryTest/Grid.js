@@ -5,14 +5,14 @@ import _ from 'lodash'
 import numeral from 'numeral'
 import { EditableTableGrid } from '@/components'
 
-const message = 'Value must be between 10 and 80 dB'
+const message = 'Value must be between 10 and 100 dB'
 const gridValidationSchema = Yup.object().shape({
   Result1000Hz: Yup.number()
     .min(10, message)
-    .max(80, message),
+    .max(100, message),
   Result4000Hz: Yup.number()
     .min(10, message)
-    .max(80, message),
+    .max(100, message),
 })
 export default ({
   dispatch,

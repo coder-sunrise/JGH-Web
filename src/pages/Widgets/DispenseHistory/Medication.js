@@ -145,7 +145,7 @@ export default ({
       align: 'right',
       width: isFullScreen ? 80 : 60,
       render: (text, row) => {
-        const qty = `${numeral(row.dispensedQuanity || 0).format('0,0.0')}`
+        const qty = `${numeral(row.realDispensedQuanity || 0).format('0,0.0')}`
         return (
           <Tooltip title={qty}>
             <div>{qty}</div>

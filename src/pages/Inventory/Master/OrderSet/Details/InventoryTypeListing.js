@@ -59,19 +59,19 @@ const InventoryTypeListing = ({
     inventoryMedicationFK: Yup.number().required(),
     quantity: Yup.number()
       .required()
-      .min(1),
+      .min(0.1, 'Min. value is 0.1'),
   })
   const consumableSchema = Yup.object().shape({
     inventoryConsumableFK: Yup.number().required(),
     quantity: Yup.number()
       .required()
-      .min(1),
+      .min(0.1, 'Min. value is 0.1'),
   })
   const vaccinationSchema = Yup.object().shape({
     inventoryVaccinationFK: Yup.number().required(),
     quantity: Yup.number()
       .required()
-      .min(1),
+      .min(0.1, 'Min. value is 0.1'),
   })
   const serviceSchema = Yup.object().shape({
     serviceFK: Yup.number().required(),
@@ -79,6 +79,7 @@ const InventoryTypeListing = ({
     serviceName: Yup.number().required(),
     quantity: Yup.number()
       .required()
+      .integer()
       .min(1),
   })
 

@@ -99,7 +99,9 @@ let i = 0
     inventoryVaccinationFK: Yup.number().required(),
     totalPrice: Yup.number().required(),
     vaccinationGivenDate: Yup.date().required(),
-    quantity: Yup.number().required(),
+    quantity: Yup.number()
+      .min(0.1, 'Min. value is 0.1')
+      .required(),
     uomfk: Yup.number().required(),
     dispenseUOMFK: Yup.number().required(),
     totalAfterItemAdjustment: Yup.number().min(
@@ -272,7 +274,7 @@ class Vaccination extends PureComponent {
     }
   }
 
-  componentWillMount() {
+  componentWillMount = async () => {
     const { dispatch } = this.props
     const codeTableNameArray = [
       'inventoryvaccination',
@@ -282,6 +284,10 @@ class Vaccination extends PureComponent {
       'ctVaccinationUnitOfMeasurement',
       'documenttemplate',
     ]
+    await dispatch({
+      type: 'codetable/fetchCodes',
+      payload: { code: 'inventoryvaccination', force: true },
+    })
     dispatch({
       type: 'codetable/batchFetch',
       payload: {
@@ -312,7 +318,11 @@ class Vaccination extends PureComponent {
     setFieldValue('isNurseActualizeRequired', op.isNurseActualizable)
     let defaultBatch
     if (op.vaccinationStock) {
-      defaultBatch = op.vaccinationStock.find(o => o.isDefault === true)
+      defaultBatch = _.orderBy(
+        (op.vaccinationStock || []).filter(s => s.isDefault || s.stock > 0),
+        ['isDefault', 'expiryDate'],
+        ['asc'],
+      )[0]
       if (defaultBatch)
         this.setState({
           batchNo: defaultBatch.batchNo,
@@ -430,7 +440,7 @@ class Vaccination extends PureComponent {
               : undefined)),
       )
       if (dosage) {
-        newTotalQuantity = roundTo(dosage.multiplier, 1)
+        newTotalQuantity = roundTo(dosage.multiplier, 2)
         calculated = true
       }
       if (currentVaccination?.prescribingUOM?.id === uomfk) {

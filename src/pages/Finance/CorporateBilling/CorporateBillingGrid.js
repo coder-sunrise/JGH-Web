@@ -141,18 +141,7 @@ class CorporateBillingGrid extends PureComponent {
     })
   }
 
-  componentDidMount() {
-    this.props.dispatch({
-      type: 'corporateBilling/query',
-      payload: {
-        id: undefined,
-        isActive: true,
-        apiCriteria: {
-          outstandingBalanceStatus: undefined,
-        },
-      },
-    })
-  }
+  componentDidMount() {}
 
   render() {
     const { columns, columnExtensions } = this.state

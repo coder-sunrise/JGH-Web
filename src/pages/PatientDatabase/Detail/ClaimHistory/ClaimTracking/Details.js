@@ -120,7 +120,9 @@ const Details = ({
       ) {
         setDueDate(undefined)
       } else {
-        const dueDate = moment(firstVisitDate).add(validityDays, 'd')
+        const dueDate = moment(firstVisitDate)
+          .add(validityDays, 'd')
+          .add(-1, 'd')
         setDueDate(dueDate)
       }
     } else if (diagnosisType === 'Injury') {
@@ -132,7 +134,9 @@ const Details = ({
       ) {
         setDueDate(undefined)
       } else {
-        const dueDate = moment(onsetDate).add(validityDays, 'd')
+        const dueDate = moment(onsetDate)
+          .add(validityDays, 'd')
+          .add(-1, 'd')
         setDueDate(dueDate)
       }
     } else {

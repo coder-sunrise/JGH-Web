@@ -41,7 +41,7 @@ export default createListViewModel({
     effects: {
       *refresh(_, { call, put }) {
         yield put({
-          type: 'queryAll',
+          type: 'query',
         })
       },
       *update({ payload }, { call }) {

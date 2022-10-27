@@ -13,9 +13,11 @@ import Yup from '@/utils/yup'
 import { subscribeNotification } from '@/utils/realtime'
 import { ReportViewer } from '@/components/_medisys'
 import { getRawData } from '@/services/report'
-import { REPORT_ID } from '@/utils/constants'
+import { PharmacyWorkitemStatus, REPORT_ID } from '@/utils/constants'
 import { orderItemTypes } from '@/utils/codes'
 import Print from '@material-ui/icons/Print'
+import ForceCompleteConfirmation from './ForceCompleteConfirmation'
+import InfoCircleOutlined from '@ant-design/icons/InfoCircleOutlined'
 import {
   GridContainer,
   GridItem,
@@ -29,6 +31,7 @@ import {
   FastField,
   notification,
   TextField,
+  IconButton,
   DatePicker,
   CommonTableGrid,
   CodeSelect,
@@ -143,6 +146,10 @@ const Main = props => {
   const [
     showDrugLabelSelectionPopup,
     setShowDrugLabelSelectionPopup,
+  ] = useState(false)
+  const [
+    showPartialDispenseCompleteConfirmation,
+    setShowPartialDispenseCompleteConfirmation,
   ] = useState(false)
   const [showReportViwer, setShowReportViwer] = useState(false)
   const [reportTitle, setReportTitle] = useState('')
@@ -370,7 +377,11 @@ const Main = props => {
     return { id, concurrencyToken, pharmacyOrderItem: newPharmacyOrderItem }
   }
 
-  const updatePharmacy = (actionType, redispenseValues = {}) => {
+  const updatePharmacy = (
+    actionType,
+    redispenseValues = {},
+    forceCompleteReason,
+  ) => {
     const { redispenseBy, redispenseReason } = redispenseValues
     dispatch({
       type: 'pharmacyDetails/upsert',
@@ -379,11 +390,18 @@ const Main = props => {
         actionType,
         redispenseBy,
         redispenseReason,
+        forceCompleteReason,
       },
     }).then(r => {
       if (r) {
         const { onConfirm } = props
         onConfirm()
+        if (
+          actionType === PHARMACY_ACTION.COMPLETEPARTIAL &&
+          showPartialDispenseCompleteConfirmation
+        ) {
+          setShowPartialDispenseCompleteConfirmation(false)
+        }
       }
     })
   }
@@ -617,6 +635,9 @@ const Main = props => {
   const onConfirmPrintDrugLabel = () => {
     setShowDrugLabelSelectionPopup(false)
   }
+  const onConfirmForceCompletePartialDispense = () => {
+    setShowPartialDispenseCompleteConfirmation(false)
+  }
 
   const onConfirmRedispense = redispenseValues => {
     updatePharmacy(PHARMACY_ACTION.REDISPENSE, redispenseValues)
@@ -751,11 +772,21 @@ const Main = props => {
                 oi.inventoryFK === orderItems[index].inventoryFK,
             )
           }
-          if (
-            orderItems[index].remainQty > _.sumBy(items, 'dispenseQuantity')
-          ) {
-            isPartialPrepare = true
-            break
+          if (pharmacyDetails.fromModule === 'History') {
+            if (
+              (orderItems[index].remainQty || 0) >
+              (_.sumBy(items, 'dispenseQuantity') || 0)
+            ) {
+              isPartialPrepare = true
+              break
+            }
+          } else {
+            if (
+              orderItems[index].remainQty > _.sumBy(items, 'dispenseQuantity')
+            ) {
+              isPartialPrepare = true
+              break
+            }
           }
         }
       }
@@ -777,22 +808,26 @@ const Main = props => {
       return
     }
     if (checkPartialPrepare()) {
-      dispatch({
-        type: 'global/updateAppState',
-        payload: {
-          openConfirm: true,
-          openConfirmContent: () => {
-            return (
-              <div>
-                <h3>There are partially prepared item.</h3>
-                <h3>Confirm to proceed?</h3>
-              </div>
-            )
+      if (pharmacyDetails.fromModule === 'History') {
+        setShowPartialDispenseCompleteConfirmation(true)
+      } else {
+        dispatch({
+          type: 'global/updateAppState',
+          payload: {
+            openConfirm: true,
+            openConfirmContent: () => {
+              return (
+                <div>
+                  <h3>There are partially prepared item.</h3>
+                  <h3>Confirm to proceed?</h3>
+                </div>
+              )
+            },
+            openConfirmText: 'Confirm',
+            onConfirmSave: () => updatePharmacy(actionType),
           },
-          openConfirmText: 'Confirm',
-          onConfirmSave: () => updatePharmacy(actionType),
-        },
-      })
+        })
+      }
     } else {
       updatePharmacy(actionType)
     }
@@ -1250,6 +1285,15 @@ const Main = props => {
         }),
         align: 'right',
         render: (_, row) => {
+          if (values.isFullyDispensed) {
+            return (
+              <Tooltip
+                title={`Complete Dispense Remarks: ${values.forceCompleteReason}`}
+              >
+                <span>-</span>
+              </Tooltip>
+            )
+          }
           const balStock = row.stockBalance
           const stock = balStock ? `${numeral(balStock).format('0.0')}` : '-'
           return (
@@ -1411,6 +1455,7 @@ const Main = props => {
   }
 
   const checkPartialDispense = () => {
+    if (values.isFullyDispensed) return false
     let isPartialDispense = false
     if (workitem.statusFK !== PHARMACY_STATUS.NEW) {
       const pharmacyOrderItem = pharmacyDetails?.entity?.pharmacyOrderItem || []
@@ -1897,8 +1942,10 @@ const Main = props => {
           )}
         </GridItem>
       </GridContainer>
+      {/* orderItems is pending dispense item list */}
       {(pharmacyDetails.fromModule === 'Main' ||
-        (values.orderItems || []).length > 0) && (
+        ((values.orderItems || []).length > 0 &&
+          !values.forceCompleteReason)) && (
         <div style={{ margin: '8px 8px 0px 8px' }}>
           {pharmacyDetails.fromModule === 'History' && (
             <div style={{ fontWeight: 600, margin: '3px 0px' }}>
@@ -1935,6 +1982,27 @@ const Main = props => {
             />
           </div>
         </div>
+      )}
+      {values.statusFK === 4 && values.forceCompleteReason && (
+        <GridContainer>
+          <GridItem md={12}>
+            <div style={{ marginTop: 10 }}>
+              <IconButton
+                size='small'
+                style={{
+                  right: 0,
+                  top: -2,
+                  color: 'gray',
+                }}
+              >
+                <InfoCircleOutlined />
+              </IconButton>
+              <span>
+                <b>Complete Dispense Remarks: </b> {values.forceCompleteReason}
+              </span>
+            </div>
+          </GridItem>
+        </GridContainer>
       )}
       <GridContainer style={{ marginTop: 10 }}>
         <GridItem md={8}>
@@ -2091,6 +2159,7 @@ const Main = props => {
               </Button>
             )}
           {pharmacyDetails.fromModule === 'History' &&
+            !values.isFullyDispensed &&
             (values.orderItems || []).length > 0 &&
             workitem.statusFK === PHARMACY_STATUS.COMPLETED &&
             showButton('pharmacyworklisthistory.completeorder') && (
@@ -2219,6 +2288,27 @@ const Main = props => {
           }}
         />
       </CommonModal>
+      {showPartialDispenseCompleteConfirmation && (
+        <CommonModal
+          open={true}
+          title='Alert'
+          onClose={() => {
+            setShowPartialDispenseCompleteConfirmation(false)
+          }}
+          maxWidth='sm'
+        >
+          <ForceCompleteConfirmation
+            handleSubmit={forceCompleteReason => {
+              updatePharmacy(
+                PHARMACY_ACTION.COMPLETEPARTIAL,
+                undefined,
+                forceCompleteReason,
+              )
+              onConfirmForceCompletePartialDispense()
+            }}
+          />
+        </CommonModal>
+      )}
     </div>
   )
 }
