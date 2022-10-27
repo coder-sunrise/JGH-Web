@@ -26,8 +26,10 @@ import { TestPanelColumn } from '../../components/TestPanelColumn'
 import { useCodeTable } from '@/utils/hooks'
 import { LAB_SPECIMEN_STATUS, PRIORITY_VALUES } from '@/utils/constants'
 import PrintSpecimenLabel from '@/pages/Lab/SpecimenCollection/components/PrintSpecimenLabel'
+import Edit from '@material-ui/icons/Edit'
+import { history } from 'umi'
 
-export const HeaderInfo = ({ entity }) => {
+export const HeaderInfo = ({ entity, toggleEditSpecimenModal }) => {
   const cttestcategory = useCodeTable('cttestcategory')
   const ctspecimentype = useCodeTable('ctspecimentype')
   const cttestpanel = useCodeTable('cttestpanel')
@@ -146,6 +148,18 @@ export const HeaderInfo = ({ entity }) => {
     <GridContainer>
       <GridItem md={8} style={{ paddingTop: 16 }}>
         <Typography.Text strong>Specimen Details </Typography.Text>
+        &#x3000;
+        {entity.specimenStatusFK != LAB_SPECIMEN_STATUS.COMPLETED &&
+          history.location.pathname.includes('lab') && (
+            <Button
+              size='sm'
+              onClick={toggleEditSpecimenModal}
+              justIcon
+              color='primary'
+            >
+              <Edit />
+            </Button>
+          )}
       </GridItem>
       <GridItem md={4} style={{ padding: 8, textAlign: 'right' }}>
         <VisitTypeTag type={entity.visitPurposeFK} />

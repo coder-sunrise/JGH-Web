@@ -7,6 +7,7 @@ const fns = {
   queryList: params => service.queryList(url, { ...params, pagesize: 9999 }),
   getRetestDetails: params => service.query(`${url}/getRetestDetails`, params),
   receiveSpecimen: params => service.upsert(`${url}/receiveSpecimen`, params),
+  editSpecimen: params => service.upsert(`${url}/editSpecimen`, params),
   discardSpecimen: params => service.upsert(`${url}/discardSpecimen`, params),
   startLabTest: params => service.upsert(`${url}/startLabTest`, params),
   saveLabTest: params => service.upsert(`${url}/saveLabTest`, params),
