@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import { ReportDataGrid } from '@/components/_medisys'
 
 class InventoryGroupDetails extends PureComponent {
-  render () {
+  render() {
     let listData = []
     const { reportDatas } = this.props
     if (!reportDatas) return null
@@ -17,9 +17,7 @@ class InventoryGroupDetails extends PureComponent {
       grouping: true,
       groupingConfig: {
         state: {
-          grouping: [
-            { columnName: 'groupName' },
-          ],
+          grouping: [{ columnName: 'groupName' }],
         },
       },
     }
@@ -55,7 +53,7 @@ class InventoryGroupDetails extends PureComponent {
         columnName: 'totalQuantity',
         sortingEnabled: false,
         type: 'number',
-        precision: 0,
+        precision: 1,
       },
     ]
 
