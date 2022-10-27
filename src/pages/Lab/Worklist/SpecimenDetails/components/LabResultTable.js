@@ -95,6 +95,7 @@ const ResultSelect = ({
         value={value}
         onChange={onChange}
         options={options}
+        allowClear
       />
       {shouldFlag && <FlagIndicator />}
     </div>

@@ -25,7 +25,11 @@ const columnBodyStyle = {
   padding: '3px',
 }
 
-const WorlklistColumnTitle = ({ title, workItemCount }) => {
+const WorlklistColumnTitle = ({
+  title,
+  selectedWorkitemCount,
+  workItemCount,
+}) => {
   return (
     <div
       style={{
@@ -50,7 +54,7 @@ const WorlklistColumnTitle = ({ title, workItemCount }) => {
           borderRadius: 10,
         }}
       >
-        {workItemCount}
+        {partialPreparedChecked ? selectedWorkitemCount : workItemCount}
       </div>
     </div>
   )
@@ -74,6 +78,7 @@ export const WorklistColumn = ({
   data,
   renderWorkitem,
   columnPercentage,
+  partialPreparedChecked,
   ...restProps
 }) => (
   <div
@@ -86,7 +91,12 @@ export const WorklistColumn = ({
   >
     <WorlklistColumnTitle
       title={data.title}
-      workItemCount={data.workitems.length}
+      selectedWorkitemCount={
+        data.workitems.filter(
+          item => item.isFullyDispensed == false && item.status != 'New',
+        ).length
+      }
+      partialPreparedChecked={partialPreparedChecked}
     />
     <WorklistColumnBody
       data={data}
