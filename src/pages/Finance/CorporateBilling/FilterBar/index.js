@@ -13,6 +13,7 @@ import {
   TextField,
   CodeSelect,
   Select,
+  notification,
   ProgressButton,
   LocalSearchSelect,
 } from '@/components'
@@ -109,7 +110,7 @@ export default compose(
   withFormik({
     mapPropsToValues: () => ({
       isActive: true,
-      copayerFK: 'All Co-Payer',
+      // copayerFK: 'All Co-Payer',
     }),
     handleSubmit: (values, { props }) => {
       const { copayerFK, isActive, outstandingBalanceStatus } = values
@@ -118,6 +119,12 @@ export default compose(
         isOutstanding = true
       } else if (outstandingBalanceStatus === 'no') {
         isOutstanding = false
+      }
+      if (typeof copayerFK !== 'number') {
+        notification.warning({
+          message: 'Please select one co-payer to query.',
+        })
+        return
       }
       props.dispatch({
         type: 'corporateBilling/query',
