@@ -45,7 +45,11 @@ export default ({ current }) => {
               <a
                 onClick={() => {
                   setIsShowModal(true)
-                  setFormValue({ ...row, formData: JSON.parse(row.formData) })
+                  setFormValue({
+                    ...row,
+                    statusFK: 2, //patient history only view, hardcode status is 'Finalize'
+                    formData: JSON.parse(row.formData),
+                  })
                 }}
               >
                 {text}
