@@ -29,6 +29,7 @@ const WorlklistColumnTitle = ({
   title,
   selectedWorkitemCount,
   workItemCount,
+  partialPreparedChecked,
 }) => {
   return (
     <div
