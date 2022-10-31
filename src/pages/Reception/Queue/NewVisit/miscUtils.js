@@ -522,11 +522,26 @@ export const formikHandleSubmit = (
     x => x.id === restValues.doctorProfileFK,
   )
   if (restValues.visitPrimaryDoctor) {
-    newVisitDoctor.push({
-      ...restValues.visitPrimaryDoctor,
-      doctorProfileFK: restValues.doctorProfileFK,
-      specialtyFK: primaryDoctor?.clinicianProfile?.specialtyFK,
-    })
+    if (
+      restValues.visitPrimaryDoctor.doctorProfileFK ===
+      restValues.doctorProfileFK
+    ) {
+      newVisitDoctor.push({
+        ...restValues.visitPrimaryDoctor,
+      })
+    } else {
+      newVisitDoctor.push({
+        ...restValues.visitPrimaryDoctor,
+        isDeleted: true,
+      })
+      newVisitDoctor.push({
+        doctorProfileFK: restValues.doctorProfileFK,
+        isPrimaryDoctor: true,
+        sequence: -1,
+        consultationStatus: VISITDOCTOR_CONSULTATIONSTATUS.WAITING,
+        specialtyFK: primaryDoctor?.clinicianProfile?.specialtyFK,
+      })
+    }
   } else {
     newVisitDoctor.push({
       doctorProfileFK: restValues.doctorProfileFK,
