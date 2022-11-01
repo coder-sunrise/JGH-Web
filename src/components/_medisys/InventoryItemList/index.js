@@ -16,7 +16,7 @@ import {
   Switch,
   SizeContainer,
 } from '@/components'
-import { getUniqueId,calculateAdjustAmount } from '@/utils/utils'
+import { getUniqueId, calculateAdjustAmount } from '@/utils/utils'
 import { isNumber } from 'util'
 import { InventoryTypes, visitOrderTemplateItemTypes } from '@/utils/codes'
 import { ITEM_TYPE } from '@/utils/constants'
@@ -160,7 +160,7 @@ class InventoryItemList extends React.Component {
         totalAftAdj: total,
         adjValue: 0,
         adjAmt: 0,
-        adjType:'Percentage',
+        adjType: 'Percentage',
         isMinus: true,
         isExactAmount: false,
       }
@@ -277,9 +277,10 @@ class InventoryItemList extends React.Component {
       }
 
       itemFieldName = InventoryTypes.filter(x => x.ctName === type)[0]
-      const unitPrice = itemFieldName.value === ITEM_TYPE.SERVICE
-      ? tempSelectedItem.unitPrice
-      : tempSelectedItem.sellingPrice
+      const unitPrice =
+        itemFieldName.value === ITEM_TYPE.SERVICE
+          ? tempSelectedItem.unitPrice
+          : tempSelectedItem.sellingPrice
       let newItemRow = {
         uid: getUniqueId(),
         type: itemFieldName.value,
@@ -295,7 +296,7 @@ class InventoryItemList extends React.Component {
         totalAftAdj: unitPrice,
         adjValue: 0,
         adjAmt: 0,
-        adjType:'Percentage',
+        adjType: 'Percentage',
         isMinus: true,
         isExactAmount: false,
       }
@@ -335,7 +336,9 @@ class InventoryItemList extends React.Component {
                       uom = {},
                       unitPrice = 0,
                       totalPrice = 0,
+                      serviceCenter,
                     } = option
+                    console.log(option)
                     let uomName = ''
 
                     if (
@@ -346,10 +349,32 @@ class InventoryItemList extends React.Component {
                     } else if (type === 'inventoryconsumable') {
                       uomName = uom.name
                     } else if (type === 'ctservice') {
-                      const optDisplay = `${displayValue} - ${code} (${currencySymbol}${unitPrice.toFixed(
-                        2,
-                      )})`
-                      return <span>{optDisplay}</span>
+                      return (
+                        <div>
+                          <div
+                            style={{
+                              width: '100%',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {displayValue} - {code}
+                          </div>
+                          <div>
+                            <span
+                              style={{
+                                display: 'inline-block',
+                                width: 155,
+                              }}
+                            >
+                              Unit Price: {currencySymbol}
+                              {unitPrice.toFixed(2)}
+                            </span>
+                            Svc. Ctr.:{serviceCenter}
+                          </div>
+                        </div>
+                      )
                     } else if (type === 'inventoryorderset') {
                       const optDisplay = `${displayValue} - ${code} (${currencySymbol}${totalPrice.toFixed(
                         2,
@@ -659,7 +684,9 @@ class InventoryItemList extends React.Component {
                   <NumberInput
                     {...args}
                     debounceDuration={1}
-                    onChange={() => this.onAdjustmentConditionChangeDebounce(index)}
+                    onChange={() =>
+                      this.onAdjustmentConditionChangeDebounce(index)
+                    }
                     min={1}
                     precision={0}
                     positiveOnly
@@ -686,7 +713,9 @@ class InventoryItemList extends React.Component {
                   <NumberInput
                     {...args}
                     debounceDuration={1}
-                    onChange={() => this.onAdjustmentConditionChangeDebounce(index)}
+                    onChange={() =>
+                      this.onAdjustmentConditionChangeDebounce(index)
+                    }
                     currency
                     positiveOnly
                     min={0}
@@ -716,7 +745,7 @@ class InventoryItemList extends React.Component {
             const { row } = currentrow
             const index = rows.map(i => i.uid).indexOf(row.uid)
             return (
-              <div style={{ display: 'flex',textAlign:'left' }}>
+              <div style={{ display: 'flex', textAlign: 'left' }}>
                 <Field
                   name={`rows[${index}].isMinus`}
                   render={args => (
@@ -726,7 +755,9 @@ class InventoryItemList extends React.Component {
                       unCheckedChildren='+'
                       label=''
                       debounceDuration={1}
-                      onChange={() => this.onAdjustmentConditionChangeDebounce(index)}
+                      onChange={() =>
+                        this.onAdjustmentConditionChangeDebounce(index)
+                      }
                       {...args}
                       inputProps={{
                         onMouseUp: e => {
@@ -758,7 +789,9 @@ class InventoryItemList extends React.Component {
                           original
                           label=''
                           debounceDuration={1}
-                          onChange={() => this.onAdjustmentConditionChangeDebounce(index)}
+                          onChange={() =>
+                            this.onAdjustmentConditionChangeDebounce(index)
+                          }
                           min={0}
                           precision={2}
                           {...args}
@@ -787,7 +820,9 @@ class InventoryItemList extends React.Component {
                           max={100}
                           label=''
                           debounceDuration={1}
-                          onChange={() => this.onAdjustmentConditionChangeDebounce(index)}
+                          onChange={() =>
+                            this.onAdjustmentConditionChangeDebounce(index)
+                          }
                           min={0}
                           precision={2}
                           {...args}
@@ -820,7 +855,9 @@ class InventoryItemList extends React.Component {
                       // unCheckedValue='Percentage'
                       label=''
                       debounceDuration={1}
-                      onChange={() => this.onAdjustmentConditionChangeDebounce(index)}
+                      onChange={() =>
+                        this.onAdjustmentConditionChangeDebounce(index)
+                      }
                       {...args}
                       inputProps={{
                         onMouseUp: e => {
@@ -937,20 +974,29 @@ class InventoryItemList extends React.Component {
                 },
                 integrated: {
                   calculator: (type, rows, getValue) => {
-                    if (type == 'total' || type == 'totalAftAdj') 
+                    if (type == 'total' || type == 'totalAftAdj')
                       return rows.reduce((acc, row) => acc + row[type], 0)
-                    return IntegratedSummary.defaultCalculator(type, rows, getValue)
+                    return IntegratedSummary.defaultCalculator(
+                      type,
+                      rows,
+                      getValue,
+                    )
                   },
                 },
                 row: {
                   totalRowComponent: p => {
                     const { children } = p
                     const newChildren = []
-                    for (var i = 0, colSpan = 1; i < children.length; i++, colSpan++) 
-                    {
+                    for (
+                      var i = 0, colSpan = 1;
+                      i < children.length;
+                      i++, colSpan++
+                    ) {
                       var col = children[i]
                       var colName = col.props.tableColumn.column?.name
-                      if (['total', 'totalAftAdj', 'action'].includes(colName)) {
+                      if (
+                        ['total', 'totalAftAdj', 'action'].includes(colName)
+                      ) {
                         var newChild = [
                           {
                             ...col,
