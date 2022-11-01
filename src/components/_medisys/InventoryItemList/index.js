@@ -359,19 +359,8 @@ class InventoryItemList extends React.Component {
                               whiteSpace: 'nowrap',
                             }}
                           >
-                            {displayValue} - {code}
-                          </div>
-                          <div>
-                            <span
-                              style={{
-                                display: 'inline-block',
-                                width: 155,
-                              }}
-                            >
-                              Unit Price: {currencySymbol}
-                              {unitPrice.toFixed(2)}
-                            </span>
-                            Svc. Ctr.:{serviceCenter}
+                            {displayValue} - {code} ({currencySymbol}
+                            {unitPrice.toFixed(2)} / {serviceCenter})
                           </div>
                         </div>
                       )
