@@ -205,7 +205,7 @@ class clinicSettings extends PureComponent {
       dispatch,
       theme,
       handleSubmit,
-      clinicSettingsInfo,
+      clinicSettings,
       values,
       ...restProps
     } = this.props
@@ -226,7 +226,7 @@ class clinicSettings extends PureComponent {
             <GridItem md={3}>
               <Field
                 name='isEnableGST.settingValue'
-                render={(args) => (
+                render={args => (
                   <Checkbox
                     label='Enable GST'
                     onChange={this.handleOnChange}
@@ -241,7 +241,7 @@ class clinicSettings extends PureComponent {
             <GridItem md={3}>
               <Field
                 name='gSTRegistrationNumber.settingValue'
-                render={(args) => (
+                render={args => (
                   <TextField
                     label='GST Registration Number'
                     {...args}
@@ -255,7 +255,7 @@ class clinicSettings extends PureComponent {
             <GridItem md={3}>
               <Field
                 name='gSTPercentage.settingValue'
-                render={(args) => (
+                render={args => (
                   <NumberInput
                     label='GST Rate'
                     {...args}
@@ -267,20 +267,23 @@ class clinicSettings extends PureComponent {
               />
             </GridItem>
           </GridContainer>
-          <GridContainer>
-            <GridItem md={3}>
-              <Field
-                name='isDefaultInclusiveGST.settingValue'
-                render={(args) => (
-                  <Checkbox
-                    label='Inclusive GST'
-                    disabled={!enableGst || !!hasActiveSession}
-                    {...args}
-                  />
-                )}
-              />
-            </GridItem>
-          </GridContainer>
+          {clinicSettings?.entity?.isEnableGSTInclusive?.settingValue ===
+            'true' && (
+            <GridContainer>
+              <GridItem md={3}>
+                <Field
+                  name='isDefaultInclusiveGST.settingValue'
+                  render={args => (
+                    <Checkbox
+                      label='Inclusive GST'
+                      disabled={!enableGst || !!hasActiveSession}
+                      {...args}
+                    />
+                  )}
+                />
+              </GridItem>
+            </GridContainer>
+          )}
           <div
             className={classes.actionBtn}
             style={{ display: 'flex', justifyContent: 'center' }}
