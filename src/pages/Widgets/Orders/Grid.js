@@ -60,6 +60,7 @@ export default ({
   isEnableEditOrder = true,
   visitRegistration,
   consultationDocument,
+  isEnableGSTInclusive,
 }) => {
   const { rows, summary, finalAdjustments, isGSTInclusive, gstValue } = orders
   const { total, gst, totalWithGST, subTotal } = summary
@@ -996,23 +997,27 @@ export default ({
         <AuthorizedContext.Provider
           value={getOrderAccessRight(OrderAccessRight(), isEnableEditOrder)}
         >
-          <Checkbox
-            simple
-            label={`Inclusive GST (${numeral(gstValue).format('0.00')}%)`}
-            controlStyle={{ fontWeight: 500 }}
-            checked={checkedStatusIncldGST}
-            onChange={e => {
-              dispatch({
-                type: 'orders/updateState',
-                payload: {
-                  isGSTInclusive: e.target.value,
-                },
-              })
-              dispatch({
-                type: 'orders/calculateAmount',
-              })
-            }}
-          />
+          {isEnableGSTInclusive ? (
+            <Checkbox
+              simple
+              label={`Inclusive GST (${numeral(gstValue).format('0.00')}%)`}
+              controlStyle={{ fontWeight: 500 }}
+              checked={checkedStatusIncldGST}
+              onChange={e => {
+                dispatch({
+                  type: 'orders/updateState',
+                  payload: {
+                    isGSTInclusive: e.target.value,
+                  },
+                })
+                dispatch({
+                  type: 'orders/calculateAmount',
+                })
+              }}
+            />
+          ) : (
+            <span>GST (${numeral(gstValue).format('0.00')}%)</span>
+          )}
         </AuthorizedContext.Provider>
         <div style={{ position: 'absolute', right: 68, top: 0 }}>
           <NumberInput value={gst} text currency style={{ width: 90 }} />
