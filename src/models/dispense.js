@@ -562,7 +562,7 @@ const getDispenseItems = (clinicSettings, entity = {}) => {
     ...(entity.prescription || [])
       .filter(item => item.type === 'Medication' && !item.isDrugMixture)
       .map(item => {
-        return { ...item, quantity: item.dispensedQuanity }
+        return { ...item, quantity: item.orderedQuantity }
       }),
     ...(entity.vaccination || []),
     ...(entity.consumable || []),
@@ -572,7 +572,7 @@ const getDispenseItems = (clinicSettings, entity = {}) => {
     ...(entity.prescription || [])
       .filter(item => item.type === 'Open Prescription')
       .map(item => {
-        return { ...item, quantity: item.dispensedQuanity }
+        return { ...item, quantity: item.orderedQuantity }
       }),
     ...(entity.externalPrescription || []).map(item => {
       return { ...item, quantity: item.dispensedQuanity }
