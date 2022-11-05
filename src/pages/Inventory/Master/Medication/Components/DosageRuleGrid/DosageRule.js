@@ -8,12 +8,17 @@ import {
   Input,
   InputNumber,
   Button,
-  Popconfirm,
   Form,
   Typography,
   Select,
 } from 'antd'
-import { GridContainer, GridItem, CodeSelect, Popover } from '@/components'
+import {
+  GridContainer,
+  GridItem,
+  CodeSelect,
+  Popconfirm,
+  Popover,
+} from '@/components'
 import DetailsContext from '../../Details/DetailsContext'
 import { DOSAGE_RULE, DOSAGE_RULE_OPERATOR } from '@/utils/constants'
 import Edit from '@material-ui/icons/Edit'
