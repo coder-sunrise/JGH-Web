@@ -7,18 +7,10 @@ import {
   TextField,
   FastField,
   Field,
+  Popconfirm,
   Tooltip,
 } from '@/components'
-import {
-  Table,
-  Radio,
-  Input,
-  InputNumber,
-  Form,
-  Popconfirm,
-  Typography,
-  Space,
-} from 'antd'
+import { Table, Radio, Input, InputNumber, Form, Typography, Space } from 'antd'
 import {
   ExclamationCircleOutlined,
   PlusOutlined,

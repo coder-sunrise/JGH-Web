@@ -8,20 +8,12 @@ import {
   FastField,
   Field,
   Tooltip,
+  Popconfirm,
   Popover,
 } from '@/components'
 import { REPORT_ID } from '@/utils/constants'
 import { MenuList, ClickAwayListener, MenuItem } from '@material-ui/core'
-import {
-  Table,
-  Radio,
-  Input,
-  Form,
-  InputNumber,
-  Popconfirm,
-  Typography,
-  Space,
-} from 'antd'
+import { Table, Radio, Input, Form, InputNumber, Typography, Space } from 'antd'
 import {
   ExclamationCircleOutlined,
   PlusOutlined,

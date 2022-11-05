@@ -582,7 +582,7 @@ class SchemesGrid extends PureComponent {
                 }}
               >
                 <Popconfirm
-                  title='Confirm to delete?'
+                  title='Confirm to delete? Confirm to delete? Confirm to delete?Confirm to delete?Confirm to delete?'
                   onConfirm={() => {
                     commitChanges({
                       changed: {
