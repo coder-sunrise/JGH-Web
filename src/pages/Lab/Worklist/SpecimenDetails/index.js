@@ -111,6 +111,7 @@ export const SpecimenDetails = ({
   const [showRawData, setShowRawData] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [showEditSpecimenModal, setShowEditSpecimenModal] = useState(false)
+  const [editSpecimenTitle, setEditSpecimenTitle] = useState('Receive Specimen')
   const currentStatus = entity.specimenStatusFK
   const [form] = Form.useForm()
 
@@ -168,8 +169,9 @@ export const SpecimenDetails = ({
       })
     }
   }
-  let toggleEditSpecimenModal = () => {
+  let toggleEditSpecimenModal = title => {
     setShowEditSpecimenModal(!showEditSpecimenModal)
+    setEditSpecimenTitle(title || 'Receive Specimen')
   }
   const handleRetest = async () => {
     const values = await form.validateFields()
@@ -500,6 +502,7 @@ export const SpecimenDetails = ({
         id={id}
         onClose={toggleEditSpecimenModal}
         onConfirm={toggleEditSpecimenModal}
+        title={editSpecimenTitle}
       />
     </React.Fragment>
   )
