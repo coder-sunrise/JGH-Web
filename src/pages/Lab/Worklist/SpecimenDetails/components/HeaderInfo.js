@@ -153,7 +153,9 @@ export const HeaderInfo = ({ entity, toggleEditSpecimenModal }) => {
           history.location.pathname.includes('lab') && (
             <Button
               size='sm'
-              onClick={toggleEditSpecimenModal}
+              onClick={() => {
+                toggleEditSpecimenModal('Edit Specimen')
+              }}
               justIcon
               color='primary'
             >
