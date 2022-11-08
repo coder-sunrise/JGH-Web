@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-
+import $ from 'jquery'
 import moment from 'moment'
 import { connect } from 'dva'
 import {
@@ -10,11 +10,14 @@ import {
 } from '@/components'
 import { queueProcessorType, queueItemStatus } from '@/utils/codes'
 
-@connect(({ queueProcessor, clinicSettings }) => ({
-  queueProcessor,
-  clinicSettings,
-}))
+@connect(({ queueProcessor }) => ({ queueProcessor }))
 class Grid extends PureComponent {
+  componentDidMount() {
+    this.props.dispatch({
+      type: 'queueProcessor/query',
+    })
+  }
+
   configs = {
     columns: [
       { name: 'queueName', title: 'Process Type' },
@@ -170,7 +173,9 @@ class Grid extends PureComponent {
   }
 
   render() {
-    const { height } = this.props
+    const { mainDivHeight = 700 } = this.props
+    const filterBarHeight = $('.filterQueueProcessorBar').height() || 0
+    const height = Math.max(300, mainDivHeight - 160 - filterBarHeight)
     return (
       <CommonTableGrid
         forceRender
