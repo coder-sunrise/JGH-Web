@@ -40,7 +40,7 @@ import {
   LAB_SPECIMEN_STATUS,
   LAB_SPECIMEN_STATUS_COLORS,
 } from '@/utils/constants'
-import { RetestHistory } from './components/RetestHistory'
+import { RetestAndUnlockHistory } from './components/RetestAndUnlockHistory'
 import { ReceiveSpecimen } from '../components'
 
 const { Panel } = Collapse
