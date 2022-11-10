@@ -68,7 +68,7 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
   validationSchema: Yup.object().shape({
     inventoryOrderSetFK: Yup.number().required(),
   }),
-  handleSubmit: (values, { props, onConfirm, setValues, resetForm }) => {
+  handleSubmit: async (values, { props, onConfirm, setValues, resetForm }) => {
     const {
       dispatch,
       orders = {},
@@ -94,6 +94,7 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
       ctmedicationprecaution,
       ctvaccinationusage,
       doctorprofile,
+      inventoryconsumable,
     } = codetable
     const { entity: visitEntity } = visitRegistration
     const clinicianProfile = getClinicianProfile(codetable, visitEntity)
@@ -321,7 +322,10 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
       return item
     }
 
-    const getOrderVaccinationFromOrderSet = (orderSetCode, orderSetItem) => {
+    const getOrderVaccinationFromOrderSet = async (
+      orderSetCode,
+      orderSetItem,
+    ) => {
       const { inventoryVaccination } = orderSetItem
       let item = {}
       if (inventoryVaccination.isActive === true) {
@@ -393,28 +397,30 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
             dt.isDefaultTemplate === true && dt.documentTemplateTypeFK === 3,
         )
         if (defaultTemplate) {
-          dispatch({
+          const response = await dispatch({
             type: 'settingDocumentTemplate/queryOne',
             payload: { id: defaultTemplate.id },
-          }).then(r => {
-            if (!r) {
-              return
-            }
-            newCORVaccinationCert = [
-              {
-                type: '3',
-                certificateDate: moment(),
-                issuedByUserFK: clinicianProfile.userProfileFK,
-                subject: `Vaccination Certificate - ${name}, ${patientAccountNo}, ${gender.code ||
-                  ''}, ${Math.floor(
-                  moment.duration(moment().diff(dob)).asYears(),
-                )}`,
-                content: ReplaceCertificateTeplate(r.templateContent, item),
-                sequence: nextDocumentSequence,
-              },
-            ]
-            nextDocumentSequence += 1
           })
+          if (!response) {
+            return
+          }
+          newCORVaccinationCert = [
+            {
+              type: '3',
+              certificateDate: moment(),
+              issuedByUserFK: clinicianProfile.userProfileFK,
+              subject: `Vaccination Certificate - ${name}, ${patientAccountNo}, ${gender.code ||
+                ''}, ${Math.floor(
+                moment.duration(moment().diff(dob)).asYears(),
+              )}`,
+              content: ReplaceCertificateTeplate(
+                response.templateContent,
+                item,
+              ),
+              sequence: nextDocumentSequence,
+            },
+          ]
+          nextDocumentSequence += 1
         } else {
           showNoTemplate = true
         }
@@ -461,7 +467,9 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
 
     const getOrderConsumableFromOrderSet = (orderSetCode, orderSetItem) => {
       const { inventoryConsumable } = orderSetItem
-
+      const unitOfMeasurement = inventoryconsumable.find(
+        item => item.id === inventoryConsumable.id,
+      ).uom.name
       const isDefaultBatchNo = inventoryConsumable.consumableStock.find(
         o => o.isDefault === true,
       )
@@ -496,18 +504,19 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
           packageGlobalId: '',
           isDispensedByPharmacy: inventoryConsumable.isDispensedByPharmacy,
           isNurseActualizeRequired: inventoryConsumable.isNurseActualizable,
+          unitOfMeasurement: unitOfMeasurement,
         }
       }
 
       return item
     }
-    const getOrderFromOrderSet = (orderSetCode, orderSetItem) => {
+    const getOrderFromOrderSet = async (orderSetCode, orderSetItem) => {
       let item
       if (orderSetItem.type === '1') {
         item = getOrderMedicationFromOrderSet(orderSetCode, orderSetItem)
       }
       if (orderSetItem.type === '2') {
-        item = getOrderVaccinationFromOrderSet(orderSetCode, orderSetItem)
+        item = await getOrderVaccinationFromOrderSet(orderSetCode, orderSetItem)
       }
       if (orderSetItem.type === '3') {
         item = getOrderServiceCenterServiceFromOrderSet(
@@ -525,7 +534,10 @@ import { getClinicianProfile } from '../../ConsultationDocument/utils'
     let datas = []
     let nextSequence = getNextSequence()
     for (let index = 0; index < orderSetItems.length; index++) {
-      const newOrder = getOrderFromOrderSet(orderSetCode, orderSetItems[index])
+      const newOrder = await getOrderFromOrderSet(
+        orderSetCode,
+        orderSetItems[index],
+      )
       if (newOrder) {
         let type = orderSetItems[index].type
         if (orderSetItems[index].type === '3') {

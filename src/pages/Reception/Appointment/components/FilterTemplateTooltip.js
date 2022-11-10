@@ -44,7 +44,11 @@ const Templates = ({
 
   if (!visible && selectedTemplateId) setSelectedTemplateId(null)
 
-  const saveFilterTemplate = (requestDelete, saveAsFavorite) => {
+  const saveFilterTemplate = (
+    requestDelete,
+    saveAsFavorite,
+    saveAsFavoriteExisted = false,
+  ) => {
     let newFilterTemplates = [...filterTemplates]
     let newTemplateObj
     let newId = 1
@@ -74,6 +78,15 @@ const Templates = ({
         template => template.id === selectedTemplateId,
       )
       newFilterTemplates[selectedTemplateindex] = newTemplateObj
+      dispatch({
+        type: 'appointment/updateState',
+        payload: {
+          filters: {
+            filterByDoctor,
+            filterByApptType,
+          },
+        },
+      })
     } else {
       const latestTemplate = _.maxBy(filterTemplates, 'id')
       if (latestTemplate) newId = latestTemplate.id + 1
@@ -111,6 +124,11 @@ const Templates = ({
             },
           })
           setSelectedTemplateId(null)
+        } else if (saveAsFavoriteExisted) {
+          notification.success({
+            message: `Favourite template ${newTemplateObj.templateName} applied`,
+          })
+          setTemplateName('')
         } else {
           notification.success({
             message: `Template ${newTemplateObj.templateName} saved`,
@@ -215,6 +233,18 @@ const Templates = ({
                 <Delete />
                 Delete
               </Button>
+              <ProgressButton
+                onClick={() => {
+                  saveFilterTemplate(false, true, true)
+                }}
+                hidden={
+                  filterTemplates.find(
+                    template => template.id === selectedTemplateId,
+                  )?.isFavorite
+                }
+              >
+                Save as My Favourite
+              </ProgressButton>
             </GridItem>
           </GridContainer>
         )}
@@ -249,7 +279,6 @@ const Templates = ({
                   onClick={() => saveFilterTemplate()}
                   disabled={
                     templateName.length === 0 ||
-                    filterTemplates.length >= 7 ||
                     (filterByDoctor.length === 0 &&
                       filterByApptType.length === 0)
                   }

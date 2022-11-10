@@ -75,6 +75,7 @@ const FilterBar = ({ handleSubmit, isSubmitting, setFieldValue }) => {
                   mode='multiple'
                   label='Category'
                   maxTagTextLength={50}
+                  localFilter={item => [1, 2, 3, 4].includes(item.id)}
                   onChange={(_, value) => {
                     if (
                       !!value.find(

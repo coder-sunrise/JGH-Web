@@ -22,7 +22,7 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
           <GridItem md={1}>
             <FastField
               name='asAt'
-              render={(args) => <Checkbox {...args} label='As At' />}
+              render={args => <Checkbox {...args} label='As At' />}
             />
           </GridItem>
           <GridItem md={2}>
@@ -38,7 +38,7 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
           <GridItem md={4}>
             <FastField
               name='performerIDs'
-              render={(args) => (
+              render={args => (
                 <DoctorProfileSelect
                   mode='multiple'
                   {...args}
@@ -57,13 +57,13 @@ const FilterBar = ({ handleSubmit, isSubmitting }) => {
           <GridItem md={4}>
             <FastField
               name='categoryIDs'
-              render={(args) => (
+              render={args => (
                 <CodeSelect
                   {...args}
                   code='ltinvoiceitemtype'
                   mode='multiple'
                   label='Category'
-                  localFilter={(item) => [ 1,2,3,4,6 ].includes(item.id)}
+                  localFilter={item => [1, 2, 3, 4].includes(item.id)}
                 />
               )}
             />

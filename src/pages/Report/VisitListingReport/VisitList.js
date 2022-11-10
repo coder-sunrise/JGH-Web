@@ -137,8 +137,8 @@ class VisitList extends PureComponent {
               if (type === 'visitCount' || type === 'groupCount') {
                 if (rows && rows.length > 0) {
                   for (let p of rows) {
-                    if (!visitIds.includes(p.id)) {
-                      visitIds.push(p.id)
+                    if (!visitIds.includes(p.invoiceNo)) {
+                      visitIds.push(p.invoiceNo)
                     }
                   }
                 }

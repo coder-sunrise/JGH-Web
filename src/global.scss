@@ -75,9 +75,10 @@ html {
 // .ant-input-number-disabled {
 //   cursor: text;
 // }
-// .ant-popover-message-title {
-//   padding-left: 2rem !important;
-// }
+.ant-popover-message-title {
+  padding-left: 2px !important;
+  display: inline;
+}
 // .ant-btn {
 //   padding: 3px 10px !important;
 //   font-size: 0.75em !important;
@@ -373,10 +374,10 @@ html {
 //   pointer-events: none;
 //   border-bottom-color: #2f54eb;
 // }
-// .anticon {
-//   // position: relative;
-//   // font-size: larger;
-// }
+.ant-popover-message > .anticon {
+  position: relative;
+  top: 0;
+}
 .ant-table-content table {
   table-layout: fixed !important;
 }

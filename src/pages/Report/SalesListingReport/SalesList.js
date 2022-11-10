@@ -138,7 +138,6 @@ class SalesList extends PureComponent {
     }
     return (
       <ReportDataGrid
-        height={height}
         data={listData}
         columns={SalesListCols}
         columnExtensions={SalesListColsExtension}

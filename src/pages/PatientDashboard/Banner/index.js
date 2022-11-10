@@ -329,6 +329,10 @@ class Banner extends PureComponent {
         code: 'ctnationality',
       },
     })
+    await dispatch({
+      type: 'codetable/fetchCodes',
+      payload: { code: 'ctgender' },
+    })
   }
 
   openNotes = () => this.setState({ showNotesModal: true })
@@ -1904,7 +1908,11 @@ class Banner extends PureComponent {
           maxWidth='lg'
           fullHeight
         >
-          <PatientResults patient={patient} patientProfileFK={entity.id} />
+          <PatientResults
+            patient={patient}
+            patientProfileFK={entity.id}
+            patientId={entity.id}
+          />
         </CommonModal>
       </Paper>
     )

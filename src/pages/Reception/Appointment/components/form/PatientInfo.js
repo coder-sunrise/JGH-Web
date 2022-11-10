@@ -25,6 +25,7 @@ const PatientInfoInput = ({
   classes,
   onViewPatientProfileClick,
   onSearchPatientClick,
+  onResetPatientClick,
   onCreatePatientClick,
   onRegisterToVisitClick,
   patientProfileFK,
@@ -106,7 +107,10 @@ const PatientInfoInput = ({
                 color='primary'
                 variant='contained'
                 submitKey='patientSearch/query'
-                disabled={disabled || isEdit}
+                disabled={
+                  appointmentStatusFK !== APPOINTMENT_STATUS.DRAFT &&
+                  (disabled || isEdit)
+                }
                 onClick={onSearchPatientClick}
                 // tabIndex={-1}
               >
@@ -155,6 +159,19 @@ const PatientInfoInput = ({
                   </Button>
                 </Authorized>
               )}
+
+              {!values?.isEnableRecurrence &&
+                [APPOINTMENT_STATUS.DRAFT, undefined].includes(
+                  appointmentStatusFK,
+                ) && (
+                  <Button
+                    size='sm'
+                    color='danger'
+                    onClick={onResetPatientClick}
+                  >
+                    Reset
+                  </Button>
+                )}
             </React.Fragment>
           )}
         </div>

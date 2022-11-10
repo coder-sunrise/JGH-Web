@@ -4,6 +4,7 @@ import { primaryColor } from '@/assets/jss'
 import { render } from 'react-dom'
 import { useSelector } from 'umi'
 import moment from 'moment'
+import { Tooltip } from '@material-ui/core'
 export default function Grid(props) {
   const { diagnosis, visitRegistration, footer } = props
   const { patientDiansiosHistoryList } = useSelector(
@@ -26,7 +27,8 @@ export default function Grid(props) {
 
   const columns = [
     { name: 'visitDate', title: 'Visit Date' },
-    { name: 'Diagnosis', title: 'Diagnosis' },
+    { name: 'icD10DiagnosisDescription', title: 'Diagnosis' },
+    { name: 'icD10JpnDiagnosisDescription', title: 'Diagnosis (JP)' },
     { name: 'diagnosisType', title: 'Type' },
     { name: 'onsetDate', title: 'Onset Date' },
     { name: 'firstVisitDate', title: 'First Visit Date' },
@@ -76,7 +78,7 @@ export default function Grid(props) {
                 .length
             }
           </span>
-          <span>&nbsp;&nbsp;diagnosis select</span>
+          <span>&nbsp;&nbsp;diagnosis selected</span>
         </div>
       </div>
       <div
@@ -105,37 +107,40 @@ export default function Grid(props) {
               type: 'date',
               width: 110,
               sortingEnabled: false,
-              render: row => {
-                if (row.firstVisitDate != null) {
-                  return moment(row.firstVisitDate).format('DD MMM YYYY')
-                }
-              },
             },
             {
               columnName: 'onsetDate',
               type: 'date',
               width: 110,
               sortingEnabled: false,
-              render: row => {
-                if (row.onsetDate != null) {
-                  return moment(row.onsetDate).format('DD MMM YYYY')
-                }
-              },
             },
             {
               columnName: 'diagnosisType',
               width: 110,
               sortingEnabled: false,
+              render: row => {
+                return (
+                  <span>
+                    {row.diagnosisType == null ? '-' : row.diagnosisType}
+                  </span>
+                )
+              },
             },
             {
               columnName: 'validityDays',
               width: 110,
               align: 'center',
               sortingEnabled: false,
+              render: row => {
+                return (
+                  <span>
+                    {row.validityDays == null ? '-' : row.validityDays}
+                  </span>
+                )
+              },
             },
             {
-              columnName: 'Diagnosis',
-              width: 300,
+              columnName: 'icD10DiagnosisDescription',
               sortingEnabled: false,
               render: row => {
                 if (
@@ -143,20 +148,84 @@ export default function Grid(props) {
                   Date.now() < Date.parse(row.effectiveEndDate)
                 ) {
                   return (
-                    <span>
-                      {row.icD10DiagnosisDescription}&nbsp;
-                      {row.icD10JpnDiagnosisDescription}
-                    </span>
+                    <Tooltip
+                      title={
+                        <div style={{ fontSize: '13px' }}>
+                          {row.icD10DiagnosisDescription}
+                        </div>
+                      }
+                      placement='top'
+                    >
+                      <span>{row.icD10DiagnosisDescription}</span>
+                    </Tooltip>
                   )
                 } else {
                   return (
-                    <span>
-                      <span style={{ color: 'red', fontStyle: 'italic' }}>
-                        <sup>#1&nbsp;</sup>
+                    <Tooltip
+                      title={
+                        <div style={{ fontSize: '13px' }}>
+                          {row.icD10DiagnosisDescription}
+                        </div>
+                      }
+                      placement='top'
+                    >
+                      <span>
+                        <span style={{ color: 'red', fontStyle: 'italic' }}>
+                          <sup>#1&nbsp;</sup>
+                        </span>
+                        &nbsp; {row.icD10DiagnosisDescription}
                       </span>
-                      &nbsp; {row.icD10DiagnosisDescription}&nbsp;
-                      {row.icD10JpnDiagnosisDescription}
-                    </span>
+                    </Tooltip>
+                  )
+                }
+              },
+            },
+            {
+              columnName: 'icD10JpnDiagnosisDescription',
+              sortingEnabled: false,
+              render: row => {
+                if (
+                  Date.now() > Date.parse(row.effectiveStartDate) &&
+                  Date.now() < Date.parse(row.effectiveEndDate)
+                ) {
+                  return (
+                    <Tooltip
+                      title={
+                        <div style={{ fontSize: '13px', fontWeight: 570 }}>
+                          {row.icD10JpnDiagnosisDescription == null
+                            ? '-'
+                            : row.icD10JpnDiagnosisDescription}
+                        </div>
+                      }
+                      placement='top'
+                    >
+                      <span style={{ fontWeight: 500 }}>
+                        {row.icD10JpnDiagnosisDescription == null
+                          ? '-'
+                          : row.icD10JpnDiagnosisDescription}
+                      </span>
+                    </Tooltip>
+                  )
+                } else {
+                  return (
+                    <Tooltip
+                      title={
+                        <div style={{ fontSize: '13px', fontWeight: 600 }}>
+                          {row.icD10JpnDiagnosisDescription}
+                        </div>
+                      }
+                      placement='top'
+                    >
+                      <span>
+                        <span style={{ color: 'red', fontStyle: 'italic' }}>
+                          <sup>#1&nbsp;</sup>
+                        </span>
+                        &nbsp;
+                        <span style={{ fontWeight: 500 }}>
+                          {row.icD10JpnDiagnosisDescription}
+                        </span>
+                      </span>
+                    </Tooltip>
                   )
                 }
               },
@@ -237,6 +306,20 @@ export default function Grid(props) {
           ]}
         ></CommonTableGrid>
       </div>
+      <div
+        style={{
+          height: 30,
+          paddingTop: 10,
+        }}
+      >
+        <span>
+          Note:&nbsp;
+          <span style={{ color: 'red', fontStyle: 'italic' }}>
+            <sup>#1&nbsp;</sup>
+          </span>
+          inactive diagnosis
+        </span>
+      </div>
       {footer &&
         footer({
           onConfirm: () => {
@@ -248,21 +331,6 @@ export default function Grid(props) {
             disabled: confirmPropsSave,
           },
         })}
-      <div
-        style={{
-          height: 30,
-          paddingTop: 10,
-          marginTop: '-20px',
-        }}
-      >
-        <span>
-          Note:&nbsp;
-          <span style={{ color: 'red', fontStyle: 'italic' }}>
-            <sup>#1&nbsp;</sup>
-          </span>
-          inactive diagnosis
-        </span>
-      </div>
     </>
   )
 }

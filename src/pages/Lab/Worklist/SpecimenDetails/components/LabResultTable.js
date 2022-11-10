@@ -1,15 +1,8 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
-import {
-  Table,
-  Input,
-  Button,
-  Popconfirm,
-  Form,
-  InputNumber,
-  Select,
-} from 'antd'
+import { Table, Input, Button, Form, InputNumber, Select } from 'antd'
+import { Popconfirm } from '@/components'
 import { useCodeTable } from '@/utils/hooks'
 import styles from './LabResultTable.less'
 import { LAB_RESULT_TYPE } from '@/utils/constants'

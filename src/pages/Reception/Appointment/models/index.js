@@ -84,6 +84,7 @@ export default createListViewModel({
         totalRecords: 0,
       },
       filterTemplates: [],
+      filters: {},
     },
     effects: {
       *saveFilterTemplate({ payload }, { call, put, select }) {

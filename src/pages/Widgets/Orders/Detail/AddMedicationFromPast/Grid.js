@@ -109,12 +109,14 @@ class Grid extends PureComponent {
       return (
         item.isActive &&
         item.orderable &&
+        item.quantity != 0 &&
         item.inventoryDispenseUOMFK === item.dispenseUOMFK &&
         firstInstruction?.prescribeUOMFK === item.inventoryPrescribingUOMFK
       )
     }
     return (
       item.isActive &&
+      item.quantity != 0 &&
       item.inventoryDispenseUOMFK === item.dispenseUOMFK &&
       item.inventoryPrescribingUOMFK === item.uomfk
     )
@@ -244,6 +246,10 @@ class Grid extends PureComponent {
                     )
                   ) {
                     warningLabel = '#3'
+                  } else if (
+                    drugMixtures.find(drugMixture => drugMixture.quantity == 0)
+                  ) {
+                    warningLabel = '#5'
                   }
                 } else {
                   if (!item.isActive) {
@@ -258,6 +264,8 @@ class Grid extends PureComponent {
                     warningLabel = '#3'
                   } else if (item.isExternalPrescription) {
                     warningLabel = '#4'
+                  } else if (item.quantity == 0) {
+                    warningLabel = '#5'
                   }
                 }
               } else {
@@ -523,11 +531,16 @@ class Grid extends PureComponent {
                   {!isRetail && (
                     <span>
                       <span style={{ color: 'red', fontStyle: 'italic' }}>
-                        <sup>4&nbsp;</sup>
+                        <sup>#4&nbsp;</sup>
                       </span>
                       external prescription
                     </span>
                   )}
+                  &nbsp;&nbsp;
+                  <span style={{ color: 'red', fontStyle: 'italic' }}>
+                    <sup>#5&nbsp;</sup>
+                  </span>
+                  quantity is 0&nbsp;&nbsp;
                 </span>
               )}
               {type === '2' && (

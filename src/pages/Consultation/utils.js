@@ -514,7 +514,6 @@ const isPharmacyOrderUpdated = (orders, isPrescriptionSheetUpdated) => {
       rows.filter(
         r =>
           !r.id &&
-          !r.isDeleted &&
           !r.isPreOrder &&
           (!isPrescriptionSheetUpdated || !r.isExternalPrescription) &&
           isPushToPharmacy(r),
@@ -696,9 +695,11 @@ const getOrdersData = val => {
       }
       data.push({
         actualizedPreOrderItemFK: po.id,
-        adjAmount: preOrderMedicationItem?.adjAmount || 0,
-        adjType: preOrderMedicationItem?.adjType || 'ExactAmount',
-        adjValue: preOrderMedicationItem?.adjValue || 0,
+        adjAmount: po.hasPaid ? preOrderMedicationItem?.adjAmount || 0 : 0,
+        adjType: po.hasPaid
+          ? preOrderMedicationItem?.adjType || 'ExactAmount'
+          : 'ExactAmount',
+        adjValue: po.hasPaid ? preOrderMedicationItem?.adjValue || 0 : 0,
         corPrescriptionItemInstruction: preOrderMedicationItem.length
           ? preOrderMedicationItem?.corPrescriptionItemInstruction
           : [defaultInstruction],
@@ -759,9 +760,11 @@ const getOrdersData = val => {
 
       data.push({
         actualizedPreOrderItemFK: po.id,
-        adjAmount: preOrderVaccinationItem?.adjAmount || 0,
-        adjType: preOrderVaccinationItem?.adjType || 'ExactAmount',
-        adjValue: preOrderVaccinationItem?.adjValue || 0,
+        adjAmount: po.hasPaid ? preOrderVaccinationItem?.adjAmount || 0 : 0,
+        adjType: po.hasPaid
+          ? preOrderVaccinationItem?.adjType || 'ExactAmount'
+          : 'ExactAmount',
+        adjValue: po.hasPaid ? preOrderVaccinationItem?.adjValue || 0 : 0,
         dosageCode:
           preOrderVaccinationItem?.dosageCode || prescribingDosage?.code,
         dosageDisplayValue:
@@ -828,9 +831,11 @@ const getOrdersData = val => {
 
       data.push({
         actualizedPreOrderItemFK: po.id,
-        adjAmount: preOrderConsumableItem?.adjAmount || 0,
-        adjType: preOrderConsumableItem?.adjType || 'ExactAmount',
-        adjValue: preOrderConsumableItem?.adjValue || 0,
+        adjAmount: po.hasPaid ? preOrderConsumableItem?.adjAmount || 0 : 0,
+        adjType: po.hasPaid
+          ? preOrderConsumableItem?.adjType || 'ExactAmount'
+          : 'ExactAmount',
+        adjValue: po.hasPaid ? preOrderConsumableItem?.adjValue || 0 : 0,
         consumableCode:
           preOrderConsumableItem.consumableCode || consumableStock[0].code,
         consumableName:
@@ -874,9 +879,11 @@ const getOrdersData = val => {
       )
       data.push({
         actualizedPreOrderItemFK: po.id,
-        adjAmount: preOrderServiceItem?.adjAmount || 0,
-        adjType: preOrderServiceItem?.adjType || 'ExactAmount',
-        adjValue: preOrderServiceItem?.adjValue || 0,
+        adjAmount: po.hasPaid ? preOrderServiceItem?.adjAmount || 0 : 0,
+        adjType: po.hasPaid
+          ? preOrderServiceItem?.adjType || 'ExactAmount'
+          : 'ExactAmount',
+        adjValue: po.hasPaid ? preOrderServiceItem?.adjValue || 0 : 0,
         instruction: po?.instruction,
         isActive: true,
         isDeleted: false,

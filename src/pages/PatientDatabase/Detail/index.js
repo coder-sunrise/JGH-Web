@@ -104,6 +104,9 @@ class PatientDetail extends PureComponent {
     },
     hasActiveSession: false,
     preSelectedMenu: '1',
+    contactAddressUpdateRequired: false,
+    patientFamilyMemberUpdateRequired: false,
+    patientSchemeUpdateRequired: false,
   }
 
   constructor(props) {
@@ -574,12 +577,25 @@ class PatientDetail extends PureComponent {
       values.contact.contactAddress,
       initialValues.contact?.contactAddress,
     )
+    this.setState({
+      contactAddressUpdateRequired: !newContactAddress,
+    })
     const newPatientFamilyMember = _.isEqual(
-      values.patientFamilyGroup.patientFamilyMember,
-      initialValues.patientFamilyGroup.patientFamilyMember,
+      values.patientFamilyGroup?.patientFamilyMember,
+      initialValues.patientFamilyGroup?.patientFamilyMember,
     )
+    this.setState({
+      patientFamilyMemberUpdateRequired: !newPatientFamilyMember,
+    })
+    const newPatientScheme = _.isEqual(
+      values.patientScheme,
+      initialValues.patientScheme,
+    )
+    this.setState({
+      patientSchemeUpdateRequired: !newPatientScheme,
+    })
     //only primaryMember can can update family member info
-    if (!newContactAddress || !newPatientFamilyMember) {
+    if (!newContactAddress || !newPatientFamilyMember || !newPatientScheme) {
       const [familyMembers, address, scheme] = this.checkFamilyMembersInfoDiff(
         initialValues,
         values,
@@ -951,6 +967,15 @@ class PatientDetail extends PureComponent {
             {this.state.isUpdateFamilyMembersInfo && (
               <FamilyMembersInfoUpdate
                 dispatch={dispatch}
+                contactAddressUpdateRequired={
+                  this.state.contactAddressUpdateRequired
+                }
+                patientFamilyMemberUpdateRequired={
+                  this.state.patientFamilyMemberUpdateRequired
+                }
+                patientSchemeUpdateRequired={
+                  this.state.patientSchemeUpdateRequired
+                }
                 patientProfileFK={currentPatientId}
                 familyMembers={this.state.familyMembers}
                 onSelectionChange={e => (values.familyMembersInfoUpdate = e)}

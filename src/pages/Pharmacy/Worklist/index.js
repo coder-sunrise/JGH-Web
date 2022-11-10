@@ -10,6 +10,7 @@ import _ from 'lodash'
 import { HistoryOutlined } from '@ant-design/icons'
 import { CommonModal, Button, Tooltip } from '@/components'
 import { Worklist } from '../Components'
+import { Checkbox } from '@/components'
 import WorklistContext, {
   WorklistContextProvider,
 } from '@/pages/Radiology/Worklist/WorklistContext'
@@ -55,6 +56,7 @@ const PharmacyWorklist = props => {
   const clinicSettings = useSelector(s => s.clinicSettings)
   const [refreshDate, setRefreshDate] = useState(moment())
   const [filterValue, setFilterValue] = useState('')
+  const [partialPreparedChecked, setPartialPreparedChecked] = useState(false)
   const { autoRefreshPharmacyWorklistInterval = 60 } =
     clinicSettings.settings || {}
   const timer = React.useRef(null)
@@ -163,10 +165,21 @@ const PharmacyWorklist = props => {
         className={props.classes.customProCard}
         gutter={[16, 16]}
         title={
-          <WorklistFilter
-            valueChange={debouncedAction}
-            filterValue={filterValue}
-          />
+          <div style={{ display: 'flex' }}>
+            <WorklistFilter
+              valueChange={debouncedAction}
+              filterValue={filterValue}
+            />
+            <div style={{ marginTop: '16px', marginLeft: '20px' }}>
+              <Checkbox
+                label='Partial Prepared/Dispensed Item'
+                onChange={e => {
+                  setPartialPreparedChecked(e.target.value)
+                }}
+                checked={partialPreparedChecked}
+              />
+            </div>
+          </div>
         }
         extra={
           <div style={{ display: 'flex', width: 265, flexDirection: 'column' }}>
@@ -214,7 +227,11 @@ const PharmacyWorklist = props => {
           </div>
         }
       >
-        <Worklist columns={columns} {...props} />
+        <Worklist
+          columns={columns}
+          partialPreparedChecked={partialPreparedChecked}
+          {...props}
+        />
         <PharmacyDetails
           refreshClick={refreshClick}
           startRefreshTimer={startRefreshTimer}
@@ -235,4 +252,3 @@ export default compose(
   withStyles(styles, { name: 'PharmacyWorklistWithProvider' }),
   withWebSocket(),
 )(PharmacyWorklistWithProvider)
-
