@@ -27,12 +27,13 @@ import { useCodeTable } from '@/utils/hooks'
 import { LAB_SPECIMEN_STATUS, PRIORITY_VALUES } from '@/utils/constants'
 import PrintSpecimenLabel from '@/pages/Lab/SpecimenCollection/components/PrintSpecimenLabel'
 import Edit from '@material-ui/icons/Edit'
-import { useRouteMatch } from 'umi'
+import { history } from 'umi'
+
 export const HeaderInfo = ({ entity, toggleEditSpecimenModal }) => {
   const cttestcategory = useCodeTable('cttestcategory')
   const ctspecimentype = useCodeTable('ctspecimentype')
   const cttestpanel = useCodeTable('cttestpanel')
-  const routeMatch = useRouteMatch('/lab/worklist')?.isExact
+
   const specimenInfoColumns = [
     {
       title: 'Accession No.',
@@ -149,10 +150,12 @@ export const HeaderInfo = ({ entity, toggleEditSpecimenModal }) => {
         <Typography.Text strong>Specimen Details </Typography.Text>
         &#x3000;
         {entity.specimenStatusFK != LAB_SPECIMEN_STATUS.COMPLETED &&
-          routeMatch && (
+          history.location.pathname.includes('lab') && (
             <Button
               size='sm'
-              onClick={toggleEditSpecimenModal}
+              onClick={() => {
+                toggleEditSpecimenModal('Edit Specimen')
+              }}
               justIcon
               color='primary'
             >

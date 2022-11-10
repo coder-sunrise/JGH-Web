@@ -197,8 +197,11 @@ class AmountSummary extends PureComponent {
       showAdjustment = true,
       global,
       isViewOnly = false,
+      clinicSettings,
     } = this.props
     const { summary, adjustments } = this.state
+    const isEnableGSTInclusive =
+      clinicSettings?.entity?.isEnableGSTInclusive?.settingValue === 'true'
     if (!summary) return null
     // console.log(summary, config)
     const { subTotal, totalWithGST, gst, isGSTInclusive } = summary
@@ -309,17 +312,23 @@ class AmountSummary extends PureComponent {
                   marginRight: theme.spacing(-4),
                 }}
               >
-                <Checkbox
-                  style={{ top: -1 }}
-                  controlStyle={{ fontWeight: 500 }}
-                  label={`Inclusive GST (${numeral(gstValue).format('0.00')}%)`}
-                  simple
-                  disabled={isViewOnly}
-                  checked={isGSTInclusive}
-                  onChange={e => {
-                    this.onChangeGstToggle(e.target.value)
-                  }}
-                />
+                {isEnableGSTInclusive ? (
+                  <Checkbox
+                    style={{ top: -1 }}
+                    controlStyle={{ fontWeight: 500 }}
+                    label={`Inclusive GST (${numeral(gstValue).format(
+                      '0.00',
+                    )}%)`}
+                    simple
+                    disabled={isViewOnly}
+                    checked={isGSTInclusive}
+                    onChange={e => {
+                      this.onChangeGstToggle(e.target.value)
+                    }}
+                  />
+                ) : (
+                  <span>GST (${numeral(gstValue).format('0.00')}%)</span>
+                )}
               </div>
               {/* <FastField
                 name={`${poPrefix}.IsGSTEnabled`}

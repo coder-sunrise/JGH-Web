@@ -1908,7 +1908,11 @@ class Banner extends PureComponent {
           maxWidth='lg'
           fullHeight
         >
-          <PatientResults patient={patient} patientProfileFK={entity.id} />
+          <PatientResults
+            patient={patient}
+            patientProfileFK={entity.id}
+            patientId={entity.id}
+          />
         </CommonModal>
       </Paper>
     )

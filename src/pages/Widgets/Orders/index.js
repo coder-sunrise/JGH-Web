@@ -71,13 +71,22 @@ const styles = theme => ({
 })
 // @skeleton()
 @connect(
-  ({ orders, codetable, clinicInfo, patient, user, consultationDocument }) => ({
+  ({
+    orders,
+    codetable,
+    clinicInfo,
+    patient,
+    user,
+    consultationDocument,
+    clinicSettings,
+  }) => ({
     orders,
     codetable,
     patient,
     user,
     clinicInfo,
     consultationDocument,
+    clinicSettings,
   }),
 )
 class Orders extends PureComponent {
@@ -171,7 +180,15 @@ class Orders extends PureComponent {
 
   render() {
     const { props } = this
-    const { className, footer, isEnableEditOrder = true, ...restProps } = props
+    const {
+      className,
+      footer,
+      isEnableEditOrder = true,
+      clinicSettings,
+      ...restProps
+    } = props
+    const isEnableGSTInclusive =
+      clinicSettings?.entity?.isEnableGSTInclusive?.settingValue === 'true'
     return (
       <div className={className} id='ordersContainer'>
         {isEnableEditOrder && <Detail {...restProps} />}
@@ -180,6 +197,7 @@ class Orders extends PureComponent {
         <Grid
           {...props}
           isEnableEditOrder={isEnableEditOrder}
+          isEnableGSTInclusive={isEnableGSTInclusive}
           // summary={this.state}
           // handleAddAdjustment={this.addAdjustment}
         />

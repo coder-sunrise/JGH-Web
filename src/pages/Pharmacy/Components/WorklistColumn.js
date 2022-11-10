@@ -27,8 +27,8 @@ const columnBodyStyle = {
 
 const WorlklistColumnTitle = ({
   title,
-  workItemCount,
   selectedWorkitemCount,
+  workItemCount,
   partialPreparedChecked,
 }) => {
   return (
@@ -92,7 +92,6 @@ export const WorklistColumn = ({
   >
     <WorlklistColumnTitle
       title={data.title}
-      workItemCount={data.workitems.length}
       selectedWorkitemCount={
         data.workitems.filter(
           item => item.isFullyDispensed == false && item.status != 'New',
