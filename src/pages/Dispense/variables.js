@@ -1685,7 +1685,11 @@ export const ServiceColumns1 = (
               }}
             >
               {(row.isPreOrder || row.isActualizedPreOrder) && (
-                <Tooltip title={row.isPreOrder ? 'Actualized Pre-Order' : ''}>
+                <Tooltip
+                  title={
+                    row.isPreOrder ? 'New Pre-Order' : 'Actualized Pre-Order'
+                  }
+                >
                   <div
                     style={{
                       ...iconStyle,
